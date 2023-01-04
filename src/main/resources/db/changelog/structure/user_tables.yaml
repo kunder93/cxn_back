@@ -1,0 +1,109 @@
+databaseChangeLog:
+- changeSet:
+    id: user_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: users
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: name
+            type: varchar(50)
+            constraints:
+              nullable: false
+        - column:
+            name: first_surname
+            type: varchar(30)
+            constraints:
+              nullable: false
+        - column:
+            name: second_surname
+            type: varchar(30)
+            constraints:
+              nullable: false
+        - column:
+            name: birth_date
+            type: date
+            constraints:
+              nullable: false
+        - column:
+            name: gender
+            type: varchar(15)
+            constraints:
+              nullable: false
+        - column:
+            name: password
+            type: varchar(255)
+            constraints:
+              nullable: false
+        - column:
+            name: email
+            type: varchar(50)
+            constraints:
+              nullable: false
+              unique: true
+- changeSet:
+    id: role_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: roles
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              unique: true
+              nullable: false
+        - column:
+            name: name
+            type: varchar(30)
+            constraints:
+              nullable: false
+              unique: true
+- changeSet:
+    id: role_users_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: role_users
+        columns:
+        - column:
+            name: role_id
+            type: bigint
+            constraints:
+              nullable: false
+        - column:
+            name: user_id
+            type: bigint
+            constraints:
+              nullable: false
+    - addPrimaryKey:
+        columnNames: role_id, user_id
+        tableName: role_users
+        constraintName: pk_role_users
+- changeSet:
+    id: role_users_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: role_id
+        baseTableName: role_users
+        constraintName: fk_roles_users_roles
+        referencedColumnNames: id
+        referencedTableName: roles
+    - addForeignKeyConstraint:
+        baseColumnNames: user_id
+        baseTableName: role_users
+        constraintName: fk_roles_users_users
+        referencedColumnNames: id
+        referencedTableName: users

@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "hibernate.cache.use_second_level_cache",
+    "type": "java.lang.String",
+    "description": "A description for 'hibernate.cache.use_second_level_cache'"
+  },
+  {
+    "name": "hibernate.cache.region.factory_class",
+    "type": "java.lang.String",
+    "description": "A description for 'hibernate.cache.region.factory_class'"
+  }
+]}
