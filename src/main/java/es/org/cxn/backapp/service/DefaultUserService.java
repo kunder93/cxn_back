@@ -33,10 +33,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
-import es.org.cxn.backapp.exceptions.UserEmailExistsExeption;
-import es.org.cxn.backapp.exceptions.UserEmailNotFoundException;
-import es.org.cxn.backapp.exceptions.UserIdNotFoundException;
+import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
@@ -53,6 +50,14 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 public final class DefaultUserService implements UserService {
 
     /**
+     * User not found message for exception.
+     */
+    public static final String USER_NOT_FOUND_MESSAGE = "User not found.";
+    /**
+     * Role not found message for exception.
+     */
+    public static final String ROLE_NOT_FOUND_MESSAGE = "Role not found.";
+    /**
      * Repository for the user entities handled by the service.
      */
     private final UserEntityRepository userRepository;
@@ -68,36 +73,41 @@ public final class DefaultUserService implements UserService {
      * @param userRepo The user repository{@link UserEntityRepository}
      * @param roleRepo The role repository{@link RoleEntityRepository}
      */
-    public DefaultUserService(final UserEntityRepository userRepo,
-            final RoleEntityRepository roleRepo) {
+    public DefaultUserService(
+            final UserEntityRepository userRepo,
+            final RoleEntityRepository roleRepo
+    ) {
         super();
 
-        this.userRepository = checkNotNull(userRepo,
-                "Received a null pointer as repository");
-        this.roleRepository = checkNotNull(roleRepo,
-                "Received a null pointer as repository");
+        this.userRepository = checkNotNull(
+                userRepo, "Received a null pointer as repository"
+        );
+        this.roleRepository = checkNotNull(
+                roleRepo, "Received a null pointer as repository"
+        );
     }
 
     @Override
     public UserEntity findById(final Integer identifier)
-            throws UserIdNotFoundException {
+            throws UserServiceException {
         final Optional<PersistentUserEntity> entity;
         checkNotNull(identifier, "Received a null pointer as identifier");
         entity = userRepository.findById(identifier);
         if (entity.isEmpty()) {
-            throw new UserIdNotFoundException(identifier);
+            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
         return entity.get();
     }
 
     @Override
-    public UserEntity add(final String name, final String firstSurname,
+    public UserEntity add(
+            final String name, final String firstSurname,
             final String secondSurname, final LocalDate birthDate,
-            final String gender, final String password, final String email)
-            throws UserEmailExistsExeption {
+            final String gender, final String password, final String email
+    ) throws UserServiceException {
 
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new UserEmailExistsExeption(email);
+            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         } else {
             final PersistentUserEntity save;
             save = new PersistentUserEntity();
@@ -116,15 +126,15 @@ public final class DefaultUserService implements UserService {
     @Override
     @Transactional
     public UserEntity addRole(final String email, final String roleName)
-            throws UserEmailNotFoundException, RoleNameNotFoundException {
+            throws UserServiceException {
         var user = userRepository.findByEmail(email);
 
         if (user.isEmpty()) {
-            throw new UserEmailNotFoundException(email);
+            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
         var role = roleRepository.findByName(roleName);
         if (role.isEmpty()) {
-            throw new RoleNameNotFoundException(roleName);
+            throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
         }
         var userEntity = user.get();
         userEntity.addRole(role.get());
@@ -135,17 +145,17 @@ public final class DefaultUserService implements UserService {
     @Override
     @Transactional
     public UserEntity removeRole(final String email, final String roleName)
-            throws UserEmailNotFoundException, RoleNameNotFoundException {
+            throws UserServiceException {
         var userOptional = userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
-            throw new UserEmailNotFoundException(email);
+            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
         var user = userOptional.get();
         var roleOptional = roleRepository.findByName(roleName);
         if (roleOptional.isEmpty()
                 || !user.getRoles().contains(roleOptional.get())) {
-            throw new RoleNameNotFoundException(roleName);
+            throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
         }
         user.removeRole(roleOptional.get());
         return userRepository.save(user);
@@ -154,35 +164,36 @@ public final class DefaultUserService implements UserService {
 
     @Override
     public UserEntity findByEmail(final String email)
-            throws UserEmailNotFoundException {
+            throws UserServiceException {
         checkNotNull(email, "Received a null pointer as identifier");
 
         var result = userRepository.findByEmail(email);
 
         if (!result.isPresent()) {
-            throw new UserEmailNotFoundException(email);
+            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
         return result.get();
     }
 
     @Override
-    public void remove(final String email) throws UserEmailNotFoundException {
+    public void remove(final String email) throws UserServiceException {
         final Optional<PersistentUserEntity> userOptional;
         userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty()) {
-            throw new UserEmailNotFoundException(email);
+            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
         userRepository.delete(userOptional.get());
     }
 
     @Override
-    public UserEntity update(final UserServiceUpdateForm userForm,
-            final String userEmail) throws UserEmailNotFoundException {
+    public UserEntity update(
+            final UserServiceUpdateForm userForm, final String userEmail
+    ) throws UserServiceException {
         Optional<PersistentUserEntity> userOptional;
 
         userOptional = userRepository.findByEmail(userEmail);
         if (userOptional.isEmpty()) {
-            throw new UserEmailNotFoundException(userEmail);
+            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
         PersistentUserEntity userEntity;
         userEntity = userOptional.get();

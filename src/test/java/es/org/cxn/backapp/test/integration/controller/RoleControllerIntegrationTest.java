@@ -74,13 +74,13 @@ class RoleControllerIntegrationTest {
         // Response CREATED 201 with user data with Role
         mockMvc.perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                        .content(jSonUserDataRequest)
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
         // Second user with same email already exists CONFLICT 409
         mockMvc.perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
+                        .content(jSonUserDataRequest)
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
     @Test
@@ -95,10 +95,10 @@ class RoleControllerIntegrationTest {
 
         mockMvc.perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(
-                        MockMvcResultMatchers.content().json(userDataResponse));
+                        .content(jSonUserDataRequest)
+        ).andExpect(MockMvcResultMatchers.status().isCreated()).andExpect(
+                MockMvcResultMatchers.content().json(userDataResponse)
+        );
 
     }
 
@@ -113,12 +113,13 @@ class RoleControllerIntegrationTest {
         // No valid name, name length max is 25.
         mockMvc.perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userAData.toString()))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"content\":[\""
-                                + Constants.NAME_MAX_LENGTH_MESSAGE + "\"],"
-                                + "\"status\":\"warning\"}"));
+                        .content(userAData.toString())
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andExpect(
+                MockMvcResultMatchers.content().string(
+                        "{\"content\":[\"" + Constants.NAME_MAX_LENGTH_MESSAGE
+                                + "\"]," + "\"status\":\"warning\"}"
+                )
+        );
 
         // Remove name key and add name key with empty string
         userAData.remove("name");
@@ -126,12 +127,13 @@ class RoleControllerIntegrationTest {
         // Empty values are no valid.
         mockMvc.perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userAData.toString()))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"content\":[\""
-                                + Constants.NAME_NOT_BLANK_MESSAGE + "\"],"
-                                + "\"status\":\"warning\"}"));
+                        .content(userAData.toString())
+        ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andExpect(
+                MockMvcResultMatchers.content().string(
+                        "{\"content\":[\"" + Constants.NAME_NOT_BLANK_MESSAGE
+                                + "\"]," + "\"status\":\"warning\"}"
+                )
+        );
     }
 
     @Test
@@ -147,28 +149,32 @@ class RoleControllerIntegrationTest {
         // User not registered, unauthorized
         mockMvc.perform(
                 post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userCredentials))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                        .content(userCredentials)
+        ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
         // Register user correctly
-        mockMvc.perform(post(SIGN_UP_URL)
-                .contentType(MediaType.APPLICATION_JSON).content(userData))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(
+                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                        .content(userData)
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Login return jwt for registered user
         final var responseContent = mockMvc
-                .perform(post(SIGN_IN_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userCredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+                .perform(
+                        post(SIGN_IN_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(userCredentials)
+                ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
                 .getResponse().getContentAsString();
-        final var jwtToken = responseContent.substring(8,
-                responseContent.length() - 2);
+        final var jwtToken = responseContent
+                .substring(8, responseContent.length() - 2);
         // Validate jwt token
         Assertions.assertTrue(
-                jwtUtils.validateToken(jwtToken,
+                jwtUtils.validateToken(
+                        jwtToken,
                         myUserDetailsService
-                                .loadUserByUsername("Santi@santi.es")),
-                "jwt response token is valid");
+                                .loadUserByUsername("Santi@santi.es")
+                ), "jwt response token is valid"
+        );
     }
 
 }

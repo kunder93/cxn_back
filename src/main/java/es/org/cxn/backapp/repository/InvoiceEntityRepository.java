@@ -24,41 +24,34 @@
 
 package es.org.cxn.backapp.repository;
 
-import java.util.Optional;
+import java.util.List;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 
 /**
- * Spring-JPA repository for {@link PersistentUserEntity}.
+ * Spring-JPA repository for {@link PersistentInvoiceEntity}.
  * <p>
  * This is a simple repository just to allow the endpoints querying the
  * entities they are asked for.
  *
- * @author Santiago Paz.
+ * @author Santiago Paz Perez.
  */
 @Repository
-public interface UserEntityRepository
-        extends JpaRepository<PersistentUserEntity, Integer> {
+public interface InvoiceEntityRepository
+        extends JpaRepository<PersistentInvoiceEntity, Integer> {
 
     /**
-     * Returns all entities with a partial match to the name.
+     * Get invoice list with only one invoice, with the number and series given.
      *
-     * @param name name for searching.
-     * @param page pagination to apply.
-     * @return all entities at least partially matching the name.
+     * @param number The invoice number.
+     * @param series The invoice series.
+     * @return The invoices list.
      */
-    Page<PersistentUserEntity> findByNameContaining(String name, Pageable page);
+    List<PersistentInvoiceEntity> findByNumberAndSeries(
+            int number, String series
+    );
 
-    /**
-     * Find user entity with provided email.
-     *
-     * @param email the user email.
-     * @return user entity with email provided.
-     */
-    Optional<PersistentUserEntity> findByEmail(String email);
 }

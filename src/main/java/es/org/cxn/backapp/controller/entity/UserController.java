@@ -26,8 +26,6 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.UserEmailNotFoundException;
+import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
 import es.org.cxn.backapp.model.form.UserDataResponse;
 import es.org.cxn.backapp.model.form.UserUpdateRequestForm;
@@ -59,9 +57,6 @@ public class UserController {
      * The user service.
      */
     private final UserService userService;
-
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(UserController.class);
 
     /**
      * Constructs a controller with the specified dependencies.
@@ -89,14 +84,10 @@ public class UserController {
                 .getAuthentication().getName();
         try {
             final var user = userService.findByEmail(authName);
-            final var logMessage = String
-                    .format("GET USER DATA: %s  ", user.toString());
-            LOGGER.info(logMessage);
             return new ResponseEntity<>(
                     new UserDataResponse(user), HttpStatus.OK
             );
-        } catch (UserEmailNotFoundException e) {
-            LOGGER.debug(e.getMessage(), e);
+        } catch (UserServiceException e) {
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED, e.getMessage()
             );
@@ -126,9 +117,6 @@ public class UserController {
         try {
             var userUpdated = userService
                     .update(userServiceUpdateForm, userName);
-            final var logMessage = String
-                    .format("CHANGE DATA FROM USER: %s ", userName);
-            LOGGER.info(logMessage);
             return new ResponseEntity<>(
                     new UserUpdateResponseForm(
                             userUpdated.getName(),
@@ -138,8 +126,7 @@ public class UserController {
                     ), HttpStatus.OK
             );
 
-        } catch (UserEmailNotFoundException e) {
-            LOGGER.debug(e.getMessage(), e);
+        } catch (UserServiceException e) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST, e.getMessage()
             );

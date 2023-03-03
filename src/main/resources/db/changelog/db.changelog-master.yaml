@@ -5,6 +5,9 @@ databaseChangeLog:
   - include:
       file: structure/user_tables.yaml
       relativeToChangelogFile: true
+  - include:
+      file: structure/invoice_tables.yaml
+      relativeToChangelogFile: true
   - changeSet:
       id: initial_data
       author: Santiago
