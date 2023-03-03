@@ -26,10 +26,7 @@ package es.org.cxn.backapp.service;
 
 import java.time.LocalDate;
 
-import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
-import es.org.cxn.backapp.exceptions.UserEmailExistsExeption;
-import es.org.cxn.backapp.exceptions.UserEmailNotFoundException;
-import es.org.cxn.backapp.exceptions.UserIdNotFoundException;
+import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
 
@@ -54,45 +51,45 @@ public interface UserService {
      * @param passwordValue      The user password.
      * @param emailValue         The user email.
      * @return The User entity persisted.
-     * @throws UserEmailExistsExeption when user with provided email already
-     *                                 exists.
+     * @throws UserServiceException When user with provided email already
+     *                              exists.
      */
     UserEntity add(
             String nameValue, String firstSurnameValue,
             String secondSurnameValue, LocalDate birthDateValue,
             String genderValue, String passwordValue, String emailValue
-    ) throws UserEmailExistsExeption;
+    ) throws UserServiceException;
 
     /**
      * Returns an entity with the given identifier (id).
+     *
      * <p>
      * If no instance exists with that id then an exception is thrown.
      *
      * @param identifier The user identifier or id.
      * @return the user entity for the given id.
-     * @throws UserIdNotFoundException when user with provided identifier not
-     *                                 found {@link UserIdNotFoundException}.
+     * @throws UserServiceException when user with provided identifier not found
+     *                              {@link UserServiceException}.
      */
-    UserEntity findById(Integer identifier) throws UserIdNotFoundException;
+    UserEntity findById(Integer identifier) throws UserServiceException;
 
     /**
      * Returns an entity with the given email.
      *
      * @param email email of the user to find.
      * @return the user for the given email.
-     * @throws UserEmailNotFoundException when user with email no exists.
+     * @throws UserServiceException when user with email no exists.
      */
-    UserEntity findByEmail(String email) throws UserEmailNotFoundException;
+    UserEntity findByEmail(String email) throws UserServiceException;
 
     /**
      * Removes an user from persistence.
      *
      * @param email email of the user to remove.
      *
-     * @throws UserEmailNotFoundException when user with provided email not
-     *                                    found.
+     * @throws UserServiceException when user with provided email not found.
      */
-    void remove(String email) throws UserEmailNotFoundException;
+    void remove(String email) throws UserServiceException;
 
     /**
      * Updates an existing user.
@@ -101,11 +98,10 @@ public interface UserService {
      * @param userEmail User unique email for locate it into database.
      *
      * @return the persisted user entity.
-     * @throws UserEmailNotFoundException when user with provided email not
-     *                                    found.
+     * @throws UserServiceException when user with provided email not found.
      */
     UserEntity update(UserServiceUpdateForm userForm, String userEmail)
-            throws UserEmailNotFoundException;
+            throws UserServiceException;
 
     /**
      * Add role to an existing user.
@@ -113,13 +109,11 @@ public interface UserService {
      * @param email    user unique email acting as identifier.
      * @param roleName Name of the role which add to user, must exists.
      * @return UserEntity with role added.
-     * @throws UserEmailNotFoundException when an user with given email no
-     *                                    exists.
-     * @throws RoleNameNotFoundException  when an role with given name no
-     *                                    exists.
+     * @throws UserServiceException When an role with given name no exists or
+     *                              When an user with given email no exists.
      */
     UserEntity addRole(String email, String roleName)
-            throws UserEmailNotFoundException, RoleNameNotFoundException;
+            throws UserServiceException;
 
     /**
      * Remove role from user.
@@ -127,12 +121,11 @@ public interface UserService {
      * @param userEmail The email for locate user.
      * @param roleName  The role name for locate role entity.
      * @return User entity with role removed from role list @see UserEntity.
-     * @throws UserEmailNotFoundException When user with provided email not
-     *                                    found.
-     * @throws RoleNameNotFoundException  When role with provided name not found
-     *                                    or user not have role.
+     * @throws UserServiceException When role with provided name not found or
+     *                              user not have role or When user with
+     *                              provided email not found.
      */
     UserEntity removeRole(String userEmail, String roleName)
-            throws UserEmailNotFoundException, RoleNameNotFoundException;
+            throws UserServiceException;
 
 }

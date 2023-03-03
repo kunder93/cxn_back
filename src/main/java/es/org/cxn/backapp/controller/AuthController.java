@@ -44,9 +44,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
-import es.org.cxn.backapp.exceptions.UserEmailExistsExeption;
-import es.org.cxn.backapp.exceptions.UserEmailNotFoundException;
+import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.form.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.SignUpRequestForm;
@@ -148,24 +146,12 @@ public class AuthController {
                     createdUser.getGender(), createdUser.getEmail(),
                     createdUser.getRoles()
             );
-            final var logMessage = String
-                    .format("USER: %s  CREATED", createdUser.toString());
-            LOGGER.info(logMessage);
+
             return new ResponseEntity<>(signUpResponseForm, HttpStatus.CREATED);
 
-            /*
-             * User email not found setting default role to user or roleName not
-             * found, this should not happen
-             */
-        } catch (UserEmailNotFoundException | RoleNameNotFoundException e) {
-            LOGGER.error(e.getMessage(), e);
+        } catch (UserServiceException e) {
             throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()
-            );
-        } catch (UserEmailExistsExeption e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, e.getMessage()
+                    HttpStatus.BAD_REQUEST, e.getMessage()
             );
         }
 

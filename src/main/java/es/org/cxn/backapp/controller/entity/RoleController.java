@@ -41,12 +41,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
-import es.org.cxn.backapp.exceptions.UserEmailNotFoundException;
+import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.UserChangeRoleRequestForm;
 import es.org.cxn.backapp.model.form.UserChangeRoleResponseForm;
-import es.org.cxn.backapp.service.RoleService;
 import es.org.cxn.backapp.service.UserService;
 
 /**
@@ -61,12 +59,7 @@ public class RoleController {
     /**
      * The admin role.
      */
-    final private String adminRole = "ADMIN";
-
-    /**
-     * The role service.
-     */
-    private final RoleService roleService;
+    public static final String ADMIN_ROLE = "ADMIN";
 
     /**
      * The user service.
@@ -76,15 +69,11 @@ public class RoleController {
     /**
      * Create a a controller with the specified dependencies.
      *
-     * @param service role service
-     * @param serv    user service
+     * @param serv user service
      */
-    public RoleController(final RoleService service, final UserService serv) {
+    public RoleController(final UserService serv) {
         super();
 
-        roleService = checkNotNull(
-                service, "Received a null pointer as role service"
-        );
         userService = checkNotNull(
                 serv, "Received a null pointer as user service"
         );
@@ -105,7 +94,7 @@ public class RoleController {
         List<String> roleList = new ArrayList<>();
 
         if (user.getAuthorities()
-                .contains(new SimpleGrantedAuthority(adminRole))) {
+                .contains(new SimpleGrantedAuthority(ADMIN_ROLE))) {
             UserEntity userWithAddedRole;
             try {
                 userWithAddedRole = userService.addRole(
@@ -119,7 +108,7 @@ public class RoleController {
                                 userWithAddedRole.getEmail(), roleList
                         ), null, HttpStatus.OK
                 );
-            } catch (UserEmailNotFoundException | RoleNameNotFoundException e) {
+            } catch (UserServiceException e) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, e.getMessage(), e
                 );
@@ -146,9 +135,9 @@ public class RoleController {
         List<String> roleList = new ArrayList<>();
         UserEntity userWithAddedRole;
 
-        if (user.getAuthorities()
-                .contains(new SimpleGrantedAuthority(adminRole))
-                && !userChangeRoleRequestForm.getRoleName().equals(adminRole)) {
+        if (user.getAuthorities().contains(
+                new SimpleGrantedAuthority(ADMIN_ROLE)
+        ) && !userChangeRoleRequestForm.getRoleName().equals(ADMIN_ROLE)) {
 
             try {
                 userWithAddedRole = userService.removeRole(
@@ -162,7 +151,7 @@ public class RoleController {
                                 userWithAddedRole.getEmail(), roleList
                         ), null, HttpStatus.OK
                 );
-            } catch (UserEmailNotFoundException | RoleNameNotFoundException e) {
+            } catch (UserServiceException e) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, e.getMessage(), e
                 );

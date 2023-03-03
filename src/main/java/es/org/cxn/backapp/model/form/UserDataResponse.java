@@ -96,7 +96,8 @@ public final class UserDataResponse implements Serializable {
         email = user.getEmail();
         userRoles = new HashSet<>();
         user.getRoles().forEach(
-                (PersistentRoleEntity role) -> userRoles.add(role.getName()));
+                (PersistentRoleEntity role) -> userRoles.add(role.getName())
+        );
 
     }
 
@@ -168,8 +169,10 @@ public final class UserDataResponse implements Serializable {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(birthDate, email, firstSurname, gender, name,
-                secondSurname, userRoles);
+        return Objects.hash(
+                birthDate, email, firstSurname, gender, name, secondSurname,
+                userRoles
+        );
     }
 
     /**

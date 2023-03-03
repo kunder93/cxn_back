@@ -1,0 +1,157 @@
+databaseChangeLog:
+- changeSet:
+    id: invoice_operations_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: invoices
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: number
+            type: integer
+            constraints:
+              nullable: false
+        - column:
+            name: series
+            type: varchar(10)
+            constraints:
+              nullable: false
+        - column:
+            name: expedition_date
+            type: date
+            constraints:
+              nullable: false
+        - column:
+            name: advance_payment_date
+            type: date
+            constraints:
+              nullable: true
+        - column:
+            name: tax_exempt
+            type: bool
+            constraints:
+              nullable: false
+        - column:
+            name: buyer_cif_nif  
+            type: varchar(40)
+            constraints:
+              nullable: false
+        - column:
+            name: seller_cif_nif
+            type: varchar(40)
+            constraints:
+              nullable: false        
+    - createTable:
+        tableName: operations
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: price
+            type: decimal
+            constraints:
+              nullable: false
+        - column:
+            name: description
+            type: varchar(255)
+            constraints:
+              nullable: false
+        - column:
+            name: discount
+            type: integer
+            constraints:
+              nullable: false
+        - column:
+            name: tax_rate
+            type: integer
+            constraints:
+              nullable: false
+        - column:
+            name: operation_date
+            type: date
+            constraints:
+              nullable: false
+        - column:
+            name: quantity
+            type: integer
+            constraints:
+              nullable: false
+        - column:
+            name: invoice_id
+            type: bigint
+            constraints:
+              nullable: false             
+
+- changeSet:
+    id: invoice_operations_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: invoice_id
+        baseTableName: operations
+        constraintName: fk_invoice_operations
+        referencedColumnNames: id
+        referencedTableName: invoices
+        
+- changeSet:
+    id: company_table        
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: companies
+        columns:
+        - column:
+            name: cifnif
+            type: varchar(40)
+            autoIncrement: false
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: name
+            type: varchar(60)
+            constraints:
+                nullable: false
+        - column:
+            name: identity_tax_number
+            type: varchar(40)
+            constraints:
+                nullable: true        
+        - column:
+            name: address
+            type: varchar(60)
+            constraints:
+              nullable: false
+
+- changeSet:
+    id: invoices_seller_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: seller_cif_nif
+        baseTableName: invoices
+        constraintName: fk_invoice_seller
+        referencedColumnNames: cifnif
+        referencedTableName: companies
+- changeSet:
+    id: invoices_buyer_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: buyer_cif_nif
+        baseTableName: invoices
+        constraintName: fk_invoice_buyer
+        referencedColumnNames: cifnif
+        referencedTableName: companies        

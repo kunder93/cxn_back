@@ -26,39 +26,45 @@ package es.org.cxn.backapp.repository;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 
 /**
- * Spring-JPA repository for {@link PersistentUserEntity}.
+ * Spring-JPA repository for {@link PersistentCompanyEntity}.
  * <p>
  * This is a simple repository just to allow the endpoints querying the
  * entities they are asked for.
  *
- * @author Santiago Paz.
+ * @author Santiago Paz Perez.
  */
 @Repository
-public interface UserEntityRepository
-        extends JpaRepository<PersistentUserEntity, Integer> {
+public interface CompanyEntityRepository
+        extends JpaRepository<PersistentCompanyEntity, Integer> {
 
     /**
-     * Returns all entities with a partial match to the name.
+     * Find company entity with provided cifnif.
      *
-     * @param name name for searching.
-     * @param page pagination to apply.
-     * @return all entities at least partially matching the name.
+     * @param cifnif the company cifnif.
+     * @return company entity with cifnif provided.
      */
-    Page<PersistentUserEntity> findByNameContaining(String name, Pageable page);
+    Optional<PersistentCompanyEntity> findByCifnif(String cifnif);
 
     /**
-     * Find user entity with provided email.
+     * Check if company entity with provided cifnif exists.
      *
-     * @param email the user email.
-     * @return user entity with email provided.
+     * @param cifnif the company cifnif.
+     * @return true if company exists.
      */
-    Optional<PersistentUserEntity> findByEmail(String email);
+    Boolean existsByCifnif(String cifnif);
+
+    /**
+     * Check if company entity with provided identityTaxNumber exists.
+     *
+     * @param identityTaxNumber the company identity tax number.
+     * @return true if company exists.
+     */
+    Boolean existsByIdentityTaxNumber(String identityTaxNumber);
+
 }
