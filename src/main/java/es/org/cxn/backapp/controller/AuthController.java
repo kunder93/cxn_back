@@ -45,10 +45,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.form.AuthenticationRequest;
-import es.org.cxn.backapp.model.form.AuthenticationResponse;
-import es.org.cxn.backapp.model.form.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.SignUpResponseForm;
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
+import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;

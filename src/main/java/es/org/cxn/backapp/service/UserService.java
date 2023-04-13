@@ -25,10 +25,12 @@
 package es.org.cxn.backapp.service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 /**
  * Service for the User entity domain.
@@ -127,5 +129,7 @@ public interface UserService {
      */
     UserEntity removeRole(String userEmail, String roleName)
             throws UserServiceException;
+
+    List<PersistentUserEntity> getAll();
 
 }

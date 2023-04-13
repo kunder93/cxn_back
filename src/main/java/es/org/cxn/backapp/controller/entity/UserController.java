@@ -39,9 +39,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
-import es.org.cxn.backapp.model.form.UserDataResponse;
-import es.org.cxn.backapp.model.form.UserUpdateRequestForm;
-import es.org.cxn.backapp.model.form.UserUpdateResponseForm;
+import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
+import es.org.cxn.backapp.model.form.responses.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
+import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
 import es.org.cxn.backapp.service.UserService;
 
 /**
@@ -131,6 +132,21 @@ public class UserController {
                     HttpStatus.BAD_REQUEST, e.getMessage()
             );
         }
+    }
+
+    /**
+     * Returns all users data.
+     *
+     * @return list with all users info.
+     */
+    @CrossOrigin
+    @GetMapping(value = "/getAll")
+    public ResponseEntity<UserListDataResponse> getAllUserData() {
+        var users = userService.getAll();
+        return new ResponseEntity<>(
+                new UserListDataResponse(users), HttpStatus.OK
+        );
+
     }
 
 }

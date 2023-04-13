@@ -1,8 +1,9 @@
-package es.org.cxn.backapp.model.form;
+package es.org.cxn.backapp.model.form.requests;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+import es.org.cxn.backapp.model.form.Constants;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 

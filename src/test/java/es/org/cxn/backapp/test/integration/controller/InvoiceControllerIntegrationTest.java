@@ -29,10 +29,10 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import es.org.cxn.backapp.model.form.CreateCompanyRequestForm;
-import es.org.cxn.backapp.model.form.CreateInvoiceRequestForm;
-import es.org.cxn.backapp.model.form.InvoiceListResponse;
-import es.org.cxn.backapp.model.form.InvoiceResponse;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
+import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.service.DefaultCompanyService;
 import es.org.cxn.backapp.service.JwtUtils;
 

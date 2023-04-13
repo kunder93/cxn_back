@@ -24,11 +24,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.CompanyListResponse;
-import es.org.cxn.backapp.model.form.CompanyUpdateRequestForm;
-import es.org.cxn.backapp.model.form.CompanyUpdateResponse;
-import es.org.cxn.backapp.model.form.CreateCompanyRequestForm;
-import es.org.cxn.backapp.model.form.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.responses.CompanyListResponse;
+import es.org.cxn.backapp.model.form.responses.CompanyUpdateResponse;
 import es.org.cxn.backapp.service.DefaultCompanyService;
 import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.integration.controller.InvoiceControllerIntegrationTest.LocalDateAdapter;

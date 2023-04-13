@@ -42,9 +42,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.exceptions.CompanyServiceException;
 import es.org.cxn.backapp.exceptions.InvoiceServiceException;
-import es.org.cxn.backapp.model.form.CreateInvoiceRequestForm;
-import es.org.cxn.backapp.model.form.InvoiceListResponse;
-import es.org.cxn.backapp.model.form.InvoiceResponse;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
+import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.service.CompanyService;

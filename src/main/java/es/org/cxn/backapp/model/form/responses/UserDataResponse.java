@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-package es.org.cxn.backapp.model.form;
+package es.org.cxn.backapp.model.form.responses;
 
 import java.io.Serializable;
 import java.time.LocalDate;

@@ -1,8 +1,10 @@
-package es.org.cxn.backapp.model.form;
+package es.org.cxn.backapp.model.form.responses;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+
+import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 
 /**
  * Represents the form used by controller as response for requesting one
@@ -79,6 +81,17 @@ public class InvoiceResponse implements Serializable {
         this.taxExempt = iTaxExempt;
         this.sellerNifCif = iSellerNifCif;
         this.buyerNifCif = iBuyerNifCif;
+    }
+
+    public InvoiceResponse(PersistentInvoiceEntity entity) {
+        super();
+        this.number = entity.getNumber();
+        this.series = entity.getSeries();
+        this.advancePaymentDate = entity.getAdvancePaymentDate();
+        this.expeditionDate = entity.getExpeditionDate();
+        this.taxExempt = entity.getTaxExempt();
+        this.sellerNifCif = entity.getSeller().getNifCif();
+        this.buyerNifCif = entity.getBuyer().getNifCif();
     }
 
     /**

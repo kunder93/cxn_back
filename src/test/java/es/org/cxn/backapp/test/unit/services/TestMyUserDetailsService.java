@@ -53,9 +53,10 @@ import es.org.cxn.backapp.service.UserService;
  *
  * @author Santiago Paz
  */
-@SpringBootTest(classes = { MyUserDetailsService.class,
-        UserEntityRepository.class, UserService.class,
-        DefaultUserService.class })
+@SpringBootTest(
+        classes = { MyUserDetailsService.class, UserEntityRepository.class,
+                UserService.class, DefaultUserService.class }
+)
 final class TestMyUserDetailsService {
 
     @Autowired
@@ -99,8 +100,10 @@ final class TestMyUserDetailsService {
     final void testLoadUserByUserNameCheckResult()
             throws UsernameNotFoundException {
 
-        PersistentUserEntity userEntity = new PersistentUserEntity(userName,
-                first_surname, second_surname, date, gender, "password", email);
+        var userEntity = new PersistentUserEntity(
+                userName, first_surname, second_surname, date, gender,
+                "password", email
+        );
         Optional<PersistentUserEntity> userOptional = Optional.of(userEntity);
         Mockito.when(userEntityRepository.findByEmail(email))
                 .thenReturn(userOptional);

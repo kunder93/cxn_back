@@ -80,7 +80,8 @@ public final class MyPrincipalUser implements UserDetails {
         birthDate = userEntity.getBirthDate();
         gender = userEntity.getGender();
         userEntity.getRoles().forEach(
-                (PersistentRoleEntity role) -> rolesNames.add(role.getName()));
+                (PersistentRoleEntity role) -> rolesNames.add(role.getName())
+        );
 
     }
 
@@ -88,7 +89,8 @@ public final class MyPrincipalUser implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
         rolesNames.forEach(
-                role -> authorities.add(new SimpleGrantedAuthority(role)));
+                role -> authorities.add(new SimpleGrantedAuthority(role))
+        );
 
         return authorities;
     }

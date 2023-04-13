@@ -39,7 +39,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 /**
- * Operation Entity.
+ * Company Entity.
  * <p>
  * This makes use of JPA annotations for the persistence configuration.
  *
@@ -119,14 +119,14 @@ public class PersistentCompanyEntity implements CompanyEntity {
                 nifCif, "Received a null pointer as cif or nif"
         );
         this.name = checkNotNull(
-                name, "Received a null pointer as operation description"
+                name, "Received a null pointer as company name"
         );
         this.identityTaxNumber = checkNotNull(
                 identityTaxNumber,
-                "Received a null pointer as operation discount"
+                "Received a null pointer as identity tax number"
         );
         this.address = checkNotNull(
-                address, "Received a null pointer as tax rate"
+                address, "Received a null pointer as address"
         );
 
     }

@@ -43,8 +43,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.form.UserChangeRoleRequestForm;
-import es.org.cxn.backapp.model.form.UserChangeRoleResponseForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
+import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
 import es.org.cxn.backapp.service.UserService;
 
 /**

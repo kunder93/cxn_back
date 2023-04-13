@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.model.form;
+package es.org.cxn.backapp.model.form.requests;
 
 import java.io.Serializable;
 import java.time.LocalDate;

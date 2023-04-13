@@ -27,7 +27,9 @@ package es.org.cxn.backapp.model.persistence;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -42,6 +44,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -135,13 +138,19 @@ public class PersistentUserEntity implements UserEntity {
     /**
      * Roles associated with this user.
      */
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @JoinTable(
             name = "role_users", joinColumns = @JoinColumn(
                     name = "user_id"
             ), inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<PersistentRoleEntity> roles = new HashSet<>();
+
+    /**
+     * The payment sheet user owner.
+     */
+    @OneToMany(mappedBy = "userOwner")
+    private List<PersistentPaymentSheetEntity> paymentSheets = new ArrayList<>();
 
     /**
      * Constructs an example entity.
@@ -264,6 +273,16 @@ public class PersistentUserEntity implements UserEntity {
     @Override
     public Set<PersistentRoleEntity> getRoles() {
         return new HashSet<>(roles);
+    }
+
+    public List<PersistentPaymentSheetEntity> getPaymentSheets() {
+        return new ArrayList<>(paymentSheets);
+    }
+
+    public void setPaymentSheets(
+            List<PersistentPaymentSheetEntity> paymentSheets
+    ) {
+        this.paymentSheets = new ArrayList<>(paymentSheets);
     }
 
     /**

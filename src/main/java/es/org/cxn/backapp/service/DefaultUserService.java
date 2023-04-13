@@ -27,6 +27,7 @@ package es.org.cxn.backapp.service;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -57,6 +58,11 @@ public final class DefaultUserService implements UserService {
      * Role not found message for exception.
      */
     public static final String ROLE_NOT_FOUND_MESSAGE = "Role not found.";
+    /**
+     * Role not found message for exception.
+     */
+    public static final String USER_EMAIL_EXISTS_MESSAGE = "User email already exists.";
+
     /**
      * Repository for the user entities handled by the service.
      */
@@ -100,6 +106,11 @@ public final class DefaultUserService implements UserService {
     }
 
     @Override
+    public List<PersistentUserEntity> getAll() {
+        return userRepository.findAll();
+    }
+
+    @Override
     public UserEntity add(
             final String name, final String firstSurname,
             final String secondSurname, final LocalDate birthDate,
@@ -107,7 +118,7 @@ public final class DefaultUserService implements UserService {
     ) throws UserServiceException {
 
         if (userRepository.findByEmail(email).isPresent()) {
-            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
+            throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
         } else {
             final PersistentUserEntity save;
             save = new PersistentUserEntity();

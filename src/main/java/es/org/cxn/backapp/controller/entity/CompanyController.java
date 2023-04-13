@@ -39,11 +39,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.exceptions.CompanyServiceException;
-import es.org.cxn.backapp.model.form.CompanyListResponse;
-import es.org.cxn.backapp.model.form.CompanyResponse;
-import es.org.cxn.backapp.model.form.CompanyUpdateRequestForm;
-import es.org.cxn.backapp.model.form.CompanyUpdateResponse;
-import es.org.cxn.backapp.model.form.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.responses.CompanyListResponse;
+import es.org.cxn.backapp.model.form.responses.CompanyResponse;
+import es.org.cxn.backapp.model.form.responses.CompanyUpdateResponse;
 import es.org.cxn.backapp.service.CompanyService;
 import jakarta.validation.Valid;
 

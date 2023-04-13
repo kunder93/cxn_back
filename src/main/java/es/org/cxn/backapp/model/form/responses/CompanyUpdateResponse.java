@@ -1,26 +1,28 @@
-package es.org.cxn.backapp.model.form;
+package es.org.cxn.backapp.model.form.responses;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Represents the form used by controller as request of update company.
+ * Represents the form used by controller as response of update company.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * </p>
  *
  * @author Santiago Paz.
  */
-public class CompanyUpdateRequestForm implements Serializable {
+public class CompanyUpdateResponse implements Serializable {
 
     /**
      * Serial UID
      */
-    private static final long serialVersionUID = 7447202297370722033L;
+    private static final long serialVersionUID = -3852186551148263014L;
 
+    /**
+     * The company cif or nif.
+     */
+    private String cifNif;
     /**
      * The company name.
      */
@@ -38,28 +40,48 @@ public class CompanyUpdateRequestForm implements Serializable {
     /**
      * Constructor with provided params.
      *
-     * @param name              the new company name.
-     * @param address           the new company address.
-     * @param identityTaxNumber the new company identity tax number.
+     * @param cifNif            the company cif or nif.
+     * @param name              the company name.
+     * @param address           the company address.
+     * @param identityTaxNumber the company identityTaxNumber.
      */
-    public CompanyUpdateRequestForm(
-            String name, String address, String identityTaxNumber
+    public CompanyUpdateResponse(
+            String cifNif, String name, String address, String identityTaxNumber
     ) {
         super();
         this.name = name;
         this.address = address;
+        this.cifNif = cifNif;
         this.identityTaxNumber = identityTaxNumber;
     }
 
     /**
      * Main empty constructor.
      */
-    public CompanyUpdateRequestForm() {
+    public CompanyUpdateResponse() {
         super();
     }
 
     /**
-     * Get request company name.
+     * Get response company cif or nif.
+     *
+     * @return The company cif or nif.
+     */
+    public String getCifNif() {
+        return cifNif;
+    }
+
+    /**
+     * Set response company cif or nif.
+     *
+     * @param value The new company cif or nif.
+     */
+    public void setCifNif(String value) {
+        this.cifNif = value;
+    }
+
+    /**
+     * Get response company name.
      *
      * @return The company name.
      */
@@ -68,7 +90,7 @@ public class CompanyUpdateRequestForm implements Serializable {
     }
 
     /**
-     * Set request company name.
+     * Set response company name.
      *
      * @param value The company name.
      */
@@ -77,7 +99,7 @@ public class CompanyUpdateRequestForm implements Serializable {
     }
 
     /**
-     * Get request company address.
+     * Get response company address.
      *
      * @return The company address.
      */
@@ -86,7 +108,7 @@ public class CompanyUpdateRequestForm implements Serializable {
     }
 
     /**
-     * Set request company address.
+     * Set response company address.
      *
      * @param value The company address.
      */
@@ -106,7 +128,7 @@ public class CompanyUpdateRequestForm implements Serializable {
     /**
      * Setter for identity tax number.
      *
-     * @param value The identity tax number value.
+     * @param value The identity tax number.
      */
     public void setIdentityTaxNumber(String value) {
         this.identityTaxNumber = value;
@@ -114,7 +136,7 @@ public class CompanyUpdateRequestForm implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, identityTaxNumber, name);
+        return Objects.hash(address, cifNif, identityTaxNumber, name);
     }
 
     @Override
@@ -128,16 +150,18 @@ public class CompanyUpdateRequestForm implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        var other = (CompanyUpdateRequestForm) obj;
+        var other = (CompanyUpdateResponse) obj;
         return Objects.equals(address, other.address)
+                && Objects.equals(cifNif, other.cifNif)
                 && Objects.equals(identityTaxNumber, other.identityTaxNumber)
                 && Objects.equals(name, other.name);
     }
 
     @Override
     public String toString() {
-        return "CompanyUpdateRequestForm [name=" + name + ", address=" + address
-                + ", identityTaxNumber=" + identityTaxNumber + "]";
+        return "CompanyUpdateResponse [cifNif=" + cifNif + ", name=" + name
+                + ", address=" + address + ", identityTaxNumber="
+                + identityTaxNumber + "]";
     }
 
 }

@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: invoice_operations_table
+    id: invoice_table
     author: Santiago
     changes:
     - createTable:
@@ -48,62 +48,6 @@ databaseChangeLog:
             type: varchar(40)
             constraints:
               nullable: false        
-    - createTable:
-        tableName: operations
-        columns:
-        - column:
-            name: id
-            type: bigint
-            autoIncrement: true
-            constraints:
-              primaryKey: true
-              nullable: false
-        - column:
-            name: price
-            type: decimal
-            constraints:
-              nullable: false
-        - column:
-            name: description
-            type: varchar(255)
-            constraints:
-              nullable: false
-        - column:
-            name: discount
-            type: integer
-            constraints:
-              nullable: false
-        - column:
-            name: tax_rate
-            type: integer
-            constraints:
-              nullable: false
-        - column:
-            name: operation_date
-            type: date
-            constraints:
-              nullable: false
-        - column:
-            name: quantity
-            type: integer
-            constraints:
-              nullable: false
-        - column:
-            name: invoice_id
-            type: bigint
-            constraints:
-              nullable: false             
-
-- changeSet:
-    id: invoice_operations_realtion
-    author: Santiago
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: invoice_id
-        baseTableName: operations
-        constraintName: fk_invoice_operations
-        referencedColumnNames: id
-        referencedTableName: invoices
         
 - changeSet:
     id: company_table        

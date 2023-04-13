@@ -7,8 +7,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import es.org.cxn.backapp.model.form.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.Constants;
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -62,17 +62,23 @@ final class TestAuthenticationRequestValidation {
         ar.setEmail(null);
         Set<ConstraintViolation<AuthenticationRequest>> violations = validator
                 .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(),
+                "only 1 error when is null value"
+        );
         violations.forEach(aa -> {
-            Assertions.assertNull(aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
-                    "The message provided");
+            Assertions.assertNull(
+                    aa.getInvalidValue(), "null is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
+                    "The message provided"
+            );
             Assertions.assertTrue(
                     aa.getConstraintDescriptor()
                             .getAnnotation() instanceof NotEmpty,
-                    "Not empty annotation");
+                    "Not empty annotation"
+            );
         });
     }
 
@@ -85,17 +91,24 @@ final class TestAuthenticationRequestValidation {
         var ar = new AuthenticationRequest(blankEmail, validPassword);
         Set<ConstraintViolation<AuthenticationRequest>> violations = validator
                 .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(),
+                "only 1 error when is null value"
+        );
         violations.forEach(aa -> {
-            Assertions.assertEquals(blankEmail, aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
-                    "Check message provided");
+            Assertions.assertEquals(
+                    blankEmail, aa.getInvalidValue(),
+                    "null is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
+                    "Check message provided"
+            );
             Assertions.assertTrue(
                     aa.getConstraintDescriptor()
                             .getAnnotation() instanceof NotEmpty,
-                    "Not empty annotation");
+                    "Not empty annotation"
+            );
         });
     }
 
@@ -109,17 +122,24 @@ final class TestAuthenticationRequestValidation {
         ar.setEmail(long51CharacterEmail);
         Set<ConstraintViolation<AuthenticationRequest>> violations = validator
                 .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when email is too long");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(),
+                "only 1 error when email is too long"
+        );
         violations.forEach(aa -> {
-            Assertions.assertEquals(long51CharacterEmail, aa.getInvalidValue(),
-                    "long51CharacterEmail is the not valid value");
-            Assertions.assertEquals(Constants.MAX_SIZE_EMAIL_MESSAGE,
-                    aa.getMessage(), "Check message provided");
+            Assertions.assertEquals(
+                    long51CharacterEmail, aa.getInvalidValue(),
+                    "long51CharacterEmail is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.MAX_SIZE_EMAIL_MESSAGE, aa.getMessage(),
+                    "Check message provided"
+            );
             Assertions.assertTrue(
                     aa.getConstraintDescriptor()
                             .getAnnotation() instanceof Size,
-                    "Check size annotation");
+                    "Check size annotation"
+            );
         });
     }
 
@@ -134,19 +154,25 @@ final class TestAuthenticationRequestValidation {
         ar.setEmail(long50ValidEmail);
         Set<ConstraintViolation<AuthenticationRequest>> violations = validator
                 .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "long 50 character email generate no errors");
+        Assertions.assertEquals(
+                Integer.valueOf(0), violations.size(),
+                "long 50 character email generate no errors"
+        );
         // Others values that should be valid
         var otherValidEmail = "emailValid@Valid.ok";
         ar.setEmail(otherValidEmail);
         violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "email validation no errors");
+        Assertions.assertEquals(
+                Integer.valueOf(0), violations.size(),
+                "email validation no errors"
+        );
         // check another email
         ar.setEmail("otroemail@a.esa");
         violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "email validation no errors");
+        Assertions.assertEquals(
+                Integer.valueOf(0), violations.size(),
+                "email validation no errors"
+        );
     }
 
     /**
@@ -163,30 +189,37 @@ final class TestAuthenticationRequestValidation {
         // Password too short
         Set<ConstraintViolation<AuthenticationRequest>> violations = validator
                 .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "password too short generate 1 error");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(),
+                "password too short generate 1 error"
+        );
         var violation = violations.iterator().next();
         Assertions.assertTrue(
                 violation.getConstraintDescriptor()
                         .getAnnotation() instanceof Length,
-                "annotation instance is Length");
+                "annotation instance is Length"
+        );
 
         // 21 characters Password is so long
         ar.setPassword(long21Password);
         violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "password too long generate 1 error");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(),
+                "password too long generate 1 error"
+        );
         violation = violations.iterator().next();
         Assertions.assertTrue(
                 violation.getConstraintDescriptor()
                         .getAnnotation() instanceof Length,
-                "annotation instance is Length");
+                "annotation instance is Length"
+        );
 
         // Valid password
         ar.setPassword("someValidPassword");
         violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "no errors");
+        Assertions.assertEquals(
+                Integer.valueOf(0), violations.size(), "no errors"
+        );
     }
 
     /**
@@ -199,17 +232,23 @@ final class TestAuthenticationRequestValidation {
         ar.setEmail(validEmail);
         Set<ConstraintViolation<AuthenticationRequest>> violations = validator
                 .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(),
+                "only 1 error when is null value"
+        );
         violations.forEach(aa -> {
-            Assertions.assertNull(aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.NOT_NULL_PASSWORD,
-                    aa.getMessage(), "The message provided");
+            Assertions.assertNull(
+                    aa.getInvalidValue(), "null is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.NOT_NULL_PASSWORD, aa.getMessage(),
+                    "The message provided"
+            );
             Assertions.assertTrue(
                     aa.getConstraintDescriptor()
                             .getAnnotation() instanceof NotNull,
-                    "Not empty annotation");
+                    "Not empty annotation"
+            );
         });
     }
 
@@ -222,17 +261,24 @@ final class TestAuthenticationRequestValidation {
         var ar = new AuthenticationRequest(validEmail, blankPassword);
         Set<ConstraintViolation<AuthenticationRequest>> violations = validator
                 .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(),
+                "only 1 error when is null value"
+        );
         violations.forEach(aa -> {
-            Assertions.assertEquals(blankPassword, aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.LENGTH_PASSWORD_MESSAGE,
-                    aa.getMessage(), "The message provided");
+            Assertions.assertEquals(
+                    blankPassword, aa.getInvalidValue(),
+                    "null is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.LENGTH_PASSWORD_MESSAGE, aa.getMessage(),
+                    "The message provided"
+            );
             Assertions.assertTrue(
                     aa.getConstraintDescriptor()
                             .getAnnotation() instanceof Length,
-                    "Not empty annotation");
+                    "Not empty annotation"
+            );
         });
     }
 
@@ -243,8 +289,9 @@ final class TestAuthenticationRequestValidation {
     void testEqualsHashCodeRequest() {
         final var ar = new AuthenticationRequest(validEmail, validPassword);
         Assertions.assertTrue(ar.equals(ar), "same object");
-        Assertions.assertEquals(ar.hashCode(), ar.hashCode(),
-                "same object hashcode");
+        Assertions.assertEquals(
+                ar.hashCode(), ar.hashCode(), "same object hashcode"
+        );
         Assertions.assertFalse(ar.equals(null), "check null");
         final var otherEmail = "other@email.com";
         final var ar2 = new AuthenticationRequest(otherEmail, validPassword);

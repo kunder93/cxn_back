@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import es.org.cxn.backapp.model.form.Constants;
-import es.org.cxn.backapp.model.form.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -30,8 +30,8 @@ final class TestSignUpRequestValidation {
     private static final String validName = "Jacinto";
     private static final String validFirstSurname = "Anacletio";
     private static final String validSecondSurname = "Juartillo";
-    private static final LocalDate validBirthDate = LocalDate.ofYearDay(1993,
-            2);
+    private static final LocalDate validBirthDate = LocalDate
+            .ofYearDay(1993, 2);
     private static final String validGender = "male";
     private static final String validPassword = "OneValidPassword";
     private static final String validEmail = "santi@santi.es";
@@ -56,13 +56,15 @@ final class TestSignUpRequestValidation {
      */
     @Test
     void testValidationNoError() {
-        var signUpRequest = new SignUpRequestForm(validName, validFirstSurname,
-                validSecondSurname, validBirthDate, validGender, validPassword,
-                validEmail);
+        var signUpRequest = new SignUpRequestForm(
+                validName, validFirstSurname, validSecondSurname,
+                validBirthDate, validGender, validPassword, validEmail
+        );
         Set<ConstraintViolation<SignUpRequestForm>> violations = validator
                 .validate(signUpRequest);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "No errors");
+        Assertions.assertEquals(
+                Integer.valueOf(0), violations.size(), "No errors"
+        );
     }
 
     /**
@@ -71,41 +73,54 @@ final class TestSignUpRequestValidation {
     @Test
     void testNameValidationNameNotBlank() {
         final String nameNullValue = null;
-        var signUpRequest = new SignUpRequestForm(nameNullValue,
-                validFirstSurname, validSecondSurname, validBirthDate,
-                validGender, validPassword, validEmail);
+        var signUpRequest = new SignUpRequestForm(
+                nameNullValue, validFirstSurname, validSecondSurname,
+                validBirthDate, validGender, validPassword, validEmail
+        );
         Set<ConstraintViolation<SignUpRequestForm>> violations = validator
                 .validate(signUpRequest);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "No errors");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(), "No errors"
+        );
 
         violations.forEach(violation -> {
-            Assertions.assertNull(violation.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.NAME_NOT_BLANK_MESSAGE,
-                    violation.getMessage(), "The message provided");
+            Assertions.assertNull(
+                    violation.getInvalidValue(), "null is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.NAME_NOT_BLANK_MESSAGE, violation.getMessage(),
+                    "The message provided"
+            );
             Assertions.assertTrue(
                     violation.getConstraintDescriptor()
                             .getAnnotation() instanceof NotBlank,
-                    "Not blank annotation");
+                    "Not blank annotation"
+            );
         });
 
         final var nameBlankValue = "";
-        signUpRequest = new SignUpRequestForm(nameBlankValue, validFirstSurname,
-                validSecondSurname, validBirthDate, validGender, validPassword,
-                validEmail);
+        signUpRequest = new SignUpRequestForm(
+                nameBlankValue, validFirstSurname, validSecondSurname,
+                validBirthDate, validGender, validPassword, validEmail
+        );
         violations = validator.validate(signUpRequest);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "No errors");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(), "No errors"
+        );
         violations.forEach(violation -> {
-            Assertions.assertEquals(nameBlankValue, violation.getInvalidValue(),
-                    "nameBlankValue is the not valid value");
-            Assertions.assertEquals(Constants.NAME_NOT_BLANK_MESSAGE,
-                    violation.getMessage(), "The message provided");
+            Assertions.assertEquals(
+                    nameBlankValue, violation.getInvalidValue(),
+                    "nameBlankValue is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.NAME_NOT_BLANK_MESSAGE, violation.getMessage(),
+                    "The message provided"
+            );
             Assertions.assertTrue(
                     violation.getConstraintDescriptor()
                             .getAnnotation() instanceof NotBlank,
-                    "Not blank annotation");
+                    "Not blank annotation"
+            );
         });
     }
 
@@ -115,31 +130,40 @@ final class TestSignUpRequestValidation {
     @Test
     void testValidationNameMaxLength() {
         final var long26Name = "Namedadsadasdsadadsadsadds";
-        var signUpRequest = new SignUpRequestForm(long26Name, validFirstSurname,
-                validSecondSurname, validBirthDate, validGender, validPassword,
-                validEmail);
+        var signUpRequest = new SignUpRequestForm(
+                long26Name, validFirstSurname, validSecondSurname,
+                validBirthDate, validGender, validPassword, validEmail
+        );
         Set<ConstraintViolation<SignUpRequestForm>> violations = validator
                 .validate(signUpRequest);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "No errors");
+        Assertions.assertEquals(
+                Integer.valueOf(1), violations.size(), "No errors"
+        );
         violations.forEach(violation -> {
-            Assertions.assertEquals(long26Name, violation.getInvalidValue(),
-                    "long26Name is the not valid value");
-            Assertions.assertEquals(Constants.NAME_MAX_LENGTH_MESSAGE,
-                    violation.getMessage(), "The message provided");
+            Assertions.assertEquals(
+                    long26Name, violation.getInvalidValue(),
+                    "long26Name is the not valid value"
+            );
+            Assertions.assertEquals(
+                    Constants.NAME_MAX_LENGTH_MESSAGE, violation.getMessage(),
+                    "The message provided"
+            );
             Assertions.assertTrue(
                     violation.getConstraintDescriptor()
                             .getAnnotation() instanceof Size,
-                    "Not blank annotation");
+                    "Not blank annotation"
+            );
         });
         // With length of 25 pass with 0 errors.
         final var longValid25Name = "Namedadsadasdsadadsadsadd";
-        signUpRequest = new SignUpRequestForm(longValid25Name,
-                validFirstSurname, validSecondSurname, validBirthDate,
-                validGender, validPassword, validEmail);
+        signUpRequest = new SignUpRequestForm(
+                longValid25Name, validFirstSurname, validSecondSurname,
+                validBirthDate, validGender, validPassword, validEmail
+        );
         violations = validator.validate(signUpRequest);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "No errors");
+        Assertions.assertEquals(
+                Integer.valueOf(0), violations.size(), "No errors"
+        );
     }
 
     /**
@@ -148,17 +172,19 @@ final class TestSignUpRequestValidation {
     @Test
     void testEqualsHashCodeRequest() {
 
-        var ar = new SignUpRequestForm(validName, validFirstSurname,
-                validSecondSurname, validBirthDate, validGender, validPassword,
-                validEmail);
+        var ar = new SignUpRequestForm(
+                validName, validFirstSurname, validSecondSurname,
+                validBirthDate, validGender, validPassword, validEmail
+        );
         Assertions.assertTrue(ar.equals(ar));
         Assertions.assertEquals(ar.hashCode(), ar.hashCode());
         Assertions.assertFalse(ar.equals(null));
         final var otherName = "Carlos";
         final var otherEmail = "other@email.com";
-        var ar2 = new SignUpRequestForm(validName, validFirstSurname,
-                validSecondSurname, validBirthDate, validGender, validPassword,
-                otherEmail);
+        var ar2 = new SignUpRequestForm(
+                validName, validFirstSurname, validSecondSurname,
+                validBirthDate, validGender, validPassword, otherEmail
+        );
 
         Assertions.assertFalse(ar.equals(ar2));
         Assertions.assertNotEquals(ar.hashCode(), ar2.hashCode());

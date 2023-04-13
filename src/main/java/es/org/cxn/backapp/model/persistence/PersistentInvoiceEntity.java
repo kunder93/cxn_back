@@ -41,6 +41,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -128,6 +129,16 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "buyer_cif_nif", nullable = false)
     private PersistentCompanyEntity buyer;
+
+    @OneToOne(mappedBy = "transportInvoice")
+    private PersistentRegularTransportEntity regularTransport;
+
+    /**
+     * The payment sheet user owner.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "food_housing_id", nullable = true)
+    private PersistentFoodHousingEntity foodHousing;
 
     /**
      * Constructs an example entity.
