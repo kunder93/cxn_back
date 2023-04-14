@@ -45,6 +45,7 @@ class PaymentSheetControllerIntegrationTest {
     private final static String PAYMENT_SHEET_URL = "/api/paymentSheet";
     private final static String CREATE_USER_URL = "/api/auth/signup";
 
+    private final static String USER_DNI = "32721859N";
     private final static String USER_EMAIL = "user@email.es";
     private final static String USER_NAME = "userName";
     private final static String USER_FIRST_SURNAME = "userFirstSurname";
@@ -107,8 +108,8 @@ class PaymentSheetControllerIntegrationTest {
             .create();
 
     private static SignUpRequestForm createUserRequestForm = new SignUpRequestForm(
-            USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME, USER_BIRTH_DATE,
-            "male", "password123", USER_EMAIL
+            USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
+            USER_BIRTH_DATE, "male", "password123", USER_EMAIL
     );
     private String createUserRequestFormJson = gson
             .toJson(createUserRequestForm);

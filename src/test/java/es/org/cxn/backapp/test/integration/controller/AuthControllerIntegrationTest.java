@@ -31,8 +31,9 @@ class AuthControllerIntegrationTest {
     private final static String SIGN_UP_URL = "/api/auth/signup";
     private final static String SIGN_IN_URL = "/api/auth/signinn";
 
-    private final static String USER_A_VALID_DATA_SIGN_UP = "{ \"name\": \"Santiago\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
+    private final static String USER_A_VALID_DATA_SIGN_UP = "{ \"dni\": \"32721859N\","
+            + " \"name\": \"Santiago\", " + " \"firstSurname\": \"Paz\", "
+            + " \"secondSurname\": \"Perez\", "
             + " \"birthDate\": \"1993-05-08\", " + " \"gender\": \"male\", "
             + " \"password\": \"123123\"," + " \"email\": Santi@santi.es }";
 

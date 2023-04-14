@@ -74,6 +74,7 @@ final class TestMyUserDetailsService {
     String second_surname = "fake second surname";
     String email = "email@test.es";
     String gender = "male";
+    String dni = "32721859N";
 
     /**
      * Sets up the validator for the tests.
@@ -101,7 +102,7 @@ final class TestMyUserDetailsService {
             throws UsernameNotFoundException {
 
         var userEntity = new PersistentUserEntity(
-                userName, first_surname, second_surname, date, gender,
+                dni, userName, first_surname, second_surname, date, gender,
                 "password", email
         );
         Optional<PersistentUserEntity> userOptional = Optional.of(userEntity);

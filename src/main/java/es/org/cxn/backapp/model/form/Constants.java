@@ -9,6 +9,11 @@ package es.org.cxn.backapp.model.form;
 public final class Constants {
 
     /**
+     * Dni max length.
+     */
+    public static final int MAX_DNI_LENGHT = 9;
+
+    /**
      * Email max length.
      */
     public static final int MAX_SIZE_EMAIL = 50;
@@ -72,6 +77,13 @@ public final class Constants {
      * Message validating Not Blank first surname.
      */
     public static final String FIRST_SURNAME_NOT_BLANK_MESSAGE = "First surname must not be null or empty.";
+
+    /**
+     * Message validating MaxSize dni.
+     */
+    public static final String DNI_MAX_LENGTH_MESSAGE = "Dni must be max length of: "
+            + NAME_MAX_LENGTH + ".";
+
     /**
      * Message validating MaxSize name.
      */

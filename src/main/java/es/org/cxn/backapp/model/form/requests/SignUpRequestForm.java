@@ -31,6 +31,18 @@ public class SignUpRequestForm implements Serializable {
     private static final long serialVersionUID = 9133529311075698110L;
 
     /**
+     * User dni field.
+     * <p>
+     * Dni must not be null and must contain 9 numeric - character. lengh is
+     * DNI_MAX_LENGHT.
+     */
+    @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
+    @Size(
+            max = Constants.MAX_DNI_LENGHT, message = Constants.DNI_MAX_LENGTH_MESSAGE
+    )
+    private String dni;
+
+    /**
      * User name field.
      * <p>
      * Name must not be null and must contain at least one non-whitespace
@@ -120,6 +132,7 @@ public class SignUpRequestForm implements Serializable {
     /**
      * Constructs a DTO with all fields provided.
      *
+     * @param dniValue           the dni field.
      * @param nameValue          the name field.
      * @param firstSurnameValue  the first surname field.
      * @param secondSurnameValue the second surname field.
@@ -129,12 +142,13 @@ public class SignUpRequestForm implements Serializable {
      * @param emailValue         the email field.
      */
     public SignUpRequestForm(
-            final String nameValue, final String firstSurnameValue,
-            final String secondSurnameValue, final LocalDate birthDateValue,
-            final String genderValue, final String passwordValue,
-            final String emailValue
+            final String dniValue, final String nameValue,
+            final String firstSurnameValue, final String secondSurnameValue,
+            final LocalDate birthDateValue, final String genderValue,
+            final String passwordValue, final String emailValue
     ) {
         super();
+        this.dni = dniValue;
         this.name = nameValue;
         this.firstSurname = firstSurnameValue;
         this.secondSurname = secondSurnameValue;
@@ -142,6 +156,10 @@ public class SignUpRequestForm implements Serializable {
         this.gender = genderValue;
         this.password = passwordValue;
         this.email = emailValue;
+    }
+
+    public String getDni() {
+        return dni;
     }
 
     /**
@@ -205,6 +223,10 @@ public class SignUpRequestForm implements Serializable {
      */
     public final String getEmail() {
         return email;
+    }
+
+    public void setDni(String dni) {
+        this.dni = dni;
     }
 
     /**
@@ -278,23 +300,16 @@ public class SignUpRequestForm implements Serializable {
         this.email = checkNotNull(value, "Received a null pointer as email");
     }
 
-    /**
-     * Hash code.
-     *
-     */
     @Override
     public int hashCode() {
         return Objects.hash(
-                birthDate, email, firstSurname, gender, name, password,
+                birthDate, dni, email, firstSurname, gender, name, password,
                 secondSurname
         );
     }
 
-    /**
-     * Equals.
-     */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -304,8 +319,9 @@ public class SignUpRequestForm implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final var other = (SignUpRequestForm) obj;
+        var other = (SignUpRequestForm) obj;
         return Objects.equals(birthDate, other.birthDate)
+                && Objects.equals(dni, other.dni)
                 && Objects.equals(email, other.email)
                 && Objects.equals(firstSurname, other.firstSurname)
                 && Objects.equals(gender, other.gender)
@@ -314,15 +330,12 @@ public class SignUpRequestForm implements Serializable {
                 && Objects.equals(secondSurname, other.secondSurname);
     }
 
-    /**
-     * To string.
-     */
     @Override
     public String toString() {
-        return "UserForm [name=" + name + ", first_surname=" + firstSurname
-                + ", second_surname=" + secondSurname + ", birth_date="
-                + birthDate + ", gender=" + gender + ", password=" + password
-                + ", email=" + email + "]";
+        return "SignUpRequestForm [dni=" + dni + ", name=" + name
+                + ", firstSurname=" + firstSurname + ", secondSurname="
+                + secondSurname + ", birthDate=" + birthDate + ", gender="
+                + gender + ", password=" + password + ", email=" + email + "]";
     }
 
 }

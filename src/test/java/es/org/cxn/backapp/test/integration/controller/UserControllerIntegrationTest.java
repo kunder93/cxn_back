@@ -31,23 +31,27 @@ class UserControllerIntegrationTest {
     private final static String SIGN_IN_URL = "/api/auth/signinn";
     private final static String GET_USER_DATA_URL = "/api/user";
 
-    private final static String USER_A_VALID_DATA_SIGN_UP = "{ \"name\": \"Santiago\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
+    private final static String USER_A_VALID_DATA_SIGN_UP = "{ \"dni\": \"32721859N\","
+            + " \"name\": \"Santiago\", " + " \"firstSurname\": \"Paz\", "
+            + " \"secondSurname\": \"Perez\", "
             + " \"birthDate\": \"1993-05-08\", " + " \"gender\": \"male\", "
             + " \"password\": \"123123\"," + " \"email\": Santi@santi.es }";
 
-    private final static String USER_B_VALID_DATA_SIGN_UP = "{ \"name\": \"Adrian\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
+    private final static String USER_B_VALID_DATA_SIGN_UP = "{ \"dni\": \"32721840N\","
+            + " \"name\": \"Adrian\", " + " \"firstSurname\": \"Paz\", "
+            + " \"secondSurname\": \"Perez\", "
             + " \"birthDate\": \"1996-02-08\", " + " \"gender\": \"male\", "
             + " \"password\": \"abc123\"," + " \"email\": Adri@adri.com }";
 
-    private final static String USER_A_VALID_DATA_SIGN_UP_RESPONSE = "{ \"name\": \"Santiago\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
+    private final static String USER_A_VALID_DATA_SIGN_UP_RESPONSE = "{ \"dni\": \"32721859N\","
+            + " \"name\": \"Santiago\", " + " \"firstSurname\": \"Paz\", "
+            + " \"secondSurname\": \"Perez\", "
             + " \"birthDate\": \"1993-05-08\", " + " \"gender\": \"male\", "
             + " \"email\": \"Santi@santi.es\"," + " \"userRoles\": [USER] }";
 
-    private final static String USER_B_VALID_DATA_SIGN_UP_RESPONSE = "{ \"name\": \"Adrian\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
+    private final static String USER_B_VALID_DATA_SIGN_UP_RESPONSE = "{ \"dni\": \"32721840N\","
+            + " \"name\": \"Adrian\", " + " \"firstSurname\": \"Paz\", "
+            + " \"secondSurname\": \"Perez\", "
             + " \"birthDate\": \"1996-02-08\", " + " \"gender\": \"male\", "
             + " \"email\": \"Adri@adri.com\"," + " \"userRoles\": [USER] }";
 
@@ -97,19 +101,21 @@ class UserControllerIntegrationTest {
                 .getAsJsonObject().toString();
 
         // Register user
-        mockMvc.perform(post(SIGN_UP_URL)
-                .contentType(MediaType.APPLICATION_JSON).content(userData))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(
+                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                        .content(userData)
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Login return jwt token for registered user
         final var responseContent = mockMvc
-                .perform(post(SIGN_IN_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userCredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+                .perform(
+                        post(SIGN_IN_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(userCredentials)
+                ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
                 .getResponse().getContentAsString();
-        final var jwtToken = responseContent.substring(8,
-                responseContent.length() - 2);
+        final var jwtToken = responseContent
+                .substring(8, responseContent.length() - 2);
         // Call api using jwt token, get user data
         var userDataResponse = JsonParser
                 .parseString(USER_A_VALID_DATA_SIGN_UP_RESPONSE)
@@ -117,10 +123,12 @@ class UserControllerIntegrationTest {
         mockMvc.perform(
                 get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtToken)
-                        .content(userCredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(userDataResponse.toString()));
+                        .content(userCredentials)
+        ).andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(
+                        MockMvcResultMatchers.content()
+                                .json(userDataResponse.toString())
+                );
     }
 
     @Test
@@ -129,8 +137,8 @@ class UserControllerIntegrationTest {
 
         // Call without jwt token, get user data, expect unauthorized
         mockMvc.perform(
-                get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+                get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
     }
 
     @Test
@@ -151,34 +159,38 @@ class UserControllerIntegrationTest {
                 .getAsJsonObject().toString();
 
         // Register user A
-        mockMvc.perform(post(SIGN_UP_URL)
-                .contentType(MediaType.APPLICATION_JSON).content(userAData))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(
+                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                        .content(userAData)
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Register user B
-        mockMvc.perform(post(SIGN_UP_URL)
-                .contentType(MediaType.APPLICATION_JSON).content(userBData))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(
+                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                        .content(userBData)
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
 
         // Login return jwt token for registered user A
         final var responseContentA = mockMvc
-                .perform(post(SIGN_IN_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userACredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+                .perform(
+                        post(SIGN_IN_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(userACredentials)
+                ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
                 .getResponse().getContentAsString();
-        final var jwtAToken = responseContentA.substring(8,
-                responseContentA.length() - 2);
+        final var jwtAToken = responseContentA
+                .substring(8, responseContentA.length() - 2);
 
         // Login return jwt token for registered user B
         final var responseContentB = mockMvc
-                .perform(post(SIGN_IN_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userBCredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+                .perform(
+                        post(SIGN_IN_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(userBCredentials)
+                ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
                 .getResponse().getContentAsString();
-        final var jwtBToken = responseContentB.substring(8,
-                responseContentB.length() - 2);
+        final var jwtBToken = responseContentB
+                .substring(8, responseContentB.length() - 2);
 
         // Call api using jwt token, get user B data
         final var userBDataResponse = JsonParser
@@ -187,10 +199,10 @@ class UserControllerIntegrationTest {
         mockMvc.perform(
                 get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtBToken)
-                        .content(userBCredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(userBDataResponse));
+                        .content(userBCredentials)
+        ).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(
+                MockMvcResultMatchers.content().json(userBDataResponse)
+        );
 
         // Call api using jwt token, get user A data
         final var userADataResponse = JsonParser
@@ -199,10 +211,10 @@ class UserControllerIntegrationTest {
         mockMvc.perform(
                 get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtAToken)
-                        .content(userACredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(userADataResponse));
+                        .content(userACredentials)
+        ).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(
+                MockMvcResultMatchers.content().json(userADataResponse)
+        );
     }
 
     @Test
@@ -212,22 +224,24 @@ class UserControllerIntegrationTest {
                 .getAsJsonObject().toString();
 
         // Register user A
-        mockMvc.perform(post(SIGN_UP_URL)
-                .contentType(MediaType.APPLICATION_JSON).content(userAData))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+        mockMvc.perform(
+                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                        .content(userAData)
+        ).andExpect(MockMvcResultMatchers.status().isCreated());
 
         final var userACredentials = JsonParser
                 .parseString(USER_A_VALID_CREDENTIALS).getAsJsonObject()
                 .toString();
         // Login return jwt token for registered user A
         final var responseContentA = mockMvc
-                .perform(post(SIGN_IN_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userACredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+                .perform(
+                        post(SIGN_IN_URL)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(userACredentials)
+                ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
                 .getResponse().getContentAsString();
-        final var jwtAToken = responseContentA.substring(8,
-                responseContentA.length() - 2);
+        final var jwtAToken = responseContentA
+                .substring(8, responseContentA.length() - 2);
 
         final var userANewData = JsonParser.parseString(USER_A_NEW_DATA)
                 .getAsJsonObject().toString();
@@ -237,10 +251,10 @@ class UserControllerIntegrationTest {
         mockMvc.perform(
                 post(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + jwtAToken)
-                        .content(userANewData))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content()
-                        .json(userAUpdatedDataResponse));
+                        .content(userANewData)
+        ).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(
+                MockMvcResultMatchers.content().json(userAUpdatedDataResponse)
+        );
     }
 
 }

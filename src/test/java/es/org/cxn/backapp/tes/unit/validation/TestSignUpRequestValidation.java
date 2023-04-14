@@ -35,6 +35,7 @@ final class TestSignUpRequestValidation {
     private static final String validGender = "male";
     private static final String validPassword = "OneValidPassword";
     private static final String validEmail = "santi@santi.es";
+    private static final String validDni = "32721859N";
 
     /**
      * Default constructor.
@@ -57,7 +58,7 @@ final class TestSignUpRequestValidation {
     @Test
     void testValidationNoError() {
         var signUpRequest = new SignUpRequestForm(
-                validName, validFirstSurname, validSecondSurname,
+                validDni, validName, validFirstSurname, validSecondSurname,
                 validBirthDate, validGender, validPassword, validEmail
         );
         Set<ConstraintViolation<SignUpRequestForm>> violations = validator
@@ -74,7 +75,7 @@ final class TestSignUpRequestValidation {
     void testNameValidationNameNotBlank() {
         final String nameNullValue = null;
         var signUpRequest = new SignUpRequestForm(
-                nameNullValue, validFirstSurname, validSecondSurname,
+                validDni, nameNullValue, validFirstSurname, validSecondSurname,
                 validBirthDate, validGender, validPassword, validEmail
         );
         Set<ConstraintViolation<SignUpRequestForm>> violations = validator
@@ -100,7 +101,7 @@ final class TestSignUpRequestValidation {
 
         final var nameBlankValue = "";
         signUpRequest = new SignUpRequestForm(
-                nameBlankValue, validFirstSurname, validSecondSurname,
+                validDni, nameBlankValue, validFirstSurname, validSecondSurname,
                 validBirthDate, validGender, validPassword, validEmail
         );
         violations = validator.validate(signUpRequest);
@@ -131,7 +132,7 @@ final class TestSignUpRequestValidation {
     void testValidationNameMaxLength() {
         final var long26Name = "Namedadsadasdsadadsadsadds";
         var signUpRequest = new SignUpRequestForm(
-                long26Name, validFirstSurname, validSecondSurname,
+                validDni, long26Name, validFirstSurname, validSecondSurname,
                 validBirthDate, validGender, validPassword, validEmail
         );
         Set<ConstraintViolation<SignUpRequestForm>> violations = validator
@@ -157,8 +158,9 @@ final class TestSignUpRequestValidation {
         // With length of 25 pass with 0 errors.
         final var longValid25Name = "Namedadsadasdsadadsadsadd";
         signUpRequest = new SignUpRequestForm(
-                longValid25Name, validFirstSurname, validSecondSurname,
-                validBirthDate, validGender, validPassword, validEmail
+                validDni, longValid25Name, validFirstSurname,
+                validSecondSurname, validBirthDate, validGender, validPassword,
+                validEmail
         );
         violations = validator.validate(signUpRequest);
         Assertions.assertEquals(
@@ -173,7 +175,7 @@ final class TestSignUpRequestValidation {
     void testEqualsHashCodeRequest() {
 
         var ar = new SignUpRequestForm(
-                validName, validFirstSurname, validSecondSurname,
+                validDni, validName, validFirstSurname, validSecondSurname,
                 validBirthDate, validGender, validPassword, validEmail
         );
         Assertions.assertTrue(ar.equals(ar));
@@ -182,7 +184,7 @@ final class TestSignUpRequestValidation {
         final var otherName = "Carlos";
         final var otherEmail = "other@email.com";
         var ar2 = new SignUpRequestForm(
-                validName, validFirstSurname, validSecondSurname,
+                validDni, validName, validFirstSurname, validSecondSurname,
                 validBirthDate, validGender, validPassword, otherEmail
         );
 

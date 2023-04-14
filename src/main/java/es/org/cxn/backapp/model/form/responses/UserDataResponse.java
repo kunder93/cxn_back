@@ -53,6 +53,10 @@ public final class UserDataResponse implements Serializable {
     private static final long serialVersionUID = -6424289331689999079L;
 
     /**
+     * User dni.
+     */
+    private final String dni;
+    /**
      * User name.
      */
     private final String name;
@@ -88,6 +92,7 @@ public final class UserDataResponse implements Serializable {
      */
     public UserDataResponse(final UserEntity user) {
         super();
+        dni = user.getDni();
         name = user.getName();
         firstSurname = user.getFirstSurname();
         secondSurname = user.getSecondSurname();
@@ -99,6 +104,10 @@ public final class UserDataResponse implements Serializable {
                 (PersistentRoleEntity role) -> userRoles.add(role.getName())
         );
 
+    }
+
+    public String getDni() {
+        return dni;
     }
 
     /**
@@ -164,22 +173,15 @@ public final class UserDataResponse implements Serializable {
         return new HashSet<>(userRoles);
     }
 
-    /**
-     * Hash code method.
-     */
     @Override
     public int hashCode() {
         return Objects.hash(
-                birthDate, email, firstSurname, gender, name, secondSurname,
-                userRoles
+                birthDate, dni, email, firstSurname, gender, name, secondSurname
         );
     }
 
-    /**
-     * Equals method.
-     */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -191,23 +193,20 @@ public final class UserDataResponse implements Serializable {
         }
         var other = (UserDataResponse) obj;
         return Objects.equals(birthDate, other.birthDate)
+                && Objects.equals(dni, other.dni)
                 && Objects.equals(email, other.email)
                 && Objects.equals(firstSurname, other.firstSurname)
                 && Objects.equals(gender, other.gender)
                 && Objects.equals(name, other.name)
-                && Objects.equals(secondSurname, other.secondSurname)
-                && Objects.equals(userRoles, other.userRoles);
+                && Objects.equals(secondSurname, other.secondSurname);
     }
 
-    /**
-     * To string method.
-     */
     @Override
     public String toString() {
-        return "UserDataResponse [name=" + name + ", firstSurname="
-                + firstSurname + ", secondSurname=" + secondSurname
-                + ", gender=" + gender + ", birthDate=" + birthDate + ", email="
-                + email + ", userRoles=" + userRoles + "]";
+        return "UserDataResponse [dni=" + dni + ", name=" + name
+                + ", firstSurname=" + firstSurname + ", secondSurname="
+                + secondSurname + ", gender=" + gender + ", birthDate="
+                + birthDate + ", email=" + email + "]";
     }
 
 }

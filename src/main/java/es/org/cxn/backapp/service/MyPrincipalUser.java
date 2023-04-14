@@ -27,6 +27,11 @@ public final class MyPrincipalUser implements UserDetails {
     private static final long serialVersionUID = 2055653610418609601L;
 
     /**
+     * User dni.
+     */
+    private final String dni;
+
+    /**
      * User password.
      */
     private final String password;
@@ -72,6 +77,7 @@ public final class MyPrincipalUser implements UserDetails {
      * @param userEntity User data to build MyPrincipalUser.
      */
     public MyPrincipalUser(final UserEntity userEntity) {
+        dni = userEntity.getDni();
         password = userEntity.getPassword();
         email = userEntity.getEmail();
         name = userEntity.getName();
@@ -121,6 +127,10 @@ public final class MyPrincipalUser implements UserDetails {
      */
     public String getFirstSurname() {
         return firstSurname;
+    }
+
+    public String getDni() {
+        return dni;
     }
 
     /**

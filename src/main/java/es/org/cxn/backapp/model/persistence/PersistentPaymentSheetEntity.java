@@ -99,7 +99,7 @@ public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
      * The payment sheet user owner.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_dni", nullable = false)
     private PersistentUserEntity userOwner;
 
     /**

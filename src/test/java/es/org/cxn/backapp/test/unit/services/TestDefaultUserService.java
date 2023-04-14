@@ -81,6 +81,7 @@ final class TestDefaultUserService {
     String email = "email@test.es";
     String gender = "male";
     Integer userIdentifier = Integer.valueOf(99);
+    String userDni = "32721859N";
     String roleName = "roleName";
 
     /**
@@ -103,14 +104,14 @@ final class TestDefaultUserService {
      *
      * @throws UserIdNotFoundException If not user avaliable with provided id
      */
-    @DisplayName("Find user by id not found user throw exception")
+    @DisplayName("Find user by dni not found user throw exception")
     @Test
-    final void testFindUserByIdNotFound() {
+    final void testFindUserByDniNotFound() {
         final Optional<PersistentUserEntity> userOptional = Optional.empty();
-        Mockito.when(userEntityRepository.findById(userIdentifier))
+        Mockito.when(userEntityRepository.findByDni(userDni))
                 .thenReturn(userOptional);
         Assertions.assertThrows(UserServiceException.class, () -> {
-            userService.findById(userIdentifier);
+            userService.findByDni(userDni);
         }, "User id not found");
     }
 
@@ -121,18 +122,18 @@ final class TestDefaultUserService {
      */
     @DisplayName("Find user by id and check return value")
     @Test
-    final void testFindUserById() {
+    final void testFindUserByDni() {
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
-        Mockito.when(userEntityRepository.findById(userIdentifier))
+        Mockito.when(userEntityRepository.findByDni(userDni))
                 .thenReturn(userOptional);
         UserEntity result = null;
         try {
-            result = userService.findById(userIdentifier);
+            result = userService.findByDni(userDni);
         } catch (UserServiceException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -140,7 +141,7 @@ final class TestDefaultUserService {
 
         Assertions.assertNotNull(result, "user not null");
         Assertions.assertEquals(userForMock, result, "user equals");
-        Mockito.verify(userEntityRepository, times(1)).findById(userIdentifier);
+        Mockito.verify(userEntityRepository, times(1)).findByDni(userDni);
     }
 
     /**
@@ -153,8 +154,8 @@ final class TestDefaultUserService {
     @Test
     final void testFindUserByEmail() {
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -218,16 +219,16 @@ final class TestDefaultUserService {
         Mockito.when(userEntityRepository.findByEmail(email))
                 .thenReturn(emptyUserOptional);
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         Mockito.when(userEntityRepository.save(any(PersistentUserEntity.class)))
                 .thenReturn(userForMock);
         UserEntity user = null;
         try {
             user = userService.add(
-                    userName, firstSurname, secondSurname, date, gender,
-                    "password", email
+                    userDni, userName, firstSurname, secondSurname, date,
+                    gender, "password", email
             );
         } catch (UserServiceException e) {
             // TODO Auto-generated catch block
@@ -260,8 +261,8 @@ final class TestDefaultUserService {
     @Test
     final void testAddUsersSameEmailThrowException() {
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -269,8 +270,8 @@ final class TestDefaultUserService {
                 .thenReturn(userOptional);
         Assertions.assertThrows(UserServiceException.class, () -> {
             userService.add(
-                    "name", "first_surname", "second_surname", date, "male",
-                    "password", email
+                    userDni, "name", "first_surname", "second_surname", date,
+                    "male", "password", email
             );
         }, "Email already exists exception");
     }
@@ -287,15 +288,15 @@ final class TestDefaultUserService {
     @Test
     final void testAddRoleToUser() {
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
 
         var userForMockWithRole = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         var role = new PersistentRoleEntity();
         role.setName(roleName);
@@ -361,8 +362,8 @@ final class TestDefaultUserService {
         }, "User email not found");
 
         final var userEntity = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         Mockito.when(userEntityRepository.findByEmail(email))
                 .thenReturn(Optional.of(userEntity));
@@ -387,8 +388,8 @@ final class TestDefaultUserService {
     @Test
     final void testRemoveRoleFromUserNoHaveRole() {
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         var roles = new HashSet<PersistentRoleEntity>();
         var role = new PersistentRoleEntity();
@@ -420,8 +421,8 @@ final class TestDefaultUserService {
     @Test
     final void testAddRoleToUserEmailRoleNameNotFound() {
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         Optional<PersistentUserEntity> userOptional = Optional.empty();
 
@@ -463,8 +464,8 @@ final class TestDefaultUserService {
     @Test
     final void testRemoveUser() {
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -525,8 +526,8 @@ final class TestDefaultUserService {
     final void testUpdateUserDataReturnUpdatedUser() {
 
         final var userForMock = new PersistentUserEntity(
-                userName, firstSurname, secondSurname, date, gender, "password",
-                email
+                userDni, userName, firstSurname, secondSurname, date, gender,
+                "password", email
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -543,8 +544,9 @@ final class TestDefaultUserService {
                 updatedBirthDate, updatedGender
         );
         final var userUpdated = new PersistentUserEntity(
-                updatedUserName, updatedFirstSurname, updatedSecondSurname,
-                updatedBirthDate, updatedGender, "password", email
+                userDni, updatedUserName, updatedFirstSurname,
+                updatedSecondSurname, updatedBirthDate, updatedGender,
+                "password", email
         );
         Mockito.when(userEntityRepository.save(userUpdated))
                 .thenReturn(userUpdated);

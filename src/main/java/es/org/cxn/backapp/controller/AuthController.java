@@ -130,7 +130,7 @@ public class AuthController {
         var defaultUserRole = "USER";
         try {
             userService.add(
-                    signUpRequestForm.getName(),
+                    signUpRequestForm.getDni(), signUpRequestForm.getName(),
                     signUpRequestForm.getFirstSurname(),
                     signUpRequestForm.getSecondSurname(),
                     signUpRequestForm.getBirthDate(),
@@ -141,7 +141,8 @@ public class AuthController {
             final var createdUser = userService
                     .addRole(signUpRequestForm.getEmail(), defaultUserRole);
             final var signUpResponseForm = new SignUpResponseForm(
-                    createdUser.getName(), createdUser.getFirstSurname(),
+                    createdUser.getDni(), createdUser.getName(),
+                    createdUser.getFirstSurname(),
                     createdUser.getSecondSurname(), createdUser.getBirthDate(),
                     createdUser.getGender(), createdUser.getEmail(),
                     createdUser.getRoles()

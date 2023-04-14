@@ -94,11 +94,11 @@ public final class DefaultUserService implements UserService {
     }
 
     @Override
-    public UserEntity findById(final Integer identifier)
+    public UserEntity findByDni(final String value)
             throws UserServiceException {
         final Optional<PersistentUserEntity> entity;
-        checkNotNull(identifier, "Received a null pointer as identifier");
-        entity = userRepository.findById(identifier);
+        checkNotNull(value, "Received a null pointer as identifier");
+        entity = userRepository.findByDni(value);
         if (entity.isEmpty()) {
             throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
@@ -112,7 +112,7 @@ public final class DefaultUserService implements UserService {
 
     @Override
     public UserEntity add(
-            final String name, final String firstSurname,
+            final String dni, final String name, final String firstSurname,
             final String secondSurname, final LocalDate birthDate,
             final String gender, final String password, final String email
     ) throws UserServiceException {
@@ -122,6 +122,7 @@ public final class DefaultUserService implements UserService {
         } else {
             final PersistentUserEntity save;
             save = new PersistentUserEntity();
+            save.setDni(dni);
             save.setName(name);
             save.setFirstSurname(firstSurname);
             save.setSecondSurname(secondSurname);

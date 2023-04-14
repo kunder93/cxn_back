@@ -34,8 +34,8 @@ databaseChangeLog:
             constraints:
               nullable: false
         - column:
-            name: user_id
-            type: bigint
+            name: user_dni
+            type: varchar(9)
             constraints:
               nullable: false                  
 - changeSet:
@@ -147,10 +147,10 @@ databaseChangeLog:
     author: Santiago
     changes:
     - addForeignKeyConstraint:
-        baseColumnNames: user_id
+        baseColumnNames: user_dni
         baseTableName: paymentsheet
         constraintName: fk_paymentsheet_users
-        referencedColumnNames: id
+        referencedColumnNames: dni
         referencedTableName: users
 - changeSet:
     id: payment_sheet_regular_transport_realtion

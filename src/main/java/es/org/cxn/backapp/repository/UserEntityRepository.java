@@ -61,4 +61,13 @@ public interface UserEntityRepository
      * @return user entity with email provided.
      */
     Optional<PersistentUserEntity> findByEmail(String email);
+
+    /**
+     * Find user entity with provided dni.
+     *
+     * @param dni the user dni.
+     * @return user entity with dni provided.
+     */
+    Optional<PersistentUserEntity> findByDni(String dni);
+
 }

@@ -39,13 +39,10 @@ public interface UserEntity extends Serializable {
 
     /**
      * Returns the identifier assigned to this user entity.
-     * <p>
-     * If no identifier has been assigned yet, then the value is expected to be
-     * {@code null} or lower than zero.
      *
      * @return the user entity's identifier
      */
-    Integer getId();
+    String getDni();
 
     /**
      * Returns the name of the user entity.
@@ -104,11 +101,11 @@ public interface UserEntity extends Serializable {
     Set<PersistentRoleEntity> getRoles();
 
     /**
-     * Sets the identifier assigned to this user entity.
+     * Sets the dni aka identifier assigned to this user entity.
      *
-     * @param identifier the identifier for the user entity.
+     * @param value the identifier for the user entity.
      */
-    void setId(Integer identifier);
+    void setDni(String value);
 
     /**
      * Changes the name of the user entity.

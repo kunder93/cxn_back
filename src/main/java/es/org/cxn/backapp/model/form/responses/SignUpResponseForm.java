@@ -29,9 +29,12 @@ public class SignUpResponseForm implements Serializable {
     private static final long serialVersionUID = -3214940499061435783L;
 
     /**
+     * Dni field.
+     */
+    private String dni;
+
+    /**
      * Name field.
-     * <p>
-     * This is a required field and can't be empty.
      */
     private String name;
 
@@ -75,6 +78,7 @@ public class SignUpResponseForm implements Serializable {
     /**
      * Construct a DTO with all fields provided.
      *
+     * @param dniValue           the dni aka identifier field.
      * @param nameValue          the name field.
      * @param firstSurnameValue  the first surname field.
      * @param secondSurnameValue the second surname field.
@@ -84,12 +88,14 @@ public class SignUpResponseForm implements Serializable {
      * @param userRolesSet       the set of user roles to get name.
      */
     public SignUpResponseForm(
-            final String nameValue, final String firstSurnameValue,
-            final String secondSurnameValue, final LocalDate birthDateValue,
-            final String genderValue, final String emailValue,
+            final String dniValue, final String nameValue,
+            final String firstSurnameValue, final String secondSurnameValue,
+            final LocalDate birthDateValue, final String genderValue,
+            final String emailValue,
             final Set<PersistentRoleEntity> userRolesSet
     ) {
         super();
+        this.dni = dniValue;
         this.name = nameValue;
         this.firstSurname = firstSurnameValue;
         this.secondSurname = secondSurnameValue;
@@ -100,9 +106,18 @@ public class SignUpResponseForm implements Serializable {
     }
 
     /**
+     * Returns the value of the dni field.
+     *
+     * @return the dni value.
+     */
+    public final String getDni() {
+        return dni;
+    }
+
+    /**
      * Returns the value of the name field.
      *
-     * @return the value of the name field.
+     * @return the name value.
      */
     public final String getName() {
         return name;
@@ -111,7 +126,7 @@ public class SignUpResponseForm implements Serializable {
     /**
      * Returns the value of the first surname field.
      *
-     * @return the value of the first surname field.
+     * @return the first surname value.
      */
     public final String getFirstSurname() {
         return firstSurname;
@@ -160,6 +175,15 @@ public class SignUpResponseForm implements Serializable {
      */
     public Set<String> getUserRoles() {
         return new HashSet<>(userRoles);
+    }
+
+    /**
+     * Sets the value of the dni field.
+     *
+     * @param value the new value for the dni field.
+     */
+    public void setDni(final String value) {
+        this.dni = checkNotNull(value, "Received a null pointer as dni");
     }
 
     /**
@@ -231,21 +255,15 @@ public class SignUpResponseForm implements Serializable {
         value.forEach(role -> this.userRoles.add(role.getName()));
     }
 
-    /**
-     * Hash code method.
-     */
     @Override
     public int hashCode() {
         return Objects.hash(
-                birthDate, email, firstSurname, gender, name, secondSurname
+                birthDate, dni, email, firstSurname, gender, name, secondSurname
         );
     }
 
-    /**
-     * Equals method.
-     */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -257,6 +275,7 @@ public class SignUpResponseForm implements Serializable {
         }
         var other = (SignUpResponseForm) obj;
         return Objects.equals(birthDate, other.birthDate)
+                && Objects.equals(dni, other.dni)
                 && Objects.equals(email, other.email)
                 && Objects.equals(firstSurname, other.firstSurname)
                 && Objects.equals(gender, other.gender)
@@ -264,15 +283,12 @@ public class SignUpResponseForm implements Serializable {
                 && Objects.equals(secondSurname, other.secondSurname);
     }
 
-    /**
-     * To string method.
-     */
     @Override
     public String toString() {
-        return "UserForm [name=" + name + ", firstSurname=" + firstSurname
-                + ", secondSurname=" + secondSurname + ", birthDate="
-                + birthDate + ", gender=" + gender + ", password=" + ", email="
-                + email + "]";
+        return "SignUpResponseForm [dni=" + dni + ", name=" + name
+                + ", firstSurname=" + firstSurname + ", secondSurname="
+                + secondSurname + ", birthDate=" + birthDate + ", gender="
+                + gender + ", email=" + email + "]";
     }
 
 }

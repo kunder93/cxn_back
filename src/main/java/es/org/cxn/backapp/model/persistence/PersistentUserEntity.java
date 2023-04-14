@@ -38,8 +38,6 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -68,12 +66,11 @@ public class PersistentUserEntity implements UserEntity {
     private static final long serialVersionUID = 1328773339450853291L;
 
     /**
-     * Entity's ID.
+     * Entity's dni aka Identifier.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    private Integer id = -1;
+    @Column(name = "dni", nullable = false, unique = true)
+    private String dni = "";
 
     /**
      * Name of the user.
@@ -141,7 +138,7 @@ public class PersistentUserEntity implements UserEntity {
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
     @JoinTable(
             name = "role_users", joinColumns = @JoinColumn(
-                    name = "user_id"
+                    name = "user_dni"
             ), inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<PersistentRoleEntity> roles = new HashSet<>();
@@ -162,6 +159,7 @@ public class PersistentUserEntity implements UserEntity {
     /**
      * Constructs an example entity with provided params.
      *
+     * @param dniValue           the user dni.
      * @param nameValue          the user name.
      * @param firstSurnameValue  the user first surname.
      * @param secondSurnameValue the user second surname.
@@ -171,12 +169,14 @@ public class PersistentUserEntity implements UserEntity {
      * @param emailValue         the user email.
      */
     public PersistentUserEntity(
-            final String nameValue, final String firstSurnameValue,
-            final String secondSurnameValue, final LocalDate birthDateValue,
-            final String genderValue, final String passwordValue,
-            final String emailValue
+            final String dniValue, final String nameValue,
+            final String firstSurnameValue, final String secondSurnameValue,
+            final LocalDate birthDateValue, final String genderValue,
+            final String passwordValue, final String emailValue
     ) {
         super();
+
+        this.dni = checkNotNull(dniValue, "Received a null pointer as dni");
         this.name = checkNotNull(nameValue, "Received a null pointer as name");
         this.firstSurname = checkNotNull(
                 firstSurnameValue, "Received a null pointer as first surname"
@@ -199,16 +199,13 @@ public class PersistentUserEntity implements UserEntity {
     }
 
     /**
-     * Returns the identifier assigned to this user entity.
-     * <p>
-     * If no identifier has been assigned yet, then the value will be lower than
-     * zero.
+     * Returns the dni aka identifier assigned to this user entity.
      *
      * @return the user's identifier
      */
     @Override
-    public Integer getId() {
-        return id;
+    public String getDni() {
+        return dni;
     }
 
     /**
@@ -289,8 +286,8 @@ public class PersistentUserEntity implements UserEntity {
      * Set user id.
      */
     @Override
-    public void setId(final Integer identifier) {
-        id = checkNotNull(identifier, "Received a null pointer as id");
+    public void setDni(final String value) {
+        dni = checkNotNull(value, "Received a null pointer as id");
     }
 
     /**
@@ -393,7 +390,7 @@ public class PersistentUserEntity implements UserEntity {
     @Override
     public int hashCode() {
         return Objects.hash(
-                birthDate, email, firstSurname, gender, id, name, password,
+                birthDate, email, firstSurname, gender, dni, name, password,
                 secondSurname
         );
     }
@@ -417,7 +414,7 @@ public class PersistentUserEntity implements UserEntity {
                 && Objects.equals(email, other.email)
                 && Objects.equals(firstSurname, other.firstSurname)
                 && Objects.equals(gender, other.gender)
-                && Objects.equals(id, other.id)
+                && Objects.equals(dni, other.dni)
                 && Objects.equals(name, other.name)
                 && Objects.equals(password, other.password)
                 && Objects.equals(secondSurname, other.secondSurname);
@@ -428,7 +425,7 @@ public class PersistentUserEntity implements UserEntity {
      */
     @Override
     public String toString() {
-        return "PersistentUserEntity [id=" + id + ", name=" + name
+        return "PersistentUserEntity [dni=" + dni + ", name=" + name
                 + ", first_surname=" + firstSurname + ", second_surname="
                 + secondSurname + ", birth_date=" + birthDate + ", gender="
                 + gender + ", password=" + password + ", email=" + email + "]";

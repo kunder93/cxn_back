@@ -45,6 +45,7 @@ public interface UserService {
     /**
      * Creates a new entity.
      *
+     * @param dniValue           The user dni aka identifier.
      * @param nameValue          The user name.
      * @param firstSurnameValue  The user first surname.
      * @param secondSurnameValue The user second surname.
@@ -57,23 +58,23 @@ public interface UserService {
      *                              exists.
      */
     UserEntity add(
-            String nameValue, String firstSurnameValue,
+            String dniValue, String nameValue, String firstSurnameValue,
             String secondSurnameValue, LocalDate birthDateValue,
             String genderValue, String passwordValue, String emailValue
     ) throws UserServiceException;
 
     /**
-     * Returns an entity with the given identifier (id).
+     * Returns an entity with the given identifier (dni).
      *
      * <p>
      * If no instance exists with that id then an exception is thrown.
      *
-     * @param identifier The user identifier or id.
-     * @return the user entity for the given id.
+     * @param value The user identifier aka dni.
+     * @return the user entity for the given dni.
      * @throws UserServiceException when user with provided identifier not found
      *                              {@link UserServiceException}.
      */
-    UserEntity findById(Integer identifier) throws UserServiceException;
+    UserEntity findByDni(String value) throws UserServiceException;
 
     /**
      * Returns an entity with the given email.
