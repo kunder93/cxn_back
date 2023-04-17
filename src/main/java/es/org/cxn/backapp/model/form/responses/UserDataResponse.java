@@ -208,5 +208,4 @@ public final class UserDataResponse implements Serializable {
                 + secondSurname + ", gender=" + gender + ", birthDate="
                 + birthDate + ", email=" + email + "]";
     }
-
 }
