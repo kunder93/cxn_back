@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 
 /**
@@ -178,5 +179,9 @@ public interface UserEntity extends Serializable {
      * @return true if deleted false if not.
      */
     boolean removeRole(PersistentRoleEntity role);
+
+    PersistentAddressEntity getAddress();
+
+    void setAddress(PersistentAddressEntity address);
 
 }

@@ -44,6 +44,7 @@ import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
@@ -83,6 +84,7 @@ final class TestDefaultUserService {
     Integer userIdentifier = Integer.valueOf(99);
     String userDni = "32721859N";
     String roleName = "roleName";
+    PersistentAddressEntity address = new PersistentAddressEntity();
 
     /**
      * Sets up the validator for the tests.
@@ -125,7 +127,7 @@ final class TestDefaultUserService {
     final void testFindUserByDni() {
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -155,7 +157,7 @@ final class TestDefaultUserService {
     final void testFindUserByEmail() {
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -220,7 +222,7 @@ final class TestDefaultUserService {
                 .thenReturn(emptyUserOptional);
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         Mockito.when(userEntityRepository.save(any(PersistentUserEntity.class)))
                 .thenReturn(userForMock);
@@ -262,7 +264,7 @@ final class TestDefaultUserService {
     final void testAddUsersSameEmailThrowException() {
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -289,14 +291,14 @@ final class TestDefaultUserService {
     final void testAddRoleToUser() {
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
 
         var userForMockWithRole = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         var role = new PersistentRoleEntity();
         role.setName(roleName);
@@ -363,7 +365,7 @@ final class TestDefaultUserService {
 
         final var userEntity = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         Mockito.when(userEntityRepository.findByEmail(email))
                 .thenReturn(Optional.of(userEntity));
@@ -389,7 +391,7 @@ final class TestDefaultUserService {
     final void testRemoveRoleFromUserNoHaveRole() {
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         var roles = new HashSet<PersistentRoleEntity>();
         var role = new PersistentRoleEntity();
@@ -422,7 +424,7 @@ final class TestDefaultUserService {
     final void testAddRoleToUserEmailRoleNameNotFound() {
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         Optional<PersistentUserEntity> userOptional = Optional.empty();
 
@@ -465,7 +467,7 @@ final class TestDefaultUserService {
     final void testRemoveUser() {
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -527,7 +529,7 @@ final class TestDefaultUserService {
 
         final var userForMock = new PersistentUserEntity(
                 userDni, userName, firstSurname, secondSurname, date, gender,
-                "password", email
+                "password", email, address
         );
         final Optional<PersistentUserEntity> userOptional = Optional
                 .of(userForMock);
@@ -546,7 +548,7 @@ final class TestDefaultUserService {
         final var userUpdated = new PersistentUserEntity(
                 userDni, updatedUserName, updatedFirstSurname,
                 updatedSecondSurname, updatedBirthDate, updatedGender,
-                "password", email
+                "password", email, address
         );
         Mockito.when(userEntityRepository.save(userUpdated))
                 .thenReturn(userUpdated);

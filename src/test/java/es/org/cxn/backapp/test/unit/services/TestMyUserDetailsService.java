@@ -38,6 +38,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
@@ -75,6 +76,7 @@ final class TestMyUserDetailsService {
     String email = "email@test.es";
     String gender = "male";
     String dni = "32721859N";
+    PersistentAddressEntity address = new PersistentAddressEntity();
 
     /**
      * Sets up the validator for the tests.
@@ -103,7 +105,7 @@ final class TestMyUserDetailsService {
 
         var userEntity = new PersistentUserEntity(
                 dni, userName, first_surname, second_surname, date, gender,
-                "password", email
+                "password", email, address
         );
         Optional<PersistentUserEntity> userOptional = Optional.of(userEntity);
         Mockito.when(userEntityRepository.findByEmail(email))

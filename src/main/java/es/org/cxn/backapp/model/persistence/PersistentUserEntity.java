@@ -43,6 +43,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -150,6 +151,23 @@ public class PersistentUserEntity implements UserEntity {
     private List<PersistentPaymentSheetEntity> paymentSheets = new ArrayList<>();
 
     /**
+     * The user address.
+     */
+    @OneToOne
+    @JoinColumn(name = "user_dni")
+    private PersistentAddressEntity address;
+
+    @Override
+    public PersistentAddressEntity getAddress() {
+        return address;
+    }
+
+    @Override
+    public void setAddress(PersistentAddressEntity address) {
+        this.address = address;
+    }
+
+    /**
      * Constructs an example entity.
      */
     public PersistentUserEntity() {
@@ -172,7 +190,8 @@ public class PersistentUserEntity implements UserEntity {
             final String dniValue, final String nameValue,
             final String firstSurnameValue, final String secondSurnameValue,
             final LocalDate birthDateValue, final String genderValue,
-            final String passwordValue, final String emailValue
+            final String passwordValue, final String emailValue,
+            PersistentAddressEntity address
     ) {
         super();
 
@@ -196,6 +215,7 @@ public class PersistentUserEntity implements UserEntity {
         this.email = checkNotNull(
                 emailValue, "Received a null pointer as email"
         );
+        this.address = address;
     }
 
     /**
