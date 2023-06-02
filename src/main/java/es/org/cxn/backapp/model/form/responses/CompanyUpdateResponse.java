@@ -22,7 +22,7 @@ public class CompanyUpdateResponse implements Serializable {
     /**
      * The company cif or nif.
      */
-    private String cifNif;
+    private String nif;
     /**
      * The company name.
      */
@@ -33,26 +33,17 @@ public class CompanyUpdateResponse implements Serializable {
     private String address;
 
     /**
-     * The company identity tax number.
-     */
-    private String identityTaxNumber;
-
-    /**
      * Constructor with provided params.
      *
-     * @param cifNif            the company cif or nif.
-     * @param name              the company name.
-     * @param address           the company address.
-     * @param identityTaxNumber the company identityTaxNumber.
+     * @param nif     the company cif or nif.
+     * @param name    the company name.
+     * @param address the company address.
      */
-    public CompanyUpdateResponse(
-            String cifNif, String name, String address, String identityTaxNumber
-    ) {
+    public CompanyUpdateResponse(String nif, String name, String address) {
         super();
         this.name = name;
         this.address = address;
-        this.cifNif = cifNif;
-        this.identityTaxNumber = identityTaxNumber;
+        this.nif = nif;
     }
 
     /**
@@ -63,21 +54,21 @@ public class CompanyUpdateResponse implements Serializable {
     }
 
     /**
-     * Get response company cif or nif.
+     * Get response company nif.
      *
-     * @return The company cif or nif.
+     * @return The company nif.
      */
-    public String getCifNif() {
-        return cifNif;
+    public String getNif() {
+        return nif;
     }
 
     /**
-     * Set response company cif or nif.
+     * Set response company nif.
      *
-     * @param value The new company cif or nif.
+     * @param value The new company nif.
      */
     public void setCifNif(String value) {
-        this.cifNif = value;
+        this.nif = value;
     }
 
     /**
@@ -116,27 +107,9 @@ public class CompanyUpdateResponse implements Serializable {
         this.address = value;
     }
 
-    /**
-     * Getter for identity tax number.
-     *
-     * @return The identity tax number.
-     */
-    public String getIdentityTaxNumber() {
-        return identityTaxNumber;
-    }
-
-    /**
-     * Setter for identity tax number.
-     *
-     * @param value The identity tax number.
-     */
-    public void setIdentityTaxNumber(String value) {
-        this.identityTaxNumber = value;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(address, cifNif, identityTaxNumber, name);
+        return Objects.hash(address, nif, name);
     }
 
     @Override
@@ -152,16 +125,14 @@ public class CompanyUpdateResponse implements Serializable {
         }
         var other = (CompanyUpdateResponse) obj;
         return Objects.equals(address, other.address)
-                && Objects.equals(cifNif, other.cifNif)
-                && Objects.equals(identityTaxNumber, other.identityTaxNumber)
+                && Objects.equals(nif, other.nif)
                 && Objects.equals(name, other.name);
     }
 
     @Override
     public String toString() {
-        return "CompanyUpdateResponse [cifNif=" + cifNif + ", name=" + name
-                + ", address=" + address + ", identityTaxNumber="
-                + identityTaxNumber + "]";
+        return "CompanyUpdateResponse [nif=" + nif + ", name=" + name
+                + ", address=" + address + "]";
     }
 
 }

@@ -110,7 +110,7 @@ public class InvoiceController {
             var buyerCompany = (PersistentCompanyEntity) companyService
                     .findById(invoiceCreateRequestForm.getBuyerCifNif());
 
-            if (sellerCompany.getNifCif().equals(buyerCompany.getNifCif())) {
+            if (sellerCompany.getNif().equals(buyerCompany.getNif())) {
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Seller and buyer cannot be the same"
@@ -127,8 +127,8 @@ public class InvoiceController {
             var response = new InvoiceResponse(
                     result.getNumber(), result.getSeries(),
                     result.getAdvancePaymentDate(), result.getExpeditionDate(),
-                    result.getTaxExempt(), result.getSeller().getNifCif(),
-                    result.getBuyer().getNifCif()
+                    result.getTaxExempt(), result.getSeller().getNif(),
+                    result.getBuyer().getNif()
             );
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (CompanyServiceException | InvoiceServiceException e) {
@@ -156,8 +156,8 @@ public class InvoiceController {
                                 invoice.getAdvancePaymentDate(),
                                 invoice.getExpeditionDate(),
                                 invoice.getTaxExempt(),
-                                invoice.getSeller().getNifCif(),
-                                invoice.getBuyer().getNifCif()
+                                invoice.getSeller().getNif(),
+                                invoice.getBuyer().getNif()
                         )
                 )
         );

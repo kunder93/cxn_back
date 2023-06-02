@@ -151,9 +151,9 @@ public class CompanyController {
                     requestForm.getIdentityTaxNumber()
             );
             var response = new CompanyUpdateResponse(
-                    companyUpdated.getNifCif(), companyUpdated.getName(),
-                    companyUpdated.getAddress(),
-                    companyUpdated.getIdentityTaxNumber()
+                    companyUpdated.getNif(), companyUpdated.getName(),
+                    companyUpdated.getAddress()
+
             );
             return new ResponseEntity<>(response, HttpStatus.OK);
 

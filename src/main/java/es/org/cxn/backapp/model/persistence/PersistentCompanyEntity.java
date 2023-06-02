@@ -59,8 +59,8 @@ public class PersistentCompanyEntity implements CompanyEntity {
      * Entity's identifier.
      */
     @Id
-    @Column(name = "cifnif", nullable = false, unique = true)
-    private String cifnif;
+    @Column(name = "nif", nullable = false, unique = true)
+    private String nif;
 
     /**
      * name of the company.
@@ -68,13 +68,6 @@ public class PersistentCompanyEntity implements CompanyEntity {
      */
     @Column(name = "name", nullable = false, unique = false)
     private String name = "";
-
-    /**
-     * Company identity tax number aka numero identificacion fiscal
-     *
-     */
-    @Column(name = "identity_tax_number", nullable = false, unique = true)
-    private String identityTaxNumber = "";
 
     /**
      * Company address
@@ -111,19 +104,14 @@ public class PersistentCompanyEntity implements CompanyEntity {
      * @param address           the company address
      */
     public PersistentCompanyEntity(
-            final String nifCif, final String name,
-            final String identityTaxNumber, final String address
+            final String nifCif, final String name, final String address
     ) {
         super();
-        this.cifnif = checkNotNull(
+        this.nif = checkNotNull(
                 nifCif, "Received a null pointer as cif or nif"
         );
         this.name = checkNotNull(
                 name, "Received a null pointer as company name"
-        );
-        this.identityTaxNumber = checkNotNull(
-                identityTaxNumber,
-                "Received a null pointer as identity tax number"
         );
         this.address = checkNotNull(
                 address, "Received a null pointer as address"
@@ -132,13 +120,13 @@ public class PersistentCompanyEntity implements CompanyEntity {
     }
 
     @Override
-    public String getNifCif() {
-        return cifnif;
+    public String getNif() {
+        return nif;
     }
 
     @Override
-    public void setNifCif(String nifCif) {
-        this.cifnif = nifCif;
+    public void setNif(String value) {
+        this.nif = value;
     }
 
     @Override
@@ -149,16 +137,6 @@ public class PersistentCompanyEntity implements CompanyEntity {
     @Override
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public String getIdentityTaxNumber() {
-        return identityTaxNumber;
-    }
-
-    @Override
-    public void setIdentityTaxNumber(String identityTaxNumber) {
-        this.identityTaxNumber = identityTaxNumber;
     }
 
     @Override
@@ -215,7 +193,7 @@ public class PersistentCompanyEntity implements CompanyEntity {
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, identityTaxNumber, name, cifnif);
+        return Objects.hash(address, nif, name);
     }
 
     @Override
@@ -231,16 +209,15 @@ public class PersistentCompanyEntity implements CompanyEntity {
         }
         var other = (PersistentCompanyEntity) obj;
         return Objects.equals(address, other.address)
-                && Objects.equals(identityTaxNumber, other.identityTaxNumber)
-                && Objects.equals(name, other.name)
-                && Objects.equals(cifnif, other.cifnif);
+                && Objects.equals(nif, other.nif)
+                && Objects.equals(name, other.name);
+
     }
 
     @Override
     public String toString() {
-        return "PersistentCompanyEntity [nifCif=" + cifnif + ", name=" + name
-                + ", identityTaxNumber=" + identityTaxNumber + ", address="
-                + address + "]";
+        return "PersistentCompanyEntity [nif=" + nif + ", name=" + name
+                + ", address=" + address + "]";
     }
 
 }

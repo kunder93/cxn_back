@@ -44,27 +44,19 @@ public interface CompanyEntityRepository
         extends JpaRepository<PersistentCompanyEntity, Integer> {
 
     /**
-     * Find company entity with provided cifnif.
+     * Find company entity with provided nif.
      *
-     * @param cifnif the company cifnif.
-     * @return company entity with cifnif provided.
+     * @param nif the company nif.
+     * @return company entity with nif provided.
      */
-    Optional<PersistentCompanyEntity> findByCifnif(String cifnif);
+    Optional<PersistentCompanyEntity> findByNif(String nif);
 
     /**
-     * Check if company entity with provided cifnif exists.
+     * Check if company entity with provided nif exists.
      *
-     * @param cifnif the company cifnif.
+     * @param nif the company nif.
      * @return true if company exists.
      */
-    Boolean existsByCifnif(String cifnif);
-
-    /**
-     * Check if company entity with provided identityTaxNumber exists.
-     *
-     * @param identityTaxNumber the company identity tax number.
-     * @return true if company exists.
-     */
-    Boolean existsByIdentityTaxNumber(String identityTaxNumber);
+    Boolean existsByNif(String nif);
 
 }

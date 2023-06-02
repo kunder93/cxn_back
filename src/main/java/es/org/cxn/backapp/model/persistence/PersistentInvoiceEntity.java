@@ -120,14 +120,14 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
      * The seller company.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "seller_cif_nif", nullable = false)
+    @JoinColumn(name = "seller_nif", nullable = false)
     private PersistentCompanyEntity seller;
 
     /**
      * The buyer company.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "buyer_cif_nif", nullable = false)
+    @JoinColumn(name = "buyer_nif", nullable = false)
     private PersistentCompanyEntity buyer;
 
     @OneToOne(mappedBy = "transportInvoice")

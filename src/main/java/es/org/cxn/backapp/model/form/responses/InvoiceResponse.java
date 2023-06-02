@@ -90,8 +90,8 @@ public class InvoiceResponse implements Serializable {
         this.advancePaymentDate = entity.getAdvancePaymentDate();
         this.expeditionDate = entity.getExpeditionDate();
         this.taxExempt = entity.getTaxExempt();
-        this.sellerNifCif = entity.getSeller().getNifCif();
-        this.buyerNifCif = entity.getBuyer().getNifCif();
+        this.sellerNifCif = entity.getSeller().getNif();
+        this.buyerNifCif = entity.getBuyer().getNif();
     }
 
     /**

@@ -27,15 +27,11 @@ public class CompanyResponse implements Serializable {
     /**
      * The company nif or cif.
      */
-    private String nifCif;
+    private String nif;
     /**
      * The company name.
      */
     private String name;
-    /**
-     * The company identity tax number.
-     */
-    private String identityTaxNumber;
     /**
      * The company address.
      */
@@ -48,9 +44,8 @@ public class CompanyResponse implements Serializable {
      */
     public CompanyResponse(PersistentCompanyEntity company) {
         super();
-        nifCif = company.getNifCif();
+        nif = company.getNif();
         name = company.getName();
-        identityTaxNumber = company.getIdentityTaxNumber();
         address = company.getAddress();
     }
 
@@ -59,8 +54,8 @@ public class CompanyResponse implements Serializable {
      *
      * @return The company nif cif.
      */
-    public String getNifCif() {
-        return nifCif;
+    public String getNif() {
+        return nif;
     }
 
     /**
@@ -68,8 +63,8 @@ public class CompanyResponse implements Serializable {
      *
      * @param value The company nif or cif.
      */
-    public void setNifCif(String value) {
-        this.nifCif = value;
+    public void setNif(String value) {
+        this.nif = value;
     }
 
     /**
@@ -88,24 +83,6 @@ public class CompanyResponse implements Serializable {
      */
     public void setName(String value) {
         this.name = value;
-    }
-
-    /**
-     * Get response company identity tax number.
-     *
-     * @return The company identity tax number.
-     */
-    public String getIdentityTaxNumber() {
-        return identityTaxNumber;
-    }
-
-    /**
-     * Set response company identity tax number.
-     *
-     * @param value The company identity tax number.
-     */
-    public void setIdentityTaxNumber(String value) {
-        this.identityTaxNumber = value;
     }
 
     /**
@@ -128,7 +105,7 @@ public class CompanyResponse implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(address, identityTaxNumber, name, nifCif);
+        return Objects.hash(address, name, nif);
     }
 
     @Override
@@ -144,15 +121,13 @@ public class CompanyResponse implements Serializable {
         }
         var other = (CompanyResponse) obj;
         return Objects.equals(address, other.address)
-                && Objects.equals(identityTaxNumber, other.identityTaxNumber)
                 && Objects.equals(name, other.name)
-                && Objects.equals(nifCif, other.nifCif);
+                && Objects.equals(nif, other.nif);
     }
 
     @Override
     public String toString() {
-        return "CompanyResponse [nifCif=" + nifCif + ", name=" + name
-                + ", identityTaxNumber=" + identityTaxNumber + ", address="
+        return "CompanyResponse [nif=" + nif + ", name=" + name + ", address="
                 + address + "]";
     }
 

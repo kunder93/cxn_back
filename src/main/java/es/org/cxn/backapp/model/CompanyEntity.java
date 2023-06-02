@@ -37,11 +37,11 @@ import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 public interface CompanyEntity extends Serializable {
 
     /**
-     * Returns the identifier as nif or cif assigned to this company entity.
+     * Returns the identifier as nif assigned to this company entity.
      *
      * @return the company entity's identifier.
      */
-    String getNifCif();
+    String getNif();
 
     /**
      * Returns the name of the company.
@@ -49,13 +49,6 @@ public interface CompanyEntity extends Serializable {
      * @return the company entity's number.
      */
     String getName();
-
-    /**
-     * Get the company identity tax number.
-     *
-     * @return identity tax number.
-     */
-    String getIdentityTaxNumber();
 
     /**
      * Get the company address.
@@ -67,9 +60,9 @@ public interface CompanyEntity extends Serializable {
     /**
      * Sets the identifier assigned to this company entity.
      *
-     * @param value the identifier nif or cif for the company entity.
+     * @param value the identifier nif for the company entity.
      */
-    void setNifCif(String value);
+    void setNif(String value);
 
     /**
      * Changes the name of the company entity.
@@ -77,13 +70,6 @@ public interface CompanyEntity extends Serializable {
      * @param value the name to set on the company entity.
      */
     void setName(String value);
-
-    /**
-     * Changes the company identity tax number.
-     *
-     * @param value the new company identity tax number.
-     */
-    void setIdentityTaxNumber(String value);
 
     /**
      * Changes the company address.
