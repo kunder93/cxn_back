@@ -136,7 +136,14 @@ public class AuthController {
                     signUpRequestForm.getBirthDate(),
                     signUpRequestForm.getGender(),
                     signUpRequestForm.getPassword(),
-                    signUpRequestForm.getEmail()
+                    signUpRequestForm.getEmail(),
+                    signUpRequestForm.getApartmentNumber(),
+                    signUpRequestForm.getBuilding(),
+                    signUpRequestForm.getCity(),
+                    signUpRequestForm.getPostalCode(),
+                    signUpRequestForm.getStreet(),
+                    signUpRequestForm.getCountryNumericCode(),
+                    signUpRequestForm.getCountrySubdivisionName()
             );
             final var createdUser = userService
                     .addRole(signUpRequestForm.getEmail(), defaultUserRole);

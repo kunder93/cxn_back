@@ -40,7 +40,7 @@ import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
 import es.org.cxn.backapp.service.AddressService;
 
 /**
- * Rest controller for companies.
+ * Rest controller for user address, countries and countries subdivisions.
  *
  * @author Santiago Paz
  */
@@ -67,9 +67,9 @@ public class AddressController {
     }
 
     /**
-     * Return all stored address.
+     * Return all stored countries with their data.
      *
-     * @return all stored address.
+     * @return all stored countries.
      */
     @GetMapping(path = "/getCountries")
     public ResponseEntity<CountryListResponse> getAllCountries() {
@@ -82,7 +82,10 @@ public class AddressController {
     /**
      * Return sub-countries from one country.
      *
-     * @return all stored subcountries from a country.
+     * @param countryCode The country code aka identifier for getting related
+     *                    sub-countries.
+     *
+     * @return all stored sub-countries from a country code.
      */
     @GetMapping(path = "/country/{countryCode}")
     public ResponseEntity<SubCountryListResponse> getAllSubCountriesFromCountry(

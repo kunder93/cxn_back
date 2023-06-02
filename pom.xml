@@ -226,6 +226,12 @@
             <version>4.0.2</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
         <!-- ============================================== -->
         <!-- ================= ASPECTJ ==================== -->
         <!-- ============================================== -->
@@ -361,7 +367,7 @@
                     <skipEmptyReport>false</skipEmptyReport>
                     <linkXref>true</linkXref>
                     <inputEncoding>utf-8</inputEncoding>
-                     <targetJdk>17</targetJdk>
+                    <targetJdk>17</targetJdk>
                     <excludes>
                         <exclude>**/*Bean.java</exclude>
                         <exclude>**/generated/*.java</exclude>

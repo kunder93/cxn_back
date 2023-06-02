@@ -9,14 +9,95 @@ package es.org.cxn.backapp.model.form;
 public final class Constants {
 
     /**
-     * Dni max length.
+     * DNI bad format message.
      */
-    public static final int MAX_DNI_LENGHT = 9;
+    public static final String DNI_BAD_FORMAT_MESSAGE = "DNI bad format. DNI must have 8 numbers and 1 letter.";
 
     /**
      * Email max length.
      */
-    public static final int MAX_SIZE_EMAIL = 50;
+    public static final int EMAIL_MAX_SIZE = 50;
+
+    /**
+     * Postal code max length.
+     */
+    public static final int POSTAL_CODE_MAX_LENGHT = 10;
+
+    /**
+     * City max length.
+     */
+    public static final int CITY_MAX_LENGHT = 50;
+
+    /**
+     * City max length message.
+     */
+    public static final String CITY_MAX_LENGHT_MESSAGE = "City must be max length of: "
+            + CITY_MAX_LENGHT + "characters or numbers.";
+
+    /**
+     * City not blank message.
+     */
+    public static final String CITY_NOT_BLANK_MESSAGE = "City must not be null or empty.";
+
+    /**
+     * Street max lenght.
+     */
+    public static final int STREET_MAX_LENGHT = 100;
+
+    /**
+     * Street max length message.
+     */
+    public static final String STREET_MAX_LENGHT_MESSAGE = "Street must be max length of: "
+            + STREET_MAX_LENGHT + "characters or numbers.";
+
+    /**
+     * Street not blank message.
+     */
+    public static final String STREET_NOT_BLANK_MESSAGE = "Street must not be null or empty.";
+
+    /**
+     * Building max length.
+     */
+    public static final int BUILDING_MAX_LENGHT = 20;
+
+    /**
+     * Building max length message.
+     */
+    public static final String BUILDING_MAX_LENGHT_MESSAGE = "Building must be max length of: "
+            + BUILDING_MAX_LENGHT + "characters or numbers.";
+
+    /**
+     * Building not blank message.
+     */
+    public static final String BUILDING_NOT_BLANK_MESSAGE = "Building must not be null or empty.";
+
+    /**
+     * Apartment number max length.
+     */
+    public static final int APARTMENT_NUMBER_MAX_LENGHT = 15;
+
+    /**
+     * Apartment number max length message.
+     */
+    public static final String APARTMENT_NUMBER_MAX_LENGHT_MESSAGE = "Apartment number must be max length of: "
+            + APARTMENT_NUMBER_MAX_LENGHT + "characters or numbers.";
+
+    /**
+     * Apartment number not blank message.
+     */
+    public static final String APARTMENT_NUMBER_NOT_BLANK_MESSAGE = "Aparment number must not be null or empty.";
+
+    /**
+     * Message validating not blank postal code.
+     */
+    public static final String POSTAL_CODE_NOT_BLANK_MESSAGE = "Postal code must not be null or empty.";
+
+    /**
+     * Postal code max length message.
+     */
+    public static final String POSTAL_CODE_MAX_LENGHT_MESSAGE = "Postal code must be max length of: "
+            + POSTAL_CODE_MAX_LENGHT + "characters or numbers.";
+
     /**
      * Password min length.
      */
@@ -52,12 +133,18 @@ public final class Constants {
     /**
      * Message validating NotEmpty email.
      */
-    public static final String NOT_EMPTY_EMAIL = "Email must not be null or empty.";
+    public static final String NOT_EMPTY_EMAIL_MESSAGE = "Email must not be null or empty.";
+
+    /**
+     * Message validating NotEmpty email.
+     */
+    public static final String NOT_VALID_EMAIL_MESSAGE = "Invalid email address.";
+
     /**
      * Message validating MaxSize email.
      */
     public static final String MAX_SIZE_EMAIL_MESSAGE = "Email must be max length of: "
-            + MAX_SIZE_EMAIL + ".";
+            + EMAIL_MAX_SIZE + ".";
     /**
      * Message validating NotEmpty password.
      */
@@ -77,12 +164,6 @@ public final class Constants {
      * Message validating Not Blank first surname.
      */
     public static final String FIRST_SURNAME_NOT_BLANK_MESSAGE = "First surname must not be null or empty.";
-
-    /**
-     * Message validating MaxSize dni.
-     */
-    public static final String DNI_MAX_LENGTH_MESSAGE = "Dni must be max length of: "
-            + NAME_MAX_LENGTH + ".";
 
     /**
      * Message validating MaxSize name.

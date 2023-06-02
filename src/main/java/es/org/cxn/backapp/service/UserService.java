@@ -58,9 +58,11 @@ public interface UserService {
      *                              exists.
      */
     UserEntity add(
-            String dniValue, String nameValue, String firstSurnameValue,
-            String secondSurnameValue, LocalDate birthDateValue,
-            String genderValue, String passwordValue, String emailValue
+            String dni, String name, String firstSurname, String secondSurname,
+            LocalDate birthDate, String gender, String password, String email,
+            String apartmentNumber, String building, String city,
+            String postalCode, String street, Integer countryNumericCode,
+            String countrySubdivisionName
     ) throws UserServiceException;
 
     /**

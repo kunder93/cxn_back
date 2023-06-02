@@ -33,6 +33,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -48,18 +49,14 @@ import jakarta.persistence.Transient;
 @Table(name = "address")
 public class PersistentAddressEntity implements AddressEntity {
 
+    @Id
+    private String userDni;
+
     /**
      * Serialization ID.
      */
     @Transient
-    private static final long serialVersionUID = 1396772519450111291L;
-
-    /**
-     * Address asociated user dni aka Identifier PK.
-     */
-    @Id
-    @Column(name = "user_dni", nullable = false, unique = true)
-    private String userDni = "";
+    private static final long serialVersionUID = 1396772919450111291L;
 
     /**
      * Address postal code
@@ -91,7 +88,18 @@ public class PersistentAddressEntity implements AddressEntity {
     @Column(name = "city", nullable = false, unique = false)
     private String city = "";
 
-    @OneToOne(mappedBy = "address")
+    public String getUserDni() {
+        return userDni;
+    }
+
+    public void setUserDni(String userDni) {
+        this.userDni = userDni;
+    }
+
+    // RELATIONS
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_dni")
     private PersistentUserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -107,10 +115,6 @@ public class PersistentAddressEntity implements AddressEntity {
      */
     public PersistentAddressEntity() {
         super();
-    }
-
-    public String getUserDni() {
-        return userDni;
     }
 
     public String getPostalCode() {
@@ -143,10 +147,6 @@ public class PersistentAddressEntity implements AddressEntity {
 
     public PersistentCountrySubdivisionEntity getCountrySubdivision() {
         return countrySubdivision;
-    }
-
-    public void setUserDni(String userDni) {
-        this.userDni = userDni;
     }
 
     public void setPostalCode(String postalCode) {
@@ -212,9 +212,8 @@ public class PersistentAddressEntity implements AddressEntity {
 
     @Override
     public String toString() {
-        return "PersistentAddressEntity [userDni=" + userDni + ", postalCode="
-                + postalCode + ", apartmentNumber=" + apartmentNumber
-                + ", building=" + building + ", street=" + street + ", city="
-                + city + "]";
+        return "PersistentAddressEntity [postalCode=" + postalCode
+                + ", apartmentNumber=" + apartmentNumber + ", building="
+                + building + ", street=" + street + ", city=" + city + "]";
     }
 }

@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: user_address
+    id: address_country_countrysubdivision_tables
     author: Santiago
     changes:
     - createTable:
@@ -8,7 +8,7 @@ databaseChangeLog:
         columns:
         - column:
             name: postal_code
-            type: varchar(15)
+            type: varchar(10)
             constraints:
               nullable: false
         - column:
@@ -23,7 +23,7 @@ databaseChangeLog:
               nullable: false
         - column:
             name: street
-            type: varchar(50)
+            type: varchar(100)
             constraints:
               nullable: false
         - column:
@@ -80,7 +80,8 @@ databaseChangeLog:
             type: varchar(3)
             constraints:
               nullable: false
-              unique: true              
+              unique: true     
+                       
     - createTable:
         tableName: country_subdivision
         columns:
@@ -91,7 +92,6 @@ databaseChangeLog:
             constraints:
               primaryKey: true
               nullable: false
-
         - column:
             name: name
             type: varchar(150)
@@ -117,12 +117,18 @@ databaseChangeLog:
     id: FK_country_address_subdivisions
     author: Santiago
     changes:
+    - addPrimaryKey: 
+        columnNames: user_dni
+        constraintName: pk_address_user_dni
+        tableName: address      
     - addForeignKeyConstraint:
         baseColumnNames: user_dni
         baseTableName: address
         constraintName: fk_users_has_address
         referencedColumnNames: dni
         referencedTableName: users
+        onDelete:  CASCADE  
+        onUpdate:  RESTRICT
     - addForeignKeyConstraint:
         baseColumnNames: country_numeric_code
         baseTableName: address
@@ -130,23 +136,17 @@ databaseChangeLog:
         referencedColumnNames: numeric_code
         referencedTableName: country     
     - addForeignKeyConstraint:
+        baseColumnNames: country_subdivision_id
+        baseTableName: address
+        constraintName: fk_address_country_subdivision
+        referencedColumnNames: id
+        referencedTableName: country_subdivision 
+    - addForeignKeyConstraint:
         baseColumnNames: country_numeric_code
         baseTableName: country_subdivision
         constraintName: fk_country_country_subdivision
         referencedColumnNames: numeric_code
         referencedTableName: country        
-    - addForeignKeyConstraint:
-        baseColumnNames: country_subdivision_id
-        baseTableName: address
-        constraintName: fk_address_country_subdivision
-        referencedColumnNames: id
-        referencedTableName: country_subdivision             
+            
 
-- changeSet:
-    id: PK_address_table
-    author: Santiago
-    changes:
-        - addPrimaryKey:
-            columnNames: user_dni
-            constraintName: pk_address
-            tableName: address
+

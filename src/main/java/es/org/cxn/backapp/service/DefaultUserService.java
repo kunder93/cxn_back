@@ -37,7 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.repository.CountryEntityRepository;
+import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 
@@ -74,23 +77,48 @@ public final class DefaultUserService implements UserService {
     private final RoleEntityRepository roleRepository;
 
     /**
+     * Repository for the country entities handled by the service.
+     */
+    private final CountryEntityRepository countryRepository;
+
+    /**
+     * Repository for the country subdivision entities handled by the service.
+     */
+    private final CountrySubdivisionEntityRepository countrySubdivisionRepository;
+
+    /**
      * Constructs an entities service with the specified repository.
      *
-     * @param userRepo The user repository{@link UserEntityRepository}
-     * @param roleRepo The role repository{@link RoleEntityRepository}
+     * @param userRepo           The user repository{@link UserEntityRepository}
+     * @param roleRepo           The role repository{@link RoleEntityRepository}
+     * @param countryRepo        The country
+     *                           repository{@link CountryEntityRepository}
+     * @param countrySubsionRepo The country subdivisions
+     *                           repository{@link CountrySubdivisionEntityRepository}
      */
     public DefaultUserService(
             final UserEntityRepository userRepo,
-            final RoleEntityRepository roleRepo
+            final RoleEntityRepository roleRepo,
+            final CountryEntityRepository countryRepo,
+            final CountrySubdivisionEntityRepository countrySubsionRepo
     ) {
         super();
 
         this.userRepository = checkNotNull(
-                userRepo, "Received a null pointer as repository"
+                userRepo, "Received a null pointer as user repository"
         );
         this.roleRepository = checkNotNull(
-                roleRepo, "Received a null pointer as repository"
+                roleRepo, "Received a null pointer as role repository"
         );
+        this.countryRepository = checkNotNull(
+                countryRepo, "Received a null pointer as country repository"
+        );
+
+        this.countrySubdivisionRepository = checkNotNull(
+                countrySubsionRepo,
+                "Received a null pointer as country subdivision repository"
+        );
+
     }
 
     @Override
@@ -114,7 +142,11 @@ public final class DefaultUserService implements UserService {
     public UserEntity add(
             final String dni, final String name, final String firstSurname,
             final String secondSurname, final LocalDate birthDate,
-            final String gender, final String password, final String email
+            final String gender, final String password, final String email,
+            final String apartmentNumber, final String building,
+            final String city, final String postalCode, final String street,
+            final Integer countryNumericCode,
+            final String countrySubdivisionName
     ) throws UserServiceException {
 
         if (userRepository.findByEmail(email).isPresent()) {
@@ -130,6 +162,35 @@ public final class DefaultUserService implements UserService {
             save.setBirthDate(birthDate);
             save.setPassword(new BCryptPasswordEncoder().encode(password));
             save.setEmail(email);
+
+            var address = new PersistentAddressEntity();
+            address.setApartmentNumber(apartmentNumber);
+            address.setBuilding(building);
+            address.setCity(city);
+            address.setPostalCode(postalCode);
+            address.setStreet(street);
+            // FindById in country entity (Id = numericCode)
+            var countryOptional = countryRepository
+                    .findById(countryNumericCode);
+            if (countryOptional.isEmpty()) {
+                throw new UserServiceException(
+                        "Country with code: " + countryNumericCode
+                                + " not found."
+                );
+            }
+            var countryEntity = countryOptional.get();
+            address.setCountry(countryEntity);
+            var countryDivisionOptional = countrySubdivisionRepository
+                    .findByName(countrySubdivisionName);
+            if (countryDivisionOptional.isEmpty()) {
+                throw new UserServiceException(
+                        "Country subidivision with code: "
+                                + countrySubdivisionName + " not found."
+                );
+            }
+            address.setCountrySubdivision(countryDivisionOptional.get());
+            address.setUser(save);
+            save.setAddress(address);
 
             return userRepository.save(save);
         }

@@ -24,13 +24,15 @@
 
 package es.org.cxn.backapp.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 
 /**
- * Spring-JPA repository for {@link AddressCompanyEntity}.
+ * Spring-JPA repository for {@link PersistentCountrySubdivisionEntity}.
  * <p>
  * This is a simple repository just to allow the endpoints querying the
  * entities they are asked for.
@@ -38,7 +40,15 @@ import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
  * @author Santiago Paz Perez.
  */
 @Repository
-public interface AddressEntityRepository
-        extends JpaRepository<PersistentAddressEntity, Integer> {
+public interface CountrySubdivisionEntityRepository
+        extends JpaRepository<PersistentCountrySubdivisionEntity, Integer> {
+
+    /**
+     * Find entity with provided name.
+     *
+     * @param name the country subdivision name.
+     * @return Optional with provided name if founds.
+     */
+    Optional<PersistentCountrySubdivisionEntity> findByName(String name);
 
 }

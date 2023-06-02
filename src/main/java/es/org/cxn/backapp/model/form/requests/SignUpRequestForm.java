@@ -1,7 +1,5 @@
 package es.org.cxn.backapp.model.form.requests;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -10,10 +8,12 @@ import es.org.cxn.backapp.model.form.Constants;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 /**
- * Represents the form used by controller as input for the creating users.
+ * Represents the form used by controller as input for the creating users. This
+ * contains user data and user address.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -31,14 +31,13 @@ public class SignUpRequestForm implements Serializable {
     private static final long serialVersionUID = 9133529311075698110L;
 
     /**
-     * User dni field.
+     * User DNI field.
      * <p>
-     * Dni must not be null and must contain 9 numeric - character. lengh is
-     * DNI_MAX_LENGHT.
+     * DNI must not be null and must contain 8 numeric and 1 letter. Length is
+     * 9.
      */
-    @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
-    @Size(
-            max = Constants.MAX_DNI_LENGHT, message = Constants.DNI_MAX_LENGTH_MESSAGE
+    @Pattern(
+            regexp = "^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$", message = Constants.DNI_BAD_FORMAT_MESSAGE
     )
     private String dni;
 
@@ -46,7 +45,7 @@ public class SignUpRequestForm implements Serializable {
      * User name field.
      * <p>
      * Name must not be null and must contain at least one non-whitespace
-     * character. Max name lengh is NAME_MAX_LENGHT.
+     * character. Max name length is NAME_MAX_LENGHT.
      */
     @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
     @Size(
@@ -58,7 +57,7 @@ public class SignUpRequestForm implements Serializable {
      * User first surname field.
      * <p>
      * First surname must not be null and must contain at least one
-     * non-whitespace character. Max first surname lengh is
+     * non-whitespace character. Max first surname length is
      * FIRST_SURNAME_MAX_LENGHT.
      */
     @NotBlank(message = Constants.FIRST_SURNAME_NOT_BLANK_MESSAGE)
@@ -118,193 +117,222 @@ public class SignUpRequestForm implements Serializable {
      * Email must not be null and must contain at least PASSWORD_MIN_LENGTH
      * non-whitespace character. String well formated email.
      */
-    @NotBlank
-    @Email
+    @NotBlank(message = Constants.NOT_EMPTY_EMAIL_MESSAGE)
+    @Size(
+            max = Constants.EMAIL_MAX_SIZE, message = Constants.MAX_SIZE_EMAIL_MESSAGE
+    )
+    @Email(message = Constants.NOT_VALID_EMAIL_MESSAGE)
     private String email;
 
+    @NotBlank(message = Constants.POSTAL_CODE_NOT_BLANK_MESSAGE)
+    @Size(
+            max = Constants.POSTAL_CODE_MAX_LENGHT, message = Constants.POSTAL_CODE_MAX_LENGHT_MESSAGE
+    )
+    private String postalCode;
+
+    @NotBlank(message = Constants.APARTMENT_NUMBER_NOT_BLANK_MESSAGE)
+    @Size(
+            max = Constants.APARTMENT_NUMBER_MAX_LENGHT, message = Constants.APARTMENT_NUMBER_MAX_LENGHT_MESSAGE
+    )
+    private String apartmentNumber;
+
+    @NotBlank(message = Constants.BUILDING_NOT_BLANK_MESSAGE)
+    @Size(
+            max = Constants.BUILDING_MAX_LENGHT, message = Constants.BUILDING_MAX_LENGHT_MESSAGE
+    )
+    private String building;
+
+    @NotBlank(message = Constants.STREET_NOT_BLANK_MESSAGE)
+    @Size(
+            max = Constants.STREET_MAX_LENGHT, message = Constants.STREET_MAX_LENGHT_MESSAGE
+    )
+    private String street;
+
+    @NotBlank(message = Constants.CITY_NOT_BLANK_MESSAGE)
+    @Size(
+            max = Constants.CITY_MAX_LENGHT, message = Constants.CITY_MAX_LENGHT_MESSAGE
+    )
+    private String city;
+
+    private Integer countryNumericCode;
+
+    private String countrySubdivisionName;
+
     /**
-     * Constructs a DTO without data for fields.
+     *
      */
     public SignUpRequestForm() {
         super();
     }
 
     /**
-     * Constructs a DTO with all fields provided.
-     *
-     * @param dniValue           the dni field.
-     * @param nameValue          the name field.
-     * @param firstSurnameValue  the first surname field.
-     * @param secondSurnameValue the second surname field.
-     * @param birthDateValue     the birth date field.
-     * @param genderValue        the gender field.
-     * @param passwordValue      the password field.
-     * @param emailValue         the email field.
+     * @param dni
+     * @param name
+     * @param firstSurname
+     * @param secondSurname
+     * @param birthDate
+     * @param gender
+     * @param password
+     * @param email
+     * @param postalCode
+     * @param apartmentNumber
+     * @param building
+     * @param street
+     * @param city
+     * @param countryNumericCode
+     * @param countrySubdivisionName
      */
     public SignUpRequestForm(
-            final String dniValue, final String nameValue,
-            final String firstSurnameValue, final String secondSurnameValue,
-            final LocalDate birthDateValue, final String genderValue,
-            final String passwordValue, final String emailValue
+            String dni, String name, String firstSurname, String secondSurname,
+            LocalDate birthDate, String gender, String password, String email,
+            String postalCode, String apartmentNumber, String building,
+            String street, String city, Integer countryNumericCode,
+            String countrySubdivisionName
     ) {
         super();
-        this.dni = dniValue;
-        this.name = nameValue;
-        this.firstSurname = firstSurnameValue;
-        this.secondSurname = secondSurnameValue;
-        this.birthDate = birthDateValue;
-        this.gender = genderValue;
-        this.password = passwordValue;
-        this.email = emailValue;
+        this.dni = dni;
+        this.name = name;
+        this.firstSurname = firstSurname;
+        this.secondSurname = secondSurname;
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.password = password;
+        this.email = email;
+        this.postalCode = postalCode;
+        this.apartmentNumber = apartmentNumber;
+        this.building = building;
+        this.street = street;
+        this.city = city;
+        this.countryNumericCode = countryNumericCode;
+        this.countrySubdivisionName = countrySubdivisionName;
     }
 
     public String getDni() {
         return dni;
     }
 
-    /**
-     * Returns the value of the name field.
-     *
-     * @return the value of the name field.
-     */
-    public final String getName() {
+    public String getName() {
         return name;
     }
 
-    /**
-     * Returns the value of the first surname field.
-     *
-     * @return the value of the first surname field.
-     */
-    public final String getFirstSurname() {
+    public String getFirstSurname() {
         return firstSurname;
     }
 
-    /**
-     * Returns the value of the second surname field.
-     *
-     * @return the value of the second surname field.
-     */
-    public final String getSecondSurname() {
+    public String getSecondSurname() {
         return secondSurname;
     }
 
-    /**
-     * Returns the value of the birth date field.
-     *
-     * @return the value of the birth date field.
-     */
-    public final LocalDate getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    /**
-     * Returns the value of the gender field.
-     *
-     * @return the value of the gender field
-     */
-    public final String getGender() {
+    public String getGender() {
         return gender;
     }
 
-    /**
-     * Returns the value of the password field.
-     *
-     * @return the value of the password field.
-     */
-    public final String getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    /**
-     * Returns the value of the email field.
-     *
-     * @return the value of the email field.
-     */
-    public final String getEmail() {
+    public String getEmail() {
         return email;
+    }
+
+    public String getPostalCode() {
+        return postalCode;
+    }
+
+    public String getApartmentNumber() {
+        return apartmentNumber;
+    }
+
+    public String getBuilding() {
+        return building;
+    }
+
+    public String getStreet() {
+        return street;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public Integer getCountryNumericCode() {
+        return countryNumericCode;
+    }
+
+    public String getCountrySubdivisionName() {
+        return countrySubdivisionName;
     }
 
     public void setDni(String dni) {
         this.dni = dni;
     }
 
-    /**
-     * Sets the value of the name field.
-     *
-     * @param value the new value for the name field.
-     */
-    public final void setName(final String value) {
-        this.name = checkNotNull(value, "Received a null pointer as name");
+    public void setName(String name) {
+        this.name = name;
     }
 
-    /**
-     * Sets the value of the first surname field.
-     *
-     * @param value the new value for the first surname field
-     */
-    public final void setFirstSurname(final String value) {
-        this.firstSurname = checkNotNull(
-                value, "Received a null pointer as first surname"
-        );
+    public void setFirstSurname(String firstSurname) {
+        this.firstSurname = firstSurname;
     }
 
-    /**
-     * Sets the value of the second surname field.
-     *
-     * @param value the new value for the second surname field.
-     */
-    public final void setSecondSurname(final String value) {
-        this.secondSurname = checkNotNull(
-                value, "Received a null pointer as second surname"
-        );
+    public void setSecondSurname(String secondSurname) {
+        this.secondSurname = secondSurname;
     }
 
-    /**
-     * Sets the value of the birth date field.
-     *
-     * @param value the new value for the birth date field
-     */
-    public final void setBirthDate(final LocalDate value) {
-        this.birthDate = checkNotNull(
-                value, "Received a null pointer as birth_date"
-        );
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
-    /**
-     * Sets the value of the gender field.
-     *
-     * @param value the new value for the gender field.
-     */
-    public final void setGender(final String value) {
-        this.gender = checkNotNull(value, "Received a null pointer as gender");
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    /**
-     * Sets the value of the password field.
-     *
-     * @param value the new value for the password field.
-     */
-    public final void setPassword(final String value) {
-        this.password = checkNotNull(
-                value, "Received a null pointer as password"
-        );
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    /**
-     * Sets the value of the email field.
-     *
-     * @param value the new value for the email field.
-     */
-    public final void setEmail(final String value) {
-        this.email = checkNotNull(value, "Received a null pointer as email");
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public void setApartmentNumber(String apartmentNumber) {
+        this.apartmentNumber = apartmentNumber;
+    }
+
+    public void setBuilding(String building) {
+        this.building = building;
+    }
+
+    public void setStreet(String street) {
+        this.street = street;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setCountryNumericCode(Integer countryNumericCode) {
+        this.countryNumericCode = countryNumericCode;
+    }
+
+    public void setCountrySubdivisionName(String countrySubdivisionName) {
+        this.countrySubdivisionName = countrySubdivisionName;
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-                birthDate, dni, email, firstSurname, gender, name, password,
-                secondSurname
+                apartmentNumber, birthDate, building, city, countryNumericCode,
+                countrySubdivisionName, dni, email, firstSurname, gender, name,
+                password, postalCode, secondSurname, street
         );
     }
 
@@ -320,14 +348,22 @@ public class SignUpRequestForm implements Serializable {
             return false;
         }
         var other = (SignUpRequestForm) obj;
-        return Objects.equals(birthDate, other.birthDate)
-                && Objects.equals(dni, other.dni)
+        return Objects.equals(apartmentNumber, other.apartmentNumber)
+                && Objects.equals(birthDate, other.birthDate)
+                && Objects.equals(building, other.building)
+                && Objects.equals(city, other.city)
+                && Objects.equals(countryNumericCode, other.countryNumericCode)
+                && Objects.equals(
+                        countrySubdivisionName, other.countrySubdivisionName
+                ) && Objects.equals(dni, other.dni)
                 && Objects.equals(email, other.email)
                 && Objects.equals(firstSurname, other.firstSurname)
                 && Objects.equals(gender, other.gender)
                 && Objects.equals(name, other.name)
                 && Objects.equals(password, other.password)
-                && Objects.equals(secondSurname, other.secondSurname);
+                && Objects.equals(postalCode, other.postalCode)
+                && Objects.equals(secondSurname, other.secondSurname)
+                && Objects.equals(street, other.street);
     }
 
     @Override
@@ -335,7 +371,12 @@ public class SignUpRequestForm implements Serializable {
         return "SignUpRequestForm [dni=" + dni + ", name=" + name
                 + ", firstSurname=" + firstSurname + ", secondSurname="
                 + secondSurname + ", birthDate=" + birthDate + ", gender="
-                + gender + ", password=" + password + ", email=" + email + "]";
+                + gender + ", password=" + password + ", email=" + email
+                + ", postalCode=" + postalCode + ", apartmentNumber="
+                + apartmentNumber + ", building=" + building + ", street="
+                + street + ", city=" + city + ", countryNumericCode="
+                + countryNumericCode + ", countrySubdivisionName="
+                + countrySubdivisionName + "]";
     }
 
 }

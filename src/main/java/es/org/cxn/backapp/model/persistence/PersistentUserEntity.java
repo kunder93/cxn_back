@@ -153,8 +153,9 @@ public class PersistentUserEntity implements UserEntity {
     /**
      * The user address.
      */
-    @OneToOne
-    @JoinColumn(name = "user_dni")
+    @OneToOne(
+            mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true
+    )
     private PersistentAddressEntity address;
 
     @Override
