@@ -1,11 +1,13 @@
+
 package es.org.cxn.backapp.model.form.requests;
+
+import es.org.cxn.backapp.model.form.Constants;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.util.Objects;
-
-import es.org.cxn.backapp.model.form.Constants;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
 /**
  * Represents the form used by controller as request of create company.
@@ -18,162 +20,135 @@ import jakarta.validation.constraints.Size;
  *
  * @author Santiago Paz.
  */
-public class CreateCompanyRequestForm implements Serializable {
+public final class CreateCompanyRequestForm implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3133389822212147705L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3133389822212147705L;
 
-    /**
-     * The company nif or cif.
-     */
-    private String nifCif;
+  /**
+   * The company nif.
+   */
+  private String nif;
 
-    /**
-     * The company name.
-     */
-    @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
-    @Size(
-            max = Constants.NAME_MAX_LENGTH, message = Constants.NAME_MAX_LENGTH_MESSAGE
-    )
-    private String name;
+  /**
+   * The company name.
+   */
+  @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
+  @Size(
+        max = Constants.NAME_MAX_LENGTH,
+        message = Constants.NAME_MAX_LENGTH_MESSAGE
+  )
+  private String name;
 
-    /**
-     * The company identity tax number.
-     */
-    private String identityTaxNumber;
+  /**
+   * The company address.
+   */
+  private String address;
 
-    /**
-     * The company address.
-     */
-    private String address;
+  /**
+   * Main arguments constructor.
+   *
+   * @param nif     the company nif.
+   * @param name    the company name.
+   * @param address the company address.
+   */
+  public CreateCompanyRequestForm(
+        final String nif, final String name, final String address
+  ) {
+    super();
+    this.nif = nif;
+    this.name = name;
+    this.address = address;
+  }
 
-    /**
-     * Main arguments constructor.
-     *
-     * @param nifCif            the company nif or cif.
-     * @param name              the company name.
-     * @param identityTaxNumber the company identity tax number.
-     * @param address           the company address
-     */
-    public CreateCompanyRequestForm(
-            String nifCif, String name, String identityTaxNumber, String address
-    ) {
-        super();
-        this.nifCif = nifCif;
-        this.name = name;
-        this.identityTaxNumber = identityTaxNumber;
-        this.address = address;
+  /**
+   * Main empty constructor.
+   */
+  public CreateCompanyRequestForm() {
+    super();
+  }
+
+  /**
+   * Get company nif.
+   *
+   * @return the company nif.
+   */
+  public String getNif() {
+    return nif;
+  }
+
+  /**
+   * Set company nif.
+   *
+   * @param value The company nif.
+   */
+  public void setNifCif(final String value) {
+    this.nif = value;
+  }
+
+  /**
+   * Get company name.
+   *
+   * @return The company name.
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * Set request company name.
+   *
+   * @param value The request company name.
+   */
+  public void setName(final String value) {
+    this.name = value;
+  }
+
+  /**
+   * Get request company address.
+   *
+   * @return The company address.
+   */
+  public String getAddress() {
+    return address;
+  }
+
+  /**
+   * Set request company address.
+   *
+   * @param value The company address.
+   */
+  public void setAddress(final String value) {
+    this.address = value;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(address, name, nif);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    /**
-     * Main empty constructor.
-     */
-    public CreateCompanyRequestForm() {
-        super();
+    if (obj == null) {
+      return false;
     }
-
-    /**
-     * Get company cif or nif.
-     *
-     * @return the company cif or nif.
-     */
-    public String getNifCif() {
-        return nifCif;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
+    var other = (CreateCompanyRequestForm) obj;
+    return Objects.equals(address, other.address)
+          && Objects.equals(name, other.name) && Objects.equals(nif, other.nif);
+  }
 
-    /**
-     * Set company cif or nif.
-     *
-     * @param value The company cif or nif.
-     */
-    public void setNifCif(String value) {
-        this.nifCif = value;
-    }
-
-    /**
-     * Get company name.
-     *
-     * @return The company name.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Set request company name.
-     *
-     * @param value The request company name.
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
-
-    /**
-     * Get request company identity tax number.
-     *
-     * @return The company identity tax number.
-     */
-    public String getIdentityTaxNumber() {
-        return identityTaxNumber;
-    }
-
-    /**
-     * Set request company identity tax number.
-     *
-     * @param value The company identity tax number.
-     */
-    public void setIdentityTaxNumber(String value) {
-        this.identityTaxNumber = value;
-    }
-
-    /**
-     * Get request company address.
-     *
-     * @return The company address.
-     */
-    public String getAddress() {
-        return address;
-    }
-
-    /**
-     * Set request company address.
-     *
-     * @param value The company address.
-     */
-    public void setAddress(String value) {
-        this.address = value;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(address, identityTaxNumber, name, nifCif);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        var other = (CreateCompanyRequestForm) obj;
-        return Objects.equals(address, other.address)
-                && Objects.equals(identityTaxNumber, other.identityTaxNumber)
-                && Objects.equals(name, other.name)
-                && Objects.equals(nifCif, other.nifCif);
-    }
-
-    @Override
-    public String toString() {
-        return "CreateCompanyRequestForm [nifCif=" + nifCif + ", name=" + name
-                + ", identityTaxNumber=" + identityTaxNumber + ", address="
-                + address + "]";
-    }
+  @Override
+  public String toString() {
+    return "CreateCompanyRequestForm [nif=" + nif + ", name=" + name
+          + ", address=" + address + "]";
+  }
 
 }

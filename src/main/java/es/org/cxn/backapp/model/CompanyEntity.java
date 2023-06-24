@@ -4,10 +4,10 @@
  * Copyright (c) 2021 the original author or authors.
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  * <p>
  * The above copyright notice and this permission notice shall be included in
@@ -17,9 +17,9 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package es.org.cxn.backapp.model;
@@ -36,90 +36,90 @@ import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
  */
 public interface CompanyEntity extends Serializable {
 
-    /**
-     * Returns the identifier as nif assigned to this company entity.
-     *
-     * @return the company entity's identifier.
-     */
-    String getNif();
+  /**
+   * Returns the identifier as nif assigned to this company entity.
+   *
+   * @return the company entity's identifier.
+   */
+  String getNif();
 
-    /**
-     * Returns the name of the company.
-     *
-     * @return the company entity's number.
-     */
-    String getName();
+  /**
+   * Returns the name of the company.
+   *
+   * @return the company entity's number.
+   */
+  String getName();
 
-    /**
-     * Get the company address.
-     *
-     * @return the company address.
-     */
-    String getAddress();
+  /**
+   * Get the company address.
+   *
+   * @return the company address.
+   */
+  String getAddress();
 
-    /**
-     * Sets the identifier assigned to this company entity.
-     *
-     * @param value the identifier nif for the company entity.
-     */
-    void setNif(String value);
+  /**
+   * Sets the identifier assigned to this company entity.
+   *
+   * @param value the identifier nif for the company entity.
+   */
+  void setNif(String value);
 
-    /**
-     * Changes the name of the company entity.
-     *
-     * @param value the name to set on the company entity.
-     */
-    void setName(String value);
+  /**
+   * Changes the name of the company entity.
+   *
+   * @param value the name to set on the company entity.
+   */
+  void setName(String value);
 
-    /**
-     * Changes the company address.
-     *
-     * @param value the new company address.
-     */
-    void setAddress(String value);
+  /**
+   * Changes the company address.
+   *
+   * @param value the new company address.
+   */
+  void setAddress(String value);
 
-    /**
-     * Get list of invoices identifiers where this company is Buyer.
-     *
-     * @return Companies identifiers list.
-     */
-    List<Integer> getInvoicesAsBuyer();
+  /**
+   * Get list of invoices identifiers where this company is Buyer.
+   *
+   * @return Companies identifiers list.
+   */
+  List<Integer> getInvoicesAsBuyer();
 
-    /**
-     * Add invoices where company is buyer.
-     *
-     * @param value The invoice to add.
-     */
-    void addInvoicesAsBuyer(PersistentInvoiceEntity value);
+  /**
+   * Add invoices where company is buyer.
+   *
+   * @param value The invoice to add.
+   */
+  void addInvoicesAsBuyer(PersistentInvoiceEntity value);
 
-    /**
-     * Add invoices where company is seller.
-     *
-     * @param value The invoice to add.
-     */
-    void addInvoicesAsSeller(PersistentInvoiceEntity value);
+  /**
+   * Add invoices where company is seller.
+   *
+   * @param value The invoice to add.
+   */
+  void addInvoicesAsSeller(PersistentInvoiceEntity value);
 
-    /**
-     * Remove invoice from company's invoice buyer list.
-     *
-     * @param value The invoice for remove.
-     * @return True if remove false if not.
-     */
-    boolean removeInvoiceAsBuyer(PersistentInvoiceEntity value);
+  /**
+   * Remove invoice from company's invoice buyer list.
+   *
+   * @param value The invoice for remove.
+   * @return True if remove false if not.
+   */
+  boolean removeInvoiceAsBuyer(PersistentInvoiceEntity value);
 
-    /**
-     * Remove invoice from company's invoice seller list.
-     *
-     * @param value The invoice for remove.
-     * @return True if remove false if not.
-     */
-    boolean removeInvoiceAsSeller(PersistentInvoiceEntity value);
+  /**
+   * Remove invoice from company's invoice seller list.
+   *
+   * @param value The invoice for remove.
+   * @return True if remove false if not.
+   */
+  boolean removeInvoiceAsSeller(PersistentInvoiceEntity value);
 
-    /**
-     * Get invoices where company is seller.
-     *
-     * @return List with invoices identifiers.
-     */
-    List<Integer> getInvoicesAsSeller();
+  /**
+   * Get invoices where company is seller.
+   *
+   * @return List with invoices identifiers.
+   */
+  List<Integer> getInvoicesAsSeller();
 
 }

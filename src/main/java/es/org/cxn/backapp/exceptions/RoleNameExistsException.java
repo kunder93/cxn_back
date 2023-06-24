@@ -1,3 +1,4 @@
+
 package es.org.cxn.backapp.exceptions;
 
 /**
@@ -9,38 +10,38 @@ package es.org.cxn.backapp.exceptions;
  */
 public final class RoleNameExistsException extends Exception {
 
-    /**
-     * Serial UID.
-     */
-    private static final long serialVersionUID = 204929958575646602L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = 204929958575646602L;
 
-    /**
-     * The role name field.
-     */
-    private final String roleName;
+  /**
+   * The role name field.
+   */
+  private final String roleName;
 
-    /**
-     * Main constructor.
-     *
-     * @param value the role name.
-     */
-    public RoleNameExistsException(final String value) {
-        super(value);
-        this.roleName = value;
-    }
+  /**
+   * Main constructor.
+   *
+   * @param value the role name.
+   */
+  public RoleNameExistsException(final String value) {
+    super(value);
+    this.roleName = value;
+  }
 
-    /**
-     * Getter for roleName field.
-     *
-     * @return the role name.
-     */
-    public String getRoleName() {
-        return roleName;
-    }
+  /**
+   * Getter for roleName field.
+   *
+   * @return the role name.
+   */
+  public String getRoleName() {
+    return roleName;
+  }
 
-    @Override
-    public String getMessage() {
-        return "Role name: " + roleName + " already exists";
-    }
+  @Override
+  public String getMessage() {
+    return "Role name: " + roleName + " already exists";
+  }
 
 }

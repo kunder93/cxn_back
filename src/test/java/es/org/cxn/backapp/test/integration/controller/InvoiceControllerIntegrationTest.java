@@ -90,12 +90,10 @@ class InvoiceControllerIntegrationTest {
     @BeforeAll
     static void setup() {
         var createCompanyARequest = new CreateCompanyRequestForm(
-                COMPANY_A_NIFCIF, COMPANY_A_NAME, COMPANY_A_IDTAXNUMBER,
-                COMPANY_A_ADDRESS
+                COMPANY_A_NIFCIF, COMPANY_A_NAME, COMPANY_A_ADDRESS
         );
         var createCompanyBRequest = new CreateCompanyRequestForm(
-                COMPANY_B_NIFCIF, COMPANY_B_NAME, COMPANY_B_IDTAXNUMBER,
-                COMPANY_B_ADDRESS
+                COMPANY_B_NIFCIF, COMPANY_B_NAME, COMPANY_B_ADDRESS
         );
         createCompanyARequestJson = new Gson().toJson(createCompanyARequest);
         createCompanyBRequestJson = new Gson().toJson(createCompanyBRequest);

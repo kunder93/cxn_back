@@ -8,18 +8,18 @@ package es.org.cxn.backapp.exceptions;
  */
 public final class PaymentSheetServiceException extends Exception {
 
-    /**
-     * Serial UID.
-     */
-    private static final long serialVersionUID = 4622634511128213252L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = 4622634511128213252L;
 
-    /**
-     * Main constructor.
-     *
-     * @param value exception message.
-     */
-    public PaymentSheetServiceException(final String value) {
-        super(value);
-    }
+  /**
+   * Main constructor.
+   *
+   * @param value exception message.
+   */
+  public PaymentSheetServiceException(final String value) {
+    super(value);
+  }
 
 }

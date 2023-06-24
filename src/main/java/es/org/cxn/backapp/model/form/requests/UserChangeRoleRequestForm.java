@@ -1,16 +1,15 @@
+
 package es.org.cxn.backapp.model.form.requests;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import jakarta.validation.constraints.NotEmpty;
+
 import java.io.Serializable;
 import java.util.Objects;
 
-import jakarta.validation.constraints.NotEmpty;
-
 /**
  * Represents the form request used for add or remove roles from user.
- * {@link es.org.cxn.backapp.controller.entity.RoleController#addRoleToUser(UserChangeRoleRequestForm)}
- * {@link es.org.cxn.backapp.controller.entity.RoleController#deleteRoleFromUser(UserChangeRoleRequestForm)}
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -20,121 +19,120 @@ import jakarta.validation.constraints.NotEmpty;
  *
  * @author Santiago Paz Perez.
  */
-public class UserChangeRoleRequestForm implements Serializable {
+public final class UserChangeRoleRequestForm implements Serializable {
 
-    /**
-     * Serial UID.
-     */
-    private static final long serialVersionUID = 726911880297432628L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = 726911880297432628L;
 
-    /**
-     * Name field.
-     * <p>
-     * This is a required field and can't be empty.
-     */
-    @NotEmpty
-    private String userEmail;
+  /**
+   * Name field.
+   * <p>
+   * This is a required field and can't be empty.
+   */
+  @NotEmpty
+  private String userEmail;
 
-    /**
-     * User role name field.
-     */
-    @NotEmpty
-    private String roleName;
+  /**
+   * User role name field.
+   */
+  @NotEmpty
+  private String roleName;
 
-    /**
-     * Constructs a DTO with no data.
-     */
-    public UserChangeRoleRequestForm() {
-        super();
+  /**
+   * Constructs a DTO with no data.
+   */
+  public UserChangeRoleRequestForm() {
+    super();
+  }
+
+  /**
+   * Constructs a DTO with all data.
+   *
+   * @param email         the userEmail field.
+   * @param roleNameValue the roleName field.
+   */
+  public UserChangeRoleRequestForm(
+        final String email, final String roleNameValue
+  ) {
+    super();
+    this.userEmail = email;
+    this.roleName = roleNameValue;
+
+  }
+
+  /**
+   * Returns the value of the userEmail field.
+   *
+   * @return the value of the userEmail field.
+   */
+  public String getUserEmail() {
+    return userEmail;
+  }
+
+  /**
+   * Returns the value of the roleName field.
+   *
+   * @return the value of the roleName field.
+   */
+  public String getRoleName() {
+    return roleName;
+  }
+
+  /**
+   * Sets the value of the userEmail field.
+   *
+   * @param value the new value for the userEmail field.
+   */
+  public void setUserEmail(final String value) {
+    this.userEmail = checkNotNull(value, "Received a null pointer as name");
+  }
+
+  /**
+   * Sets the value of the roleName field.
+   *
+   * @param value the new value for the roleName field.
+   */
+  public void setRoleName(final String value) {
+    this.roleName =
+          checkNotNull(value, "Received a null pointer as first surname");
+  }
+
+  /**
+   * The hash code method.
+   */
+  @Override
+  public int hashCode() {
+    return Objects.hash(roleName, userEmail);
+  }
+
+  /**
+   * The equals method.
+   */
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    /**
-     * Constructs a DTO with all data.
-     *
-     * @param email         the userEmail field.
-     * @param roleNameValue the roleName field.
-     */
-    public UserChangeRoleRequestForm(
-            final String email, final String roleNameValue
-    ) {
-        super();
-        this.userEmail = email;
-        this.roleName = roleNameValue;
-
+    if (obj == null) {
+      return false;
     }
-
-    /**
-     * Returns the value of the userEmail field.
-     *
-     * @return the value of the userEmail field.
-     */
-    public final String getUserEmail() {
-        return userEmail;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
+    var other = (UserChangeRoleRequestForm) obj;
+    return Objects.equals(roleName, other.roleName)
+          && Objects.equals(userEmail, other.userEmail);
+  }
 
-    /**
-     * Returns the value of the roleName field.
-     *
-     * @return the value of the roleName field.
-     */
-    public final String getRoleName() {
-        return roleName;
-    }
-
-    /**
-     * Sets the value of the userEmail field.
-     *
-     * @param value the new value for the userEmail field.
-     */
-    public final void setUserEmail(final String value) {
-        this.userEmail = checkNotNull(value, "Received a null pointer as name");
-    }
-
-    /**
-     * Sets the value of the roleName field.
-     *
-     * @param value the new value for the roleName field.
-     */
-    public final void setRoleName(final String value) {
-        this.roleName = checkNotNull(
-                value, "Received a null pointer as first surname"
-        );
-    }
-
-    /**
-     * The hash code method.
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(roleName, userEmail);
-    }
-
-    /**
-     * The equals method.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        var other = (UserChangeRoleRequestForm) obj;
-        return Objects.equals(roleName, other.roleName)
-                && Objects.equals(userEmail, other.userEmail);
-    }
-
-    /**
-     * The to string method.
-     */
-    @Override
-    public String toString() {
-        return "UserChangeRoleRequestForm [userEmail=" + userEmail
-                + ", roleName=" + roleName + "]";
-    }
+  /**
+   * The to string method.
+   */
+  @Override
+  public String toString() {
+    return "UserChangeRoleRequestForm [userEmail=" + userEmail + ", roleName="
+          + roleName + "]";
+  }
 
 }

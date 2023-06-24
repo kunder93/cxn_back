@@ -639,3 +639,237 @@ INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_nume
 VALUES ('Tiranë','countie', 'AL-11', '008');
 INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
 VALUES ('Vlorë','countie', 'AL-12', '008');
+
+
+-- ARMENIA --
+
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Yerevan','city', 'AM-ER', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Aragatsotn','region', 'AM-AG', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Ararat','region', 'AM-AR', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Armavir','region', 'AM-AV', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Gegharkunik','region', 'AM-GR', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Kotayk','region', 'AM-KT', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Lori','region', 'AM-LO', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Shirak','region', 'AM-SH', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Syunik','region', 'AM-SU', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Tavush','region', 'AM-TV', '051');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Vayots Dzor','region', 'AM-VD', '051');
+
+-- ARGENTINA --
+
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Ciudad Autónoma de Buenos Aires','city', 'AR-C', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Buenos Aires','province', 'AR-B', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Catamarca','province', 'AR-K', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Chaco','province', 'AR-H', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Chubut','province', 'AR-U', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Córdoba','province', 'AR-X', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Corrientes','province', 'AR-W', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Entre Ríos','province', 'AR-E', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Formosa','province', 'AR-P', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Jujuy','province', 'AR-Y', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('La Pampa','province', 'AR-L', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('La Rioja','province', 'AR-F', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Mendoza','province', 'AR-M', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Misiones','province', 'AR-N', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Neuquén','province', 'AR-Q', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Río Negro','province', 'AR-R', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Salta','province', 'AR-A', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('San Juan','province', 'AR-J', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('San Luis','province', 'AR-D', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Santa Cruz','province', 'AR-Z', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Santa Fe','province', 'AR-S', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Santiago del Estero','province', 'AR-G', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Tierra del Fuego','province', 'AR-V', '032');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Tucumán','province', 'AR-T', '032');
+
+-- AUSTRIA --
+
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Burgenland','state', 'AT-1', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Carinthia','state', 'AT-2', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Lower Austria ','state', 'AT-3', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Upper Austria ','state', 'AT-4', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Salzburg','state', 'AT-5', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Styria','state', 'AT-6', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Tyrol','state', 'AT-7', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Vorarlberg','state', 'AT-8', '040');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Vienna','state', 'AT-9', '040');
+
+-- AUSTRALIA --
+
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('New South Wales','state', 'AU-NSW', '036');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Queensland','state', 'AU-QLD', '036');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('South Australia','state', 'AU-SA', '036');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Tasmania','state', 'AU-TAS', '036');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Victoria','state', 'AU-VIC', '036');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Western Australia','state', 'AU-WA', '036');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Australian Capital Territory','territory', 'AU-ACT', '036');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Northern Territory','territory', 'AU-NT', '036');
+
+-- VIETNAM -- 
+
+-- SOUTH AFRICA --
+
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Eastern Cape','province', 'ZA-EC', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Free State','province', 'ZA-FS', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Gauteng','province', 'ZA-GP', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Kwazulu-Natal','province', 'ZA-KZN', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Limpopo','province', 'ZA-LP', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Mpumalanga','province', 'ZA-MP', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('North-West','province', 'ZA-NW', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Northern Cape','province', 'ZA-NC', '710');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Western Cape','province', 'ZA-WC', '710');
+
+-- VANUATU -- 
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Malampa','province', 'VU-MAP', '548');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Pénama','province', 'VU-PAM', '548');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Sanma','province', 'VU-SAM', '548');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Shéfa','province', 'VU-SEE', '548');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Taféa','province', 'VU-TAE', '548');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Torba','province', 'VU-', '548');
+
+--  Wallis and Futuna --
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Alo','chiefdom', 'WF-AL', '876');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Sigave','chiefdom', 'WF-SG', '876');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Uvea','chiefdom', 'WF-UV', '876');
+
+-- SAMOA -- 
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('A''ana','district', 'WS-AA', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Aiga-i-le-Tai','district', 'WS-AL', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Atua','district', 'WS-AT', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Fa''asaleleaga','district', 'WS-FA', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Gaga''emauga','district', 'WS-GE', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Gagaifomauga','district', 'WS-GI', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Palauli','district', 'WS-PA', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Satupa''itea','district', 'WS-SA', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Tuamasaga','district', 'WS-TU', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Va''a-o-Fonoti','district', 'WS-VF', '016');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Vaisigano','district', 'WS-VS', '016');
+
+-- ZAMBIA --
+
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Central','province', 'ZM-02', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Copperbelt','province', 'ZM-08', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Eastern','province', 'ZM-03', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Luapula','province', 'ZM-04', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('   Lusaka','province', 'ZM-09', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Muchinga','province', 'ZM-10', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('North-Western','province', 'ZM-06', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Northern','province', 'ZM-05', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Southern','province', 'ZM-07', '894');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Western','province', 'ZM-01', '894');
+
+-- ZIMBABWE --
+
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Bulawayo','province', 'ZW-BU', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Harare','province', 'ZW-HA', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Manicaland','province', 'ZW-MA', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Mashonaland Central','province', 'ZW-MC', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Mashonaland East','province', 'ZW-ME', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Mashonaland West','province', 'ZW-MW', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Masvingo','province', 'ZW-MV', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Matabeleland North','province', 'ZW-MN', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Matabeleland South','province', 'ZW-MS', '716');
+INSERT INTO country_subdivision (name, kind_subdivision_name, code, country_numeric_code)
+VALUES ('Midlands','province', 'ZW-MI', '716');
+
+

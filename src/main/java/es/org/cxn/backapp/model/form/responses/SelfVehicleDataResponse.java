@@ -1,3 +1,4 @@
+
 package es.org.cxn.backapp.model.form.responses;
 
 import java.io.Serializable;
@@ -14,97 +15,120 @@ import java.util.Objects;
  *
  * @author Santiago Paz.
  */
-public class SelfVehicleDataResponse implements Serializable {
+public final class SelfVehicleDataResponse implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3110389922215947999L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3110389922215947999L;
 
-    /**
-     * The regular transport Category
-     */
-    private String places;
-    /**
-     * The regular transport description.
-     */
-    private float distance;
+  /**
+   * The regular transport Category.
+   */
+  private String places;
+  /**
+   * The regular transport description.
+   */
+  private float distance;
 
-    private double kmPrice;
+  /**
+   * The regular transport price per kilometer.
+   */
+  private double kmPrice;
 
-    /**
-     * Main empty constructor.
-     */
-    public SelfVehicleDataResponse() {
-        super();
+  /**
+   * Main empty constructor.
+   */
+  public SelfVehicleDataResponse() {
+    super();
+  }
+
+  /**
+   * Constructor.
+   *
+   * @param places   The places.
+   * @param distance The distance.
+   * @param kmPrice  The price per kilometer.
+   */
+  public SelfVehicleDataResponse(
+        final String places, final float distance, final double kmPrice
+  ) {
+    super();
+    this.places = places;
+    this.distance = distance;
+    this.kmPrice = kmPrice;
+  }
+
+  /**
+   * @return The places.
+   */
+  public String getPlaces() {
+    return places;
+  }
+
+  /**
+   * @return The distance.
+   */
+  public float getDistance() {
+    return distance;
+  }
+
+  /**
+   * @return The price per kilometer.
+   */
+  public double getKmPrice() {
+    return kmPrice;
+  }
+
+  /**
+   * @param places The places.
+   */
+  public void setPlaces(final String places) {
+    this.places = places;
+  }
+
+  /**
+   * @param distance The distance.
+   */
+  public void setDistance(final float distance) {
+    this.distance = distance;
+  }
+
+  /**
+   * @param kmPrice The price per kilometer.
+   */
+  public void setKmPrice(final double kmPrice) {
+    this.kmPrice = kmPrice;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(distance, kmPrice, places);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    /**
-     * @param places
-     * @param distance
-     * @param kmPrice
-     */
-    public SelfVehicleDataResponse(
-            String places, float distance, double kmPrice
-    ) {
-        super();
-        this.places = places;
-        this.distance = distance;
-        this.kmPrice = kmPrice;
+    if (obj == null) {
+      return false;
     }
-
-    public String getPlaces() {
-        return places;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
+    var other = (SelfVehicleDataResponse) obj;
+    return Double.doubleToLongBits(distance) == Double
+          .doubleToLongBits(other.distance)
+          && Double.doubleToLongBits(kmPrice) == Double
+                .doubleToLongBits(other.kmPrice)
+          && Objects.equals(places, other.places);
+  }
 
-    public float getDistance() {
-        return distance;
-    }
-
-    public double getKmPrice() {
-        return kmPrice;
-    }
-
-    public void setPlaces(String places) {
-        this.places = places;
-    }
-
-    public void setDistance(float distance) {
-        this.distance = distance;
-    }
-
-    public void setKmPrice(double kmPrice) {
-        this.kmPrice = kmPrice;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(distance, kmPrice, places);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        var other = (SelfVehicleDataResponse) obj;
-        return Double.doubleToLongBits(distance) == Double
-                .doubleToLongBits(other.distance)
-                && Double.doubleToLongBits(kmPrice) == Double
-                        .doubleToLongBits(other.kmPrice)
-                && Objects.equals(places, other.places);
-    }
-
-    @Override
-    public String toString() {
-        return "SelfVehicleDataResponse [places=" + places + ", distance="
-                + distance + ", kmPrice=" + kmPrice + "]";
-    }
+  @Override
+  public String toString() {
+    return "SelfVehicleDataResponse [places=" + places + ", distance="
+          + distance + ", kmPrice=" + kmPrice + "]";
+  }
 
 }

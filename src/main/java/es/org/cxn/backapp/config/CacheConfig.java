@@ -14,11 +14,11 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CacheConfig {
 
-    /**
-     * Main empty constructor.
-     */
-    public CacheConfig() {
-        super();
-    }
+  /**
+   * Main empty constructor.
+   */
+  public CacheConfig() {
+    super();
+  }
 
 }

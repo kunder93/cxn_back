@@ -1,13 +1,14 @@
+
 package es.org.cxn.backapp.model.form.responses;
+
+import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
-
 /**
- * Represents the form used by controller as response for requesting one
- * invoice.
+ * Represents the form used by controller as response for requesting one payment
+ * sheet.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -17,171 +18,488 @@ import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
  *
  * @author Santiago Paz.
  */
-public class PaymentSheetResponse implements Serializable {
+public final class PaymentSheetResponse implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3183089459011952705L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3183089459011952705L;
 
-    private Integer paymentSheetIdentifier;
-    private String userName;
-    private String userFirstSurname;
-    private String userSecondSurname;
-    private String userDNI;
-    private String userDomicile;
-    private String reason;
-    private String place;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private SelfVehicleDataResponse selfVehicle;
-    private FoodHousingDataResponse foodHousing;
-    private RegularTransportListResponse regularTransportList = new RegularTransportListResponse();
+  /**
+   * The payment sheet identifier.
+   */
+  private Integer paymentSheetIdentifier;
+  /**
+   * Payment sheet owner user name.
+   */
+  private String userName;
+  /**
+   * Payment sheet owner user first surname.
+   */
+  private String userFirstSurname;
+  /**
+   * Payment sheet owner user second surname.
+   */
+  private String userSecondSurname;
+  /**
+   * Payment sheet owner user DNI.
+   */
+  private String userDNI;
+  /**
+   * Payment sheet event reason.
+   */
+  private String reason;
+  /**
+   * Payment sheet event place.
+   */
+  private String place;
+  /**
+   * Payment sheet event start date.
+   */
+  private LocalDate startDate;
+  /**
+   * Payment sheet event end date.
+   */
+  private LocalDate endDate;
+  /**
+   * Self vehicle data.
+   */
+  private SelfVehicleDataResponse selfVehicle;
+  /**
+   * Food housing data.
+   */
+  private FoodHousingDataResponse foodHousing;
+  /**
+   * Regular transport list.
+   */
+  private RegularTransportListResponse regularTransportList =
+        new RegularTransportListResponse();
+  /**
+   * User address postal code.
+   */
+  private String postalCode;
+  /**
+   * User address apartment number.
+   */
+  private String apartmentNumber;
+  /**
+   * User address building.
+   */
+  private String building;
+  /**
+   * User address street.
+   */
+  private String street;
+  /**
+   * User address city.
+   */
+  private String city;
+  /**
+   * User address country name.
+   */
+  private String countryName;
+  /**
+   * User address country subdivision name.
+   */
+  private String countrySubdivisionName;
 
-    /**
-     * Main empty constructor.
-     */
-    public PaymentSheetResponse() {
-        super();
+  /**
+   * Main empty constructor.
+   */
+  public PaymentSheetResponse() {
+    super();
+  }
+
+  /**
+   * Constructor with Payment sheet entity.
+   *
+   * @param paymentSheetEntity The payment sheet entity.
+   */
+  public PaymentSheetResponse(
+        final PersistentPaymentSheetEntity paymentSheetEntity
+  ) {
+    super();
+    this.paymentSheetIdentifier = paymentSheetEntity.getId();
+    this.userName = paymentSheetEntity.getUserOwner().getName();
+    this.userFirstSurname = paymentSheetEntity.getUserOwner().getFirstSurname();
+    this.userSecondSurname =
+          paymentSheetEntity.getUserOwner().getSecondSurname();
+    this.userDNI = paymentSheetEntity.getUserOwner().getDni();
+    this.reason = paymentSheetEntity.getReason();
+    this.place = paymentSheetEntity.getPlace();
+    this.startDate = paymentSheetEntity.getStartDate();
+    this.endDate = paymentSheetEntity.getEndDate();
+    this.postalCode =
+          paymentSheetEntity.getUserOwner().getAddress().getPostalCode();
+    this.apartmentNumber =
+          paymentSheetEntity.getUserOwner().getAddress().getApartmentNumber();
+    this.building =
+          paymentSheetEntity.getUserOwner().getAddress().getBuilding();
+    this.street = paymentSheetEntity.getUserOwner().getAddress().getStreet();
+    this.city = paymentSheetEntity.getUserOwner().getAddress().getCity();
+    this.countryName = paymentSheetEntity.getUserOwner().getAddress()
+          .getCountry().getShortName();
+    this.countrySubdivisionName = paymentSheetEntity.getUserOwner().getAddress()
+          .getCountrySubdivision().getName();
+    if (paymentSheetEntity.getSelfVehicle() != null) {
+      this.selfVehicle = new SelfVehicleDataResponse(
+            paymentSheetEntity.getSelfVehicle().getPlaces(),
+            paymentSheetEntity.getSelfVehicle().getDistance(),
+            paymentSheetEntity.getSelfVehicle().getKmPrice()
+      );
+    }
+    if (paymentSheetEntity.getFoodHousing() != null) {
+      this.foodHousing = new FoodHousingDataResponse(
+            paymentSheetEntity.getFoodHousing().getAmountDays(),
+            paymentSheetEntity.getFoodHousing().getDayPrice(),
+            paymentSheetEntity.getFoodHousing().getOvernight()
+      );
     }
 
-    public PaymentSheetResponse(
-            PersistentPaymentSheetEntity paymentSheetEntity
-    ) {
-        super();
-        this.paymentSheetIdentifier = paymentSheetEntity.getId();
-        this.userName = paymentSheetEntity.getUserOwner().getName();
-        this.userFirstSurname = paymentSheetEntity.getUserOwner()
-                .getFirstSurname();
-        this.userSecondSurname = paymentSheetEntity.getUserOwner()
-                .getSecondSurname();
-        this.userDNI = "FAKE DNI NOT PROVIDED YET";
-        this.userDomicile = "FAKE DOMICILE NOT PROVIDED YET";
-        this.reason = paymentSheetEntity.getReason();
-        this.place = paymentSheetEntity.getPlace();
-        this.startDate = paymentSheetEntity.getStartDate();
-        this.endDate = paymentSheetEntity.getEndDate();
-        if (paymentSheetEntity.getSelfVehicle() != null) {
-            this.selfVehicle = new SelfVehicleDataResponse(
-                    paymentSheetEntity.getSelfVehicle().getPlaces(),
-                    paymentSheetEntity.getSelfVehicle().getDistance(),
-                    paymentSheetEntity.getSelfVehicle().getKmPrice()
-            );
-        }
-        if (paymentSheetEntity.getFoodHousing() != null) {
-            this.foodHousing = new FoodHousingDataResponse(
-                    paymentSheetEntity.getFoodHousing().getAmountDays(),
-                    paymentSheetEntity.getFoodHousing().getDayPrice(),
-                    paymentSheetEntity.getFoodHousing().getOvernight()
-            );
-        }
+  }
 
-    }
+  /**
+   * Get payment sheet regular transport list.
+   *
+   * @return The regular transport list.
+   */
+  public RegularTransportListResponse getRegularTransportList() {
+    return regularTransportList;
+  }
 
-    public RegularTransportListResponse getRegularTransportList() {
-        return regularTransportList;
-    }
+  /**
+   * Set payment sheet regular transport list.
+   *
+   * @param regularTransportList The regular transport list.
+   */
+  public void setRegularTransportList(
+        final RegularTransportListResponse regularTransportList
+  ) {
+    this.regularTransportList = regularTransportList;
+  }
 
-    public void setRegularTransportList(
-            RegularTransportListResponse regularTransportList
-    ) {
-        this.regularTransportList = regularTransportList;
-    }
+  /**
+   * Return payment sheet food housing.
+   *
+   * @return the food housing.
+   */
+  public FoodHousingDataResponse getFoodHousing() {
+    return foodHousing;
+  }
 
-    public FoodHousingDataResponse getFoodHousing() {
-        return foodHousing;
-    }
+  /**
+   * Get payment sheet postal user address.
+   *
+   * @return The postal code.
+   */
+  public String getPostalCode() {
+    return postalCode;
+  }
 
-    public void setFoodHousing(FoodHousingDataResponse foodHousing) {
-        this.foodHousing = foodHousing;
-    }
+  /**
+   * Set payment sheet user postal code address.
+   *
+   * @param postalCode The postal code.
+   */
+  public void setPostalCode(final String postalCode) {
+    this.postalCode = postalCode;
+  }
 
-    public SelfVehicleDataResponse getSelfVehicle() {
-        return selfVehicle;
-    }
+  /**
+   * Get payment sheet user apartment number address.
+   *
+   * @return The apartment number.
+   */
+  public String getApartmentNumber() {
+    return apartmentNumber;
+  }
 
-    public void setSelfVehicle(SelfVehicleDataResponse selfVehicle) {
-        this.selfVehicle = selfVehicle;
-    }
+  /**
+   * Set payment sheet user apartment number address.
+   *
+   * @param apartmentNumber The apartment number.
+   */
+  public void setApartmentNumber(final String apartmentNumber) {
+    this.apartmentNumber = apartmentNumber;
+  }
 
-    public Integer getPaymentSheetIdentifier() {
-        return paymentSheetIdentifier;
-    }
+  /**
+   * Get payment sheet user building address.
+   *
+   * @return The building.
+   */
+  public String getBuilding() {
+    return building;
+  }
 
-    public String getUserName() {
-        return userName;
-    }
+  /**
+   * Set payment sheet user building address.
+   *
+   * @param building The building.
+   */
+  public void setBuilding(final String building) {
+    this.building = building;
+  }
 
-    public String getUserFirstSurname() {
-        return userFirstSurname;
-    }
+  /**
+   * Get payment sheet user street address.
+   *
+   * @return The street.
+   */
+  public String getStreet() {
+    return street;
+  }
 
-    public String getUserSecondSurname() {
-        return userSecondSurname;
-    }
+  /**
+   * Set payment sheet user street address.
+   *
+   * @param street The street.
+   */
+  public void setStreet(final String street) {
+    this.street = street;
+  }
 
-    public String getUserDNI() {
-        return userDNI;
-    }
+  /**
+   * The payment sheet user city address.
+   *
+   * @return The city.
+   */
+  public String getCity() {
+    return city;
+  }
 
-    public String getUserDomicile() {
-        return userDomicile;
-    }
+  /**
+   * Set payment sheet user city address.
+   *
+   * @param city The city.
+   */
+  public void setCity(final String city) {
+    this.city = city;
+  }
 
-    public String getReason() {
-        return reason;
-    }
+  /**
+   * Get payment sheet user country name address.
+   *
+   * @return The country name.
+   */
+  public String getCountryName() {
+    return countryName;
+  }
 
-    public String getPlace() {
-        return place;
-    }
+  /**
+   * Set payment sheet user country name address.
+   *
+   * @param countryName The country name.
+   */
+  public void setCountryName(final String countryName) {
+    this.countryName = countryName;
+  }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
+  /**
+   * Get payment sheet user country subdivision name address.
+   *
+   * @return The country subdivision name.
+   */
+  public String getCountrySubdivisionName() {
+    return countrySubdivisionName;
+  }
 
-    public LocalDate getEndDate() {
-        return endDate;
-    }
+  /**
+   * Set payment sheet user country subdivision name address.
+   *
+   * @param countrySubdivisionName The country subdivision name.
+   */
+  public void setCountrySubdivisionName(final String countrySubdivisionName) {
+    this.countrySubdivisionName = countrySubdivisionName;
+  }
 
-    public void setPaymentSheetIdentifier(Integer paymentSheetIdentifier) {
-        this.paymentSheetIdentifier = paymentSheetIdentifier;
-    }
+  /**
+   * Set payment sheet food housing response.
+   *
+   * @param foodHousing The food housing response.
+   */
+  public void setFoodHousing(final FoodHousingDataResponse foodHousing) {
+    this.foodHousing = foodHousing;
+  }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
+  /**
+   * Get payment sheet self vehicle data response.
+   *
+   * @return The self vehicle data response.
+   */
+  public SelfVehicleDataResponse getSelfVehicle() {
+    return selfVehicle;
+  }
 
-    public void setUserFirstSurname(String userFirstSurname) {
-        this.userFirstSurname = userFirstSurname;
-    }
+  /**
+   * Set payment sheet self vehicle data response.
+   *
+   * @param selfVehicle The self vehicle data response.
+   */
+  public void setSelfVehicle(final SelfVehicleDataResponse selfVehicle) {
+    this.selfVehicle = selfVehicle;
+  }
 
-    public void setUserSecondSurname(String userSecondSurname) {
-        this.userSecondSurname = userSecondSurname;
-    }
+  /**
+   * Get payment sheet identifier.
+   *
+   * @return The payment sheet identifier.
+   */
+  public Integer getPaymentSheetIdentifier() {
+    return paymentSheetIdentifier;
+  }
 
-    public void setUserDNI(String userDNI) {
-        this.userDNI = userDNI;
-    }
+  /**
+   * Get payment sheet user name.
+   *
+   * @return The user name.
+   */
+  public String getUserName() {
+    return userName;
+  }
 
-    public void setUserDomicile(String userDomicile) {
-        this.userDomicile = userDomicile;
-    }
+  /**
+   * Get payment sheet user first surname.
+   *
+   * @return The payment sheet user first surname.
+   */
+  public String getUserFirstSurname() {
+    return userFirstSurname;
+  }
 
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
+  /**
+   * Get payment sheet user second surname.
+   *
+   * @return The payment sheet user second surname.
+   */
+  public String getUserSecondSurname() {
+    return userSecondSurname;
+  }
 
-    public void setPlace(String place) {
-        this.place = place;
-    }
+  /**
+   * Get payment sheet user dni.
+   *
+   * @return The payment sheet user dni.
+   */
+  public String getUserDNI() {
+    return userDNI;
+  }
 
-    public void setStartDate(LocalDate startDate) {
-        this.startDate = startDate;
-    }
+  /**
+   * Get payment sheet event reason.
+   *
+   * @return The payment sheet event reason.
+   */
+  public String getReason() {
+    return reason;
+  }
 
-    public void setEndDate(LocalDate endDate) {
-        this.endDate = endDate;
-    }
+  /**
+   * Get payment sheet event place.
+   *
+   * @return The payment sheet event place.
+   */
+  public String getPlace() {
+    return place;
+  }
+
+  /**
+   * Get payment sheet event start date.
+   *
+   * @return The payment sheet event start date.
+   */
+  public LocalDate getStartDate() {
+    return startDate;
+  }
+
+  /**
+   * Get payment sheet event end date.
+   *
+   * @return The payment sheet event end date.
+   */
+  public LocalDate getEndDate() {
+    return endDate;
+  }
+
+  /**
+   * Set payment sheet identifier.
+   *
+   * @param paymentSheetIdentifier The payment sheet identifier.
+   */
+  public void setPaymentSheetIdentifier(final Integer paymentSheetIdentifier) {
+    this.paymentSheetIdentifier = paymentSheetIdentifier;
+  }
+
+  /**
+   * Set payment sheet user name.
+   *
+   * @param userName The payment sheet user name.
+   */
+  public void setUserName(final String userName) {
+    this.userName = userName;
+  }
+
+  /**
+   * Set payment sheet user first surname.
+   *
+   * @param userFirstSurname The payment sheet user first surname.
+   */
+  public void setUserFirstSurname(final String userFirstSurname) {
+    this.userFirstSurname = userFirstSurname;
+  }
+
+  /**
+   * Set payment sheet user second surname.
+   *
+   * @param userSecondSurname The payment sheet user second surname.
+   */
+  public void setUserSecondSurname(final String userSecondSurname) {
+    this.userSecondSurname = userSecondSurname;
+  }
+
+  /**
+   * Set payment sheet user dni.
+   *
+   * @param userDNI The payment sheet user dni.
+   */
+  public void setUserDNI(final String userDNI) {
+    this.userDNI = userDNI;
+  }
+
+  /**
+   * Set payment sheet event reason.
+   *
+   * @param reason The payment sheet event reason.
+   */
+  public void setReason(final String reason) {
+    this.reason = reason;
+  }
+
+  /**
+   * Set the payment sheet event place.
+   *
+   * @param place The payment sheet event place.
+   */
+  public void setPlace(final String place) {
+    this.place = place;
+  }
+
+  /**
+   * Set payment sheet event start date.
+   *
+   * @param startDate The payment sheet event start date.
+   */
+  public void setStartDate(final LocalDate startDate) {
+    this.startDate = startDate;
+  }
+
+  /**
+   * Set payment sheet event end date.
+   *
+   * @param endDate The payment sheet event end date.
+   */
+  public void setEndDate(final LocalDate endDate) {
+    this.endDate = endDate;
+  }
 
 }

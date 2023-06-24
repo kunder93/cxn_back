@@ -1,5 +1,11 @@
 package es.org.cxn.backapp.config;
 
+
+
+import es.org.cxn.backapp.filter.JwtRequestFilter;
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import es.org.cxn.backapp.filter.JwtRequestFilter;
+
 
 /**
  * Spring security configuration.
@@ -27,61 +33,59 @@ import es.org.cxn.backapp.filter.JwtRequestFilter;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
-    /**
-     * Default constructor.
-     */
-    public SecurityConfiguration() {
-        super();
-    }
+  /**
+   * Default constructor.
+   */
+  public SecurityConfiguration() {
+    super();
+  }
 
-    /**
-     * Bean fork enconde password.
-     *
-     * @return password enconded.
-     */
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  /**
+   * Bean fork enconde password.
+   *
+   * @return password enconded.
+   */
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-    /**
-     * Bean for managing user authentication.
-     *
-     * @param authConfig actual authentication configuration.
-     * @return authentication manager.
-     * @throws Exception when fails.
-     */
-    @Bean
-    AuthenticationManager authenticationManager(
-            final AuthenticationConfiguration authConfig
-    ) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+  /**
+   * Bean for managing user authentication.
+   *
+   * @param authConfig actual authentication configuration.
+   * @return authentication manager.
+   * @throws Exception when fails.
+   */
+  @Bean
+  AuthenticationManager authenticationManager(
+        final AuthenticationConfiguration authConfig
+  ) throws Exception {
+    return authConfig.getAuthenticationManager();
+  }
 
-    /**
-     * Filter chain applied to http petitions.
-     *
-     * @param http             the petition.
-     * @param jwtRequestFilter the jwt filter.
-     * @return object built.
-     * @throws Exception if fails.
-     */
-    @Bean
-    SecurityFilterChain filterChain(
-            final HttpSecurity http,
-            final @Autowired JwtRequestFilter jwtRequestFilter
-    ) throws Exception {
-        // Disabled csrf for API REST
-        http.csrf().disable().authorizeHttpRequests().requestMatchers("/**")
-                .permitAll().requestMatchers("/*").permitAll().anyRequest()
-                .authenticated().and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+  /**
+   * Filter chain applied to http petitions.
+   *
+   * @param http             the petition.
+   * @param jwtRequestFilter the jwt filter.
+   * @return object built.
+   * @throws Exception if fails.
+   */
+  @Bean
+  SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired
+  JwtRequestFilter jwtRequestFilter) throws Exception {
+    // Disabled csrf for API REST
+    http.csrf().disable().authorizeHttpRequests().requestMatchers("/**")
+          .permitAll().requestMatchers("/*").permitAll().anyRequest()
+          .authenticated().and().sessionManagement()
+          .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        http.addFilterBefore(
-                jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
-        );
+    http.addFilterBefore(
+          jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
+    );
 
-        return http.build();
-    }
+    return http.build();
+  }
 
 }

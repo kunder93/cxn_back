@@ -1,8 +1,9 @@
+
 package es.org.cxn.backapp.model.form.responses;
 
-import java.io.Serializable;
-
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
+
+import java.io.Serializable;
 
 /**
  * Represents the form used by controller as response for requesting one
@@ -16,48 +17,80 @@ import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
  *
  * @author Santiago Paz.
  */
-public class SubCountryResponse implements Serializable {
+public final class SubCountryResponse implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3133052826313337705L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3133052826313337705L;
 
-    private String name;
-    private String kindSubdivisionName;
-    private String code;
+  /**
+   * Subcountry name.
+   */
+  private String name;
+  /**
+   * Subcountry kind of subdivision.
+   */
+  private String kindSubdivisionName;
+  /**
+   * Subcountry code.
+   */
+  private String code;
 
-    public String getName() {
-        return name;
-    }
+  /**
+   * Constructs a subCountry response.
+   *
+   * @param countrySubdivision country subdivision entity.
+   */
+  public SubCountryResponse(
+        final PersistentCountrySubdivisionEntity countrySubdivision
+  ) {
+    super();
+    this.name = countrySubdivision.getName();
+    this.kindSubdivisionName = countrySubdivision.getKindSubdivisionName();
+    this.code = countrySubdivision.getCode();
+  }
 
-    public String getKindSubdivisionName() {
-        return kindSubdivisionName;
-    }
+  /**
+   * @return The name.
+   */
+  public String getName() {
+    return name;
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  /**
+   * @return The kind subdivision name.
+   */
+  public String getKindSubdivisionName() {
+    return kindSubdivisionName;
+  }
 
-    public String getCode() {
-        return code;
-    }
+  /**
+   * @param name The name.
+   */
+  public void setName(final String name) {
+    this.name = name;
+  }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
+  /**
+   * @return The code.
+   */
+  public String getCode() {
+    return code;
+  }
 
-    public void setKindSubdivisionName(String kindSubdivisionName) {
-        this.kindSubdivisionName = kindSubdivisionName;
-    }
+  /**
+   * @param code The code.
+   */
+  public void setCode(final String code) {
+    this.code = code;
+  }
 
-    public SubCountryResponse(
-            PersistentCountrySubdivisionEntity countrySubdivision
-    ) {
-        super();
-        this.name = countrySubdivision.getName();
-        this.kindSubdivisionName = countrySubdivision.getKindSubdivisionName();
-        this.code = countrySubdivision.getCode();
-    }
+  /**
+   * @param kindSubdivisionName The kind subdivision name.
+   */
+  public void setKindSubdivisionName(final String kindSubdivisionName) {
+    this.kindSubdivisionName = kindSubdivisionName;
+  }
 
 }

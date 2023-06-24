@@ -225,6 +225,12 @@
             <artifactId>jakarta.el</artifactId>
             <version>4.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -388,6 +394,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.5.0</version>
                 <configuration>
                     <show>public</show>
                     <additionalOptions>-package</additionalOptions>
@@ -401,13 +408,14 @@
                 </reportSets>
             </plugin>
 
-            <plugin>
+            <plugin> 
                 <!-- Checkstyle -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.0</version>
+                
                 <configuration>
-                    <configLocation>google_checks.xml</configLocation>
+                    <configLocation>sun_checks.xml</configLocation>
                 </configuration>
                 <reportSets>
                     <reportSet>

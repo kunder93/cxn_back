@@ -71,7 +71,7 @@ final class TestAuthenticationRequestValidation {
                     aa.getInvalidValue(), "null is the not valid value"
             );
             Assertions.assertEquals(
-                    Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
+                    Constants.EMAIL_NOT_EMPTY_MESSAGE, aa.getMessage(),
                     "The message provided"
             );
             Assertions.assertTrue(
@@ -101,7 +101,7 @@ final class TestAuthenticationRequestValidation {
                     "null is the not valid value"
             );
             Assertions.assertEquals(
-                    Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
+                    Constants.EMAIL_NOT_EMPTY_MESSAGE, aa.getMessage(),
                     "Check message provided"
             );
             Assertions.assertTrue(

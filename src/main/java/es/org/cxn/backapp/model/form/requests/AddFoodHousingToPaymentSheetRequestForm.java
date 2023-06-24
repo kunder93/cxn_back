@@ -1,10 +1,12 @@
+
 package es.org.cxn.backapp.model.form.requests;
 
 import java.io.Serializable;
 import java.util.Objects;
 
 /**
- * Represents the form used by controller as request of create company.
+ * Represents the form used by controller as request of add food or housing to
+ * existing payment sheet.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -14,97 +16,120 @@ import java.util.Objects;
  *
  * @author Santiago Paz.
  */
-public class AddFoodHousingToPaymentSheetRequestForm implements Serializable {
+public final class AddFoodHousingToPaymentSheetRequestForm
+      implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3100089900015947999L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3100089900015947999L;
 
-    /**
-     * The regular transport Category
-     */
-    private Integer amountDays;
-    /**
-     * The regular transport description.
-     */
-    private float dayPrice;
+  /**
+   * The amount of days that last the event.
+   */
+  private Integer amountDays;
+  /**
+   * Price for each day.
+   */
+  private float dayPrice;
 
-    private Boolean overnight;
+  /**
+   * True if sleep is included false if not.
+   */
+  private Boolean overnight;
 
-    /**
-     *
-     */
-    public AddFoodHousingToPaymentSheetRequestForm() {
-        super();
+  /**
+   * Main empty constructor.
+   */
+  public AddFoodHousingToPaymentSheetRequestForm() {
+    super();
+  }
+
+  /**
+   * Constructor with provided values.
+   *
+   * @param amountDays The amount of days.
+   * @param dayPrice   The price of each day.
+   * @param overnight  Boolean if includes sleep or not.
+   */
+  public AddFoodHousingToPaymentSheetRequestForm(
+        final Integer amountDays, final float dayPrice, final Boolean overnight
+  ) {
+    super();
+    this.amountDays = amountDays;
+    this.dayPrice = dayPrice;
+    this.overnight = overnight;
+  }
+
+  /**
+   * @return The amount of days.
+   */
+  public Integer getAmountDays() {
+    return amountDays;
+  }
+
+  /**
+   * @return The price per day.
+   */
+  public float getDayPrice() {
+    return dayPrice;
+  }
+
+  /**
+   * @return True if overnight false if not.
+   */
+  public Boolean getOvernight() {
+    return overnight;
+  }
+
+  /**
+   * @param value The amount of days.
+   */
+  public void setAmountDays(final Integer value) {
+    this.amountDays = value;
+  }
+
+  /**
+   * @param value the price per day.
+   */
+  public void setDayPrice(final float value) {
+    this.dayPrice = value;
+  }
+
+  /**
+   * @param value The overnight boolean value.
+   */
+  public void setOvernight(final Boolean value) {
+    this.overnight = value;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(amountDays, dayPrice, overnight);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    /**
-     * @param amountDays
-     * @param dayPrice
-     * @param overnight
-     */
-    public AddFoodHousingToPaymentSheetRequestForm(
-            Integer amountDays, float dayPrice, Boolean overnight
-    ) {
-        super();
-        this.amountDays = amountDays;
-        this.dayPrice = dayPrice;
-        this.overnight = overnight;
+    if (obj == null) {
+      return false;
     }
-
-    public Integer getAmountDays() {
-        return amountDays;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
+    var other = (AddFoodHousingToPaymentSheetRequestForm) obj;
+    return Objects.equals(amountDays, other.amountDays)
+          && Float.floatToIntBits(dayPrice) == Float
+                .floatToIntBits(other.dayPrice)
+          && Objects.equals(overnight, other.overnight);
+  }
 
-    public float getDayPrice() {
-        return dayPrice;
-    }
-
-    public Boolean getOvernight() {
-        return overnight;
-    }
-
-    public void setAmountDays(Integer amountDays) {
-        this.amountDays = amountDays;
-    }
-
-    public void setDayPrice(float dayPrice) {
-        this.dayPrice = dayPrice;
-    }
-
-    public void setOvernight(Boolean overnight) {
-        this.overnight = overnight;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(amountDays, dayPrice, overnight);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        var other = (AddFoodHousingToPaymentSheetRequestForm) obj;
-        return Objects.equals(amountDays, other.amountDays)
-                && Float.floatToIntBits(dayPrice) == Float
-                        .floatToIntBits(other.dayPrice)
-                && Objects.equals(overnight, other.overnight);
-    }
-
-    @Override
-    public String toString() {
-        return "AddFoodHousingToPaymentSheetRequestForm [amountDays="
-                + amountDays + ", dayPrice=" + dayPrice + ", overnight="
-                + overnight + "]";
-    }
+  @Override
+  public String toString() {
+    return "AddFoodHousingToPaymentSheetRequestForm [amountDays=" + amountDays
+          + ", dayPrice=" + dayPrice + ", overnight=" + overnight + "]";
+  }
 
 }

@@ -1,3 +1,4 @@
+
 package es.org.cxn.backapp.model.form.requests;
 
 import java.io.Serializable;
@@ -15,237 +16,236 @@ import java.util.Objects;
  *
  * @author Santiago Paz.
  */
-public class CreateInvoiceRequestForm implements Serializable {
+public final class CreateInvoiceRequestForm implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3133089826012147705L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3133089826012147705L;
 
-    /**
-     * Invoice number.
-     */
-    private int number;
-    /**
-     * Invoice series.
-     */
-    private String series;
-    /**
-     * The invoice payment date.
-     */
-    private LocalDate advancePaymentDate;
-    /**
-     * The invoice expedition date.
-     */
-    private LocalDate expeditionDate;
-    /**
-     * Invoice tax exempt for calculating taxes.
-     */
-    private Boolean taxExempt;
-    /**
-     * Seller cif or nif.
-     */
-    private String sellerCifNif;
-    /**
-     * Buyer cif or nif.
-     */
-    private String buyerCifNif;
+  /**
+   * Invoice number.
+   */
+  private int number;
+  /**
+   * Invoice series.
+   */
+  private String series;
+  /**
+   * The invoice payment date.
+   */
+  private LocalDate advancePaymentDate;
+  /**
+   * The invoice expedition date.
+   */
+  private LocalDate expeditionDate;
+  /**
+   * Invoice tax exempt for calculating taxes.
+   */
+  private Boolean taxExempt;
+  /**
+   * Seller nif.
+   */
+  private String sellerNif;
+  /**
+   * Buyer nif.
+   */
+  private String buyerNif;
 
-    /**
-     * Main empty constructor.
-     */
-    public CreateInvoiceRequestForm() {
-        super();
+  /**
+   * Main empty constructor.
+   */
+  public CreateInvoiceRequestForm() {
+    super();
+  }
+
+  /**
+   * Main arguments constructor.
+   *
+   * @param number             the invoice number
+   * @param series             the invoice series
+   * @param advancePaymentDate the invoice payment date
+   * @param expeditionDate     the invoice expedition date
+   * @param taxExempt          the invoice tax exempt
+   * @param sellerNif          the invoice seller company nif.
+   * @param buyerNif           the invoice buyer company nif.
+   */
+  public CreateInvoiceRequestForm(
+        final int number, final String series,
+        final LocalDate advancePaymentDate, final LocalDate expeditionDate,
+        final Boolean taxExempt, final String sellerNif, final String buyerNif
+  ) {
+    super();
+    this.number = number;
+    this.series = series;
+    this.advancePaymentDate = advancePaymentDate;
+    this.expeditionDate = expeditionDate;
+    this.taxExempt = taxExempt;
+    this.sellerNif = sellerNif;
+    this.buyerNif = buyerNif;
+  }
+
+  @Override
+  public String toString() {
+    return "CreateInvoiceRequestForm [number=" + number + ", series=" + series
+          + ", advancePaymentDate=" + advancePaymentDate + ", expeditionDate="
+          + expeditionDate + ", taxExempt=" + taxExempt + ", sellerNif="
+          + sellerNif + ", buyerNif=" + buyerNif + "]";
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+          advancePaymentDate, buyerNif, expeditionDate, number, sellerNif,
+          series, taxExempt
+    );
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    /**
-     * Main arguments constructor.
-     *
-     * @param number             the invoice number
-     * @param series             the invoice series
-     * @param advancePaymentDate the invoice payment date
-     * @param expeditionDate     the invoice expedition date
-     * @param taxExempt          the invoice tax exempt
-     * @param sellerCifNif       the invoice seller company cif or nif.
-     * @param buyerCifNif        the invoice buyer company cif or nif.
-     */
-    public CreateInvoiceRequestForm(
-            int number, String series, LocalDate advancePaymentDate,
-            LocalDate expeditionDate, Boolean taxExempt, String sellerCifNif,
-            String buyerCifNif
-    ) {
-        super();
-        this.number = number;
-        this.series = series;
-        this.advancePaymentDate = advancePaymentDate;
-        this.expeditionDate = expeditionDate;
-        this.taxExempt = taxExempt;
-        this.sellerCifNif = sellerCifNif;
-        this.buyerCifNif = buyerCifNif;
+    if (obj == null) {
+      return false;
     }
-
-    @Override
-    public String toString() {
-        return "CreateInvoiceRequestForm [number=" + number + ", series="
-                + series + ", advancePaymentDate=" + advancePaymentDate
-                + ", expeditionDate=" + expeditionDate + ", taxExempt="
-                + taxExempt + ", sellerCifNif=" + sellerCifNif
-                + ", buyerCifNif=" + buyerCifNif + "]";
+    if (getClass() != obj.getClass()) {
+      return false;
     }
+    var other = (CreateInvoiceRequestForm) obj;
+    return Objects.equals(advancePaymentDate, other.advancePaymentDate)
+          && Objects.equals(buyerNif, other.buyerNif)
+          && Objects.equals(expeditionDate, other.expeditionDate)
+          && number == other.number
+          && Objects.equals(sellerNif, other.sellerNif)
+          && Objects.equals(series, other.series)
+          && Objects.equals(taxExempt, other.taxExempt);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                advancePaymentDate, buyerCifNif, expeditionDate, number,
-                sellerCifNif, series, taxExempt
-        );
-    }
+  /**
+   * Get invoice seller nif.
+   *
+   * @return The invoice seller nif.
+   */
+  public String getSellerNif() {
+    return sellerNif;
+  }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        var other = (CreateInvoiceRequestForm) obj;
-        return Objects.equals(advancePaymentDate, other.advancePaymentDate)
-                && Objects.equals(buyerCifNif, other.buyerCifNif)
-                && Objects.equals(expeditionDate, other.expeditionDate)
-                && number == other.number
-                && Objects.equals(sellerCifNif, other.sellerCifNif)
-                && Objects.equals(series, other.series)
-                && Objects.equals(taxExempt, other.taxExempt);
-    }
+  /**
+   * Set invoice seller company nif.
+   *
+   * @param value The invoice seller company nif.
+   */
+  public void setSellerNif(final String value) {
+    this.sellerNif = value;
+  }
 
-    /**
-     * Get invoice seller cif or nif.
-     *
-     * @return The invoice seller cif or nif.
-     */
-    public String getSellerCifNif() {
-        return sellerCifNif;
-    }
+  /**
+   * Get invoice buyer nif.
+   *
+   * @return The invoice buyer company nif.
+   */
+  public String getBuyerNif() {
+    return buyerNif;
+  }
 
-    /**
-     * Set invoice seller company cif or nif.
-     *
-     * @param value The invoice seller company cif or nif.
-     */
-    public void setSellerCifNif(String value) {
-        this.sellerCifNif = value;
-    }
+  /**
+   * Set invoice buyer company nif.
+   *
+   * @param value The new buyer company nif.
+   */
+  public void setBuyerNif(final String value) {
+    this.buyerNif = value;
+  }
 
-    /**
-     * Get invoice buyer cif or nif.
-     *
-     * @return The invoice buyer company cif or nif.
-     */
-    public String getBuyerCifNif() {
-        return buyerCifNif;
-    }
+  /**
+   * Get invoice number.
+   *
+   * @return The invoice number.
+   */
+  public int getNumber() {
+    return number;
+  }
 
-    /**
-     * Set invoice buyer company cif or nif.
-     *
-     * @param value The new buyer company cif or nif.
-     */
-    public void setBuyerCifNif(String value) {
-        this.buyerCifNif = value;
-    }
+  /**
+   * Set invoice number.
+   *
+   * @param value The invoice number.
+   */
+  public void setNumber(final int value) {
+    this.number = value;
+  }
 
-    /**
-     * Get invoice number.
-     *
-     * @return The invoice number.
-     */
-    public int getNumber() {
-        return number;
-    }
+  /**
+   * Get invoice series.
+   *
+   * @return The invoice series.
+   */
+  public String getSeries() {
+    return series;
+  }
 
-    /**
-     * Set invoice number.
-     *
-     * @param value The invoice number.
-     */
-    public void setNumber(int value) {
-        this.number = value;
-    }
+  /**
+   * Set invoice series.
+   *
+   * @param value the new invoice series.
+   */
+  public void setSeries(final String value) {
+    this.series = value;
+  }
 
-    /**
-     * Get invoice series.
-     *
-     * @return The invoice series.
-     */
-    public String getSeries() {
-        return series;
-    }
+  /**
+   * Get invoice advance payment date.
+   *
+   * @return the invoice advance payment date.
+   */
+  public LocalDate getAdvancePaymentDate() {
+    return advancePaymentDate;
+  }
 
-    /**
-     * Set invoice series.
-     *
-     * @param value the new invoice series.
-     */
-    public void setSeries(String value) {
-        this.series = value;
-    }
+  /**
+   * Set invoice advance payment date.
+   *
+   * @param value the invoice advance payment date.
+   */
+  public void setAdvancePaymentDate(final LocalDate value) {
+    this.advancePaymentDate = value;
+  }
 
-    /**
-     * Get invoice advance payment date.
-     *
-     * @return the invoice advance payment date.
-     */
-    public LocalDate getAdvancePaymentDate() {
-        return advancePaymentDate;
-    }
+  /**
+   * Get the invoice expedition date.
+   *
+   * @return the invoice expedition date.
+   */
+  public LocalDate getExpeditionDate() {
+    return expeditionDate;
+  }
 
-    /**
-     * Set invoice advance payment date.
-     *
-     * @param value the invoice advance payment date.
-     */
-    public void setAdvancePaymentDate(LocalDate value) {
-        this.advancePaymentDate = value;
-    }
+  /**
+   * Set invoice expedition date.
+   *
+   * @param value the invoice expedition date.
+   */
+  public void setExpeditionDate(final LocalDate value) {
+    this.expeditionDate = value;
+  }
 
-    /**
-     * Get the invoice expedition date.
-     *
-     * @return the invoice expedition date.
-     */
-    public LocalDate getExpeditionDate() {
-        return expeditionDate;
-    }
+  /**
+   * Get invoice tax exempt value.
+   *
+   * @return The tax exempt value.
+   */
+  public Boolean getTaxExempt() {
+    return taxExempt;
+  }
 
-    /**
-     * Set invoice expedition date.
-     *
-     * @param value the invoice expedition date.
-     */
-    public void setExpeditionDate(LocalDate value) {
-        this.expeditionDate = value;
-    }
-
-    /**
-     * Get invoice tax exempt value.
-     *
-     * @return The tax exempt value.
-     */
-    public Boolean getTaxExempt() {
-        return taxExempt;
-    }
-
-    /**
-     * Setter for Invoice request tax exempt value.
-     *
-     * @param value The tax exempt boolean value.
-     */
-    public void setTaxExempt(Boolean value) {
-        this.taxExempt = value;
-    }
+  /**
+   * Setter for Invoice request tax exempt value.
+   *
+   * @param value The tax exempt boolean value.
+   */
+  public void setTaxExempt(final Boolean value) {
+    this.taxExempt = value;
+  }
 
 }

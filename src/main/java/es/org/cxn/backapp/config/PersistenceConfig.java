@@ -14,11 +14,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableTransactionManagement
 public class PersistenceConfig {
 
-    /**
-     * Default constructor.
-     */
-    public PersistenceConfig() {
-        super();
-    }
+  /**
+   * Default constructor.
+   */
+  public PersistenceConfig() {
+    super();
+  }
 
 }

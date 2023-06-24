@@ -12,11 +12,11 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ServiceConfig {
 
-    /**
-     * Default constructor.
-     */
-    public ServiceConfig() {
-        super();
-    }
+  /**
+   * Default constructor.
+   */
+  public ServiceConfig() {
+    super();
+  }
 
 }

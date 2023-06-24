@@ -1,9 +1,10 @@
+
 package es.org.cxn.backapp.model.form.responses;
 
 import java.io.Serializable;
 
 /**
- * Represents the form used by controller as request of create company.
+ * Represents the form used by controller as request of Food Housing data.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -13,67 +14,90 @@ import java.io.Serializable;
  *
  * @author Santiago Paz.
  */
-public class FoodHousingDataResponse implements Serializable {
+public final class FoodHousingDataResponse implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3110452922215007099L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3110452922215007099L;
 
-    /**
-     * The regular transport Category
-     */
-    private Integer amountDays;
-    /**
-     * The regular transport description.
-     */
-    private double dayPrice;
+  /**
+   * The food housing amount of days that last.
+   */
+  private Integer amountDays;
+  /**
+   * The food housing price per day.
+   */
+  private double dayPrice;
 
-    private boolean overnight;
+  /**
+   * True if sleeps else false.
+   */
+  private boolean overnight;
 
-    /**
-     * Main empty constructor.
-     */
-    public FoodHousingDataResponse() {
-        super();
-    }
+  /**
+   * Main empty constructor.
+   */
+  public FoodHousingDataResponse() {
+    super();
+  }
 
-    /**
-     * @param amountDays
-     * @param dayPrice
-     * @param overnight
-     */
-    public FoodHousingDataResponse(
-            Integer amountDays, double dayPrice, boolean overnight
-    ) {
-        super();
-        this.amountDays = amountDays;
-        this.dayPrice = dayPrice;
-        this.overnight = overnight;
-    }
+  /**
+   * Constructor with parameters.
+   *
+   * @param amountDays The amount of days.
+   * @param dayPrice   The price per day.
+   * @param overnight  The overnight or if sleeps.
+   */
+  public FoodHousingDataResponse(
+        final Integer amountDays, final double dayPrice, final boolean overnight
+  ) {
+    super();
+    this.amountDays = amountDays;
+    this.dayPrice = dayPrice;
+    this.overnight = overnight;
+  }
 
-    public Integer getAmountDays() {
-        return amountDays;
-    }
+  /**
+   * @return The amount of days.
+   */
+  public Integer getAmountDays() {
+    return amountDays;
+  }
 
-    public double getDayPrice() {
-        return dayPrice;
-    }
+  /**
+   * @return The price per day.
+   */
+  public double getDayPrice() {
+    return dayPrice;
+  }
 
-    public boolean isOvernight() {
-        return overnight;
-    }
+  /**
+   * @return True if sleeps false else.
+   */
+  public boolean isOvernight() {
+    return overnight;
+  }
 
-    public void setAmountDays(Integer amountDays) {
-        this.amountDays = amountDays;
-    }
+  /**
+   * @param value The amount of days.
+   */
+  public void setAmountDays(final Integer value) {
+    this.amountDays = value;
+  }
 
-    public void setDayPrice(double dayPrice) {
-        this.dayPrice = dayPrice;
-    }
+  /**
+   * @param value The price per day.
+   */
+  public void setDayPrice(final double value) {
+    this.dayPrice = value;
+  }
 
-    public void setOvernight(boolean overnight) {
-        this.overnight = overnight;
-    }
+  /**
+   * @param overnight The overnight.
+   */
+  public void setOvernight(final boolean overnight) {
+    this.overnight = overnight;
+  }
 
 }

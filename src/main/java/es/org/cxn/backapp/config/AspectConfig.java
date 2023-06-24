@@ -14,11 +14,11 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableAspectJAutoProxy
 public class AspectConfig {
 
-    /**
-     * The aspectConfig.
-     */
-    public AspectConfig() {
-        super();
-    }
+  /**
+   * The aspectConfig.
+   */
+  public AspectConfig() {
+    super();
+  }
 
 }

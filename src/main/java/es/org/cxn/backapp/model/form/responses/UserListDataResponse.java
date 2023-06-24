@@ -4,10 +4,10 @@
  * Copyright (c) 2020 the original author or authors.
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  * <p>
  * The above copyright notice and this permission notice shall be included in
@@ -17,20 +17,20 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package es.org.cxn.backapp.model.form.responses;
+
+import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 /**
  * Represents the form used for response authenticating user.
@@ -46,56 +46,65 @@ import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
  */
 public final class UserListDataResponse implements Serializable {
 
-    /**
-     * UID Serial version.
-     */
-    private static final long serialVersionUID = -6421122331689999079L;
+  /**
+   * UID Serial version.
+   */
+  private static final long serialVersionUID = -6421122331689999079L;
 
-    private List<UserDataResponse> usersList = new ArrayList<UserDataResponse>();
+  /**
+   * List of users data response.
+   */
+  private List<UserDataResponse> usersList = new ArrayList<>();
 
-    /**
-     * Constructs a DTO for user data response with fields values.
-     *
-     * @param user the user entity with data.
-     */
-    public UserListDataResponse(final List<PersistentUserEntity> users) {
-        super();
-        users.forEach(
-                (UserEntity user) -> usersList.add(new UserDataResponse(user))
-        );
+  /**
+   * Constructs a DTO for user data response with fields values.
+   *
+   * @param users the list users entities with data.
+   */
+  public UserListDataResponse(final List<PersistentUserEntity> users) {
+    super();
+    users.forEach(
+          (UserEntity user) -> usersList.add(new UserDataResponse(user))
+    );
+  }
+
+  /**
+   * @return The users list.
+   */
+  public List<UserDataResponse> getUsersList() {
+    return new ArrayList<>(usersList);
+  }
+
+  /**
+   * @param usersList the users list.
+   */
+  public void setUsersList(final List<UserDataResponse> usersList) {
+    this.usersList = new ArrayList<>(usersList);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(usersList);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
     }
-
-    public List<UserDataResponse> getUsersList() {
-        return usersList;
+    if (obj == null) {
+      return false;
     }
-
-    public void setUsersList(List<UserDataResponse> usersList) {
-        this.usersList = usersList;
+    if (getClass() != obj.getClass()) {
+      return false;
     }
+    var other = (UserListDataResponse) obj;
+    return Objects.equals(usersList, other.usersList);
+  }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(usersList);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        var other = (UserListDataResponse) obj;
-        return Objects.equals(usersList, other.usersList);
-    }
-
-    @Override
-    public String toString() {
-        return "UserListDataResponse [usersList=" + usersList + "]";
-    }
+  @Override
+  public String toString() {
+    return "UserListDataResponse [usersList=" + usersList + "]";
+  }
 
 }

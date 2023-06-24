@@ -1,8 +1,9 @@
+
 package es.org.cxn.backapp.model.form.responses;
 
-import java.io.Serializable;
-
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
+
+import java.io.Serializable;
 
 /**
  * Represents the form used by controller as response for requesting one
@@ -16,60 +17,87 @@ import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
  *
  * @author Santiago Paz.
  */
-public class RegularTransportResponse implements Serializable {
+public final class RegularTransportResponse implements Serializable {
 
-    /**
-     * Serial UID
-     */
-    private static final long serialVersionUID = -3180089459011962505L;
+  /**
+   * Serial UID.
+   */
+  private static final long serialVersionUID = -3180089459011962505L;
 
-    private String category;
-    private String description;
-    private InvoiceResponse invoiceResponse;
+  /**
+   * The response regular transport category.
+   */
+  private String category;
+  /**
+   * The response regular transport description.
+   */
+  private String description;
+  /**
+   * The response regular transport invoice response.
+   */
+  private InvoiceResponse invoiceResponse;
 
-    /**
-     *
-     */
-    public RegularTransportResponse() {
-        super();
-    }
+  /**
+   * Main empty constructor.
+   */
+  public RegularTransportResponse() {
+    super();
+  }
 
-    /**
-     * @param category
-     * @param description
-     * @param invoiceResponse
-     */
-    public RegularTransportResponse(PersistentRegularTransportEntity entity) {
-        super();
-        this.category = entity.getCategory();
-        this.description = entity.getDescription();
-        this.invoiceResponse = new InvoiceResponse(
-                entity.getTransportInvoice()
-        );
-    }
+  /**
+   * Constructor with regular transport entity.
+   *
+   * @param entity The Regular Transport entity.
+   */
+  public RegularTransportResponse(
+        final PersistentRegularTransportEntity entity
+  ) {
+    super();
+    this.category = entity.getCategory();
+    this.description = entity.getDescription();
+    this.invoiceResponse = new InvoiceResponse(entity.getTransportInvoice());
+  }
 
-    public String getCategory() {
-        return category;
-    }
+  /**
+   * @return The category.
+   */
+  public String getCategory() {
+    return category;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  /**
+   * @return The description.
+   */
+  public String getDescription() {
+    return description;
+  }
 
-    public InvoiceResponse getInvoiceResponse() {
-        return invoiceResponse;
-    }
+  /**
+   * @return The invoice response.
+   */
+  public InvoiceResponse getInvoiceResponse() {
+    return invoiceResponse;
+  }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+  /**
+   * @param category The category.
+   */
+  public void setCategory(final String category) {
+    this.category = category;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  /**
+   * @param description The description.
+   */
+  public void setDescription(final String description) {
+    this.description = description;
+  }
 
-    public void setInvoiceResponse(InvoiceResponse invoiceResponse) {
-        this.invoiceResponse = invoiceResponse;
-    }
+  /**
+   * @param invoiceResponse The invoice response.
+   */
+  public void setInvoiceResponse(final InvoiceResponse invoiceResponse) {
+    this.invoiceResponse = invoiceResponse;
+  }
 
 }
