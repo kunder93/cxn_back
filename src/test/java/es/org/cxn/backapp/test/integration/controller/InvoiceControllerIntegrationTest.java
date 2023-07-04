@@ -29,10 +29,10 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
-import es.org.cxn.backapp.model.form.CreateCompanyRequestForm;
-import es.org.cxn.backapp.model.form.CreateInvoiceRequestForm;
-import es.org.cxn.backapp.model.form.InvoiceListResponse;
-import es.org.cxn.backapp.model.form.InvoiceResponse;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
+import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.service.DefaultCompanyService;
 import es.org.cxn.backapp.service.JwtUtils;
 
@@ -90,12 +90,10 @@ class InvoiceControllerIntegrationTest {
     @BeforeAll
     static void setup() {
         var createCompanyARequest = new CreateCompanyRequestForm(
-                COMPANY_A_NIFCIF, COMPANY_A_NAME, COMPANY_A_IDTAXNUMBER,
-                COMPANY_A_ADDRESS
+                COMPANY_A_NIFCIF, COMPANY_A_NAME, COMPANY_A_ADDRESS
         );
         var createCompanyBRequest = new CreateCompanyRequestForm(
-                COMPANY_B_NIFCIF, COMPANY_B_NAME, COMPANY_B_IDTAXNUMBER,
-                COMPANY_B_ADDRESS
+                COMPANY_B_NIFCIF, COMPANY_B_NAME, COMPANY_B_ADDRESS
         );
         createCompanyARequestJson = new Gson().toJson(createCompanyARequest);
         createCompanyBRequestJson = new Gson().toJson(createCompanyBRequest);

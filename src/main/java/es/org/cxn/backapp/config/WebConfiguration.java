@@ -7,6 +7,7 @@ import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerF
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -19,32 +20,37 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
-    /**
-     * Main constructor.
-     */
-    public WebConfiguration() {
-        super();
-    }
+  /**
+   * Main constructor.
+   */
+  public WebConfiguration() {
+    super();
+  }
 
-    /**
-     * Add view controllers.
-     */
-    @Override
-    public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController("/notFound").setViewName("forward:/");
-    }
+  @Override
+  public final void addCorsMappings(final CorsRegistry registry) {
+    registry.addMapping("/**").allowedMethods("*");
+  }
 
-    /**
-     * Add error page.
-     *
-     * @return container with error page added.
-     */
-    @Bean
-    WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
-        return (ConfigurableServletWebServerFactory container) -> container
-                .addErrorPages(
-                        new ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
+  /**
+   * Add view controllers.
+   */
+  @Override
+  public void addViewControllers(final ViewControllerRegistry registry) {
+    registry.addViewController("/notFound").setViewName("forward:/");
+  }
 
-    }
+  /**
+   * Add error page.
+   *
+   * @return container with error page added.
+   */
+  @Bean
+  WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>
+        containerCustomizer() {
+    return (var container) -> container
+          .addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
+
+  }
 
 }

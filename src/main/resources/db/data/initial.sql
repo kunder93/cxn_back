@@ -35,6 +35,5 @@ INSERT INTO roles (name) VALUES
    ('PRESIDENTE'),
    ('SECRETARIO'),
    ('TESORERO');   
-   
-   
+       
    
