@@ -219,6 +219,52 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  void testPaymentSheetCreateAndGetDataFromIdOk() throws Exception {
+    // Create user.
+    mockMvc.perform(
+          post(CREATE_USER_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(createUserRequestFormJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    // Create payment sheet
+    var paymentSheetCreateResponse = mockMvc
+          .perform(
+                post(PAYMENT_SHEET_URL).contentType(MediaType.APPLICATION_JSON)
+                      .content(createPaymentSheetRequestFormJson)
+          ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
+          .getResponse().getContentAsString();
+
+    var paymentSheetResponseObject =
+          gson.fromJson(paymentSheetCreateResponse, PaymentSheetResponse.class);
+    var paymentSheetIdentifier =
+          paymentSheetResponseObject.getPaymentSheetIdentifier();
+
+    mockMvc.perform(
+          get(
+                PAYMENT_SHEET_URL + "/" + paymentSheetIdentifier
+
+          )
+    ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse()
+          .getContentAsString();
+  }
+
+  @Test
+  @Transactional
+  void testNotExistingPaymentSheetGetDataFromIdBadRequest() throws Exception {
+
+    var paymentSheetIdentifier = 99;
+
+    mockMvc.perform(
+          get(
+                PAYMENT_SHEET_URL + "/" + paymentSheetIdentifier
+
+          )
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn()
+          .getResponse().getContentAsString();
+  }
+
+  @Test
+  @Transactional
   void testPaymentSheetAddRegularTransportOk() throws Exception {
     // Create user.
     mockMvc.perform(

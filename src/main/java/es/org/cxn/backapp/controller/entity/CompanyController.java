@@ -36,9 +36,6 @@ import es.org.cxn.backapp.service.CompanyService;
 
 import jakarta.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -60,11 +57,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/company")
 public class CompanyController {
 
-  /**
-   * The logger.
-   */
-  private static final Logger LOGGER =
-        LoggerFactory.getLogger(CompanyController.class);
   /**
    * The company service.
    */
@@ -114,7 +106,6 @@ public class CompanyController {
       final var response = new CompanyResponse(result);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (CompanyServiceException e) {
-      LOGGER.error("A CompanyServiceException occurred: {}", e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -132,9 +123,7 @@ public class CompanyController {
     try {
       companyService.remove(nif);
     } catch (CompanyServiceException e) {
-      LOGGER.error(
-            "An AddressServiceException occurred: {}", e.getMessage(), e
-      );
+
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
     return new ResponseEntity<>(HttpStatus.OK);
@@ -164,9 +153,7 @@ public class CompanyController {
       return new ResponseEntity<>(response, HttpStatus.OK);
 
     } catch (CompanyServiceException e) {
-      LOGGER.error(
-            "An CompanyServiceException occurred: {}", e.getMessage(), e
-      );
+
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 

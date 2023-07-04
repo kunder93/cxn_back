@@ -31,8 +31,6 @@ import es.org.cxn.backapp.model.form.responses.CountryListResponse;
 import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
 import es.org.cxn.backapp.service.AddressService;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,12 +49,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class AddressController {
 
   /**
-   * The LOGGER.
-   */
-  private static final Logger LOGGER = LogManager
-        .getLogger(AddressController.class);
-
-  /**
    * The address service.
    */
   private final AddressService addressService;
@@ -69,9 +61,8 @@ public class AddressController {
   public AddressController(final AddressService service) {
     super();
 
-    addressService = checkNotNull(
-          service, "Received a null pointer as service"
-    );
+    addressService =
+          checkNotNull(service, "Received a null pointer as service");
   }
 
   /**
@@ -106,9 +97,6 @@ public class AddressController {
             new SubCountryListResponse(country), HttpStatus.OK
       );
     } catch (AddressServiceException e) {
-      LOGGER.error(
-            "An AddressServiceException occurred: {}", e.getMessage(), e
-      );
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage()
 

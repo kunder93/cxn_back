@@ -40,9 +40,6 @@ import jakarta.validation.Valid;
 
 import java.util.ArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -66,12 +63,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class InvoiceController {
 
   /**
-   * The LOGGER.
-   */
-  private static final Logger LOGGER = LoggerFactory
-        .getLogger(InvoiceController.class);
-
-  /**
    * The invoice service.
    */
   private final InvoiceService invoiceService;
@@ -90,12 +81,10 @@ public class InvoiceController {
         final InvoiceService invoiceServ, final CompanyService companyServ
   ) {
     super();
-    invoiceService = checkNotNull(
-          invoiceServ, "Received a null pointer as service"
-    );
-    companyService = checkNotNull(
-          companyServ, "Received a null pointer as service"
-    );
+    invoiceService =
+          checkNotNull(invoiceServ, "Received a null pointer as service");
+    companyService =
+          checkNotNull(companyServ, "Received a null pointer as service");
   }
 
   /**
@@ -136,10 +125,6 @@ public class InvoiceController {
       );
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (CompanyServiceException | InvoiceServiceException e) {
-      LOGGER.error(
-            "A CompanyServiceException or InvoiceServiceException occurred: {}",
-            e.getMessage(), e
-      );
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -187,9 +172,6 @@ public class InvoiceController {
     try {
       invoiceService.remove(series, number);
     } catch (InvoiceServiceException e) {
-      LOGGER.error(
-            "An InvoiceServiceException occurred: {}", e.getMessage(), e
-      );
       return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
     }
     return new ResponseEntity<>(true, HttpStatus.OK);

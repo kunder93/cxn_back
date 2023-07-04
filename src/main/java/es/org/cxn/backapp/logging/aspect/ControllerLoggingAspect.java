@@ -55,7 +55,7 @@ public class ControllerLoggingAspect {
    * @param param1 The param1.
    */
   @Before("execution(* es.org.cxn.backapp.controller.*.*(..)) && args(param1)")
-  public void logBefore(JoinPoint joinPoint, Object param1) {
+  public void logBefore(final JoinPoint joinPoint, final Object param1) {
     var methodName = joinPoint.getSignature().getName();
     LOGGER.info(
           "Entering AUTH CONTROLLER method: {} Parameters: {}", methodName,
@@ -72,7 +72,7 @@ public class ControllerLoggingAspect {
   @AfterReturning(
     "execution(* es.org.cxn.backapp.controller.*.*(..)) && args(param1)"
   )
-  public void logMethodExit(JoinPoint joinPoint, Object param1) {
+  public void logMethodExit(final JoinPoint joinPoint, final Object param1) {
     var methodName = joinPoint.getSignature().getName();
     LOGGER.info(
           "Exiting AUTH CONTROLLER method: {} Parameters: {}", methodName,

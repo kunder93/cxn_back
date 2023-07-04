@@ -30,16 +30,13 @@ import es.org.cxn.backapp.response.ResponseStatus;
 
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -48,14 +45,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *
  * @author Santiago Paz.
  */
-@ControllerAdvice
+@RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-
-  /**
-   * Logger for the exception handler.
-   */
-  private static final Logger LOGGER = LoggerFactory
-        .getLogger(GlobalExceptionHandler.class);
 
   /**
    * Default constructor.
@@ -76,8 +67,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         handleExceptionDefault(final Exception ex, final WebRequest request) {
     final HttpHeaders headers;
     final HttpStatus status;
-
-    LOGGER.error(ex.getMessage(), ex);
 
     status = HttpStatus.INTERNAL_SERVER_ERROR;
     headers = new HttpHeaders();
