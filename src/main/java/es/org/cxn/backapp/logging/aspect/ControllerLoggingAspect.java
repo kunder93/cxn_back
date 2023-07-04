@@ -49,40 +49,34 @@ public class ControllerLoggingAspect {
         LoggerFactory.getLogger(ControllerLoggingAspect.class);
 
   /**
-   * Default constructor.
-   */
-  public ControllerLoggingAspect() {
-    super();
-  }
-
-  /**
-   * Logs the returned value after the method is called.
+   * Log before.
    *
-   * @param joinPoint   point where the aspect is applied.
-   * @param returnValue returned value.
+   * @param joinPoint The joinPoint
+   * @param param1 The param1.
    */
-  @AfterReturning(
-        value = "execution(* com.bernardomg.example.spring_mvc_react_maven_archetype_example..*Controller*.*(..))", returning = "returnValue"
-  )
-  public void afterCall(final JoinPoint joinPoint, final Object returnValue) {
-    LOGGER.debug(
-          "Called {} and returning {}",
-          joinPoint.getSignature().toShortString(), returnValue
+  @Before("execution(* es.org.cxn.backapp.controller.*.*(..)) && args(param1)")
+  public void logBefore(JoinPoint joinPoint, Object param1) {
+    var methodName = joinPoint.getSignature().getName();
+    LOGGER.info(
+          "Entering AUTH CONTROLLER method: {} Parameters: {}", methodName,
+          param1
     );
   }
 
   /**
-   * Logs the received arguments before the method is called.
+   * Log after.
    *
-   * @param joinPoint point where the aspect is applied.
+   * @param joinPoint The joinPoint.
+   * @param param1 The param1.
    */
-  @Before(
-        value = "execution(* com.bernardomg.example.spring_mvc_react_maven_archetype_example..*Controller*.*(..))", argNames = "joinPoint"
+  @AfterReturning(
+    "execution(* es.org.cxn.backapp.controller.*.*(..)) && args(param1)"
   )
-  public void beforeCall(final JoinPoint joinPoint) {
-    LOGGER.debug(
-          "Calling {} with arguments {}",
-          joinPoint.getSignature().toShortString(), joinPoint.getArgs()
+  public void logMethodExit(JoinPoint joinPoint, Object param1) {
+    var methodName = joinPoint.getSignature().getName();
+    LOGGER.info(
+          "Exiting AUTH CONTROLLER method: {} Parameters: {}", methodName,
+          param1
     );
   }
 

@@ -37,9 +37,6 @@ import es.org.cxn.backapp.service.UserService;
 
 import jakarta.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -65,11 +62,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  /**
-   * The LOGGER.
-   */
-  private static final Logger LOGGER = LoggerFactory
-        .getLogger(AuthController.class);
   /**
    * The user Service.
    */
@@ -141,8 +133,8 @@ public class AuthController {
             signUpRequestForm.getCountryNumericCode(),
             signUpRequestForm.getCountrySubdivisionName()
       );
-      final var createdUser = userService
-            .addRole(signUpRequestForm.getEmail(), defaultUserRole);
+      final var createdUser =
+            userService.addRole(signUpRequestForm.getEmail(), defaultUserRole);
       final var signUpResponseForm = new SignUpResponseForm(
             createdUser.getDni(), createdUser.getName(),
             createdUser.getFirstSurname(), createdUser.getSecondSurname(),
@@ -153,7 +145,7 @@ public class AuthController {
       return new ResponseEntity<>(signUpResponseForm, HttpStatus.CREATED);
 
     } catch (UserServiceException e) {
-      LOGGER.error("An UserServiceException occurred: {}", e.getMessage(), e);
+
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
@@ -178,12 +170,10 @@ public class AuthController {
             )
       );
     } catch (BadCredentialsException | DisabledException e) {
-      LOGGER.debug(e.getMessage(), e);
       throw new ResponseStatusException(
             HttpStatus.UNAUTHORIZED, e.getMessage()
       );
     } catch (LockedException e) {
-      LOGGER.debug(e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.LOCKED, e.getMessage());
     }
     final MyPrincipalUser userDetails;
@@ -191,15 +181,11 @@ public class AuthController {
       userDetails = (MyPrincipalUser) userDetailsService
             .loadUserByUsername(loginRequest.getEmail());
     } catch (UsernameNotFoundException e) {
-      LOGGER.debug(e.getMessage(), e);
       throw new ResponseStatusException(
             HttpStatus.UNAUTHORIZED, e.getMessage()
       );
     }
     var jwt = jwtUtils.generateToken(userDetails);
-    final var logMessage = String
-          .format("USER EMAIL: %s  AUTHENTICATED", userDetails.getUsername());
-    LOGGER.info(logMessage);
     return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
   }
 

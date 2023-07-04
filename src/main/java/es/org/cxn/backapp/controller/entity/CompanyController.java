@@ -63,8 +63,8 @@ public class CompanyController {
   /**
    * The logger.
    */
-  private static final Logger LOGGER = LoggerFactory
-        .getLogger(CompanyController.class);
+  private static final Logger LOGGER =
+        LoggerFactory.getLogger(CompanyController.class);
   /**
    * The company service.
    */
@@ -78,9 +78,8 @@ public class CompanyController {
   public CompanyController(final CompanyService service) {
     super();
 
-    companyService = checkNotNull(
-          service, "Received a null pointer as service"
-    );
+    companyService =
+          checkNotNull(service, "Received a null pointer as service");
   }
 
   /**
@@ -107,12 +106,12 @@ public class CompanyController {
   public ResponseEntity<CompanyResponse> createCompany(@RequestBody @Valid
   final CreateCompanyRequestForm createCompanyRequestForm) {
     try {
-      var result = companyService.add(
+      final var result = companyService.add(
             createCompanyRequestForm.getNif(),
             createCompanyRequestForm.getName(),
             createCompanyRequestForm.getAddress()
       );
-      var response = new CompanyResponse(result);
+      final var response = new CompanyResponse(result);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (CompanyServiceException e) {
       LOGGER.error("A CompanyServiceException occurred: {}", e.getMessage(), e);

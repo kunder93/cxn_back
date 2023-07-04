@@ -2,9 +2,12 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
+import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Represents the form used by controller as response for requesting one payment
@@ -72,8 +75,7 @@ public final class PaymentSheetResponse implements Serializable {
   /**
    * Regular transport list.
    */
-  private RegularTransportListResponse regularTransportList =
-        new RegularTransportListResponse();
+  private RegularTransportListResponse regularTransportList;
   /**
    * User address postal code.
    */
@@ -154,8 +156,13 @@ public final class PaymentSheetResponse implements Serializable {
             paymentSheetEntity.getFoodHousing().getDayPrice(),
             paymentSheetEntity.getFoodHousing().getOvernight()
       );
+      if (!paymentSheetEntity.getRegularTransports().isEmpty()) {
+        var regularTransports = paymentSheetEntity.getRegularTransports();
+        List<PersistentRegularTransportEntity> lista = new ArrayList<>();
+        lista.addAll(regularTransports);
+        regularTransportList = new RegularTransportListResponse(lista);
+      }
     }
-
   }
 
   /**

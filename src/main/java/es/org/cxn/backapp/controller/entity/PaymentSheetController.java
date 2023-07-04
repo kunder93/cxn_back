@@ -37,9 +37,6 @@ import es.org.cxn.backapp.service.PaymentSheetService;
 
 import jakarta.validation.Valid;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -65,11 +62,6 @@ public class PaymentSheetController {
   private static final String EXCEPTION_MESSAGE_WRAPPER =
         "An PaymentSheetServiceException occurred: {}";
 
-  /**
-   * The logger.
-   */
-  private static final Logger LOGGER =
-        LoggerFactory.getLogger(PaymentSheetController.class);
   /**
    * The payment sheet service.
    */
@@ -107,15 +99,14 @@ public class PaymentSheetController {
    * @param paymentSheetId The payment sheet identifier.
    * @return form with the created company data.
    */
-  @GetMapping(value = "/{paymentSheetId}")
+  @GetMapping("/{paymentSheetId}")
   public ResponseEntity<PaymentSheetResponse> getPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
       final var result = paymentSheetService.findById(paymentSheetId);
       final var response = new PaymentSheetResponse(result);
-      return new ResponseEntity<>(response, HttpStatus.CREATED);
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -142,7 +133,6 @@ public class PaymentSheetController {
       final var response = new PaymentSheetResponse(result);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -154,7 +144,7 @@ public class PaymentSheetController {
    * @param requestForm    the new data for regular transport.
    * @return The regular transport data.
    */
-  @PostMapping(value = "/{paymentSheetId}" + "/addRegularTransport")
+  @PostMapping("/{paymentSheetId}" + "/addRegularTransport")
   public ResponseEntity<String> addRegularTransportToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddRegularTransportRequestForm requestForm) {
@@ -166,7 +156,6 @@ public class PaymentSheetController {
       );
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -178,7 +167,7 @@ public class PaymentSheetController {
    * @param regularTransportId The regular transport identifier.
    * @return The payment sheet without regular transport that has been deleted.
    */
-  @PostMapping(value = "/{paymentSheetId}" + "/{regularTransportId}")
+  @PostMapping("/{paymentSheetId}" + "/{regularTransportId}")
   public ResponseEntity<String>
         removeRegularTransportFromPaymentSheet(@PathVariable
   final Integer paymentSheetId, @PathVariable
@@ -189,7 +178,6 @@ public class PaymentSheetController {
       );
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -202,7 +190,7 @@ public class PaymentSheetController {
    *                       sheet.
    * @return The payment sheet data with self vehicle assocaited.
    */
-  @PostMapping(value = "/{paymentSheetId}" + "/addSelfVehicle")
+  @PostMapping("/{paymentSheetId}" + "/addSelfVehicle")
   public ResponseEntity<String> addSelfVehicleToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddSelfVehicleRequestForm requestForm) {
@@ -215,7 +203,6 @@ public class PaymentSheetController {
       return new ResponseEntity<>("", HttpStatus.OK);
 
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
@@ -227,14 +214,13 @@ public class PaymentSheetController {
    * @param paymentSheetId The payment sheet identifier.
    * @return The payment sheet data without self vehicle.
    */
-  @PostMapping(value = "/{paymentSheetId}" + "/removeSelfVehicle")
+  @PostMapping("/{paymentSheetId}" + "/removeSelfVehicle")
   public ResponseEntity<String> removeSelfVehicleFromPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
       paymentSheetService.removeSelfVehicle(paymentSheetId);
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -246,7 +232,7 @@ public class PaymentSheetController {
    * @param requestForm    The food housing data for add to payment sheet.
    * @return The payment sheet with data added.
    */
-  @PostMapping(value = "/{paymentSheetId}" + "/addFoodHousing")
+  @PostMapping("/{paymentSheetId}" + "/addFoodHousing")
   public ResponseEntity<String> addFoodHousingToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddFoodHousingToPaymentSheetRequestForm requestForm) {
@@ -259,7 +245,6 @@ public class PaymentSheetController {
       return new ResponseEntity<>("", HttpStatus.OK);
 
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -270,7 +255,7 @@ public class PaymentSheetController {
    * @param paymentSheetId The payment sheet identifier.
    * @return The payment sheet data without food housing.
    */
-  @PostMapping(value = "/{paymentSheetId}" + "/removeFoodHousing")
+  @PostMapping("/{paymentSheetId}" + "/removeFoodHousing")
   public ResponseEntity<String> removeFoodHousingFromPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
@@ -278,7 +263,6 @@ public class PaymentSheetController {
       return new ResponseEntity<>("", HttpStatus.OK);
 
     } catch (PaymentSheetServiceException e) {
-      LOGGER.error(EXCEPTION_MESSAGE_WRAPPER, e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }

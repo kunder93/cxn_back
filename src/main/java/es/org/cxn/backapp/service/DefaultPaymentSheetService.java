@@ -193,7 +193,7 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
 
   @Override
   public void remove(final Integer id) throws PaymentSheetServiceException {
-    var paymentSheet = paymentSheetRepository.findById(id);
+    final var paymentSheet = paymentSheetRepository.findById(id);
     if (paymentSheet.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
@@ -211,7 +211,7 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
         final LocalDate startDate, final LocalDate endDate
   ) throws PaymentSheetServiceException {
 
-    var paymentSheetOptional = paymentSheetRepository.findById(id);
+    final var paymentSheetOptional = paymentSheetRepository.findById(id);
     if (paymentSheetOptional.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     } else {

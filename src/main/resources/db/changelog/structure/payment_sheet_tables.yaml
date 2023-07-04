@@ -67,6 +67,7 @@ databaseChangeLog:
             type: bigint
             constraints:
               nullable: false
+              unique: true
         - column:
             name: payment_sheet_id
             type: bigint
@@ -214,3 +215,15 @@ databaseChangeLog:
         constraintName: fk_regular_transport_invoice
         referencedColumnNames: id
         referencedTableName: invoices     
+
+- changeSet:
+    id: regular_transport_category_values_constraint
+    author: Santiago
+    changes:  
+    - sql:
+            sql: "ALTER TABLE regulartransport ADD CONSTRAINT chk_category_values CHECK (category IN ('metro', 'tren', 'autobus', 'taxi', 'otro'))"
+
+    
+              
+        
+        
