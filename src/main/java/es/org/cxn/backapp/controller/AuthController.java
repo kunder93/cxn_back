@@ -119,7 +119,7 @@ public class AuthController {
   public ResponseEntity<SignUpResponseForm>
         registerUser(final @Valid @RequestBody
   SignUpRequestForm signUpRequestForm) {
-    var defaultUserRole = "USER";
+    var defaultUserRole = "SOCIO";
     try {
       userService.add(
             signUpRequestForm.getDni(), signUpRequestForm.getName(),

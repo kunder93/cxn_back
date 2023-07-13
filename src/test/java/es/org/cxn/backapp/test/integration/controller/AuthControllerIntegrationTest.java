@@ -38,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource("/application.properties")
 class AuthControllerIntegrationTest {
 
-  private final static String DEFAULT_USER_ROLE = "USER";
+  private final static String DEFAULT_USER_ROLE = "SOCIO";
   private final static String SIGN_UP_URL = "/api/auth/signup";
   private final static String SIGN_IN_URL = "/api/auth/signinn";
 
@@ -196,7 +196,7 @@ class AuthControllerIntegrationTest {
   }
 
   /**
-   * Sing in user and return Jwt token. Validate it.
+   * Sing in user with bad credentials unauthorized.
    *
    * @throws Exception When fails.
    */

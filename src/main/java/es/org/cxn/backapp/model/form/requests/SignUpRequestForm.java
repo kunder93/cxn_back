@@ -5,6 +5,7 @@ import es.org.cxn.backapp.model.form.Constants;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -41,6 +42,7 @@ public final class SignUpRequestForm implements Serializable {
         regexp = "^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$",
         message = Constants.DNI_BAD_FORMAT_MESSAGE
   )
+  @NotNull(message = Constants.DNI_BAD_FORMAT_MESSAGE)
   private String dni;
 
   /**
@@ -124,12 +126,12 @@ public final class SignUpRequestForm implements Serializable {
    * Email must not be null and must contain at least PASSWORD_MIN_LENGTH
    * non-whitespace character. String well formated email.
    */
-  @NotBlank(message = Constants.EMAIL_NOT_EMPTY_MESSAGE)
+  @NotBlank(message = Constants.EMAIL_NOT_VALID_MESSAGE)
   @Size(
         max = Constants.EMAIL_MAX_SIZE,
         message = Constants.MAX_SIZE_EMAIL_MESSAGE
   )
-  @Email(message = Constants.NOT_VALID_EMAIL_MESSAGE)
+  @Email(message = Constants.EMAIL_NOT_VALID_MESSAGE)
   private String email;
 
   /**

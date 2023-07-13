@@ -26,6 +26,11 @@ public final class Constants {
   public static final int EMAIL_MAX_SIZE = 50;
 
   /**
+   * Email min length.
+   */
+  public static final int EMAIL_MIN_SIZE = 5;
+
+  /**
    * Postal code max length.
    */
   public static final int POSTAL_CODE_MAX_LENGHT = 10;
@@ -149,13 +154,8 @@ public final class Constants {
   /**
    * Message validating NotEmpty email.
    */
-  public static final String EMAIL_NOT_EMPTY_MESSAGE =
-        "Email must not be null or empty.";
-
-  /**
-   * Message validating NotEmpty email.
-   */
-  public static final String NOT_VALID_EMAIL_MESSAGE = "Invalid email address.";
+  public static final String EMAIL_NOT_VALID_MESSAGE =
+        "Email not valid format.";
 
   /**
    * Message validating MaxSize email.

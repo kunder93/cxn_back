@@ -30,7 +30,7 @@
    
    
 INSERT INTO roles (name) VALUES
-   ('USER'),
+   ('SOCIO'),
    ('ADMIN'),
    ('PRESIDENTE'),
    ('SECRETARIO'),
