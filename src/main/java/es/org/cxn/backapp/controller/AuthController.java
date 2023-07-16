@@ -75,7 +75,7 @@ public class AuthController {
   /**
    * The user details service.
    */
-  private final UserDetailsService userDetailsService;
+  private final UserDetailsService usrDtlsSrv;
 
   /**
    * The jwt utilities.
@@ -100,7 +100,7 @@ public class AuthController {
     this.authManager = Preconditions.checkNotNull(
           authManag, "Received a null pointer as authenticationManager"
     );
-    this.userDetailsService = Preconditions.checkNotNull(
+    this.usrDtlsSrv = Preconditions.checkNotNull(
           userDetailsServ, "Received a null pointer as authenticationManager"
     );
     this.jwtUtils = Preconditions
@@ -119,7 +119,7 @@ public class AuthController {
   public ResponseEntity<SignUpResponseForm>
         registerUser(final @Valid @RequestBody
   SignUpRequestForm signUpRequestForm) {
-    var defaultUserRole = "USER";
+    final var DEFAULT_USER_ROLE = "ROLE_SOCIO";
     try {
       userService.add(
             signUpRequestForm.getDni(), signUpRequestForm.getName(),
@@ -133,16 +133,16 @@ public class AuthController {
             signUpRequestForm.getCountryNumericCode(),
             signUpRequestForm.getCountrySubdivisionName()
       );
-      final var createdUser =
-            userService.addRole(signUpRequestForm.getEmail(), defaultUserRole);
-      final var signUpResponseForm = new SignUpResponseForm(
+      final var createdUser = userService
+            .addRole(signUpRequestForm.getEmail(), DEFAULT_USER_ROLE);
+      final var signUpRspnsFrm = new SignUpResponseForm(
             createdUser.getDni(), createdUser.getName(),
             createdUser.getFirstSurname(), createdUser.getSecondSurname(),
             createdUser.getBirthDate(), createdUser.getGender(),
             createdUser.getEmail(), createdUser.getRoles()
       );
 
-      return new ResponseEntity<>(signUpResponseForm, HttpStatus.CREATED);
+      return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
 
     } catch (UserServiceException e) {
 
@@ -178,14 +178,14 @@ public class AuthController {
     }
     final MyPrincipalUser userDetails;
     try {
-      userDetails = (MyPrincipalUser) userDetailsService
+      userDetails = (MyPrincipalUser) usrDtlsSrv
             .loadUserByUsername(loginRequest.getEmail());
     } catch (UsernameNotFoundException e) {
       throw new ResponseStatusException(
             HttpStatus.UNAUTHORIZED, e.getMessage()
       );
     }
-    var jwt = jwtUtils.generateToken(userDetails);
+    final var jwt = jwtUtils.generateToken(userDetails);
     return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
   }
 

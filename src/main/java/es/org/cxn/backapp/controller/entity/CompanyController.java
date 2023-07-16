@@ -79,6 +79,8 @@ public class CompanyController {
    *
    * @return all stored companies.
    */
+  //  @PreAuthorize("hasRole('PRESIDENTE')")
+  //  @PreAuthorize("isAuthenticated()")
   @GetMapping()
   public ResponseEntity<CompanyListResponse> getAllCompanies() {
     final var companiesList = companyService.getCompanies();

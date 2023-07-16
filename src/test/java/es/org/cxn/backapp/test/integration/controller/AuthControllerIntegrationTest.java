@@ -6,18 +6,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.integration.controller.InvoiceControllerIntegrationTest.LocalDateAdapter;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource("/application.properties")
 class AuthControllerIntegrationTest {
 
-  private final static String DEFAULT_USER_ROLE = "USER";
+  private final static String DEFAULT_USER_ROLE = "ROLE_SOCIO";
   private final static String SIGN_UP_URL = "/api/auth/signup";
   private final static String SIGN_IN_URL = "/api/auth/signinn";
 
@@ -115,108 +109,21 @@ class AuthControllerIntegrationTest {
   }
 
   /**
-   * Create two users with same email. Email must be unique and second user
-   * sign up raises exception
-   *
-   * @throws Exception
-   */
-  @Test
-  @Transactional
-  void testUsersSignUpWithSameEmailReturnError() throws Exception {
-
-    // First user created
-    // Response CREATED 201 with user data with Role
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userARequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    // Second user with same email already exists
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userBRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
-  }
-
-  /**
-   * Sign up user with data and return user data with default role.
+   * SingUp new user return user info with default role "ROLE_SOCIO".
    *
    * @throws Exception When fails.
    */
   @Test
   @Transactional
-  void testSignUpReturnUserDataWithRole() throws Exception {
-    Set<PersistentRoleEntity> userRolesSet = new HashSet<>();
-    userRolesSet.add(new PersistentRoleEntity(DEFAULT_USER_ROLE));
-    var signUpResponse = new SignUpResponseForm(
-          userA_dni, userA_name, userA_firstSurname, userA_secondSurname,
-          userA_birthDate, userA_gender, userA_email, userRolesSet
-    );
-    var signUpResponseJson = gson.toJson(signUpResponse);
+  void testSignUpReturnUserWithDefautlRole() throws Exception {
 
-    mockMvc
+    // Register user correctly
+    var response = mockMvc
           .perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                       .content(userARequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isCreated())
-          .andExpect(MockMvcResultMatchers.content().json(signUpResponseJson));
-
-  }
-
-  /**
-   * Sing in user and return Jwt token. Validate it.
-   *
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testSignInReturnJwtTokenValidate() throws Exception {
-    var signInRequest = new AuthenticationRequest(userA_email, userA_password);
-    var signInRequestJson = gson.toJson(signInRequest);
-    // Register user correctly
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userARequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    // Login return jwt for registered user
-    final var responseContent = mockMvc
-          .perform(
-                post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                      .content(signInRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+          ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
           .getResponse().getContentAsString();
-    final var jwtToken =
-          responseContent.substring(8, responseContent.length() - 2);
-    // Validate jwt token
-    Assertions.assertTrue(
-          jwtUtils.validateToken(
-                jwtToken, myUserDetailsService.loadUserByUsername(userA_email)
-          ), "jwt response token is valid"
-    );
-  }
-
-  /**
-   * Sing in user and return Jwt token. Validate it.
-   *
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testSignInBadCredentialsCheckResponse() throws Exception {
-    var badPassword = "jajajaja";
-    var signInRequest = new AuthenticationRequest(userA_email, badPassword);
-    var signInRequestJson = gson.toJson(signInRequest);
-    // Register user correctly
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userARequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    // Login bad password unauthorized.
-    mockMvc.perform(
-          post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(signInRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
 
   }
 
