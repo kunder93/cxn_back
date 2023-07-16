@@ -37,8 +37,6 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -87,34 +85,26 @@ public class RoleController {
   @PostMapping()
   public ResponseEntity<UserChangeRoleResponseForm> addRoleToUser(@RequestBody
   final UserChangeRoleRequestForm userChangeRoleRequestForm) {
-    var user = SecurityContextHolder.getContext().getAuthentication();
+
     List<String> roleList = new ArrayList<>();
 
-    if (user.getAuthorities()
-          .contains(new SimpleGrantedAuthority(ADMIN_ROLE))) {
-      UserEntity userWithAddedRole;
-      try {
-        userWithAddedRole = userService.addRole(
-              userChangeRoleRequestForm.getUserEmail(),
-              userChangeRoleRequestForm.getRoleName()
-        );
-        userWithAddedRole.getRoles().forEach(e -> roleList.add(e.getName()));
-        return new ResponseEntity<>(
-              new UserChangeRoleResponseForm(
-                    userWithAddedRole.getEmail(), roleList
-              ), null, HttpStatus.OK
-        );
-      } catch (UserServiceException e) {
-        throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, e.getMessage(), e
-        );
-      }
+    UserEntity userWithAddedRole;
+    try {
+      userWithAddedRole = userService.addRole(
+            userChangeRoleRequestForm.getUserEmail(),
+            userChangeRoleRequestForm.getRoleName()
+      );
+      userWithAddedRole.getRoles().forEach(e -> roleList.add(e.getName()));
+      return new ResponseEntity<>(
+            new UserChangeRoleResponseForm(
+                  userWithAddedRole.getEmail(), roleList
+            ), HttpStatus.OK
+      );
+    } catch (UserServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
-    return new ResponseEntity<>(
-          new UserChangeRoleResponseForm(
-                userChangeRoleRequestForm.getUserEmail(), roleList
-          ), null, HttpStatus.FORBIDDEN
-    );
   }
 
   /**
@@ -127,34 +117,23 @@ public class RoleController {
   public ResponseEntity<UserChangeRoleResponseForm>
         deleteRoleFromUser(@RequestBody
   final UserChangeRoleRequestForm userChangeRoleRequestForm) {
-    var user = SecurityContextHolder.getContext().getAuthentication();
     List<String> roleList = new ArrayList<>();
     UserEntity userWithAddedRole;
-
-    if (user.getAuthorities().contains(new SimpleGrantedAuthority(ADMIN_ROLE))
-          && !userChangeRoleRequestForm.getRoleName().equals(ADMIN_ROLE)) {
-
-      try {
-        userWithAddedRole = userService.removeRole(
-              userChangeRoleRequestForm.getUserEmail(),
-              userChangeRoleRequestForm.getRoleName()
-        );
-        userWithAddedRole.getRoles().forEach(e -> roleList.add(e.getName()));
-        return new ResponseEntity<>(
-              new UserChangeRoleResponseForm(
-                    userWithAddedRole.getEmail(), roleList
-              ), null, HttpStatus.OK
-        );
-      } catch (UserServiceException e) {
-        throw new ResponseStatusException(
-              HttpStatus.BAD_REQUEST, e.getMessage(), e
-        );
-      }
+    try {
+      userWithAddedRole = userService.removeRole(
+            userChangeRoleRequestForm.getUserEmail(),
+            userChangeRoleRequestForm.getRoleName()
+      );
+      userWithAddedRole.getRoles().forEach(e -> roleList.add(e.getName()));
+      return new ResponseEntity<>(
+            new UserChangeRoleResponseForm(
+                  userWithAddedRole.getEmail(), roleList
+            ), null, HttpStatus.OK
+      );
+    } catch (UserServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
-    return new ResponseEntity<>(
-          new UserChangeRoleResponseForm(
-                userChangeRoleRequestForm.getUserEmail(), roleList
-          ), null, HttpStatus.FORBIDDEN
-    );
   }
 }
