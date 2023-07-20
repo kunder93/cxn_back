@@ -31,6 +31,7 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
@@ -62,11 +63,15 @@ public final class DefaultUserService implements UserService {
    */
   public static final String ROLE_NOT_FOUND_MESSAGE = "Role not found.";
   /**
-   * Role not found message for exception.
+   * User with this email exists message for exception.
    */
   public static final String USER_EMAIL_EXISTS_MESSAGE =
         "User email already exists.";
-
+  /**
+   * User with this dni exists message for exception.
+   */
+  public static final String USER_DNI_EXISTS_MESSAGE =
+        "User dni already exists.";
   /**
    * Repository for the user entities handled by the service.
    */
@@ -144,9 +149,13 @@ public final class DefaultUserService implements UserService {
         final String gender, final String password, final String email,
         final String apartmentNumber, final String building, final String city,
         final String postalCode, final String street,
-        final Integer countryNumericCode, final String countrySubdivisionName
+        final Integer countryNumericCode, final String countrySubdivisionName,
+        final UserType kindMember
   ) throws UserServiceException {
 
+    if (userRepository.findByDni(dni).isPresent()) {
+      throw new UserServiceException(USER_DNI_EXISTS_MESSAGE);
+    }
     if (userRepository.findByEmail(email).isPresent()) {
       throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
     } else {
@@ -160,6 +169,7 @@ public final class DefaultUserService implements UserService {
       save.setBirthDate(birthDate);
       save.setPassword(new BCryptPasswordEncoder().encode(password));
       save.setEmail(email);
+      save.setKindMember(kindMember);
 
       var address = new PersistentAddressEntity();
       address.setApartmentNumber(apartmentNumber);
@@ -273,6 +283,24 @@ public final class DefaultUserService implements UserService {
     userEntity.setGender(userForm.getGender());
 
     return userRepository.save(userEntity);
+  }
+
+  @Override
+  public UserEntity
+        changeKindMember(final String userEmail, final UserType newKindMember)
+              throws UserServiceException {
+    Optional<PersistentUserEntity> userOptional;
+
+    userOptional = userRepository.findByEmail(userEmail);
+    if (userOptional.isEmpty()) {
+      throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
+    } else {
+      var userEntity = userOptional.get();
+      userEntity.setKindMember(newKindMember);
+      userRepository.save(userEntity);
+
+      return userEntity;
+    }
   }
 
 }

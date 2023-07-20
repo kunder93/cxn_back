@@ -106,3 +106,23 @@ databaseChangeLog:
         constraintName: fk_roles_users_users
         referencedColumnNames: dni
         referencedTableName: users
+
+
+- changeSet:
+      id: addColumnKindMember
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: kind_member
+                  type: varchar(20)  
+                  defaultValue: socio_numero  # Set the default value
+            constraints:
+              - validCheckConstraint:
+                  name: check_kind_member_values
+                  checkSql: "kind_member IN ('socio_numero', 'socio_aspirante', 'socio_honorario', 'socio_familiar')"
+     
+        
+  

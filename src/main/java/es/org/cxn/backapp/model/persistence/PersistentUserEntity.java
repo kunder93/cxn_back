@@ -50,6 +50,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * User Entity.
  * <p>
@@ -62,6 +65,31 @@ import java.util.Set;
 public class PersistentUserEntity implements UserEntity {
 
   /**
+   * kind of member that users can be.
+   *
+   * @author Santi
+   *
+   */
+  public enum UserType {
+    /**
+     * Socio numerario, cuota de 30, mayor de 18 independiente economicamente.
+     */
+    SOCIO_NUMERO,
+    /**
+    * Socio aspirante, menor de 18, sin voto en junta.
+    */
+    SOCIO_ASPIRANTE,
+    /**
+    * Socio honorario, cuota de 0, sin voto en junta.
+    */
+    SOCIO_HONORARIO,
+    /**
+    * Depende economicamente de socio de numero, cuota 0, sin voto en junta.
+    */
+    SOCIO_FAMILIAR
+  }
+
+  /**
    * Serialization ID.
    */
   @Transient
@@ -72,6 +100,8 @@ public class PersistentUserEntity implements UserEntity {
    */
   @Id
   @Column(name = "dni", nullable = false, unique = true)
+  @Getter
+  @Setter
   private String dni = "";
 
   /**
@@ -80,6 +110,8 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "name", nullable = false, unique = false)
+  @Getter
+  @Setter
   private String name = "";
 
   /**
@@ -88,6 +120,8 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "first_surname", nullable = false, unique = false)
+  @Getter
+  @Setter
   private String firstSurname = "";
 
   /**
@@ -96,6 +130,8 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "second_surname", nullable = false, unique = false)
+  @Getter
+  @Setter
   private String secondSurname = "";
 
   /**
@@ -105,6 +141,8 @@ public class PersistentUserEntity implements UserEntity {
    */
   @Temporal(TemporalType.DATE)
   @Column(name = "birth_date", nullable = false, unique = false)
+  @Getter
+  @Setter
   private LocalDate birthDate;
 
   /**
@@ -113,6 +151,8 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "gender", nullable = false, unique = false)
+  @Getter
+  @Setter
   private String gender = "";
 
   /**
@@ -120,6 +160,8 @@ public class PersistentUserEntity implements UserEntity {
    *
    */
   @Column(name = "password", nullable = false, unique = false)
+  @Getter
+  @Setter
   private String password = "";
 
   /**
@@ -127,7 +169,18 @@ public class PersistentUserEntity implements UserEntity {
    *
    */
   @Column(name = "email", nullable = false, unique = true)
+  @Getter
+  @Setter
   private String email = "";
+
+  /**
+   * Kind of user member.
+   *
+   */
+  @Column(name = "kind_member", nullable = false, unique = false)
+  @Getter
+  @Setter
+  private UserType kindMember = UserType.SOCIO_NUMERO;
 
   /**
    * Roles associated with this user.
@@ -137,18 +190,24 @@ public class PersistentUserEntity implements UserEntity {
         name = "role_users", joinColumns = @JoinColumn(name = "user_dni"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
   )
+  @Getter
+  @Setter
   private Set<PersistentRoleEntity> roles = new HashSet<>();
 
   /**
    * The payment sheet user owner.
    */
   @OneToMany(mappedBy = "userOwner")
+  @Getter
+  @Setter
   private List<PersistentPaymentSheetEntity> paymentSheets = new ArrayList<>();
 
   /**
    * The user address.
    */
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Getter
+  @Setter
   private PersistentAddressEntity address;
 
   /**
@@ -170,13 +229,14 @@ public class PersistentUserEntity implements UserEntity {
    * @param passwordValue      the user password.
    * @param emailValue         the user email.
    * @param address            the user address.
+   * @param kindMember         the user kind of member.
    */
   public PersistentUserEntity(
         final String dniValue, final String nameValue,
         final String firstSurnameValue, final String secondSurnameValue,
         final LocalDate birthDateValue, final String genderValue,
         final String passwordValue, final String emailValue,
-        final PersistentAddressEntity address
+        final PersistentAddressEntity address, final UserType kindMember
   ) {
     super();
 
@@ -196,189 +256,7 @@ public class PersistentUserEntity implements UserEntity {
           checkNotNull(passwordValue, "Received a null pointer as password");
     this.email = checkNotNull(emailValue, "Received a null pointer as email");
     this.address = address;
-  }
-
-  /**
-   * Returns the dni aka identifier assigned to this user entity.
-   *
-   * @return the user's identifier
-   */
-  @Override
-  public String getDni() {
-    return dni;
-  }
-
-  /**
-   * Get address entity.
-   */
-  @Override
-  public PersistentAddressEntity getAddress() {
-    return address;
-  }
-
-  /**
-   * Set address entity.
-   */
-  @Override
-  public void setAddress(final PersistentAddressEntity address) {
-    this.address = address;
-  }
-
-  /**
-   * Get user name.
-   */
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Get user first surname.
-   */
-  @Override
-  public String getFirstSurname() {
-    return firstSurname;
-  }
-
-  /**
-   * Get user second surname.
-   */
-  @Override
-  public String getSecondSurname() {
-    return secondSurname;
-  }
-
-  /**
-   * Get user birth date.
-   */
-  @Override
-  public LocalDate getBirthDate() {
-    return birthDate;
-  }
-
-  /**
-   * Get user gender.
-   */
-  @Override
-  public String getGender() {
-    return gender;
-  }
-
-  /**
-   * Get user password.
-   */
-  @Override
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * Get user email.
-   */
-  @Override
-  public String getEmail() {
-    return email;
-  }
-
-  /**
-   * Get user set of roles.
-   */
-  @Override
-  public Set<PersistentRoleEntity> getRoles() {
-    return new HashSet<>(roles);
-  }
-
-  /**
-   * @return The payment sheet list.
-   */
-  public List<PersistentPaymentSheetEntity> getPaymentSheets() {
-    return new ArrayList<>(paymentSheets);
-  }
-
-  /**
-   * @param paymentSheets The payment sheet list.
-   */
-  public void setPaymentSheets(
-        final List<PersistentPaymentSheetEntity> paymentSheets
-  ) {
-    this.paymentSheets = new ArrayList<>(paymentSheets);
-  }
-
-  /**
-   * Set user id.
-   */
-  @Override
-  public void setDni(final String value) {
-    dni = checkNotNull(value, "Received a null pointer as id");
-  }
-
-  /**
-   * Set user name.
-   */
-  @Override
-  public void setName(final String value) {
-    this.name = checkNotNull(value, "Received a null pointer as name");
-  }
-
-  /**
-   * Set first surname.
-   */
-  @Override
-  public void setFirstSurname(final String value) {
-    this.firstSurname =
-          checkNotNull(value, "Received a null pointer as first surname");
-  }
-
-  /**
-   * Set second surname.
-   */
-  @Override
-  public void setSecondSurname(final String value) {
-    this.secondSurname =
-          checkNotNull(value, "Received a null pointer as second surname");
-  }
-
-  /**
-   * Set birth date.
-   */
-  @Override
-  public void setBirthDate(final LocalDate value) {
-    this.birthDate =
-          checkNotNull(value, "Received a null pointer as birth date");
-  }
-
-  /**
-   * Set gender.
-   */
-  @Override
-  public void setGender(final String value) {
-    this.gender = checkNotNull(value, "Received a null pointer as gender");
-  }
-
-  /**
-   * Set password.
-   */
-  @Override
-  public void setPassword(final String value) {
-    this.password = checkNotNull(value, "Received a null pointer as password");
-
-  }
-
-  /**
-   * Set email.
-   */
-  @Override
-  public void setEmail(final String value) {
-    this.email = checkNotNull(value, "Received a null pointer as email");
-
-  }
-
-  /**
-   * Put a Set of Roles.
-   */
-  @Override
-  public void setRoles(final Set<PersistentRoleEntity> roles) {
-    this.roles = new HashSet<>(roles);
+    this.kindMember = kindMember;
   }
 
   /**
@@ -408,7 +286,7 @@ public class PersistentUserEntity implements UserEntity {
   public int hashCode() {
     return Objects.hash(
           birthDate, email, firstSurname, gender, dni, name, password,
-          secondSurname
+          secondSurname, kindMember
     );
   }
 
@@ -433,7 +311,8 @@ public class PersistentUserEntity implements UserEntity {
           && Objects.equals(gender, other.gender)
           && Objects.equals(dni, other.dni) && Objects.equals(name, other.name)
           && Objects.equals(password, other.password)
-          && Objects.equals(secondSurname, other.secondSurname);
+          && Objects.equals(secondSurname, other.secondSurname)
+          && Objects.equals(kindMember, other.kindMember);
   }
 
   /**
@@ -444,7 +323,8 @@ public class PersistentUserEntity implements UserEntity {
     return "PersistentUserEntity [dni=" + dni + ", name=" + name
           + ", first_surname=" + firstSurname + ", second_surname="
           + secondSurname + ", birth_date=" + birthDate + ", gender=" + gender
-          + ", password=" + password + ", email=" + email + "]";
+          + ", password=" + password + ", kindMember=" + kindMember + ", email="
+          + email + "]";
   }
 
 }

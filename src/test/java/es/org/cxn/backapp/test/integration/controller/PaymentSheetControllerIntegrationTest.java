@@ -16,6 +16,7 @@ import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.JwtUtils;
 
 import jakarta.transaction.Transactional;
@@ -99,11 +100,15 @@ class PaymentSheetControllerIntegrationTest {
         .registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
 
   private static SignUpRequestForm createUserRequestForm =
-        new SignUpRequestForm(
-              USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
-              USER_BIRTH_DATE, "male", "password123", USER_EMAIL, "postCode",
-              "apartnumber", "building", "stret", "city", 724, "Lugo"
-        );
+
+        SignUpRequestForm.builder().dni(USER_DNI).name(USER_NAME)
+              .firstSurname(USER_FIRST_SURNAME)
+              .secondSurname(USER_SECOND_SURNAME).birthDate(USER_BIRTH_DATE)
+              .gender("male").password("password123").email(USER_EMAIL)
+              .postalCode("postCode").apartmentNumber("apartnumber")
+              .building("build").street("street").city("city")
+              .countryNumericCode(724).countrySubdivisionName("Lugo")
+              .kindMember(UserType.SOCIO_NUMERO).build();
 
   private String createUserRequestFormJson = gson.toJson(createUserRequestForm);
 

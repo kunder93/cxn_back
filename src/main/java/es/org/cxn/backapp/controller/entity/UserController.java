@@ -27,21 +27,21 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
+import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
 import es.org.cxn.backapp.service.UserService;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,13 +57,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/user")
 public class UserController {
 
-  /**
-   * The logger.
-   */
-  private static final Logger LOGGER = LoggerFactory
-        .getLogger(UserController.class);
-
-  /**
+  /**s
    * The user service.
    */
   private final UserService userService;
@@ -87,14 +81,12 @@ public class UserController {
   @CrossOrigin
   @GetMapping()
   public ResponseEntity<UserDataResponse> getUserData() {
-
-    final var authName = SecurityContextHolder.getContext().getAuthentication()
-          .getName();
+    final var authName =
+          SecurityContextHolder.getContext().getAuthentication().getName();
     try {
       final var user = userService.findByEmail(authName);
       return new ResponseEntity<>(new UserDataResponse(user), HttpStatus.OK);
     } catch (UserServiceException e) {
-      LOGGER.error("An UserServiceException occurred: {}", e.getMessage(), e);
       throw new ResponseStatusException(
             HttpStatus.UNAUTHORIZED, e.getMessage()
       );
@@ -111,8 +103,8 @@ public class UserController {
   @PostMapping()
   public ResponseEntity<UserUpdateResponseForm> updateUserData(@RequestBody
   final UserUpdateRequestForm userUpdateRequestForm) {
-    var userName = SecurityContextHolder.getContext().getAuthentication()
-          .getName();
+    var userName =
+          SecurityContextHolder.getContext().getAuthentication().getName();
     var userServiceUpdateForm = new UserServiceUpdateForm(
           userUpdateRequestForm.getName(),
           userUpdateRequestForm.getFirstSurname(),
@@ -131,7 +123,6 @@ public class UserController {
       );
 
     } catch (UserServiceException e) {
-      LOGGER.error("An UserServiceException occurred: {}", e.getMessage(), e);
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
     }
   }
@@ -146,7 +137,29 @@ public class UserController {
   public ResponseEntity<UserListDataResponse> getAllUserData() {
     var users = userService.getAll();
     return new ResponseEntity<>(new UserListDataResponse(users), HttpStatus.OK);
+  }
 
+  /**
+   * Change user kind of member.
+   *
+   * @param userChangeKindMemberRequest The email as user identifier and new kind of member.
+   * @return user data with new kind of member.
+   */
+  @CrossOrigin
+  @PatchMapping("/changeKindOfMember")
+  public ResponseEntity<UserDataResponse> changeUserKindOfMember(@RequestBody
+  final UserChangeKindMemberRequest userChangeKindMemberRequest) {
+    UserEntity result;
+    try {
+      result = userService.changeKindMember(
+            userChangeKindMemberRequest.getEmail(),
+            userChangeKindMemberRequest.getKindMember()
+      );
+    } catch (UserServiceException e) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
   }
 
 }

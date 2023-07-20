@@ -4,6 +4,7 @@ package es.org.cxn.backapp.model.form.responses;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -65,6 +66,11 @@ public final class SignUpResponseForm implements Serializable {
   private String email;
 
   /**
+   * User kind of member.
+   */
+  private UserType kindMember;
+
+  /**
    * User roles set field.
    */
   private Set<String> userRoles = new HashSet<>();
@@ -86,13 +92,15 @@ public final class SignUpResponseForm implements Serializable {
    * @param birthDateValue     the birth date field.
    * @param genderValue        the gender field.
    * @param emailValue         the email field.
+   * @param kindMember         the kind member field.
    * @param userRolesSet       the set of user roles to get name.
    */
   public SignUpResponseForm(
         final String dniValue, final String nameValue,
         final String firstSurnameValue, final String secondSurnameValue,
         final LocalDate birthDateValue, final String genderValue,
-        final String emailValue, final Set<PersistentRoleEntity> userRolesSet
+        final String emailValue, final UserType kindMember,
+        final Set<PersistentRoleEntity> userRolesSet
   ) {
     super();
     this.dni = dniValue;
@@ -102,6 +110,7 @@ public final class SignUpResponseForm implements Serializable {
     this.birthDate = birthDateValue;
     this.gender = genderValue;
     this.email = emailValue;
+    this.kindMember = kindMember;
     userRolesSet.forEach(role -> this.userRoles.add(role.getName()));
   }
 
@@ -166,6 +175,15 @@ public final class SignUpResponseForm implements Serializable {
    */
   public String getEmail() {
     return email;
+  }
+
+  /**
+   * Returns the value of the kind member field.
+   *
+   * @return the value of the kind member field.
+   */
+  public UserType getKindMember() {
+    return kindMember;
   }
 
   /**
@@ -235,6 +253,15 @@ public final class SignUpResponseForm implements Serializable {
   }
 
   /**
+   * Sets the value of the kindMember field.
+   *
+   * @param value the new value for the kindMember field.
+   */
+  public void setGender(final UserType value) {
+    this.kindMember = value;
+  }
+
+  /**
    * Sets the value of the email field.
    *
    * @param value the new value for the email field.
@@ -255,7 +282,8 @@ public final class SignUpResponseForm implements Serializable {
   @Override
   public int hashCode() {
     return Objects.hash(
-          birthDate, dni, email, firstSurname, gender, name, secondSurname
+          birthDate, dni, email, firstSurname, gender, name, secondSurname,
+          kindMember
     );
   }
 
@@ -277,7 +305,8 @@ public final class SignUpResponseForm implements Serializable {
           && Objects.equals(firstSurname, other.firstSurname)
           && Objects.equals(gender, other.gender)
           && Objects.equals(name, other.name)
-          && Objects.equals(secondSurname, other.secondSurname);
+          && Objects.equals(secondSurname, other.secondSurname)
+          && Objects.equals(kindMember, other.kindMember);
   }
 
   @Override
@@ -285,7 +314,7 @@ public final class SignUpResponseForm implements Serializable {
     return "SignUpResponseForm [dni=" + dni + ", name=" + name
           + ", firstSurname=" + firstSurname + ", secondSurname="
           + secondSurname + ", birthDate=" + birthDate + ", gender=" + gender
-          + ", email=" + email + "]";
+          + ", kindMember=" + kindMember + ", email=" + email + "]";
   }
 
 }

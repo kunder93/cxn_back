@@ -3,6 +3,7 @@ package es.org.cxn.backapp.tes.unit.validation;
 
 import es.org.cxn.backapp.model.form.Constants;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -47,6 +48,7 @@ final class TestSignUpRequestValidation {
   private static final String validCity = "Naron";
   private static final Integer validCountryNumericCode = Integer.valueOf(340);
   private static final String validCountrySubdivisionName = "Angunio";
+  private static final UserType validKindMember = UserType.SOCIO_NUMERO;
 
   /**
    * Default constructor.
@@ -76,12 +78,16 @@ final class TestSignUpRequestValidation {
             "12345678A" }
   )
   void testValidDni(final String dniValue) {
-    var signUpRequest = new SignUpRequestForm(
-          dniValue, validName, validFirstSurname, validSecondSurname,
-          validBirthDate, validGender, validPassword, validEmail,
-          validPostalCode, validApartmentNumber, validBuilding, validStreet,
-          validCity, validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(dniValue)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -101,12 +107,16 @@ final class TestSignUpRequestValidation {
             "12A34567A8", "12345678", "123456789", "AAAAAAAAA" }
   )
   void testNotValidDni(final String dniValue) {
-    var signUpRequest = new SignUpRequestForm(
-          dniValue, validName, validFirstSurname, validSecondSurname,
-          validBirthDate, validGender, validPassword, validEmail,
-          validPostalCode, validApartmentNumber, validBuilding, validStreet,
-          validCity, validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(dniValue)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -130,12 +140,16 @@ final class TestSignUpRequestValidation {
   @Test
   void testNullDniNotValid() {
     final String dniValue = null;
-    var signUpRequest = new SignUpRequestForm(
-          dniValue, validName, validFirstSurname, validSecondSurname,
-          validBirthDate, validGender, validPassword, validEmail,
-          validPostalCode, validApartmentNumber, validBuilding, validStreet,
-          validCity, validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(dniValue)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -160,12 +174,16 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @ValueSource(strings = { "", " ", "    " })
   void testNameBlankNotValid(final String name) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, name, validFirstSurname, validSecondSurname, validBirthDate,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni).name(name)
+          .firstSurname(validFirstSurname).secondSurname(validSecondSurname)
+          .birthDate(validBirthDate).gender(validGender).password(validPassword)
+          .email(validEmail).postalCode(validPostalCode)
+          .apartmentNumber(validApartmentNumber).building(validBuilding)
+          .street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -192,12 +210,16 @@ final class TestSignUpRequestValidation {
   @Test
   void testNullNameNotValid() {
     final String nameValue = null;
-    var signUpRequest = new SignUpRequestForm(
-          validDni, nameValue, validFirstSurname, validSecondSurname,
-          validBirthDate, validGender, validPassword, validEmail,
-          validPostalCode, validApartmentNumber, validBuilding, validStreet,
-          validCity, validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(nameValue).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -227,12 +249,16 @@ final class TestSignUpRequestValidation {
             /*26 with special characters */"dsadsadadwd€€14@|#|4€#€¬~@" }
   )
   void testNameLengthNotValid(final String name) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, name, validFirstSurname, validSecondSurname, validBirthDate,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni).name(name)
+          .firstSurname(validFirstSurname).secondSurname(validSecondSurname)
+          .birthDate(validBirthDate).gender(validGender).password(validPassword)
+          .email(validEmail).postalCode(validPostalCode)
+          .apartmentNumber(validApartmentNumber).building(validBuilding)
+          .street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -263,12 +289,16 @@ final class TestSignUpRequestValidation {
             /*25 with special characters */"dsdsadadwd€€14@|#|4€#€¬~@" }
   )
   void testNameValid(final String name) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, name, validFirstSurname, validSecondSurname, validBirthDate,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni).name(name)
+          .firstSurname(validFirstSurname).secondSurname(validSecondSurname)
+          .birthDate(validBirthDate).gender(validGender).password(validPassword)
+          .email(validEmail).postalCode(validPostalCode)
+          .apartmentNumber(validApartmentNumber).building(validBuilding)
+          .street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -283,12 +313,16 @@ final class TestSignUpRequestValidation {
   @Test
   void testNullFirstSurnameNotValid() {
     final String firstSurname = null;
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, firstSurname, validSecondSurname, validBirthDate,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(firstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -315,12 +349,16 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @ValueSource(strings = { "", " ", "    " })
   void testFirstSurnameBlankNotValid(final String firstSurname) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, firstSurname, validSecondSurname, validBirthDate,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(firstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -354,12 +392,15 @@ final class TestSignUpRequestValidation {
             /*26 with special characters */"dsadsadadwd€€14@|#|4€#€¬~@" }
   )
   void testFirstSurnameLengthNotValid(final String firstSurname) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, firstSurname, validSecondSurname, validBirthDate,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(firstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -394,12 +435,15 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @MethodSource("datePastProvider")
   void testOnlyPastBirthDateAreValid(final LocalDate date) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, validFirstSurname, validSecondSurname, date,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(date).gender(validGender)
+          .password(validPassword).email(validEmail).postalCode(validPostalCode)
+          .apartmentNumber(validApartmentNumber).building(validBuilding)
+          .street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -423,12 +467,15 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @MethodSource("dateFutureProvider")
   void testFutureBirthDateNotValid(final LocalDate date) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, validFirstSurname, validSecondSurname, date,
-          validGender, validPassword, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(date).gender(validGender)
+          .password(validPassword).email(validEmail).postalCode(validPostalCode)
+          .apartmentNumber(validApartmentNumber).building(validBuilding)
+          .street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -452,12 +499,15 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @ValueSource(strings = { "", " ", "                 " })
   void testBlankPasswordNotValid(final String password) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, validFirstSurname, validSecondSurname,
-          validBirthDate, validGender, password, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(password).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
 
@@ -491,12 +541,15 @@ final class TestSignUpRequestValidation {
             /*22*/ "1234567890123456789012" }
   )
   void testPasswordLengthOutBoundsNotValid(final String password) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, validFirstSurname, validSecondSurname,
-          validBirthDate, validGender, password, validEmail, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(password).email(validEmail)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -523,12 +576,15 @@ final class TestSignUpRequestValidation {
             /*52*/ "baaaaaaaaaaaaaverylongEmailExample@VeryLongEmail.com" }
   )
   void testEmailLengthOutBoundsNotValid(final String email) {
-    var signUpRequest = new SignUpRequestForm(
-          validDni, validName, validFirstSurname, validSecondSurname,
-          validBirthDate, validGender, validPassword, email, validPostalCode,
-          validApartmentNumber, validBuilding, validStreet, validCity,
-          validCountryNumericCode, validCountrySubdivisionName
-    );
+    var signUpRequest = SignUpRequestForm.builder().dni(validDni)
+          .name(validName).firstSurname(validFirstSurname)
+          .secondSurname(validSecondSurname).birthDate(validBirthDate)
+          .gender(validGender).password(validPassword).email(email)
+          .postalCode(validPostalCode).apartmentNumber(validApartmentNumber)
+          .building(validBuilding).street(validStreet).city(validCity)
+          .countryNumericCode(validCountryNumericCode)
+          .countrySubdivisionName(validCountrySubdivisionName)
+          .kindMember(validKindMember).build();
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions

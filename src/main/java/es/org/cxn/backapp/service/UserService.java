@@ -24,12 +24,14 @@
 
 package es.org.cxn.backapp.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserServiceUpdateForm;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Service for the User entity domain.
@@ -61,6 +63,7 @@ public interface UserService {
    *                               identifier.
    * @param countrySubdivisionName The user address country subdivision name aka
    *                               identifier.
+   * @param kindMember             The user kindMember.
    * @return The user entity created.
    * @throws UserServiceException If fails.
    */
@@ -68,7 +71,8 @@ public interface UserService {
         String dni, String name, String firstSurname, String secondSurname,
         LocalDate birthDate, String gender, String password, String email,
         String apartmentNumber, String building, String city, String postalCode,
-        String street, Integer countryNumericCode, String countrySubdivisionName
+        String street, Integer countryNumericCode,
+        String countrySubdivisionName, UserType kindMember
   ) throws UserServiceException;
 
   /**
@@ -142,5 +146,16 @@ public interface UserService {
    * @return Get list with all users.
    */
   List<PersistentUserEntity> getAll();
+
+  /**
+   * Change the user kind member.
+   *
+   * @param userEmail The user email aka identifier.
+   * @param newKindMember The new user kind member.
+   * @return User entity with change.
+   * @throws UserServiceException When cannot change the user kind member.
+   */
+  UserEntity changeKindMember(String userEmail, UserType newKindMember)
+        throws UserServiceException;
 
 }

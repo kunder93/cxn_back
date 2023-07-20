@@ -32,9 +32,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 import org.hibernate.validator.constraints.Length;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents the form used login user.
@@ -48,6 +51,9 @@ import org.hibernate.validator.constraints.Length;
  *
  * @author Santiago Paz Perez.
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public final class AuthenticationRequest implements Serializable {
 
   /**
@@ -80,88 +86,5 @@ public final class AuthenticationRequest implements Serializable {
         message = Constants.LENGTH_PASSWORD_MESSAGE
   )
   private String password;
-
-  /**
-   * Constructs a DTO for Login request.
-   */
-  public AuthenticationRequest() {
-    super();
-  }
-
-  /**
-   * Constructs a DTO for Login Request with given data.
-   *
-   * @param emailValue    the email value field
-   * @param passwordValue the password value field
-   */
-  public AuthenticationRequest(
-        final String emailValue, final String passwordValue
-  ) {
-    super();
-    this.email = emailValue;
-    this.password = passwordValue;
-  }
-
-  /**
-   * Returns the value of the email field.
-   *
-   * @return the value of the email field
-   */
-  public String getEmail() {
-    return email;
-  }
-
-  /**
-   * Returns the value of the password field.
-   *
-   * @return the value of the password field
-   */
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * Sets the value of the email field.
-   *
-   * @param value the new value for the email field.
-   */
-  public void setEmail(final String value) {
-    email = value;
-  }
-
-  /**
-   * Sets the value of the password field.
-   *
-   * @param value the new value for the password field.
-   */
-  public void setPassword(final String value) {
-    password = value;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(email, password);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (AuthenticationRequest) obj;
-    return Objects.equals(email, other.email)
-          && Objects.equals(password, other.password);
-  }
-
-  @Override
-  public String toString() {
-    return "LoginRequestForm [email=" + email + ", password=" + password + "]";
-  }
 
 }

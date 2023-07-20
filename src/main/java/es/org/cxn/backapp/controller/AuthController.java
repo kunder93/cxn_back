@@ -131,7 +131,8 @@ public class AuthController {
             signUpRequestForm.getBuilding(), signUpRequestForm.getCity(),
             signUpRequestForm.getPostalCode(), signUpRequestForm.getStreet(),
             signUpRequestForm.getCountryNumericCode(),
-            signUpRequestForm.getCountrySubdivisionName()
+            signUpRequestForm.getCountrySubdivisionName(),
+            signUpRequestForm.getKindMember()
       );
       final var createdUser = userService
             .addRole(signUpRequestForm.getEmail(), DEFAULT_USER_ROLE);
@@ -139,7 +140,8 @@ public class AuthController {
             createdUser.getDni(), createdUser.getName(),
             createdUser.getFirstSurname(), createdUser.getSecondSurname(),
             createdUser.getBirthDate(), createdUser.getGender(),
-            createdUser.getEmail(), createdUser.getRoles()
+            createdUser.getEmail(), createdUser.getKindMember(),
+            createdUser.getRoles()
       );
 
       return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
