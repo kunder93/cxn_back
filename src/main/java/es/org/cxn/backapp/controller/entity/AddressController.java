@@ -98,7 +98,7 @@ public class AddressController {
       );
     } catch (AddressServiceException e) {
       throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, e.getMessage()
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
 
       );
     }

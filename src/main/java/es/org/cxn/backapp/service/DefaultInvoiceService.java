@@ -33,6 +33,7 @@ import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.repository.InvoiceEntityRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,9 +70,8 @@ public final class DefaultInvoiceService implements InvoiceService {
   public DefaultInvoiceService(final InvoiceEntityRepository repo) {
     super();
 
-    invoiceRepository = checkNotNull(
-          repo, "Received a null pointer as repository"
-    );
+    invoiceRepository =
+          checkNotNull(repo, "Received a null pointer as repository");
   }
 
   @Transactional
@@ -84,8 +84,8 @@ public final class DefaultInvoiceService implements InvoiceService {
         final PersistentCompanyEntity buyer
 
   ) throws InvoiceServiceException {
-    var invoices = invoiceRepository
-          .findByNumberAndSeries(numberValue, seriesValue);
+    final var invoices =
+          invoiceRepository.findByNumberAndSeries(numberValue, seriesValue);
     if (!invoices.isEmpty()) {
       throw new InvoiceServiceException(INVOICE_EXISTS_MESSAGE);
     }
@@ -108,9 +108,10 @@ public final class DefaultInvoiceService implements InvoiceService {
   @Override
   public void remove(final String series, final int number)
         throws InvoiceServiceException {
-    var invoicesList = invoiceRepository.findByNumberAndSeries(number, series);
+    final var invoicesList =
+          invoiceRepository.findByNumberAndSeries(number, series);
     if (invoicesList.size() == 1) {
-      var invoice = invoicesList.get(0);
+      final var invoice = invoicesList.get(0);
       invoiceRepository.delete(invoice);
     } else {
       throw new InvoiceServiceException(INVOICE_NOT_FOUND_MESSAGE);
@@ -118,8 +119,9 @@ public final class DefaultInvoiceService implements InvoiceService {
   }
 
   @Override
-  public List<PersistentInvoiceEntity> getInvoices() {
-    return invoiceRepository.findAll();
+  public List<InvoiceEntity> getInvoices() {
+    var a = invoiceRepository.findAll();
+    return new ArrayList<>(a);
   }
 
   @Override

@@ -28,13 +28,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.UserServiceUpdateForm;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -88,7 +88,7 @@ public class UserController {
       return new ResponseEntity<>(new UserDataResponse(user), HttpStatus.OK);
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
-            HttpStatus.UNAUTHORIZED, e.getMessage()
+            HttpStatus.UNAUTHORIZED, e.getMessage(), e
       );
     }
   }
@@ -103,27 +103,28 @@ public class UserController {
   @PostMapping()
   public ResponseEntity<UserUpdateResponseForm> updateUserData(@RequestBody
   final UserUpdateRequestForm userUpdateRequestForm) {
-    var userName =
+    final var userName =
           SecurityContextHolder.getContext().getAuthentication().getName();
-    var userServiceUpdateForm = new UserServiceUpdateForm(
-          userUpdateRequestForm.getName(),
-          userUpdateRequestForm.getFirstSurname(),
-          userUpdateRequestForm.getSecondSurname(),
-          userUpdateRequestForm.getBirthDate(),
-          userUpdateRequestForm.getGender()
+
+    final var name = userUpdateRequestForm.getName();
+    final var firstSurname = userUpdateRequestForm.getFirstSurname();
+    final var secondSurname = userUpdateRequestForm.getSecondSurname();
+    final var birthDate = userUpdateRequestForm.getBirthDate();
+    final var gender = userUpdateRequestForm.getGender();
+    final var userServiceUpdateForm = new UserServiceUpdateForm(
+          name, firstSurname, secondSurname, birthDate, gender
     );
     try {
-      var userUpdated = userService.update(userServiceUpdateForm, userName);
+      final var userUpdated =
+            userService.update(userServiceUpdateForm, userName);
       return new ResponseEntity<>(
-            new UserUpdateResponseForm(
-                  userUpdated.getName(), userUpdated.getFirstSurname(),
-                  userUpdated.getSecondSurname(), userUpdated.getBirthDate(),
-                  userUpdated.getGender()
-            ), HttpStatus.OK
+            new UserUpdateResponseForm(userUpdated), HttpStatus.OK
       );
 
     } catch (UserServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -133,9 +134,9 @@ public class UserController {
    * @return list with all users info.
    */
   @CrossOrigin
-  @GetMapping(value = "/getAll")
+  @GetMapping("/getAll")
   public ResponseEntity<UserListDataResponse> getAllUserData() {
-    var users = userService.getAll();
+    final var users = userService.getAll();
     return new ResponseEntity<>(new UserListDataResponse(users), HttpStatus.OK);
   }
 
@@ -156,7 +157,9 @@ public class UserController {
             userChangeKindMemberRequest.getKindMember()
       );
     } catch (UserServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
 
     return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);

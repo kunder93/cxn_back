@@ -6,7 +6,8 @@ import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.Data;
 
 /**
  * Represents the form used by controller as response for requesting all payment
@@ -20,6 +21,7 @@ import java.util.Objects;
  *
  * @author Santiago Paz.
  */
+@Data
 public final class PaymentSheetListResponse implements Serializable {
 
   /**
@@ -46,47 +48,4 @@ public final class PaymentSheetListResponse implements Serializable {
                 .add(new PaymentSheetResponse(entity))
     );
   }
-
-  /**
-   * @return the payment sheets list.
-   */
-  public List<PaymentSheetResponse> getPaymentSheetsList() {
-    return new ArrayList<>(paymentSheetsList);
-  }
-
-  /**
-   * @param paymentSheetsList The payment sheets list.
-   */
-  public void setPaymentSheetsList(
-        final List<PaymentSheetResponse> paymentSheetsList
-  ) {
-    this.paymentSheetsList = new ArrayList<>(paymentSheetsList);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(paymentSheetsList);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PaymentSheetListResponse) obj;
-    return Objects.equals(paymentSheetsList, other.paymentSheetsList);
-  }
-
-  @Override
-  public String toString() {
-    return "PaymentSheetListResponse [paymentSheetsList=" + paymentSheetsList
-          + "]";
-  }
-
 }

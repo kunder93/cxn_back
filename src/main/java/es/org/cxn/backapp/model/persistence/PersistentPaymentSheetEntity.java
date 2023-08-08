@@ -41,8 +41,13 @@ import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * Operation Entity.
@@ -53,6 +58,10 @@ import java.util.Set;
  */
 @Entity(name = "PaymentSheet")
 @Table(name = "paymentsheet")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
 
   /**
@@ -74,26 +83,30 @@ public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
    *
    */
   @Column(name = "reason", nullable = false, unique = false)
-  private String reason = "";
+  @NonNull
+  private String reason;
 
   /**
    * Event place of the payment sheet.
    *
    */
   @Column(name = "place", nullable = false, unique = false)
-  private String place = "";
+  @NonNull
+  private String place;
 
   /**
    * Event starting date of the payment sheet.
    *
    */
   @Column(name = "start_date", nullable = false, unique = false)
+  @NonNull
   private LocalDate startDate;
 
   /**
    * Event end date of the payment sheet.
    */
   @Column(name = "end_date", nullable = false, unique = false)
+  @NonNull
   private LocalDate endDate;
 
   /**
@@ -101,12 +114,14 @@ public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
    */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_dni", nullable = false)
+  @NonNull
   private PersistentUserEntity userOwner;
 
   /**
    * Roles associated with this user.
    */
   @OneToMany(mappedBy = "paymentSheet")
+  @Builder.Default
   private Set<PersistentRegularTransportEntity> regularTransports =
         new HashSet<>();
 
@@ -121,218 +136,5 @@ public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
    */
   @OneToOne(mappedBy = "paymentSheet")
   private PersistentFoodHousingEntity foodHousing;
-
-  /**
-   * Constructs a company entity.
-   */
-  public PersistentPaymentSheetEntity() {
-    super();
-  }
-
-  /**
-   * The payment sheet entity constructor.
-   *
-   * @param reason    The reason.
-   * @param place     The place.
-   * @param startDate The start date.
-   * @param endDate   The end date.
-   * @param userOwner The user owner.
-   */
-  public PersistentPaymentSheetEntity(
-        final String reason, final String place, final LocalDate startDate,
-        final LocalDate endDate, final PersistentUserEntity userOwner
-  ) {
-    super();
-    this.reason = reason;
-    this.place = place;
-    this.startDate = startDate;
-    this.endDate = endDate;
-    this.userOwner = userOwner;
-  }
-
-  /**
-   * Get identifier.
-   */
-  @Override
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * Get the reason.
-   */
-  @Override
-  public String getReason() {
-    return reason;
-  }
-
-  /**
-   * Get the place.
-   */
-  @Override
-  public String getPlace() {
-    return place;
-  }
-
-  /**
-   * Get the start date.
-   */
-  @Override
-  public LocalDate getStartDate() {
-    return startDate;
-  }
-
-  /**
-   * Get the end date.
-   */
-  @Override
-  public LocalDate getEndDate() {
-    return endDate;
-  }
-
-  /**
-   * Get the user owner entity.
-   */
-  @Override
-  public PersistentUserEntity getUserOwner() {
-    return userOwner;
-  }
-
-  /**
-   * Set the identifier.
-   */
-  @Override
-  public void setId(final Integer value) {
-    this.id = value;
-  }
-
-  /**
-   * Set the reason.
-   */
-  @Override
-  public void setReason(final String reason) {
-    this.reason = reason;
-  }
-
-  /**
-   * Set the place.
-   */
-  @Override
-  public void setPlace(final String place) {
-    this.place = place;
-  }
-
-  /**
-   * Set the start date.
-   */
-  @Override
-  public void setStartDate(final LocalDate startDate) {
-    this.startDate = startDate;
-  }
-
-  /**
-   * Set the end date.
-   */
-  @Override
-  public void setEndDate(final LocalDate endDate) {
-    this.endDate = endDate;
-  }
-
-  /**
-   * Set the user owner entity.
-   */
-  @Override
-  public void setUserOwner(final PersistentUserEntity value) {
-    this.userOwner = value;
-  }
-
-  /**
-   * Get the self vehicle entity.
-   */
-  @Override
-  public PersistentSelfVehicleEntity getSelfVehicle() {
-    return selfVehicle;
-  }
-
-  /**
-   * Get the food housing entity.
-   */
-  @Override
-  public PersistentFoodHousingEntity getFoodHousing() {
-    return foodHousing;
-  }
-
-  /**
-   * Set food housing entity.
-   */
-  @Override
-  public void setFoodHousing(final PersistentFoodHousingEntity foodHousing) {
-    this.foodHousing = foodHousing;
-  }
-
-  /**
-   * Get regular transport entity set.
-   */
-  @Override
-  public Set<PersistentRegularTransportEntity> getRegularTransports() {
-    return new HashSet<>(regularTransports);
-  }
-
-  /**
-   * Set regular transport entity set.
-   */
-  @Override
-  public void setRegularTransports(
-        final Set<PersistentRegularTransportEntity> regularTransports
-  ) {
-    this.regularTransports = new HashSet<>(regularTransports);
-  }
-
-  /**
-   * Set self vehicle entity.
-   */
-  @Override
-  public void setSelfVehicle(final PersistentSelfVehicleEntity selfVehicle) {
-    this.selfVehicle = selfVehicle;
-  }
-
-  /**
-   * Hash code.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(endDate, id, place, reason, startDate);
-  }
-
-  /**
-   * Equals.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PersistentPaymentSheetEntity) obj;
-    return Objects.equals(endDate, other.endDate)
-          && Objects.equals(id, other.id) && Objects.equals(place, other.place)
-          && Objects.equals(reason, other.reason)
-          && Objects.equals(startDate, other.startDate);
-  }
-
-  /**
-   * To string.
-   */
-  @Override
-  public String toString() {
-    return "PersistentPaymentSheetEntity [id=" + id + ", reason=" + reason
-          + ", place=" + place + ", startDate=" + startDate + ", endDate="
-          + endDate + "]";
-  }
 
 }

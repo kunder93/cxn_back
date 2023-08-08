@@ -46,12 +46,10 @@ class InvoiceControllerIntegrationTest {
 
   private final static String COMPANY_A_NIFCIF = "45235234-G";
   private final static String COMPANY_A_NAME = "MyCompanyName";
-  private final static String COMPANY_A_IDTAXNUMBER = "MyCompTaxNmbr";
   private final static String COMPANY_A_ADDRESS = "MyCompanyAddress";
 
   private final static String COMPANY_B_NIFCIF = "33344434-G";
   private final static String COMPANY_B_NAME = "OtherCompanyName";
-  private final static String COMPANY_B_IDTAXNUMBER = "OtherCompTaxNmbr";
   private final static String COMPANY_B_ADDRESS = "OtherCompanyAddress";
   private static String createCompanyARequestJson;
   private static String createCompanyBRequestJson;
@@ -320,7 +318,7 @@ class InvoiceControllerIntegrationTest {
           .create();
     var invoiceRequestJSon = gson.toJson(invoiceRequest);
 
-    var firstInvoiceResponse = mockMvc
+    mockMvc
           .perform(
                 post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
                       .content(invoiceRequestJSon)
@@ -343,7 +341,7 @@ class InvoiceControllerIntegrationTest {
     );
 
     var secondInvoiceRequestJSon = gson.toJson(secondInvoiceRequest);
-    var secondInvoiceResponse = mockMvc
+    mockMvc
           .perform(
                 post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
                       .content(secondInvoiceRequestJSon)

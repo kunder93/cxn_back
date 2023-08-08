@@ -28,7 +28,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.UserServiceUpdateForm;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
@@ -36,8 +35,10 @@ import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -138,55 +139,69 @@ public final class DefaultUserService implements UserService {
   }
 
   @Override
-  public List<PersistentUserEntity> getAll() {
-    return userRepository.findAll();
+  public List<UserEntity> getAll() {
+    var persistentUsers = userRepository.findAll();
+    return new ArrayList<>(persistentUsers);
   }
 
   @Override
-  public UserEntity add(
-        final String dni, final String name, final String firstSurname,
-        final String secondSurname, final LocalDate birthDate,
-        final String gender, final String password, final String email,
-        final String apartmentNumber, final String building, final String city,
-        final String postalCode, final String street,
-        final Integer countryNumericCode, final String countrySubdivisionName,
-        final UserType kindMember
-  ) throws UserServiceException {
+  public UserEntity add(final UserRegistrationDetails userDetails)
+        throws UserServiceException {
+    final var dni = userDetails.getDni();
 
     if (userRepository.findByDni(dni).isPresent()) {
       throw new UserServiceException(USER_DNI_EXISTS_MESSAGE);
     }
+    final var email = userDetails.getEmail();
     if (userRepository.findByEmail(email).isPresent()) {
       throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
     } else {
       final PersistentUserEntity save;
       save = new PersistentUserEntity();
       save.setDni(dni);
+      final var name = userDetails.getName();
       save.setName(name);
+      final var firstSurname = userDetails.getFirstSurname();
       save.setFirstSurname(firstSurname);
+      final var secondSurname = userDetails.getSecondSurname();
       save.setSecondSurname(secondSurname);
+      final var gender = userDetails.getGender();
       save.setGender(gender);
+      final var birthDate = userDetails.getBirthDate();
       save.setBirthDate(birthDate);
+      final var password = userDetails.getPassword();
       save.setPassword(new BCryptPasswordEncoder().encode(password));
       save.setEmail(email);
+      final var kindMember = PersistentUserEntity.UserType.SOCIO_NUMERO;//userDetails.getKindMember();
       save.setKindMember(kindMember);
 
-      var address = new PersistentAddressEntity();
+      final var addressDetails = userDetails.getAddressDetails();
+      final var apartmentNumber = addressDetails.getApartmentNumber();
+      final var building = addressDetails.getBuilding();
+      final var city = addressDetails.getCity();
+      final var postalCode = addressDetails.getPostalCode();
+      final var street = addressDetails.getStreet();
+      final var countryNumericCode = addressDetails.getCountryNumericCode();
+
+      final var address = new PersistentAddressEntity();
       address.setApartmentNumber(apartmentNumber);
       address.setBuilding(building);
       address.setCity(city);
       address.setPostalCode(postalCode);
       address.setStreet(street);
       // FindById in country entity (Id = numericCode)
-      var countryOptional = countryRepository.findById(countryNumericCode);
+      final var countryOptional =
+            countryRepository.findById(countryNumericCode);
       if (countryOptional.isEmpty()) {
         throw new UserServiceException(
               "Country with code: " + countryNumericCode + " not found."
         );
       }
-      var countryEntity = countryOptional.get();
+      final var countryEntity = countryOptional.get();
       address.setCountry(countryEntity);
-      var countryDivisionOptional =
+      final var countrySubdivisionName =
+            addressDetails.getCountrySubdivisionName();
+      final var countryDivisionOptional =
             countrySubdivisionRepository.findByName(countrySubdivisionName);
       if (countryDivisionOptional.isEmpty()) {
         throw new UserServiceException(
@@ -206,16 +221,15 @@ public final class DefaultUserService implements UserService {
   @Transactional
   public UserEntity addRole(final String email, final String roleName)
         throws UserServiceException {
-    var user = userRepository.findByEmail(email);
-
+    final var user = userRepository.findByEmail(email);
     if (user.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    var role = roleRepository.findByName(roleName);
+    final var role = roleRepository.findByName(roleName);
     if (role.isEmpty()) {
       throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
     }
-    var userEntity = user.get();
+    final var userEntity = user.get();
     userEntity.addRole(role.get());
     return userRepository.save(userEntity);
 
@@ -225,13 +239,13 @@ public final class DefaultUserService implements UserService {
   @Transactional
   public UserEntity removeRole(final String email, final String roleName)
         throws UserServiceException {
-    var userOptional = userRepository.findByEmail(email);
+    final var userOptional = userRepository.findByEmail(email);
 
     if (userOptional.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    var user = userOptional.get();
-    var roleOptional = roleRepository.findByName(roleName);
+    final var user = userOptional.get();
+    final var roleOptional = roleRepository.findByName(roleName);
     if (roleOptional.isEmpty()
           || !user.getRoles().contains(roleOptional.get())) {
       throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
@@ -246,7 +260,7 @@ public final class DefaultUserService implements UserService {
         throws UserServiceException {
     checkNotNull(email, "Received a null pointer as identifier");
 
-    var result = userRepository.findByEmail(email);
+    final var result = userRepository.findByEmail(email);
 
     if (!result.isPresent()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
@@ -276,11 +290,16 @@ public final class DefaultUserService implements UserService {
     }
     PersistentUserEntity userEntity;
     userEntity = userOptional.get();
-    userEntity.setName(userForm.getName());
-    userEntity.setFirstSurname(userForm.getFirstSurname());
-    userEntity.setSecondSurname(userForm.getSecondSurname());
-    userEntity.setBirthDate(userForm.getBirthDate());
-    userEntity.setGender(userForm.getGender());
+    final var name = userForm.getName();
+    userEntity.setName(name);
+    final var firstSurname = userForm.getFirstSurname();
+    userEntity.setFirstSurname(firstSurname);
+    final var secondSurname = userForm.getSecondSurname();
+    userEntity.setSecondSurname(secondSurname);
+    final var birthDate = userForm.getBirthDate();
+    userEntity.setBirthDate(birthDate);
+    final var gender = userForm.getGender();
+    userEntity.setGender(gender);
 
     return userRepository.save(userEntity);
   }
@@ -289,13 +308,12 @@ public final class DefaultUserService implements UserService {
   public UserEntity
         changeKindMember(final String userEmail, final UserType newKindMember)
               throws UserServiceException {
-    Optional<PersistentUserEntity> userOptional;
+    final var userOptional = userRepository.findByEmail(userEmail);
 
-    userOptional = userRepository.findByEmail(userEmail);
     if (userOptional.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     } else {
-      var userEntity = userOptional.get();
+      final var userEntity = userOptional.get();
       userEntity.setKindMember(newKindMember);
       userRepository.save(userEntity);
 

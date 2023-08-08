@@ -1,10 +1,7 @@
+
 package es.org.cxn.backapp.config;
 
-
-
 import es.org.cxn.backapp.filter.JwtRequestFilter;
-
-
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-
+import lombok.NoArgsConstructor;
 
 /**
  * Spring security configuration.
@@ -31,14 +28,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@NoArgsConstructor
 public class SecurityConfiguration {
-
-  /**
-   * Default constructor.
-   */
-  public SecurityConfiguration() {
-    super();
-  }
 
   /**
    * Bean fork enconde password.
@@ -58,9 +49,9 @@ public class SecurityConfiguration {
    * @throws Exception when fails.
    */
   @Bean
-  AuthenticationManager authenticationManager(
-        final AuthenticationConfiguration authConfig
-  ) throws Exception {
+  AuthenticationManager
+        authenticationManager(final AuthenticationConfiguration authConfig)
+              throws Exception {
     return authConfig.getAuthenticationManager();
   }
 

@@ -36,7 +36,7 @@ public interface SelfVehicleEntity extends Serializable {
   /**
    * @return The identifier.
    */
-  Integer getId();
+  Integer getIdentifier();
 
   /**
    * @return The places.
@@ -56,7 +56,7 @@ public interface SelfVehicleEntity extends Serializable {
   /**
    * @param id The identifier.
    */
-  void setId(Integer id);
+  void setIdentifier(Integer id);
 
   /**
    * @param places The places.

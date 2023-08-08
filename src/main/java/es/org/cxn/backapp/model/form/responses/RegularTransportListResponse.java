@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Data;
+
 /**
  * Represents the form used by controller as response for requesting all
  * invoices.
@@ -19,6 +21,7 @@ import java.util.List;
  *
  * @author Santiago Paz.
  */
+@Data
 public final class RegularTransportListResponse implements Serializable {
 
   /**
@@ -46,28 +49,4 @@ public final class RegularTransportListResponse implements Serializable {
                 .add(new RegularTransportResponse(e))
     );
   }
-
-  /**
-   * Empty constructor.
-   */
-  public RegularTransportListResponse() {
-    super();
-  }
-
-  /**
-   * @return The regular transport list.
-   */
-  public List<RegularTransportResponse> getRegularTransportList() {
-    return new ArrayList<>(regularTransportList);
-  }
-
-  /**
-   * @param regularTransportList The regular transport list.
-   */
-  public void setRegularTransportList(
-        final List<RegularTransportResponse> regularTransportList
-  ) {
-    this.regularTransportList = new ArrayList<>(regularTransportList);
-  }
-
 }

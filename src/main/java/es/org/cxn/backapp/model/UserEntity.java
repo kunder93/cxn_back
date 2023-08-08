@@ -200,7 +200,7 @@ public interface UserEntity extends Serializable {
    *
    * @param address The address entity.
    */
-  void setAddress(final PersistentAddressEntity address);
+  void setAddress(PersistentAddressEntity address);
 
   /**
    * @param kindMember the kindMember to set

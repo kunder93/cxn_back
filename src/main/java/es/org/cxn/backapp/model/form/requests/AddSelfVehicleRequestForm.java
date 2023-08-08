@@ -2,7 +2,10 @@
 package es.org.cxn.backapp.model.form.requests;
 
 import java.io.Serializable;
-import java.util.Objects;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents the form used by controller as request of add self vehicle to
@@ -16,6 +19,9 @@ import java.util.Objects;
  *
  * @author Santiago Paz.
  */
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public final class AddSelfVehicleRequestForm implements Serializable {
 
   /**
@@ -37,96 +43,4 @@ public final class AddSelfVehicleRequestForm implements Serializable {
    */
   private double kmPrice;
 
-  /**
-   * @param places   The places visited.
-   * @param distance The total distance traveled.
-   * @param kmPrice  Price per kilometer traveled.
-   */
-  public AddSelfVehicleRequestForm(
-        final String places, final float distance, final double kmPrice
-  ) {
-    super();
-    this.places = places;
-    this.distance = distance;
-    this.kmPrice = kmPrice;
-  }
-
-  /**
-   * Main empty constructor.
-   */
-  public AddSelfVehicleRequestForm() {
-    super();
-  }
-
-  /**
-   * @return Get places traveled.
-   */
-  public String getPlaces() {
-    return places;
-  }
-
-  /**
-   * @return The total distance.
-   */
-  public float getDistance() {
-    return distance;
-  }
-
-  /**
-   * @return Price per kilometer.
-   */
-  public double getKmPrice() {
-    return kmPrice;
-  }
-
-  /**
-   * @param value The places value.
-   */
-  public void setPlaces(final String value) {
-    this.places = value;
-  }
-
-  /**
-   * @param value The distance value.
-   */
-  public void setDistance(final float value) {
-    this.distance = value;
-  }
-
-  /**
-   * @param value The km price value.
-   */
-  public void setKmPrice(final double value) {
-    this.kmPrice = value;
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(distance, kmPrice, places);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (AddSelfVehicleRequestForm) obj;
-    return Float.floatToIntBits(distance) == Float
-          .floatToIntBits(other.distance)
-          && Double.doubleToLongBits(kmPrice) == Double
-                .doubleToLongBits(other.kmPrice)
-          && Objects.equals(places, other.places);
-  }
-
-  @Override
-  public String toString() {
-    return "AddSelfVehicleRequestForm [places=" + places + ", distance="
-          + distance + ", kmPrice=" + kmPrice + "]";
-  }
 }

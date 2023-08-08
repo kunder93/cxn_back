@@ -91,7 +91,7 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
   /**
    * Regular transport not in payment sheet message exception.
    */
-  public static final String REGULAR_TRANSPORT_NOT_IN_THIS_PAYMENT_SHEET_MESSAGE =
+  public static final String REGULAR_TRANSPORT_NOT_IN_PAYMENT_SHEET_MESSAGE =
         "This payment sheet not contains this regular transport.";
 
   /**
@@ -169,13 +169,14 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
         final LocalDate endDate, final String userEmail
   ) throws PaymentSheetServiceException {
 
-    var user = userRepository.findByEmail(userEmail);
+    final var user = userRepository.findByEmail(userEmail);
     if (user.isEmpty()) {
       throw new PaymentSheetServiceException(USER_NOT_FOUND_MESSAGE);
     } else {
-      var paymentSheet = new PersistentPaymentSheetEntity(
-            reason, place, startDate, endDate, user.get()
-      );
+      final var paymentSheet = PersistentPaymentSheetEntity.builder()
+            .reason(reason).place(place).startDate(startDate).endDate(endDate)
+            .userOwner(user.get()).build();
+
       return paymentSheetRepository.save(paymentSheet);
     }
   }
@@ -184,7 +185,7 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
   public PersistentPaymentSheetEntity findById(final Integer id)
         throws PaymentSheetServiceException {
 
-    var paymentSheet = paymentSheetRepository.findById(id);
+    final var paymentSheet = paymentSheetRepository.findById(id);
     if (paymentSheet.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
@@ -193,11 +194,12 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
 
   @Override
   public void remove(final Integer id) throws PaymentSheetServiceException {
-    final var paymentSheet = paymentSheetRepository.findById(id);
-    if (paymentSheet.isEmpty()) {
+    final var paymentSheetOpt = paymentSheetRepository.findById(id);
+    if (paymentSheetOpt.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
-    paymentSheetRepository.delete(paymentSheet.get());
+    final var paymentSheetEntity = paymentSheetOpt.get();
+    paymentSheetRepository.delete(paymentSheetEntity);
   }
 
   @Override
@@ -207,15 +209,16 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
 
   @Override
   public PersistentPaymentSheetEntity updatePaymentSheet(
-        final Integer id, final String reason, final String place,
+        final Integer identifier, final String reason, final String place,
         final LocalDate startDate, final LocalDate endDate
   ) throws PaymentSheetServiceException {
 
-    final var paymentSheetOptional = paymentSheetRepository.findById(id);
+    final var paymentSheetOptional =
+          paymentSheetRepository.findById(identifier);
     if (paymentSheetOptional.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     } else {
-      var paymentSheet = paymentSheetOptional.get();
+      final var paymentSheet = paymentSheetOptional.get();
       paymentSheet.setReason(reason);
       paymentSheet.setPlace(place);
       paymentSheet.setEndDate(endDate);
@@ -232,21 +235,24 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
         final String invoiceSeries
   ) throws PaymentSheetServiceException {
 
-    var paymentSheetEntity = paymentSheetRepository.findById(paymentSheetId);
+    final var paymentSheetEntity =
+          paymentSheetRepository.findById(paymentSheetId);
     if (paymentSheetEntity.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
-    var invoiceEntityList =
+    final var invoiceEntityList =
           invoiceRepository.findByNumberAndSeries(invoiceNumber, invoiceSeries);
-    if (invoiceEntityList.size() != Integer.valueOf(1)) {
+    if (invoiceEntityList.size() != 1) {
       throw new PaymentSheetServiceException(INVOICE_NOT_FOUND_MESSAGE);
     }
-    var invoiceEntity = invoiceEntityList.get(0);
+    final var invoiceEntity = invoiceEntityList.get(0);
 
-    var transportEntity = new PersistentRegularTransportEntity(
-          regularTransportCategory, regularTransportDescription, invoiceEntity,
-          paymentSheetEntity.get()
-    );
+    final var transportEntity = PersistentRegularTransportEntity.builder()
+          .category(regularTransportCategory)
+          .description(regularTransportDescription)
+          .transportInvoice(invoiceEntity)
+          .paymentSheet(paymentSheetEntity.get()).build();
+
     return regularTransportRepository.save(transportEntity);
   }
 
@@ -256,16 +262,15 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
         final double kmPrice
   ) throws PaymentSheetServiceException {
 
-    var paymentSheetOptionalEntity =
+    final var paymentSheetOptionalEntity =
           paymentSheetRepository.findById(paymentSheetId);
     if (paymentSheetOptionalEntity.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
-    var paymentSheetEntity = paymentSheetOptionalEntity.get();
-    var selfVehicle = new PersistentSelfVehicleEntity(
-          places, distance, kmPrice, paymentSheetEntity
-    );
-
+    final var paymentSheetEntity = paymentSheetOptionalEntity.get();
+    final var selfVehicle = PersistentSelfVehicleEntity.builder().places(places)
+          .distance(distance).kmPrice(kmPrice).paymentSheet(paymentSheetEntity)
+          .build();
     return selfVehicleRepository.save(selfVehicle);
   }
 
@@ -275,16 +280,15 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
         final float dayPrice, final boolean overnight
   ) throws PaymentSheetServiceException {
 
-    var paymentSheetOptionalEntity =
+    final var paymentSheetOptionalEntity =
           paymentSheetRepository.findById(paymentSheetId);
     if (paymentSheetOptionalEntity.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
-    var paymentSheetEntity = paymentSheetOptionalEntity.get();
-    var foodHousing = new PersistentFoodHousingEntity(
-          amountDays, dayPrice, overnight, paymentSheetEntity
-    );
-
+    final var paymentSheetEntity = paymentSheetOptionalEntity.get();
+    final var foodHousing = PersistentFoodHousingEntity.builder()
+          .amountDays(amountDays).dayPrice(dayPrice).overnight(overnight)
+          .paymentSheet(paymentSheetEntity).build();
     return foodHousingRepository.save(foodHousing);
   }
 
@@ -292,12 +296,12 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
   public void removeSelfVehicle(final Integer paymentSheetId)
         throws PaymentSheetServiceException {
 
-    var paymentSheetOptionalEntity =
+    final var paymentSheetOptionalEntity =
           paymentSheetRepository.findById(paymentSheetId);
     if (paymentSheetOptionalEntity.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
-    var paymentSheetEntity = paymentSheetOptionalEntity.get();
+    final var paymentSheetEntity = paymentSheetOptionalEntity.get();
     if (paymentSheetEntity.getSelfVehicle() == null) {
       throw new PaymentSheetServiceException(SELF_VEHICLE_NOT_FOUND_MESSAGE);
     }
@@ -308,12 +312,12 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
   public void removeFoodHousing(final Integer paymentSheetId)
         throws PaymentSheetServiceException {
 
-    var paymentSheetOptionalEntity =
+    final var paymentSheetOptionalEntity =
           paymentSheetRepository.findById(paymentSheetId);
     if (paymentSheetOptionalEntity.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
-    var paymentSheetEntity = paymentSheetOptionalEntity.get();
+    final var paymentSheetEntity = paymentSheetOptionalEntity.get();
     if (paymentSheetEntity.getFoodHousing() == null) {
       throw new PaymentSheetServiceException(FOOD_HOUSING_NOT_FOUND_MESSAGE);
     }
@@ -325,23 +329,23 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
         final Integer paymentSheetId, final Integer regularTransportId
   ) throws PaymentSheetServiceException {
 
-    var paymentSheetOptionalEntity =
+    final var paymentSheetOptionalEntity =
           paymentSheetRepository.findById(paymentSheetId);
     if (paymentSheetOptionalEntity.isEmpty()) {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
-    var regularTransportOptional =
+    final var regularTransportOptional =
           regularTransportRepository.findById(regularTransportId);
     if (regularTransportOptional.isEmpty()) {
       throw new PaymentSheetServiceException(
             REGULAR_TRANSPORT_NOT_FOUND_MESSAGE
       );
     }
-    var paymentSheetEntity = paymentSheetOptionalEntity.get();
+    final var paymentSheetEntity = paymentSheetOptionalEntity.get();
     if (!paymentSheetEntity.getRegularTransports()
           .contains(regularTransportOptional.get())) {
       throw new PaymentSheetServiceException(
-            REGULAR_TRANSPORT_NOT_IN_THIS_PAYMENT_SHEET_MESSAGE
+            REGULAR_TRANSPORT_NOT_IN_PAYMENT_SHEET_MESSAGE
       );
     }
     regularTransportRepository.delete(regularTransportOptional.get());

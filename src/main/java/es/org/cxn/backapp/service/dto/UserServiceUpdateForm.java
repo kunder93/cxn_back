@@ -1,7 +1,7 @@
 /**
  * The MIT License (MIT)
  * <p>
- * Copyright (c) 2020 the original author or authors.
+ * Copyright (c) 2021 the original author or authors.
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -22,39 +22,53 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.model.form.responses;
+package es.org.cxn.backapp.service.dto;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents the form used for response authenticating user.
- * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller, and mapping all the values from the form. Each of field in the
- * DTO matches a field in the form.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * Default implementation of the user form user by service.
  *
- * @author Santiago Paz Perez
+ * @author Santiago Paz
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public final class AuthenticationResponse implements Serializable {
+public class UserServiceUpdateForm implements Serializable {
 
   /**
    * Serialization ID.
    */
-  private static final long serialVersionUID = 1333322989450853491L;
+  private static final long serialVersionUID = 1328776449450853491L;
 
   /**
-   * Jwt field.
+   * Name of the user.
    */
-  private String jwt;
+  private String name = "";
+
+  /**
+   * Name of the user.
+   */
+  private String firstSurname = "";
+
+  /**
+   * Name of the user.
+   */
+  private String secondSurname = "";
+
+  /**
+   * Name of the user.
+   */
+  private LocalDate birthDate;
+
+  /**
+   * Name of the user.
+   */
+  private String gender = "";
 
 }

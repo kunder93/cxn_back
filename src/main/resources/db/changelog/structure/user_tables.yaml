@@ -123,6 +123,6 @@ databaseChangeLog:
               - validCheckConstraint:
                   name: check_kind_member_values
                   checkSql: "kind_member IN ('socio_numero', 'socio_aspirante', 'socio_honorario', 'socio_familiar')"
-     
+                  nullable: false
         
   

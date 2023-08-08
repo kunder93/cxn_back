@@ -27,7 +27,6 @@ package es.org.cxn.backapp.service;
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.model.RoleEntity;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 
 /**
  * Service for the Role entity domain. {@link RoleEntity}
@@ -74,7 +73,7 @@ public interface RoleService {
    *
    * @return the persisted role entities.
    */
-  Iterable<PersistentRoleEntity> getAllRoles();
+  Iterable<RoleEntity> getAllRoles();
 
   /**
    * Removes a role entity from persistence.

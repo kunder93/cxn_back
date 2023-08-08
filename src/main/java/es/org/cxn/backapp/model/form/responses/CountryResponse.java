@@ -5,6 +5,10 @@ import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Represents the form used by controller as response for requesting one country
  * data.
@@ -14,6 +18,9 @@ import java.io.Serializable;
  *
  * @author Santiago Paz.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public final class CountryResponse implements Serializable {
 
   /**
@@ -56,75 +63,4 @@ public final class CountryResponse implements Serializable {
     alpha3Code = value.getAlpha3Code();
 
   }
-
-  /**
-   * @return The country short name.
-   */
-  public String getShortName() {
-    return shortName;
-  }
-
-  /**
-   * @return The country full name.
-   */
-  public String getFullName() {
-    return fullName;
-  }
-
-  /**
-   * @return The country numeric code.
-   */
-  public Integer getNumericCode() {
-    return numericCode;
-  }
-
-  /**
-   * @return The country alpha 2 code.
-   */
-  public String getAlpha2Code() {
-    return alpha2Code;
-  }
-
-  /**
-   * @return The country alpha 3 code.
-   */
-  public String getAlpha3Code() {
-    return alpha3Code;
-  }
-
-  /**
-   * @param value the country short name.
-   */
-  public void setShortName(final String value) {
-    this.shortName = value;
-  }
-
-  /**
-   * @param value The country full name.
-   */
-  public void setFullName(final String value) {
-    this.fullName = value;
-  }
-
-  /**
-   * @param numericCode The country numeric code.
-   */
-  public void setNumericCode(final Integer numericCode) {
-    this.numericCode = numericCode;
-  }
-
-  /**
-   * @param alpha2Code The country alpha 2 code.
-   */
-  public void setAlpha2Code(final String alpha2Code) {
-    this.alpha2Code = alpha2Code;
-  }
-
-  /**
-   * @param alpha3Code The country alpha 3 code.
-   */
-  public void setAlpha3Code(final String alpha3Code) {
-    this.alpha3Code = alpha3Code;
-  }
-
 }

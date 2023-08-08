@@ -25,12 +25,12 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.Data;
 
 /**
  * Represents the form used for response authenticating user.
@@ -44,6 +44,7 @@ import java.util.Objects;
  *
  * @author Santiago Paz Perez.
  */
+@Data
 public final class UserListDataResponse implements Serializable {
 
   /**
@@ -61,50 +62,9 @@ public final class UserListDataResponse implements Serializable {
    *
    * @param users the list users entities with data.
    */
-  public UserListDataResponse(final List<PersistentUserEntity> users) {
+  public UserListDataResponse(final List<UserEntity> users) {
     super();
-    users.forEach(
-          (UserEntity user) -> usersList.add(new UserDataResponse(user))
-    );
-  }
-
-  /**
-   * @return The users list.
-   */
-  public List<UserDataResponse> getUsersList() {
-    return new ArrayList<>(usersList);
-  }
-
-  /**
-   * @param usersList the users list.
-   */
-  public void setUsersList(final List<UserDataResponse> usersList) {
-    this.usersList = new ArrayList<>(usersList);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(usersList);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (UserListDataResponse) obj;
-    return Objects.equals(usersList, other.usersList);
-  }
-
-  @Override
-  public String toString() {
-    return "UserListDataResponse [usersList=" + usersList + "]";
+    users.forEach((UserEntity usr) -> usersList.add(new UserDataResponse(usr)));
   }
 
 }
