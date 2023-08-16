@@ -38,6 +38,8 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -172,7 +174,7 @@ public final class DefaultUserService implements UserService {
       final var password = userDetails.getPassword();
       save.setPassword(new BCryptPasswordEncoder().encode(password));
       save.setEmail(email);
-      final var kindMember = PersistentUserEntity.UserType.SOCIO_NUMERO;//userDetails.getKindMember();
+      final var kindMember = PersistentUserEntity.UserType.SOCIO_NUMERO;
       save.setKindMember(kindMember);
 
       final var addressDetails = userDetails.getAddressDetails();
@@ -304,19 +306,42 @@ public final class DefaultUserService implements UserService {
     return userRepository.save(userEntity);
   }
 
+  private static boolean checkAgeUnder18(PersistentUserEntity user) {
+    final var LIMIT_AGE = 18;
+    final var birthDate = user.getBirthDate();
+    final var today = LocalDate.now();
+    var age = Period.between(birthDate, today).getYears();
+    //Return if under 18.
+    return age < LIMIT_AGE;
+  }
+
+  private static boolean validateKindMemberChange(
+        final UserType userType, final PersistentUserEntity user
+  ) {
+    return switch (userType) {
+    case SOCIO_NUMERO -> true;
+    case SOCIO_ASPIRANTE -> checkAgeUnder18(user);
+    case SOCIO_HONORARIO -> true;
+    case SOCIO_FAMILIAR -> true;
+    default -> false;
+    };
+  }
+
   @Override
   public UserEntity
         changeKindMember(final String userEmail, final UserType newKindMember)
               throws UserServiceException {
     final var userOptional = userRepository.findByEmail(userEmail);
-
     if (userOptional.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     } else {
       final var userEntity = userOptional.get();
+
+      if (!validateKindMemberChange(newKindMember, userEntity)) {
+        throw new UserServiceException("Cannot change the kind of member");
+      }
       userEntity.setKindMember(newKindMember);
       userRepository.save(userEntity);
-
       return userEntity;
     }
   }

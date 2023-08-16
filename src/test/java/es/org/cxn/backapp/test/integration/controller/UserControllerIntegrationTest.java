@@ -13,6 +13,8 @@ import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.JwtUtils;
 
+import jakarta.transaction.Transactional;
+
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.transaction.annotation.Transactional;
 
 import utils.LocalDateAdapter;
 
@@ -85,13 +86,35 @@ class UserControllerIntegrationTest {
   }
 
   /**
-   * SingUp second user with same email as userA bad request cause email is in using.
+   * hfghfgh.
    *
    * @throws Exception When fails.
    */
   @Test
   @Transactional
-  void testChangeKindOfMember() throws Exception {
+  void testChangeKindOfMemberNotExistingMemberBadRequest() throws Exception {
+
+    var changeKindMemberRequest = new UserChangeKindMemberRequest(
+          userA_email, UserType.SOCIO_HONORARIO
+    );
+    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+    mockMvc
+          .perform(
+                patch(CHANGE_KIND_MEMBER_URL)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(changeKindMemberRequestJson)
+          ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn()
+          .getResponse().getContentAsString();
+  }
+
+  /**
+   * Change member type from
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testChangeKindOfMemberSocioNumeroSocioHonorario() throws Exception {
     var userARequest = SignUpRequestForm.builder().dni(userA_dni)
           .name(userA_name).firstSurname(userA_firstSurname)
           .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
@@ -132,18 +155,84 @@ class UserControllerIntegrationTest {
   }
 
   /**
-   * SingUp second user with same email as userA bad request cause email is in using.
+   * TO-DO
    *
    * @throws Exception When fails.
    */
   @Test
   @Transactional
-  void testChangeKindOfMemberNotExistingMemberBadRequest() throws Exception {
-
+  void testChangeKindOfMemberSocioNumeroSocioAspirante() throws Exception {
+    // Age under 18.
+    final var userAgeUnder18 = LocalDate.of(2010, 2, 2);
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userAgeUnder18)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
     var changeKindMemberRequest = new UserChangeKindMemberRequest(
-          userA_email, UserType.SOCIO_HONORARIO
+          userA_email, UserType.SOCIO_ASPIRANTE
     );
     var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+    // Update kind of member.
+    var changeKindMemberResponseJson = mockMvc
+          .perform(
+                patch(CHANGE_KIND_MEMBER_URL)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(changeKindMemberRequestJson)
+          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+          .getResponse().getContentAsString();
+    var changeKindMemberResponse =
+          gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
+    Assertions.assertEquals(
+          UserType.SOCIO_ASPIRANTE, changeKindMemberResponse.getKindMember(),
+          "kind of member has been changed."
+    );
+    Assertions.assertEquals(
+          userARequest.getEmail(), changeKindMemberResponse.getEmail(),
+          "email is the user email."
+    );
+  }
+
+  /**
+   * TO-DO
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testChangeKindOfMemberSocioNumeroSocioAspiranteNotAllowedBirthDate()
+        throws Exception {
+    //User age NOT under 18.
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+    var changeKindMemberRequest = new UserChangeKindMemberRequest(
+          userA_email, UserType.SOCIO_ASPIRANTE
+    );
+    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+    // Update kind of member.
     mockMvc
           .perform(
                 patch(CHANGE_KIND_MEMBER_URL)
@@ -152,5 +241,100 @@ class UserControllerIntegrationTest {
           ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn()
           .getResponse().getContentAsString();
   }
+
+  /**
+   * TO-DO
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testChangeKindOfMemberSocioNumeroSocioFamiliar() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+    var changeKindMemberRequest =
+          new UserChangeKindMemberRequest(userA_email, UserType.SOCIO_FAMILIAR);
+    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+    // Update kind of member.
+    var changeKindMemberResponseJson = mockMvc
+          .perform(
+                patch(CHANGE_KIND_MEMBER_URL)
+                      .contentType(MediaType.APPLICATION_JSON)
+                      .content(changeKindMemberRequestJson)
+          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+          .getResponse().getContentAsString();
+    var changeKindMemberResponse =
+          gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
+    Assertions.assertEquals(
+          UserType.SOCIO_FAMILIAR, changeKindMemberResponse.getKindMember(),
+          "kind of member has been changed."
+    );
+    Assertions.assertEquals(
+          userARequest.getEmail(), changeKindMemberResponse.getEmail(),
+          "email is the user email."
+    );
+  }
+  //
+  //  /**
+  //   * TO-DO
+  //   *
+  //   * @throws Exception When fails.
+  //   */
+  //  @Test
+  //  @Transactional
+  //  void testChangeKindOfMemberSocioNumeroSocioFamiliarNotAllowedDiferentAddress()
+  //        throws Exception {
+  //     NOT IMPLEMENTED YET
+  //        var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+  //              .name(userA_name).firstSurname(userA_firstSurname)
+  //              .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+  //              .gender(userA_gender).password(userA_password).email(userA_email)
+  //              .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+  //              .building(userA_building).street(userA_street).city(userA_city)
+  //              .countryNumericCode(userA_countryNumericCode)
+  //              .countrySubdivisionName(userA_countrySubdivisionName)
+  //              .kindMember(kindMember).build();
+  //        var userARequestJson = gson.toJson(userARequest);
+  //        // Register user correctly
+  //        mockMvc.perform(
+  //              post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+  //                    .content(userARequestJson)
+  //        ).andExpect(MockMvcResultMatchers.status().isCreated());
+  //        var changeKindMemberRequest = new UserChangeKindMemberRequest(
+  //              userA_email, UserType.SOCIO_HONORARIO
+  //        );
+  //        var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+  //        // Update kind of member.
+  //        var changeKindMemberResponseJson = mockMvc
+  //              .perform(
+  //                    patch(CHANGE_KIND_MEMBER_URL)
+  //                          .contentType(MediaType.APPLICATION_JSON)
+  //                          .content(changeKindMemberRequestJson)
+  //              ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+  //              .getResponse().getContentAsString();
+  //        var changeKindMemberResponse =
+  //              gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
+  //        Assertions.assertEquals(
+  //              UserType.SOCIO_HONORARIO, changeKindMemberResponse.getKindMember(),
+  //              "kind of member has been changed."
+  //        );
+  //        Assertions.assertEquals(
+  //              userARequest.getEmail(), changeKindMemberResponse.getEmail(),
+  //              "email is the user email."
+  //        );
+  //  }
 
 }

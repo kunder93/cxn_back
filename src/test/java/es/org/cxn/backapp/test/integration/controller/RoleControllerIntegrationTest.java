@@ -111,19 +111,20 @@ class RoleControllerIntegrationTest {
   void testCreateUserExpectDefaultUserRole() throws Exception {
 
     // Register user correctly
-    var response = mockMvc
+    var responseJson = mockMvc
           .perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                       .content(userARequestJson)
           ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
           .getResponse().getContentAsString();
 
-    var aa = gson.fromJson(response, SignUpResponseForm.class);
+    var response = gson.fromJson(responseJson, SignUpResponseForm.class);
     Assertions.assertEquals(
-          aa.getUserRoles().size(), Integer.valueOf(1), "Only have one role."
+          response.getUserRoles().size(), Integer.valueOf(1),
+          "Only have one role."
     );
     Assertions.assertTrue(
-          aa.getUserRoles().contains(DEFAULT_USER_ROLE),
+          response.getUserRoles().contains(DEFAULT_USER_ROLE),
           "Have default user role."
     );
   }
@@ -139,36 +140,39 @@ class RoleControllerIntegrationTest {
   void testCreateUserAddRoleCheckIt() throws Exception {
     var userRoleToAdd = "ROLE_TESORERO";
     // Register user correctly
-    var response = mockMvc
+    var responseJSON = mockMvc
           .perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                       .content(userARequestJson)
           ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
           .getResponse().getContentAsString();
 
-    var aa = gson.fromJson(response, SignUpResponseForm.class);
+    var response = gson.fromJson(responseJSON, SignUpResponseForm.class);
 
-    var userEmail = aa.getEmail();
+    var userEmail = response.getEmail();
     var userChangeRoleRequest =
           new UserChangeRoleRequestForm(userEmail, userRoleToAdd);
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
-    var addRoleResponse = mockMvc
+    var addRoleResponseJson = mockMvc
           .perform(
                 post(ROLES_URL).contentType(MediaType.APPLICATION_JSON)
                       .content(userChangeRoleRequestJson)
           ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
           .getResponse().getContentAsString();
-    var bb = gson.fromJson(addRoleResponse, UserChangeRoleResponseForm.class);
+    var addRoleResponse =
+          gson.fromJson(addRoleResponseJson, UserChangeRoleResponseForm.class);
 
     Assertions.assertEquals(
-          bb.getUserRoles().size(), Integer.valueOf(2), "User have 2 roles."
+          addRoleResponse.getUserRoles().size(), Integer.valueOf(2),
+          "User have 2 roles."
     );
     Assertions.assertTrue(
-          bb.getUserRoles().contains(DEFAULT_USER_ROLE),
+          addRoleResponse.getUserRoles().contains(DEFAULT_USER_ROLE),
           "user have default role"
     );
     Assertions.assertTrue(
-          bb.getUserRoles().contains(userRoleToAdd), "user have added role"
+          addRoleResponse.getUserRoles().contains(userRoleToAdd),
+          "user have added role"
     );
   }
 
@@ -195,6 +199,27 @@ class RoleControllerIntegrationTest {
     var userEmail = aa.getEmail();
     var userChangeRoleRequest =
           new UserChangeRoleRequestForm(userEmail, userRoleToAdd);
+    var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
+    mockMvc.perform(
+          post(ROLES_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userChangeRoleRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
+
+  /**
+   * Add role not existing user is bad request.
+   *
+   * @throws Exception When fails.
+   */
+  @DisplayName("Add role to not existing user is bad request.")
+  @Test
+  @Transactional
+  void testAddExistingRoleToNotExistingUserBadRequest() throws Exception {
+    var userRoleToAdd = "ROLE_TESORERO";
+
+    var NotExisitngUserEmail = "NotExistingEmail@Email.com";
+    var userChangeRoleRequest =
+          new UserChangeRoleRequestForm(NotExisitngUserEmail, userRoleToAdd);
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
     mockMvc.perform(
           post(ROLES_URL).contentType(MediaType.APPLICATION_JSON)
@@ -264,6 +289,28 @@ class RoleControllerIntegrationTest {
 
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
 
+    // Delete role from user.
+    mockMvc.perform(
+          delete(ROLES_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userChangeRoleRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
+
+  /**
+   * Delete role from not existing user is bad request.
+   *
+   * @throws Exception When fails.
+   */
+  @DisplayName("Delete role from created user.")
+  @Test
+  @Transactional
+  void testRemoveRoleNotExistingUserBadRequest() throws Exception {
+    var userRoleToAdd = "ROLE_TESORERO";
+
+    var NotExistingUserEmail = "NotExistingUserEmail@email.com";
+    var userChangeRoleRequest =
+          new UserChangeRoleRequestForm(NotExistingUserEmail, userRoleToAdd);
+    var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
     // Delete role from user.
     mockMvc.perform(
           delete(ROLES_URL).contentType(MediaType.APPLICATION_JSON)
