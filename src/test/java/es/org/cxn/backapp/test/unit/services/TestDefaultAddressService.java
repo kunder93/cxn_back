@@ -24,19 +24,18 @@
 
 package es.org.cxn.backapp.test.unit.services;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import es.org.cxn.backapp.repository.AddressEntityRepository;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.service.AddressService;
 import es.org.cxn.backapp.service.DefaultAddressService;
 import es.org.cxn.backapp.service.DefaultRoleService;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 /**
  * Unit tests for {@link DefaultRoleService}.
@@ -47,42 +46,39 @@ import es.org.cxn.backapp.service.DefaultRoleService;
  * @author Santiago Paz
  */
 @SpringBootTest(
-        classes = { AddressEntityRepository.class, AddressService.class,
-                DefaultAddressService.class }
+      classes = { AddressEntityRepository.class, AddressService.class,
+          DefaultAddressService.class }
 )
 final class TestDefaultAddressService {
 
-    @Autowired
-    private DefaultAddressService addressService;
+  @MockBean
+  private AddressEntityRepository addressEntityRepository;
 
-    @MockBean
-    private AddressEntityRepository addressEntityRepository;
+  @MockBean
+  private CountryEntityRepository countryEntityRepository;
 
-    @MockBean
-    private CountryEntityRepository countryEntityRepository;
+  /**
+   * Sets up the validator for the tests.
+   */
+  @BeforeEach
+  public final void setUpValidator() {
+  }
 
-    /**
-     * Sets up the validator for the tests.
-     */
-    @BeforeEach
-    public final void setUpValidator() {
-    }
+  /**
+   * Default constructor.
+   */
+  public TestDefaultAddressService() {
+    super();
+  }
 
-    /**
-     * Default constructor.
-     */
-    public TestDefaultAddressService() {
-        super();
-    }
-
-    /**
-     * Get all countries stored in db.
-     *
-     */
-    @DisplayName("Assert equals")
-    @Test
-    void testGetAllCountriesSize() {
-        Assertions.assertEquals(1, 1);
-    }
+  /**
+   * Get all countries stored in db.
+   *
+   */
+  @DisplayName("Assert equals")
+  @Test
+  void testGetAllCountriesSize() {
+    Assertions.assertEquals(1, 1);
+  }
 
 }

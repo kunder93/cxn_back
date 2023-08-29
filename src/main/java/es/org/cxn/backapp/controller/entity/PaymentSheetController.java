@@ -33,6 +33,7 @@ import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequestForm;
 import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
+import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.service.PaymentSheetService;
 
 import jakarta.validation.Valid;
@@ -55,12 +56,6 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/paymentSheet")
 public class PaymentSheetController {
-
-  /**
-   * COMMON MESSAGE PART IN EXCEPTION MESSAGES.
-   */
-  private static final String EXCEPTION_MESSAGE_WRAPPER =
-        "An PaymentSheetServiceException occurred: {}";
 
   /**
    * The payment sheet service.
@@ -107,7 +102,9 @@ public class PaymentSheetController {
       final var response = new PaymentSheetResponse(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -130,10 +127,13 @@ public class PaymentSheetController {
             createPaymentSheetRequestForm.getEndDate(),
             createPaymentSheetRequestForm.getUserEmail()
       );
-      final var response = new PaymentSheetResponse(result);
+      final var response =
+            new PaymentSheetResponse((PersistentPaymentSheetEntity) result);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -156,7 +156,9 @@ public class PaymentSheetController {
       );
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -178,7 +180,9 @@ public class PaymentSheetController {
       );
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -203,7 +207,9 @@ public class PaymentSheetController {
       return new ResponseEntity<>("", HttpStatus.OK);
 
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
 
   }
@@ -221,7 +227,9 @@ public class PaymentSheetController {
       paymentSheetService.removeSelfVehicle(paymentSheetId);
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -245,7 +253,9 @@ public class PaymentSheetController {
       return new ResponseEntity<>("", HttpStatus.OK);
 
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -263,7 +273,9 @@ public class PaymentSheetController {
       return new ResponseEntity<>("", HttpStatus.OK);
 
     } catch (PaymentSheetServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 }

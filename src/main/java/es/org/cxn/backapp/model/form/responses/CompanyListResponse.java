@@ -6,7 +6,8 @@ import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.Data;
 
 /**
  * Represents the form used by controller as response for requesting all
@@ -20,6 +21,7 @@ import java.util.Objects;
  *
  * @author Santiago Paz.
  */
+@Data
 public final class CompanyListResponse implements Serializable {
 
   /**
@@ -44,48 +46,4 @@ public final class CompanyListResponse implements Serializable {
                 .add(new CompanyResponse(e))
     );
   }
-
-  /**
-   * Get response companies list.
-   *
-   * @return The response companies list.
-   */
-  public List<CompanyResponse> getCompaniesList() {
-    return new ArrayList<>(companiesList);
-  }
-
-  /**
-   * Set response companies list.
-   *
-   * @param value The companies list.
-   */
-  public void setCompaniesList(final List<CompanyResponse> value) {
-    this.companiesList = new ArrayList<>(value);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(companiesList);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (CompanyListResponse) obj;
-    return Objects.equals(companiesList, other.companiesList);
-  }
-
-  @Override
-  public String toString() {
-    return "CompaniesListResponse [companies=" + companiesList + "]";
-  }
-
 }

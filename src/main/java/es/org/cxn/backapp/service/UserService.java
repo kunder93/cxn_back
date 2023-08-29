@@ -24,12 +24,13 @@
 
 package es.org.cxn.backapp.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.UserServiceUpdateForm;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
+
+import java.util.List;
 
 /**
  * Service for the User entity domain.
@@ -44,32 +45,12 @@ public interface UserService {
   /**
    * Creates new user entity.
    *
-   * @param dni                    The user DNI aka identifier.
-   * @param name                   The user name.
-   * @param firstSurname           The user first surname.
-   * @param secondSurname          The user second surname.
-   * @param birthDate              The user birth date.
-   * @param gender                 The user gender.
-   * @param password               The user password.
-   * @param email                  The user email.
-   * @param apartmentNumber        The user address apartment number.
-   * @param building               The user address building.
-   * @param city                   The user address city.
-   * @param postalCode             The user address postal code.
-   * @param street                 The user address street.
-   * @param countryNumericCode     The user address country numeric code aka
-   *                               identifier.
-   * @param countrySubdivisionName The user address country subdivision name aka
-   *                               identifier.
+   * @param userDetails The dto with user and address data.
    * @return The user entity created.
    * @throws UserServiceException If fails.
    */
-  UserEntity add(
-        String dni, String name, String firstSurname, String secondSurname,
-        LocalDate birthDate, String gender, String password, String email,
-        String apartmentNumber, String building, String city, String postalCode,
-        String street, Integer countryNumericCode, String countrySubdivisionName
-  ) throws UserServiceException;
+  UserEntity add(UserRegistrationDetails userDetails)
+        throws UserServiceException;
 
   /**
    * Returns an entity with the given identifier (dni).
@@ -141,6 +122,17 @@ public interface UserService {
   /**
    * @return Get list with all users.
    */
-  List<PersistentUserEntity> getAll();
+  List<UserEntity> getAll();
+
+  /**
+   * Change the user kind member.
+   *
+   * @param userEmail The user email aka identifier.
+   * @param newKindMember The new user kind member.
+   * @return User entity with change.
+   * @throws UserServiceException When cannot change the user kind member.
+   */
+  UserEntity changeKindMember(String userEmail, UserType newKindMember)
+        throws UserServiceException;
 
 }

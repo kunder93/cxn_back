@@ -5,6 +5,10 @@ import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Represents the form used by controller as response for requesting one
  * invoice.
@@ -17,6 +21,9 @@ import java.io.Serializable;
  *
  * @author Santiago Paz.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public final class RegularTransportResponse implements Serializable {
 
   /**
@@ -38,13 +45,6 @@ public final class RegularTransportResponse implements Serializable {
   private InvoiceResponse invoiceResponse;
 
   /**
-   * Main empty constructor.
-   */
-  public RegularTransportResponse() {
-    super();
-  }
-
-  /**
    * Constructor with regular transport entity.
    *
    * @param entity The Regular Transport entity.
@@ -57,47 +57,4 @@ public final class RegularTransportResponse implements Serializable {
     this.description = entity.getDescription();
     this.invoiceResponse = new InvoiceResponse(entity.getTransportInvoice());
   }
-
-  /**
-   * @return The category.
-   */
-  public String getCategory() {
-    return category;
-  }
-
-  /**
-   * @return The description.
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * @return The invoice response.
-   */
-  public InvoiceResponse getInvoiceResponse() {
-    return invoiceResponse;
-  }
-
-  /**
-   * @param category The category.
-   */
-  public void setCategory(final String category) {
-    this.category = category;
-  }
-
-  /**
-   * @param description The description.
-   */
-  public void setDescription(final String description) {
-    this.description = description;
-  }
-
-  /**
-   * @param invoiceResponse The invoice response.
-   */
-  public void setInvoiceResponse(final InvoiceResponse invoiceResponse) {
-    this.invoiceResponse = invoiceResponse;
-  }
-
 }

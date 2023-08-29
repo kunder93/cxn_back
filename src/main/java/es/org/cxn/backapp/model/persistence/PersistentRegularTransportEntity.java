@@ -38,7 +38,11 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * RegularTransport Entity.
@@ -49,6 +53,10 @@ import java.util.Objects;
  */
 @Entity(name = "RegularTransport")
 @Table(name = "regulartransport")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PersistentRegularTransportEntity
       implements RegularTransportEntity {
 
@@ -70,19 +78,22 @@ public class PersistentRegularTransportEntity
    * Regular transport category.
    */
   @Column(name = "category", nullable = false, unique = false)
-  private String category = "";
+  @NonNull
+  private String category;
 
   /**
    * Regular transport description.
    */
   @Column(name = "description", nullable = false, unique = false)
-  private String description = "";
+  @NonNull
+  private String description;
 
   /**
    * The regular transport assigned invoice.
    */
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "invoice_id", nullable = false)
+  @NonNull
   private PersistentInvoiceEntity transportInvoice;
 
   /**
@@ -91,150 +102,5 @@ public class PersistentRegularTransportEntity
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "payment_sheet_id", nullable = false)
   private PersistentPaymentSheetEntity paymentSheet;
-
-  /**
-   * Constructs a company entity.
-   */
-  public PersistentRegularTransportEntity() {
-    super();
-  }
-
-  /**
-   * Regular transport entity constructor.
-   *
-   * @param category         The category.
-   * @param description      The description.
-   * @param transportInvoice The transport invoice.
-   * @param paymentSheet     The payment sheet.
-   */
-  public PersistentRegularTransportEntity(
-        final String category, final String description,
-        final PersistentInvoiceEntity transportInvoice,
-        final PersistentPaymentSheetEntity paymentSheet
-  ) {
-    super();
-    this.category = category;
-    this.description = description;
-    this.transportInvoice = transportInvoice;
-    this.paymentSheet = paymentSheet;
-  }
-
-  /**
-   * Get identifier.
-   */
-  @Override
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * Get category.
-   */
-  @Override
-  public String getCategory() {
-    return category;
-  }
-
-  /**
-   * Get description.
-   */
-  @Override
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Get transport invoice entity.
-   */
-  @Override
-  public PersistentInvoiceEntity getTransportInvoice() {
-    return transportInvoice;
-  }
-
-  /**
-   * Get payment sheet entity.
-   */
-  @Override
-  public PersistentPaymentSheetEntity getPaymentSheet() {
-    return paymentSheet;
-  }
-
-  /**
-   * Set identifier.
-   */
-  @Override
-  public void setId(final Integer id) {
-    this.id = id;
-  }
-
-  /**
-   * Set cagegory.
-   */
-  @Override
-  public void setCategory(final String category) {
-    this.category = category;
-  }
-
-  /**
-   * Set description.
-   */
-  @Override
-  public void setDescription(final String description) {
-    this.description = description;
-  }
-
-  /**
-   * Set transport invoice entity.
-   */
-  @Override
-  public void
-        setTransportInvoice(final PersistentInvoiceEntity transportInvoice) {
-    this.transportInvoice = transportInvoice;
-  }
-
-  /**
-   * Set payment sheet entity.
-   */
-  @Override
-  public void setPaymentSheet(final PersistentPaymentSheetEntity paymentSheet) {
-    this.paymentSheet = paymentSheet;
-  }
-
-  /**
-   * Hash code.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(category, description, id);
-  }
-
-  /**
-   * Equals.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PersistentRegularTransportEntity) obj;
-    return Objects.equals(category, other.category)
-          && Objects.equals(description, other.description)
-          && Objects.equals(id, other.id);
-  }
-
-  /**
-   * To string.
-   */
-  @Override
-  public String toString() {
-    return "PersistentRegularTransportEntity [id=" + id + ", category="
-          + category + ", description=" + description + "]";
-  }
 
 }

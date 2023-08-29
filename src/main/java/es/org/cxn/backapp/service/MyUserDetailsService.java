@@ -1,11 +1,14 @@
+
 package es.org.cxn.backapp.service;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import es.org.cxn.backapp.repository.UserEntityRepository;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import es.org.cxn.backapp.repository.UserEntityRepository;
 
 /**
  * Implementation of Spring UserDetailsService.
@@ -28,20 +31,18 @@ public final class MyUserDetailsService implements UserDetailsService {
    */
   public MyUserDetailsService(final UserEntityRepository repository) {
     super();
-    userRepository = checkNotNull(
-          repository, "Received a null pointer as repository"
-    );
+    userRepository =
+          checkNotNull(repository, "Received a null pointer as repository");
   }
 
   @Override
-  public UserDetails loadUserByUsername(final String email)
-        throws UsernameNotFoundException {
-    var userEntityOptional = userRepository.findByEmail(email);
+  public UserDetails loadUserByUsername(final String email) {
+    final var userEntityOptional = userRepository.findByEmail(email);
     if (userEntityOptional.isEmpty()) {
       throw new UsernameNotFoundException("email: " + email);
     }
-
-    return new MyPrincipalUser(userEntityOptional.get());
+    final var user = userEntityOptional.get();
+    return new MyPrincipalUser(user);
   }
 
 }

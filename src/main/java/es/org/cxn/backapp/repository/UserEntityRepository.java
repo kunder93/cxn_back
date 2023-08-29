@@ -24,12 +24,14 @@
 
 package es.org.cxn.backapp.repository;
 
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 /**
  * Spring-JPA repository for {@link PersistentUserEntity}.
@@ -41,7 +43,7 @@ import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
  */
 @Repository
 public interface UserEntityRepository
-      extends JpaRepository<PersistentUserEntity, Integer> {
+      extends JpaRepository<PersistentUserEntity, String> {
 
   /**
    * Returns all entities with a partial match to the name.

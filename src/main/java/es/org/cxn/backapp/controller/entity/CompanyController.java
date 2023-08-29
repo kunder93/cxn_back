@@ -108,7 +108,9 @@ public class CompanyController {
       final var response = new CompanyResponse(result);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (CompanyServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -119,14 +121,16 @@ public class CompanyController {
    *
    * @return Ok or error.
    */
-  @DeleteMapping(value = "/{nif}")
+  @DeleteMapping("/{nif}")
   public ResponseEntity<Boolean> deleteCompany(@PathVariable
   final String nif) {
     try {
       companyService.remove(nif);
     } catch (CompanyServiceException e) {
 
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
     return new ResponseEntity<>(HttpStatus.OK);
   }
@@ -138,16 +142,16 @@ public class CompanyController {
    * @param requestForm the new data for update company.
    * @return The company with data updated.
    */
-  @PutMapping(value = "/{nif}")
+  @PutMapping("/{nif}")
   public ResponseEntity<CompanyUpdateResponse> updateCompany(@PathVariable
   final String nif, @RequestBody
   final CompanyUpdateRequestForm requestForm) {
     try {
-      var companyUpdated = companyService.updateCompany(
+      final var companyUpdated = companyService.updateCompany(
             nif, requestForm.getName(), requestForm.getAddress()
 
       );
-      var response = new CompanyUpdateResponse(
+      final var response = new CompanyUpdateResponse(
             companyUpdated.getNif(), companyUpdated.getName(),
             companyUpdated.getAddress()
 
@@ -156,7 +160,9 @@ public class CompanyController {
 
     } catch (CompanyServiceException e) {
 
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
 
   }

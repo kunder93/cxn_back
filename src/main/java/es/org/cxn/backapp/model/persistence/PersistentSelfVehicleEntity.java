@@ -37,7 +37,11 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * Self vehicle entity.
@@ -48,6 +52,10 @@ import java.util.Objects;
  */
 @Entity(name = "SelfVehicle")
 @Table(name = "selfvehicle")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
 
   /**
@@ -62,14 +70,15 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false, unique = true)
-  private Integer id;
+  private Integer identifier;
 
   /**
    * Places where travel with the vehicle.
    *
    */
   @Column(name = "places", nullable = false, unique = false)
-  private String places = "";
+  @NonNull
+  private String places;
 
   /**
    * Distance of travels.
@@ -90,154 +99,6 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    */
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "payment_sheet_id", nullable = false)
+  @NonNull
   private PersistentPaymentSheetEntity paymentSheet;
-
-  /**
-   * Constructs a company entity.
-   */
-  public PersistentSelfVehicleEntity() {
-    super();
-  }
-
-  /**
-   * Self vehicle entity constructor.
-   *
-   * @param places       The places.
-   * @param distance     The distance.
-   * @param kmPrice      The price per kilometer.
-   * @param paymentSheet The payment sheet.
-   */
-  public PersistentSelfVehicleEntity(
-        final String places, final float distance, final double kmPrice,
-        final PersistentPaymentSheetEntity paymentSheet
-  ) {
-    super();
-    this.places = places;
-    this.distance = distance;
-    this.kmPrice = kmPrice;
-    this.paymentSheet = paymentSheet;
-  }
-
-  /**
-   * Get identifier.
-   */
-  @Override
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * Get places.
-   */
-  @Override
-  public String getPlaces() {
-    return places;
-  }
-
-  /**
-   * Get distance.
-   */
-  @Override
-  public float getDistance() {
-    return distance;
-  }
-
-  /**
-   * Get price per kilometer.
-   */
-  @Override
-  public double getKmPrice() {
-    return kmPrice;
-  }
-
-  /**
-   * Set identifier.
-   */
-  @Override
-  public void setId(final Integer id) {
-    this.id = id;
-  }
-
-  /**
-   * Set places.
-   */
-  @Override
-  public void setPlaces(final String places) {
-    this.places = places;
-  }
-
-  /**
-   * Set distance.
-   */
-  @Override
-  public void setDistance(final float distance) {
-    this.distance = distance;
-  }
-
-  /**
-   * Set price per kilometer.
-   */
-  @Override
-  public void setKmPrice(final double kmPrice) {
-    this.kmPrice = kmPrice;
-  }
-
-  /**
-   * Get the payment sheet.
-   *
-   * @return The payment sheet.
-   */
-  public PersistentPaymentSheetEntity getPaymentSheet() {
-    return paymentSheet;
-  }
-
-  /**
-   * Set the payment sheet.
-   *
-   * @param paymentSheet The payment sheet.
-   */
-  public void setPaymentSheet(final PersistentPaymentSheetEntity paymentSheet) {
-    this.paymentSheet = paymentSheet;
-  }
-
-  /**
-   * Hash code.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(distance, id, kmPrice, places);
-  }
-
-  /**
-   * Equals.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PersistentSelfVehicleEntity) obj;
-    return Double.doubleToLongBits(distance) == Double
-          .doubleToLongBits(other.distance)
-          && Objects.equals(id, other.id)
-          && Double.doubleToLongBits(kmPrice) == Double
-                .doubleToLongBits(other.kmPrice)
-          && Objects.equals(places, other.places);
-  }
-
-  /**
-   * To string.
-   */
-  @Override
-  public String toString() {
-    return "PersistentSelfVehicleEntity [id=" + id + ", places=" + places
-          + ", distance=" + distance + ", kmPrice=" + kmPrice + "]";
-  }
-
 }

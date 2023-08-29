@@ -24,10 +24,11 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
-import java.util.Objects;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents the form used for response authenticating user.
@@ -41,6 +42,9 @@ import java.util.Objects;
  *
  * @author Santiago Paz Perez
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public final class AuthenticationResponse implements Serializable {
 
   /**
@@ -52,65 +56,5 @@ public final class AuthenticationResponse implements Serializable {
    * Jwt field.
    */
   private String jwt;
-
-  /**
-   * Constructs a DTO for user info response.
-   */
-  public AuthenticationResponse() {
-    super();
-  }
-
-  /**
-   * Constructs a DTO for user info response with fields values.
-   *
-   * @param value the jwt field.
-   */
-  public AuthenticationResponse(final String value) {
-    super();
-    this.jwt = value;
-  }
-
-  /**
-   * Returns the value of the jwt token.
-   *
-   * @return the value of the jwt field.
-   */
-  public String getJwt() {
-    return jwt;
-  }
-
-  /**
-   * Sets the value of the Jwt field.
-   *
-   * @param value the new value for the Jwt token.
-   */
-  public void setJwt(final String value) {
-    this.jwt = checkNotNull(value, "Received a null pointer as name");
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(jwt);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (AuthenticationResponse) obj;
-    return Objects.equals(jwt, other.jwt);
-  }
-
-  @Override
-  public String toString() {
-    return "UserInfoResponseForm [jwt=" + jwt + "]";
-  }
 
 }

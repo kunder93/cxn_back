@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+
 import jakarta.validation.constraints.NotEmpty;
 
 import java.io.Serializable;
@@ -23,25 +25,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public final class UserChangeRoleRequestForm implements Serializable {
+public final class UserChangeKindMemberRequest implements Serializable {
 
   /**
    * Serial UID.
    */
-  private static final long serialVersionUID = 726911880297432628L;
+  private static final long serialVersionUID = 726912280697412328L;
 
   /**
-   * Name field.
+   * User email name field.
+   */
+  @NotEmpty
+  private String email;
+
+  /**
+   * kindMember field.
    * <p>
    * This is a required field and can't be empty.
    */
   @NotEmpty
-  private String userEmail;
-
-  /**
-   * User role name field.
-   */
-  @NotEmpty
-  private String roleName;
+  private UserType kindMember;
 
 }

@@ -3,8 +3,8 @@ package es.org.cxn.backapp.service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +14,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.NoArgsConstructor;
 
 /**
  * Class for operations associated to jwt token used in authentication.
@@ -22,6 +23,7 @@ import io.jsonwebtoken.security.Keys;
  *
  */
 @Service
+@NoArgsConstructor
 public final class DefaultJwtUtils implements JwtUtils {
 
   /**
@@ -36,19 +38,12 @@ public final class DefaultJwtUtils implements JwtUtils {
   private static final int EXPIRATION_TIME = 1000 * 60 * 60 * 10;
 
   /**
-   * Default constructor.
-   */
-  public DefaultJwtUtils() {
-    super();
-  }
-
-  /**
    * Temporary for develop, must change.
    *
    * @return the key.
    */
   private static Key getSigningKey() {
-    var keyBytes = Decoders.BASE64.decode(DefaultJwtUtils.SECRET);
+    final var keyBytes = Decoders.BASE64.decode(DefaultJwtUtils.SECRET);
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
@@ -120,7 +115,7 @@ public final class DefaultJwtUtils implements JwtUtils {
    */
   @Override
   public String generateToken(final MyPrincipalUser userDetails) {
-    Map<String, Object> claims = new HashMap<>();
+    final Map<String, Object> claims = new ConcurrentHashMap<>();
     return createToken(claims, userDetails.getUsername());
   }
 

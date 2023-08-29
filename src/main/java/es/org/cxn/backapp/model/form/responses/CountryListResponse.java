@@ -6,7 +6,8 @@ import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.Data;
 
 /**
  * Represents the form used by controller as response for requesting all
@@ -17,6 +18,7 @@ import java.util.Objects;
  *
  * @author Santiago Paz.
  */
+@Data
 public final class CountryListResponse implements Serializable {
 
   /**
@@ -41,48 +43,4 @@ public final class CountryListResponse implements Serializable {
                 .add(new CountryResponse(e))
     );
   }
-
-  /**
-   * Get response countries list.
-   *
-   * @return The response countries list.
-   */
-  public List<CountryResponse> getCountryList() {
-    return new ArrayList<>(countryList);
-  }
-
-  /**
-   * Set response country list.
-   *
-   * @param value The countries list.
-   */
-  public void setCountryList(final List<CountryResponse> value) {
-    this.countryList = new ArrayList<>(value);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(countryList);
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (CountryListResponse) obj;
-    return Objects.equals(countryList, other.countryList);
-  }
-
-  @Override
-  public String toString() {
-    return "CountryListResponse [countries=" + countryList + "]";
-  }
-
 }

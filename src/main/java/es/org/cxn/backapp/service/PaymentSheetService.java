@@ -24,13 +24,15 @@
 
 package es.org.cxn.backapp.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
+import es.org.cxn.backapp.model.PaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
 import es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Service for the PaymentSheet entity domain.
@@ -53,7 +55,7 @@ public interface PaymentSheetService {
    * @return The entity that has been added.
    * @throws PaymentSheetServiceException If fails.
    */
-  PersistentPaymentSheetEntity add(
+  PaymentSheetEntity add(
         String reason, String place, LocalDate startDate, LocalDate endDate,
         String userEmail
   ) throws PaymentSheetServiceException;
@@ -61,25 +63,25 @@ public interface PaymentSheetService {
   /**
    * Find a payment sheet entity.
    *
-   * @param id The payment sheet identifier.
+   * @param identifier The payment sheet identifier (id).
    * @return The payment sheet entity with the identifier.
    * @throws PaymentSheetServiceException If fails.
    */
-  PersistentPaymentSheetEntity findById(Integer id)
+  PersistentPaymentSheetEntity findById(Integer identifier)
         throws PaymentSheetServiceException;
 
   /**
    * Remove or delete payment sheet entity.
    *
-   * @param id The payment sheet identifier.
+   * @param identifier The payment sheet identifier.
    * @throws PaymentSheetServiceException If fails.
    */
-  void remove(Integer id) throws PaymentSheetServiceException;
+  void remove(Integer identifier) throws PaymentSheetServiceException;
 
   /**
    * Update data from existing payment sheet entity.
    *
-   * @param id        The payment sheet identifier.
+   * @param identifier        The payment sheet identifier.
    * @param reason    The payment sheet event reason.
    * @param place     The payment sheet event place.
    * @param startDate The payment sheet start date.
@@ -88,7 +90,7 @@ public interface PaymentSheetService {
    * @throws PaymentSheetServiceException If fails.
    */
   PersistentPaymentSheetEntity updatePaymentSheet(
-        Integer id, String reason, String place, LocalDate startDate,
+        Integer identifier, String reason, String place, LocalDate startDate,
         LocalDate endDate
   ) throws PaymentSheetServiceException;
 

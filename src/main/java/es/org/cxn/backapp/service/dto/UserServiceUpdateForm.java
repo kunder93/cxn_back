@@ -22,22 +22,53 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.repository;
+package es.org.cxn.backapp.service.dto;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import es.org.cxn.backapp.model.persistence.PersistentOperationEntity;
+import java.io.Serializable;
+import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
- * Spring-JPA repository for {@link PersistentOperationEntity}.
- * <p>
- * This is a simple repository just to allow the endpoints querying the entities
- * they are asked for.
+ * Default implementation of the user form user by service.
  *
- * @author Santiago Paz Perez.
+ * @author Santiago Paz
  */
-@Repository
-public interface OperationEntityRepository
-      extends JpaRepository<PersistentOperationEntity, Integer> {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserServiceUpdateForm implements Serializable {
+
+  /**
+   * Serialization ID.
+   */
+  private static final long serialVersionUID = 1328776449450853491L;
+
+  /**
+   * Name of the user.
+   */
+  private String name = "";
+
+  /**
+   * Name of the user.
+   */
+  private String firstSurname = "";
+
+  /**
+   * Name of the user.
+   */
+  private String secondSurname = "";
+
+  /**
+   * Name of the user.
+   */
+  private LocalDate birthDate;
+
+  /**
+   * Name of the user.
+   */
+  private String gender = "";
 
 }

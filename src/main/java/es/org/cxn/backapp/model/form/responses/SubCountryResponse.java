@@ -5,6 +5,10 @@ import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Represents the form used by controller as response for requesting one
  * company.
@@ -17,6 +21,9 @@ import java.io.Serializable;
  *
  * @author Santiago Paz.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public final class SubCountryResponse implements Serializable {
 
   /**
@@ -50,47 +57,4 @@ public final class SubCountryResponse implements Serializable {
     this.kindSubdivisionName = countrySubdivision.getKindSubdivisionName();
     this.code = countrySubdivision.getCode();
   }
-
-  /**
-   * @return The name.
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * @return The kind subdivision name.
-   */
-  public String getKindSubdivisionName() {
-    return kindSubdivisionName;
-  }
-
-  /**
-   * @param name The name.
-   */
-  public void setName(final String name) {
-    this.name = name;
-  }
-
-  /**
-   * @return The code.
-   */
-  public String getCode() {
-    return code;
-  }
-
-  /**
-   * @param code The code.
-   */
-  public void setCode(final String code) {
-    this.code = code;
-  }
-
-  /**
-   * @param kindSubdivisionName The kind subdivision name.
-   */
-  public void setKindSubdivisionName(final String kindSubdivisionName) {
-    this.kindSubdivisionName = kindSubdivisionName;
-  }
-
 }
