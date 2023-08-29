@@ -139,9 +139,15 @@ class PaymentSheetControllerIntegrationTest {
     super();
   }
 
+  /**
+   * Create payment sheet request, check data returned and request all payment sheets.
+   * Check that are only one payment sheet and containing data.
+   *
+   * @throws Exception
+   */
   @Test
   @Transactional
-  void testCreatePaymentSheetResponseOkContainData() throws Exception {
+  void testCreatePaymentSheetResponseContainData() throws Exception {
     var numberOfPaymentSheets = 1;
 
     // Create user, expect 201 created.
@@ -150,7 +156,7 @@ class PaymentSheetControllerIntegrationTest {
                 .content(createUserRequestFormJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    // Do payment sheet request, expect controller status created
+    // Create payment sheet, expect 201 created
     var requestResult = mockMvc.perform(
           post(PAYMENT_SHEET_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(createPaymentSheetRequestFormJson)
@@ -201,13 +207,47 @@ class PaymentSheetControllerIntegrationTest {
 
     var paymentSheetListResponse = gson
           .fromJson(paymentSheetGetResponse, PaymentSheetListResponse.class);
+
+    var paymentSheetList = paymentSheetListResponse.getPaymentSheetsList();
     Assertions.assertEquals(
-          paymentSheetListResponse.getPaymentSheetsList().size(),
-          numberOfPaymentSheets, "user dni."
+          paymentSheetList.size(), numberOfPaymentSheets,
+          "Only one payment sheet."
+    );
+
+    var paymentSheetReturned = paymentSheetList.iterator().next();
+
+    Assertions.assertEquals(
+          USER_DNI, paymentSheetReturned.getUserDNI(), "user dni"
+    );
+    Assertions.assertEquals(
+          USER_FIRST_SURNAME, paymentSheetReturned.getUserFirstSurname(),
+          "user first surname"
+    );
+    Assertions.assertEquals(
+          PAYMENT_SHEET_START_DATE, paymentSheetReturned.getStartDate(),
+          "payment sheet start date."
+    );
+    Assertions.assertEquals(
+          PAYMENT_SHEET_END_DATE, paymentSheetReturned.getEndDate(),
+          "payment sheet end date."
+    );
+    Assertions.assertEquals(
+          PAYMENT_SHEET_PLACE, paymentSheetReturned.getPlace(),
+          "payment sheet place."
+    );
+
+    Assertions.assertEquals(
+          PAYMENT_SHEET_REASON, paymentSheetReturned.getReason(),
+          "payment sheet reason."
     );
 
   }
 
+  /**
+   * Create payment sheet with no valid user who no exists. Expect bad request.
+   *
+   * @throws Exception
+   */
   @Test
   @Transactional
   void testCreatePaymentSheetNotExistingUserBadRequest() throws Exception {
@@ -219,7 +259,6 @@ class PaymentSheetControllerIntegrationTest {
                       .content(createPaymentSheetRequestFormJson)
           ).andExpect(MockMvcResultMatchers.status().isBadRequest())
           .andReturn();
-
   }
 
   @Test
@@ -244,28 +283,69 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetIdentifier =
           paymentSheetResponseObject.getPaymentSheetIdentifier();
 
-    mockMvc.perform(
-          get(
-                PAYMENT_SHEET_URL + "/" + paymentSheetIdentifier
+    // get payment sheet data using id.
+    var paymentSheetIdResponse = mockMvc
+          .perform(
+                get(
+                      PAYMENT_SHEET_URL + "/" + paymentSheetIdentifier
 
-          )
-    ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse()
-          .getContentAsString();
+                )
+          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+          .getResponse().getContentAsString();
+
+    gson = new GsonBuilder()
+          .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+          .create();
+
+    var paymentSheetIdObjectResponse =
+          gson.fromJson(paymentSheetIdResponse, PaymentSheetResponse.class);
+
+    // Check payment sheet response data obtained through identifier.
+    Assertions.assertEquals(
+          USER_DNI, paymentSheetIdObjectResponse.getUserDNI(), "user dni"
+    );
+    Assertions.assertEquals(
+          USER_FIRST_SURNAME,
+          paymentSheetIdObjectResponse.getUserFirstSurname(),
+          "user first surname"
+    );
+    Assertions.assertEquals(
+          PAYMENT_SHEET_START_DATE, paymentSheetIdObjectResponse.getStartDate(),
+          "payment sheet start date."
+    );
+    Assertions.assertEquals(
+          PAYMENT_SHEET_END_DATE, paymentSheetIdObjectResponse.getEndDate(),
+          "payment sheet end date."
+    );
+    Assertions.assertEquals(
+          PAYMENT_SHEET_PLACE, paymentSheetIdObjectResponse.getPlace(),
+          "payment sheet place."
+    );
+
+    Assertions.assertEquals(
+          PAYMENT_SHEET_REASON, paymentSheetIdObjectResponse.getReason(),
+          "payment sheet reason."
+    );
+
   }
 
+  /**
+   * Get payment sheet with identifier that not exists is bad request.
+   *
+   * @throws Exception
+   */
   @Test
   @Transactional
-  void testNotExistingPaymentSheetGetDataFromIdBadRequest() throws Exception {
+  void testGetDataFromIdNotExistingPaymentSheetBadRequest() throws Exception {
+    var paymentSheetNotExistingIdentifier = 99;
+    mockMvc
+          .perform(
+                get(
+                      PAYMENT_SHEET_URL + "/"
+                            + paymentSheetNotExistingIdentifier
 
-    var paymentSheetIdentifier = 99;
-
-    mockMvc.perform(
-          get(
-                PAYMENT_SHEET_URL + "/" + paymentSheetIdentifier
-
-          )
-    ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn()
-          .getResponse().getContentAsString();
+                )
+          ).andExpect(MockMvcResultMatchers.status().isBadRequest());
   }
 
   @Test

@@ -65,6 +65,11 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
         "Payment sheet with this identifier not found.";
 
   /**
+   * Payment sheet already have food housing message exception.
+   */
+  public static final String PAYMENT_SHEET_FOOD_HOUSING_EXISTS =
+        " This payment sheet have already food-housing.";
+  /**
    * Invoice not found message exception.
    */
   public static final String INVOICE_NOT_FOUND_MESSAGE =
@@ -286,6 +291,9 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
       throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
     }
     final var paymentSheetEntity = paymentSheetOptionalEntity.get();
+    if (paymentSheetEntity.getFoodHousing() != null) {
+      throw new PaymentSheetServiceException(PAYMENT_SHEET_FOOD_HOUSING_EXISTS);
+    }
     final var foodHousing = PersistentFoodHousingEntity.builder()
           .amountDays(amountDays).dayPrice(dayPrice).overnight(overnight)
           .paymentSheet(paymentSheetEntity).build();

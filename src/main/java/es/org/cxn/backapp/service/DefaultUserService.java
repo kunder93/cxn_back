@@ -306,7 +306,7 @@ public final class DefaultUserService implements UserService {
     return userRepository.save(userEntity);
   }
 
-  private static boolean checkAgeUnder18(PersistentUserEntity user) {
+  private static boolean checkAgeUnder18(final PersistentUserEntity user) {
     final var LIMIT_AGE = 18;
     final var birthDate = user.getBirthDate();
     final var today = LocalDate.now();

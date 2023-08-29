@@ -32,7 +32,7 @@ public final class PaymentSheetListResponse implements Serializable {
   /**
    * List with all stored payment sheets.
    */
-  private List<PaymentSheetResponse> paymentSheetsList = new ArrayList<>();
+  private List<PaymentSheetResponse> paymentSheetsList;
 
   /**
    * Constructor with provided parameters values.
@@ -43,6 +43,7 @@ public final class PaymentSheetListResponse implements Serializable {
         final List<PersistentPaymentSheetEntity> value
   ) {
     super();
+    paymentSheetsList = new ArrayList<>();
     value.forEach(
           (PersistentPaymentSheetEntity entity) -> this.paymentSheetsList
                 .add(new PaymentSheetResponse(entity))
