@@ -1,0 +1,91 @@
+databaseChangeLog:
+  - changeSet:
+      id: library_authors_table
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: author
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: first_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: nationality
+                  type: VARCHAR(255)
+
+  - changeSet:
+      id: library_books_table
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: book
+            columns:
+              - column:
+                  name: isbn
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: title
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: gender
+                  type: varchar(30)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: publish_year
+                  type: DATE
+                  constraints:
+                    nullable: true
+              - column:
+                  name: language
+                  type: varchar(20)
+                  constraints:
+                    nullable: true   
+  - changeSet:
+      id: book_author_table
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: bookauthor
+            columns:
+              - column:
+                  name: book_isbn
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true              
+            constraints: 
+            - foreignKey:
+                name: FK_BOOK_AUTHOR_BOOK
+                baseColumnNames: book_isbn
+                baseTableName: book_author
+                referencedColumnNames: isbn
+                referencedTableName: book
+            - foreignKey:
+                name: FK_BOOK_AUTHOR_AUTHOR
+                baseColumnNames: author_id
+                baseTableName: author
+                referencedColumnNames: id
+                referencedTableName: author
+

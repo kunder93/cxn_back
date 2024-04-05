@@ -154,6 +154,7 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
+            <version>10.1.20</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -269,8 +270,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
     </dependencies>
 
     <build>

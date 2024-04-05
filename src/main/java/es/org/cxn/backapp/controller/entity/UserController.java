@@ -101,6 +101,7 @@ public class UserController {
    * @return form with the updated user data.
    */
   @PostMapping()
+  @CrossOrigin
   public ResponseEntity<UserUpdateResponseForm> updateUserData(@RequestBody
   final UserUpdateRequestForm userUpdateRequestForm) {
     final var userName =
