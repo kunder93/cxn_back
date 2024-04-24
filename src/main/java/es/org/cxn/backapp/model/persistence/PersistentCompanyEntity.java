@@ -24,8 +24,6 @@
 
 package es.org.cxn.backapp.model.persistence;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import es.org.cxn.backapp.model.CompanyEntity;
 
 import jakarta.persistence.Column;
@@ -37,7 +35,12 @@ import jakarta.persistence.Transient;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * Company Entity.
@@ -48,6 +51,10 @@ import java.util.Objects;
  */
 @Entity(name = "CompanyEntity")
 @Table(name = "companies")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class PersistentCompanyEntity implements CompanyEntity {
 
   /**
@@ -61,6 +68,7 @@ public class PersistentCompanyEntity implements CompanyEntity {
    */
   @Id
   @Column(name = "nif", nullable = false, unique = true)
+  @NonNull
   private String nif;
 
   /**
@@ -68,98 +76,30 @@ public class PersistentCompanyEntity implements CompanyEntity {
    *
    */
   @Column(name = "name", nullable = false, unique = false)
-  private String name = "";
+  @NonNull
+  private String name;
 
   /**
    * Company address.
    *
    */
   @Column(name = "address", nullable = false, unique = false)
+  @NonNull
   private String address;
 
   /**
    * List of companies that have this company as buyer.
    */
   @OneToMany(mappedBy = "buyer")
+  @Builder.Default
   private List<PersistentInvoiceEntity> invoicesAsBuyer = new ArrayList<>();
 
   /**
    * List with invoices that have this company as seller.
    */
   @OneToMany(mappedBy = "seller")
+  @Builder.Default
   private List<PersistentInvoiceEntity> invoicesAsSeller = new ArrayList<>();
-
-  /**
-   * Constructs a company entity.
-   */
-  public PersistentCompanyEntity() {
-    super();
-  }
-
-  /**
-   * Company entity constructor.
-   *
-   * @param nif     The nif.
-   * @param name    The name.
-   * @param address The address.
-   */
-  public PersistentCompanyEntity(
-        final String nif, final String name, final String address
-  ) {
-    super();
-    this.nif = checkNotNull(nif, "Received a null pointer as cif or nif");
-    this.name = checkNotNull(name, "Received a null pointer as company name");
-    this.address = checkNotNull(address, "Received a null pointer as address");
-
-  }
-
-  /**
-   * Get NIF.
-   */
-  @Override
-  public String getNif() {
-    return nif;
-  }
-
-  /**
-   * Set NIF.
-   */
-  @Override
-  public void setNif(final String value) {
-    this.nif = value;
-  }
-
-  /**
-   * Get name.
-   */
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Set name.
-   */
-  @Override
-  public void setName(final String name) {
-    this.name = name;
-  }
-
-  /**
-   * Get address.
-   */
-  @Override
-  public String getAddress() {
-    return address;
-  }
-
-  /**
-   * Set address.
-   */
-  @Override
-  public void setAddress(final String address) {
-    this.address = address;
-  }
 
   /**
    * Get invoices as Buyer.
@@ -218,43 +158,6 @@ public class PersistentCompanyEntity implements CompanyEntity {
           (PersistentInvoiceEntity invoice) -> lista.add(invoice.getId())
     );
     return lista;
-  }
-
-  /**
-   * Hash code.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(address, nif, name);
-  }
-
-  /**
-   * Equals.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PersistentCompanyEntity) obj;
-    return Objects.equals(address, other.address)
-          && Objects.equals(nif, other.nif) && Objects.equals(name, other.name);
-
-  }
-
-  /**
-   * To string.
-   */
-  @Override
-  public String toString() {
-    return "PersistentCompanyEntity [nif=" + nif + ", name=" + name
-          + ", address=" + address + "]";
   }
 
 }

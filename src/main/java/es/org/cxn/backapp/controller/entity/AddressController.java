@@ -33,6 +33,7 @@ import es.org.cxn.backapp.service.AddressService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +72,7 @@ public class AddressController {
    *
    * @return all stored countries.
    */
+  @CrossOrigin
   @GetMapping(path = "/getCountries")
   public ResponseEntity<CountryListResponse> getAllCountries() {
     final var countryList = addressService.getCountries();
@@ -87,6 +89,7 @@ public class AddressController {
    *
    * @return country data and his sub-countries.
    */
+  @CrossOrigin
   @GetMapping(path = "/country/{countryCode}")
   public ResponseEntity<SubCountryListResponse>
         getAllSubCountriesFromCountry(@PathVariable
@@ -98,11 +101,9 @@ public class AddressController {
       );
     } catch (AddressServiceException e) {
       throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, e.getMessage()
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
 
       );
     }
-
   }
-
 }

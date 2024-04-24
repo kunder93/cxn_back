@@ -83,15 +83,15 @@ public final class DefaultCompanyService implements CompanyService {
     if (Boolean.TRUE.equals(companyRepository.existsByNif(nif))) {
       throw new CompanyServiceException(COMPANY_EXISTS_MESSAGE);
     }
-
-    var company = new PersistentCompanyEntity(nif, name, address);
+    final var company = PersistentCompanyEntity.builder().nif(nif).name(name)
+          .address(address).build();
     return companyRepository.save(company);
   }
 
   @Override
   public PersistentCompanyEntity findById(final String nifCif)
         throws CompanyServiceException {
-    var company = companyRepository.findByNif(nifCif);
+    final var company = companyRepository.findByNif(nifCif);
     if (company.isEmpty()) {
       throw new CompanyServiceException(COMPANY_NOT_FOUND_MESSAGE);
     }
@@ -101,13 +101,13 @@ public final class DefaultCompanyService implements CompanyService {
   @Override
   public void remove(final String nifCif) throws CompanyServiceException {
 
-    var companyOptional = companyRepository.findByNif(nifCif);
+    final var companyOptional = companyRepository.findByNif(nifCif);
     if (companyOptional.isEmpty()) {
       throw new CompanyServiceException(COMPANY_NOT_FOUND_MESSAGE);
     }
-    var numberInvoicesAsBuyer =
+    final var numberInvoicesAsBuyer =
           companyOptional.get().getInvoicesAsBuyer().size();
-    var numberInvoicesAsSeller =
+    final var numberInvoicesAsSeller =
           companyOptional.get().getInvoicesAsSeller().size();
     if (numberInvoicesAsBuyer > 0 || numberInvoicesAsSeller > 0) {
       throw new CompanyServiceException(COMPANY_CANNOT_DELETE_MESSAGE);
@@ -125,11 +125,11 @@ public final class DefaultCompanyService implements CompanyService {
         final String nif, final String name, final String addresss
   ) throws CompanyServiceException {
 
-    var company = companyRepository.findByNif(nif);
+    final var company = companyRepository.findByNif(nif);
     if (company.isEmpty()) {
       throw new CompanyServiceException("message");
     } else {
-      var companyEntity = company.get();
+      final var companyEntity = company.get();
       companyEntity.setName(name);
       companyEntity.setAddress(addresss);
 

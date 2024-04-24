@@ -36,7 +36,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -44,9 +43,9 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Invoice Entity.
@@ -56,8 +55,9 @@ import java.util.Set;
  * @author Santiago Paz Perez.
  */
 @Entity(name = "InvoiceEntity")
-
 @Table(name = "invoices")
+@Data
+@NoArgsConstructor
 public class PersistentInvoiceEntity implements InvoiceEntity {
 
   /**
@@ -112,12 +112,6 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
   private Boolean taxExempt;
 
   /**
-   * Roles associated with this user.
-   */
-  @OneToMany(mappedBy = "invoice")
-  private Set<PersistentOperationEntity> operations = new HashSet<>();
-
-  /**
    * The seller company.
    */
   @ManyToOne(fetch = FetchType.LAZY)
@@ -143,13 +137,6 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "food_housing_id", nullable = true)
   private PersistentFoodHousingEntity foodHousing;
-
-  /**
-   * Constructs an example entity.
-   */
-  public PersistentInvoiceEntity() {
-    super();
-  }
 
   /**
    * Main arguments contructor.
@@ -182,230 +169,4 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
     );
 
   }
-
-  /**
-   * Get the invoices seller.
-   *
-   * @return the invoice seller company.
-   */
-  public PersistentCompanyEntity getSeller() {
-    return seller;
-  }
-
-  /**
-   * Set seller invoice.
-   *
-   * @param seller The invoice seller.
-   */
-  public void setSeller(final PersistentCompanyEntity seller) {
-    this.seller = seller;
-  }
-
-  /**
-   * Get the invoice identifier.
-   *
-   * @return The invoice identifier.
-   */
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * Set the invoice identifier.
-   *
-   * @param id The invoice identifier.
-   */
-  public void setId(final Integer id) {
-    this.id = id;
-  }
-
-  /**
-   * Get the invoice company buyer.
-   *
-   * @return the invoice buyer.
-   */
-  public PersistentCompanyEntity getBuyer() {
-    return buyer;
-  }
-
-  /**
-   * Set the invoices buyer.
-   *
-   * @param buyer The buyer company.
-   */
-  public void setBuyer(final PersistentCompanyEntity buyer) {
-    this.buyer = buyer;
-  }
-
-  /**
-   * Get number.
-   */
-  @Override
-  public int getNumber() {
-    return number;
-  }
-
-  /**
-   * Get series.
-   */
-  @Override
-  public String getSeries() {
-    return series;
-  }
-
-  /**
-   * Get expedition date.
-   */
-  @Override
-  public LocalDate getExpeditionDate() {
-    return expeditionDate;
-  }
-
-  /**
-   * Get advance payment date.
-   */
-  @Override
-  public LocalDate getAdvancePaymentDate() {
-    return advancePaymentDate;
-  }
-
-  /**
-   * Get tax exempt value.
-   */
-  @Override
-  public Boolean getTaxExempt() {
-    return taxExempt;
-  }
-
-  /**
-   * Get operation entity set.
-   */
-  @Override
-  public Set<PersistentOperationEntity> getOperations() {
-    return new HashSet<>(operations);
-  }
-
-  /**
-   * Set number.
-   */
-  @Override
-  public void setNumber(final int value) {
-    number = checkNotNull(value, "Received a null pointer as number");
-
-  }
-
-  /**
-   * Set series.
-   */
-  @Override
-  public void setSeries(final String value) {
-    series = checkNotNull(value, "Received a null pointer as series");
-
-  }
-
-  /**
-   * Set expedition date.
-   */
-  @Override
-  public void setExpeditionDate(final LocalDate value) {
-    expeditionDate =
-          checkNotNull(value, "Received a null pointer as expedition date");
-
-  }
-
-  /**
-   * Set advance payment date.
-   */
-  @Override
-  public void setAdvancePaymentDate(final LocalDate value) {
-    advancePaymentDate = value;
-
-  }
-
-  /**
-   * Set tax exempt.
-   */
-  @Override
-  public void setTaxExempt(final Boolean value) {
-    taxExempt = checkNotNull(value, "Received a null pointer as tax exempt");
-
-  }
-
-  /**
-   * Set operations entity set.
-   */
-  @Override
-  public void setOperations(final Set<PersistentOperationEntity> value) {
-    operations = new HashSet<>(value);
-
-  }
-
-  /**
-   * Gets regular transport entity associated.
-   *
-   * @return The regular transport entity.
-   */
-  public PersistentRegularTransportEntity getRegularTransport() {
-    return regularTransport;
-  }
-
-  /**
-   * Set regular transport association.
-   *
-   * @param regularTransport The regular transport entity.
-   */
-  public void setRegularTransport(
-        final PersistentRegularTransportEntity regularTransport
-  ) {
-    this.regularTransport = regularTransport;
-  }
-
-  /**
-   * Gets food housing entity associated.
-   *
-   * @return The food housing entity.
-   */
-  public PersistentFoodHousingEntity getFoodHousing() {
-    return foodHousing;
-  }
-
-  /**
-   * Set food housing associated entity.
-   *
-   * @param foodHousing The food housing entity.
-   */
-  public void setFoodHousing(final PersistentFoodHousingEntity foodHousing) {
-    this.foodHousing = foodHousing;
-  }
-
-  /**
-   * Hash code.
-   */
-  @Override
-  public int hashCode() {
-    return Objects
-          .hash(advancePaymentDate, expeditionDate, number, series, taxExempt);
-  }
-
-  /**
-   * Equals.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PersistentInvoiceEntity) obj;
-    return Objects.equals(advancePaymentDate, other.advancePaymentDate)
-          && Objects.equals(expeditionDate, other.expeditionDate)
-          && number == other.number && Objects.equals(series, other.series)
-          && Objects.equals(taxExempt, other.taxExempt);
-  }
-
 }

@@ -26,12 +26,14 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
+
+import lombok.Data;
 
 /**
  * Represents the form used for response authenticating user.
@@ -45,6 +47,7 @@ import java.util.Set;
  *
  * @author Santiago Paz Perez.
  */
+@Data
 public final class UserDataResponse implements Serializable {
 
   /**
@@ -81,6 +84,11 @@ public final class UserDataResponse implements Serializable {
    */
   private final String email;
   /**
+   * Kind of member.
+   */
+  private final UserType kindMember;
+
+  /**
    * List of rolenames owned by one user.
    */
   private Set<String> userRoles;
@@ -99,7 +107,9 @@ public final class UserDataResponse implements Serializable {
     gender = user.getGender();
     birthDate = user.getBirthDate();
     email = user.getEmail();
+    kindMember = user.getKindMember();
     userRoles = new HashSet<>();
+
     user.getRoles().forEach(
           (PersistentRoleEntity role) -> userRoles.add(role.getName())
     );
@@ -176,38 +186,4 @@ public final class UserDataResponse implements Serializable {
     return new HashSet<>(userRoles);
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(
-          birthDate, dni, email, firstSurname, gender, name, secondSurname
-    );
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (UserDataResponse) obj;
-    return Objects.equals(birthDate, other.birthDate)
-          && Objects.equals(dni, other.dni)
-          && Objects.equals(email, other.email)
-          && Objects.equals(firstSurname, other.firstSurname)
-          && Objects.equals(gender, other.gender)
-          && Objects.equals(name, other.name)
-          && Objects.equals(secondSurname, other.secondSurname);
-  }
-
-  @Override
-  public String toString() {
-    return "UserDataResponse [dni=" + dni + ", name=" + name + ", firstSurname="
-          + firstSurname + ", secondSurname=" + secondSurname + ", gender="
-          + gender + ", birthDate=" + birthDate + ", email=" + email + "]";
-  }
 }

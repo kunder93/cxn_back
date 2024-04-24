@@ -6,12 +6,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.JwtUtils;
-import es.org.cxn.backapp.test.integration.controller.InvoiceControllerIntegrationTest.LocalDateAdapter;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+
+import utils.LocalDateAdapter;
 
 /**
  * @author Santiago Paz. Authentication controller integration tests.
@@ -53,6 +60,7 @@ class AuthControllerIntegrationTest {
   private final static String userA_countrySubdivisionName = "Lugo";
 
   private final static String userB_dni = "32721860J";
+  private final static String userB_email = "adri@adri.es";
   private final static String userB_name = "Adrian";
   private final static String userB_firstSurname = "Paz";
   private final static String userB_secondSurname = "Perez";
@@ -67,6 +75,8 @@ class AuthControllerIntegrationTest {
   private final static Integer userB_countryNumericCode = 724;
   private final static String userB_countrySubdivisionName = "Lugo";
 
+  private final static UserType kindMember = UserType.SOCIO_NUMERO;
+
   @Autowired
   private MockMvc mockMvc;
 
@@ -75,8 +85,6 @@ class AuthControllerIntegrationTest {
   @Autowired
   JwtUtils jwtUtils;
 
-  private static String userARequestJson;
-  private static String userBRequestJson;
   private static Gson gson;
 
   @BeforeAll
@@ -84,21 +92,7 @@ class AuthControllerIntegrationTest {
     gson = new GsonBuilder()
           .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
           .create();
-    var userARequest = new SignUpRequestForm(
-          userA_dni, userA_name, userA_firstSurname, userA_secondSurname,
-          userA_birthDate, userA_gender, userA_password, userA_email,
-          userA_postalCode, userA_apartmentNumber, userA_building, userA_street,
-          userA_city, userA_countryNumericCode, userA_countrySubdivisionName
-    );
-    var userBRequest = new SignUpRequestForm(
-          userB_dni, userB_name, userB_firstSurname, userB_secondSurname,
-          userB_birthDate, userB_gender, userB_password, userA_email,
-          userB_postalCode, userB_apartmentNumber, userB_building, userB_street,
-          userB_city, userB_countryNumericCode, userB_countrySubdivisionName
-    );
-    userARequestJson = gson.toJson(userARequest);
 
-    userBRequestJson = gson.toJson(userBRequest);
   }
 
   /**
@@ -115,16 +109,249 @@ class AuthControllerIntegrationTest {
    */
   @Test
   @Transactional
-  void testSignUpReturnUserWithDefautlRole() throws Exception {
-
+  void testSignUpReturnUserDataWithDefautlRole() throws Exception {
+    var numberOfRoles = 1;
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
     // Register user correctly
-    var response = mockMvc
+    var controllerResponse = mockMvc
           .perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                       .content(userARequestJson)
           ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
           .getResponse().getContentAsString();
 
+    var signUpResponse =
+          gson.fromJson(controllerResponse, SignUpResponseForm.class);
+
+    Assertions.assertEquals(
+          signUpResponse.getDni(), userARequest.getDni(), "Dni field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getEmail(), userARequest.getEmail(), "Email field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getName(), userARequest.getName(), "Dni field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getFirstSurname(), userARequest.getFirstSurname(),
+          "First surname field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getSecondSurname(), userARequest.getSecondSurname(),
+          "Second surname field."
+    );
+
+    Assertions.assertEquals(
+          signUpResponse.getGender(), userARequest.getGender(), "Gender field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getBirthDate(), userARequest.getBirthDate(),
+          "Birth date field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getKindMember(), userARequest.getKindMember(),
+          "kind of member field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getUserRoles().size(), numberOfRoles, "Only one role."
+    );
+    Assertions.assertTrue(
+          signUpResponse.getUserRoles().contains(DEFAULT_USER_ROLE),
+          "Role is default user role."
+    );
+  }
+
+  /**
+   * SingUp second user with same email as userA bad request cause email is in using.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testSignUpSecondUserWithSameEmailBadRequest() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    var userBRequest = SignUpRequestForm.builder().dni(userB_dni)
+          .name(userB_name).firstSurname(userB_firstSurname)
+          .secondSurname(userB_secondSurname).birthDate(userB_birthDate)
+          .gender(userB_gender).password(userB_password).email(userA_email)
+          .postalCode(userB_postalCode).apartmentNumber(userB_apartmentNumber)
+          .building(userB_building).street(userB_street).city(userB_city)
+          .countryNumericCode(userB_countryNumericCode)
+          .countrySubdivisionName(userB_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userBRequestJson = gson.toJson(userBRequest);
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userBRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
+
+  /**
+   * SingUp second user with same dni as userA bad request cause dni is in using.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testSignUpSecondUserWithSameDniBadRequest() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    var userBRequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userB_name).firstSurname(userB_firstSurname)
+          .secondSurname(userB_secondSurname).birthDate(userB_birthDate)
+          .gender(userB_gender).password(userB_password).email(userB_email)
+          .postalCode(userB_postalCode).apartmentNumber(userB_apartmentNumber)
+          .building(userB_building).street(userB_street).city(userB_city)
+          .countryNumericCode(userB_countryNumericCode)
+          .countrySubdivisionName(userB_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userBRequestJson = gson.toJson(userBRequest);
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userBRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
+
+  /**
+   * SignIn return valid jwt.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testAuthenticateUserReturnJwt() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    var authenticationRequest =
+          new AuthenticationRequest(userA_email, userA_password);
+    var authenticationRequestJson = gson.toJson(authenticationRequest);
+
+    // Second user with same email as userA bad request.
+    var authenticationResponseJson = mockMvc
+          .perform(
+                post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
+                      .content(authenticationRequestJson)
+          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+          .getResponse().getContentAsString();
+
+    var ar = gson
+          .fromJson(authenticationResponseJson, AuthenticationResponse.class);
+    var jwtToken = ar.getJwt();
+    JwtUtils jwtUtil = new DefaultJwtUtils();
+    var jwtUsername = jwtUtil.extractUsername(jwtToken);
+    Assertions.assertEquals(
+          userA_email, jwtUsername, "Jwt username is same as user signUp"
+    );
+  }
+
+  /**
+   * SignIn not existing user is unauthorized.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testAuthenticateUserNotExistingUserUnauthorized() throws Exception {
+    // Authenticate not existing user (no signUp)
+    var authenticationRequest =
+          new AuthenticationRequest(userA_email, userA_password);
+    var authenticationRequestJson = gson.toJson(authenticationRequest);
+
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(authenticationRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+  }
+
+  /**
+   * SignIn with bad password unauthorized.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testAuthenticateUserBadPasswordUnauthorized() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    var notValidPassword = "NotValidPassword";
+    var authenticationRequest =
+          new AuthenticationRequest(userA_email, notValidPassword);
+    var authenticationRequestJson = gson.toJson(authenticationRequest);
+
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(authenticationRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
   }
 
 }

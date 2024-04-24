@@ -39,8 +39,13 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 /**
  * Self vehicle entity.
@@ -51,6 +56,10 @@ import java.util.Set;
  */
 @Entity(name = "FoodHousing")
 @Table(name = "foodhousing")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 public class PersistentFoodHousingEntity implements FoodHousingEntity {
 
   /**
@@ -72,6 +81,7 @@ public class PersistentFoodHousingEntity implements FoodHousingEntity {
    *
    */
   @Column(name = "amountdays", nullable = false, unique = false)
+  @NonNull
   private Integer amountDays;
 
   /**
@@ -84,6 +94,7 @@ public class PersistentFoodHousingEntity implements FoodHousingEntity {
    * The food housing overnight.
    */
   @Column(name = "overnight", nullable = false, unique = false)
+  @NonNull
   private Boolean overnight;
 
   /**
@@ -91,174 +102,14 @@ public class PersistentFoodHousingEntity implements FoodHousingEntity {
    */
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "payment_sheet_id", nullable = true)
+  @NonNull
   private PersistentPaymentSheetEntity paymentSheet;
 
   /**
    * Roles associated with this user.
    */
   @OneToMany(mappedBy = "foodHousing")
+  @Builder.Default
   private Set<PersistentInvoiceEntity> invoices = new HashSet<>();
-
-  /**
-   * Constructs a company entity.
-   */
-  public PersistentFoodHousingEntity() {
-    super();
-  }
-
-  /**
-   * Constructs food housing entity.
-   *
-   * @param amountDays   The amount of days.
-   * @param dayPrice     The day price.
-   * @param overnight    The overnight
-   * @param paymentSheet The payment sheet.
-   */
-  public PersistentFoodHousingEntity(
-        final Integer amountDays, final double dayPrice,
-        final Boolean overnight, final PersistentPaymentSheetEntity paymentSheet
-  ) {
-    super();
-    this.amountDays = amountDays;
-    this.dayPrice = dayPrice;
-    this.overnight = overnight;
-    this.paymentSheet = paymentSheet;
-  }
-
-  /**
-   * Get identifier.
-   */
-  @Override
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * Get the amount of days.
-   */
-  @Override
-  public Integer getAmountDays() {
-    return amountDays;
-  }
-
-  /**
-   * Get day price.
-   */
-  @Override
-  public double getDayPrice() {
-    return dayPrice;
-  }
-
-  /**
-   * Get overnight value.
-   */
-  @Override
-  public Boolean getOvernight() {
-    return overnight;
-  }
-
-  /**
-   * Set identifier.
-   */
-  @Override
-  public void setId(final Integer id) {
-    this.id = id;
-  }
-
-  /**
-   * Set the amount of days.
-   */
-  @Override
-  public void setAmountDays(final Integer amountDays) {
-    this.amountDays = amountDays;
-  }
-
-  /**
-   * Set the price per day.
-   */
-  @Override
-  public void setDayPrice(final double dayPrice) {
-    this.dayPrice = dayPrice;
-  }
-
-  /**
-   * Set overnight value.
-   */
-  @Override
-  public void setOvernight(final Boolean overnight) {
-    this.overnight = overnight;
-  }
-
-  /**
-   * Get the payment sheet entity.
-   */
-  @Override
-  public PersistentPaymentSheetEntity getPaymentSheet() {
-    return paymentSheet;
-  }
-
-  /**
-   * Get the invoices list.
-   */
-  @Override
-  public Set<PersistentInvoiceEntity> getInvoices() {
-    return new HashSet<>(invoices);
-  }
-
-  /**
-   * Set payment sheet entity.
-   */
-  @Override
-  public void setPaymentSheet(final PersistentPaymentSheetEntity paymentSheet) {
-    this.paymentSheet = paymentSheet;
-  }
-
-  /**
-   * Set invoices list.
-   */
-  @Override
-  public void setInvoices(final Set<PersistentInvoiceEntity> invoices) {
-    this.invoices = new HashSet<>(invoices);
-  }
-
-  /**
-   * Hash code.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(amountDays, dayPrice, id, overnight);
-  }
-
-  /**
-   * Equals.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PersistentFoodHousingEntity) obj;
-    return Objects.equals(amountDays, other.amountDays)
-          && Double.doubleToLongBits(dayPrice) == Double
-                .doubleToLongBits(other.dayPrice)
-          && Objects.equals(id, other.id)
-          && Objects.equals(overnight, other.overnight);
-  }
-
-  /**
-   * To string.
-   */
-  @Override
-  public String toString() {
-    return "PersistentFoodHousingEntity [id=" + id + ", amountDays="
-          + amountDays + ", dayPrice=" + dayPrice + ", overnight=" + overnight
-          + "]";
-  }
 
 }

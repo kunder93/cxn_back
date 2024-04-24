@@ -27,21 +27,21 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.UserServiceUpdateForm;
+import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
 import es.org.cxn.backapp.service.UserService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,13 +57,7 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/user")
 public class UserController {
 
-  /**
-   * The logger.
-   */
-  private static final Logger LOGGER = LoggerFactory
-        .getLogger(UserController.class);
-
-  /**
+  /**s
    * The user service.
    */
   private final UserService userService;
@@ -84,19 +78,17 @@ public class UserController {
    *
    * @return info for this user.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "*")
   @GetMapping()
   public ResponseEntity<UserDataResponse> getUserData() {
-
-    final var authName = SecurityContextHolder.getContext().getAuthentication()
-          .getName();
+    final var authName =
+          SecurityContextHolder.getContext().getAuthentication().getName();
     try {
       final var user = userService.findByEmail(authName);
       return new ResponseEntity<>(new UserDataResponse(user), HttpStatus.OK);
     } catch (UserServiceException e) {
-      LOGGER.error("An UserServiceException occurred: {}", e.getMessage(), e);
       throw new ResponseStatusException(
-            HttpStatus.UNAUTHORIZED, e.getMessage()
+            HttpStatus.UNAUTHORIZED, e.getMessage(), e
       );
     }
   }
@@ -109,30 +101,31 @@ public class UserController {
    * @return form with the updated user data.
    */
   @PostMapping()
+  @CrossOrigin(origins = "*")
   public ResponseEntity<UserUpdateResponseForm> updateUserData(@RequestBody
   final UserUpdateRequestForm userUpdateRequestForm) {
-    var userName = SecurityContextHolder.getContext().getAuthentication()
-          .getName();
-    var userServiceUpdateForm = new UserServiceUpdateForm(
-          userUpdateRequestForm.getName(),
-          userUpdateRequestForm.getFirstSurname(),
-          userUpdateRequestForm.getSecondSurname(),
-          userUpdateRequestForm.getBirthDate(),
-          userUpdateRequestForm.getGender()
+    final var userName =
+          SecurityContextHolder.getContext().getAuthentication().getName();
+
+    final var name = userUpdateRequestForm.getName();
+    final var firstSurname = userUpdateRequestForm.getFirstSurname();
+    final var secondSurname = userUpdateRequestForm.getSecondSurname();
+    final var birthDate = userUpdateRequestForm.getBirthDate();
+    final var gender = userUpdateRequestForm.getGender();
+    final var userServiceUpdateForm = new UserServiceUpdateForm(
+          name, firstSurname, secondSurname, birthDate, gender
     );
     try {
-      var userUpdated = userService.update(userServiceUpdateForm, userName);
+      final var userUpdated =
+            userService.update(userServiceUpdateForm, userName);
       return new ResponseEntity<>(
-            new UserUpdateResponseForm(
-                  userUpdated.getName(), userUpdated.getFirstSurname(),
-                  userUpdated.getSecondSurname(), userUpdated.getBirthDate(),
-                  userUpdated.getGender()
-            ), HttpStatus.OK
+            new UserUpdateResponseForm(userUpdated), HttpStatus.OK
       );
 
     } catch (UserServiceException e) {
-      LOGGER.error("An UserServiceException occurred: {}", e.getMessage(), e);
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -141,12 +134,35 @@ public class UserController {
    *
    * @return list with all users info.
    */
-  @CrossOrigin
-  @GetMapping(value = "/getAll")
+  @CrossOrigin(origins = "*")
+  @GetMapping("/getAll")
   public ResponseEntity<UserListDataResponse> getAllUserData() {
-    var users = userService.getAll();
+    final var users = userService.getAll();
     return new ResponseEntity<>(new UserListDataResponse(users), HttpStatus.OK);
+  }
 
+  /**
+   * Change user kind of member.
+   *
+   * @param userChangeKindMemberRequest The email as user identifier and new kind of member.
+   * @return user data with new kind of member.
+   */
+  @CrossOrigin(origins = "*")
+  @PatchMapping("/changeKindOfMember")
+  public ResponseEntity<UserDataResponse> changeUserKindOfMember(@RequestBody
+  final UserChangeKindMemberRequest userChangeKindMemberRequest) {
+    UserEntity result;
+    try {
+      result = userService.changeKindMember(
+            userChangeKindMemberRequest.getEmail(),
+            userChangeKindMemberRequest.getKindMember()
+      );
+    } catch (UserServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    }
+    return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
   }
 
 }

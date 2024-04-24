@@ -36,6 +36,9 @@ import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Country Entity.
  * <p>
@@ -45,6 +48,8 @@ import java.util.List;
  */
 @Entity(name = "CountryEntity")
 @Table(name = "country")
+@NoArgsConstructor
+@Data
 public class PersistentCountryEntity implements CountryEntity {
 
   /**
@@ -96,140 +101,4 @@ public class PersistentCountryEntity implements CountryEntity {
    */
   @OneToMany(mappedBy = "country")
   private List<PersistentAddressEntity> addressList = new ArrayList<>();
-
-  /**
-   * Constructs a country entity.
-   */
-  public PersistentCountryEntity() {
-    super();
-  }
-
-  /**
-   * Get country numeric code.
-   *
-   * @return The numeric code.
-   */
-  public Integer getNumericCode() {
-    return numericCode;
-  }
-
-  /**
-   * Get country full name.
-   *
-   * @return The full name.
-   */
-  public String getFullName() {
-    return fullName;
-  }
-
-  /**
-   * Get country short name.
-   *
-   * @return The short name.
-   */
-  public String getShortName() {
-    return shortName;
-  }
-
-  /**
-   * Get country alpha-2 code.
-   *
-   * @return The alhpa-2 code.
-   */
-  public String getAlpha2Code() {
-    return alpha2Code;
-  }
-
-  /**
-   * Get country alpha-3 code.
-   *
-   * @return The alpha-3 code.
-   */
-  public String getAlpha3Code() {
-    return alpha3Code;
-  }
-
-  /**
-   * Get country subdivisions list.
-   *
-   * @return The country subdivisions list.
-   */
-  public List<PersistentCountrySubdivisionEntity> getSubdivisions() {
-    return new ArrayList<>(subdivisions);
-  }
-
-  /**
-   * Get country address list.
-   *
-   * @return The address list.
-   */
-  public List<PersistentAddressEntity> getAddressList() {
-    return new ArrayList<>(addressList);
-  }
-
-  /**
-   * Set country numeric code.
-   *
-   * @param numericCode The numeric code.
-   */
-  public void setNumericCode(final Integer numericCode) {
-    this.numericCode = numericCode;
-  }
-
-  /**
-   * Set country full name.
-   *
-   * @param fullName The full name.
-   */
-  public void setFullName(final String fullName) {
-    this.fullName = fullName;
-  }
-
-  /**
-   * Set country short name.
-   *
-   * @param shortName The short name.
-   */
-  public void setShortName(final String shortName) {
-    this.shortName = shortName;
-  }
-
-  /**
-   * Set country alpha-2 code.
-   *
-   * @param alpha2Code The alpha2 code.
-   */
-  public void setAlpha2Code(final String alpha2Code) {
-    this.alpha2Code = alpha2Code;
-  }
-
-  /**
-   * Set country alpha-3 code.
-   *
-   * @param alpha3Code The alpha-3 code.
-   */
-  public void setAlpha3Code(final String alpha3Code) {
-    this.alpha3Code = alpha3Code;
-  }
-
-  /**
-   * Set country subdivisions list.
-   *
-   * @param subdivisions The country subdivisions list.
-   */
-  public void setSubdivisions(
-        final List<PersistentCountrySubdivisionEntity> subdivisions
-  ) {
-    this.subdivisions = new ArrayList<>(subdivisions);
-  }
-
-  /**
-   * Set country address list.
-   *
-   * @param addressList The address list.
-   */
-  public void setAddressList(final List<PersistentAddressEntity> addressList) {
-    this.addressList = new ArrayList<>(addressList);
-  }
-
 }

@@ -25,14 +25,18 @@
 package es.org.cxn.backapp.service;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import java.util.List;
-import java.util.Optional;
-import org.springframework.stereotype.Service;
+
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.model.RoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
 
 /**
  * Default implementation of the privilege entity service.
@@ -56,15 +60,15 @@ public final class DefaultRoleService implements RoleService {
   public DefaultRoleService(final RoleEntityRepository repository) {
     super();
 
-    entityRepository = checkNotNull(
-          repository, "Received a null pointer as repository"
-    );
+    entityRepository =
+          checkNotNull(repository, "Received a null pointer as repository");
   }
 
   @Override
   public RoleEntity add(final String name) throws RoleNameExistsException {
     final PersistentRoleEntity save;
-    var nameNotNull = checkNotNull(name, "Received a null pointer as name");
+    final var nameNotNull =
+          checkNotNull(name, "Received a null pointer as name");
     save = new PersistentRoleEntity();
     save.setName(nameNotNull);
     if (entityRepository.existsByName(nameNotNull)) {
@@ -85,23 +89,23 @@ public final class DefaultRoleService implements RoleService {
    */
   @Override
   public RoleEntity findById(final Integer identifier) {
-    final Optional<PersistentRoleEntity> entity;
+    final Optional<PersistentRoleEntity> entityOpt;
 
     checkNotNull(identifier, "Received a null pointer as identifier");
 
-    entity = entityRepository.findById(identifier);
+    entityOpt = entityRepository.findById(identifier);
 
-    if (entity.isEmpty()) {
+    if (entityOpt.isEmpty()) {
       return new PersistentRoleEntity();
     }
-    return entity.get();
+    return entityOpt.get();
   }
 
   @Override
   public RoleEntity findByName(final String name)
         throws RoleNameNotFoundException {
     checkNotNull(name, "Received a null pointer as identifier");
-    var entity = entityRepository.findByName(name);
+    final var entity = entityRepository.findByName(name);
     if (entity.isEmpty()) {
       throw new RoleNameNotFoundException(name);
     }
@@ -109,13 +113,14 @@ public final class DefaultRoleService implements RoleService {
   }
 
   @Override
-  public List<PersistentRoleEntity> getAllRoles() {
-    return entityRepository.findAll();
+  public List<RoleEntity> getAllRoles() {
+    var tmp = entityRepository.findAll();
+    return new ArrayList<>(tmp);
   }
 
   @Override
   public void remove(final String name) throws RoleNameNotFoundException {
-    var delete = entityRepository.findByName(name);
+    final var delete = entityRepository.findByName(name);
     if (delete.isEmpty()) {
       throw new RoleNameNotFoundException(name);
     }

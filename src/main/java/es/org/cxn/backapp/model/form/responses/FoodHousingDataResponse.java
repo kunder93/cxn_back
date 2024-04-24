@@ -3,6 +3,10 @@ package es.org.cxn.backapp.model.form.responses;
 
 import java.io.Serializable;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Represents the form used by controller as request of Food Housing data.
  * <p>
@@ -14,6 +18,9 @@ import java.io.Serializable;
  *
  * @author Santiago Paz.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public final class FoodHousingDataResponse implements Serializable {
 
   /**
@@ -34,70 +41,5 @@ public final class FoodHousingDataResponse implements Serializable {
    * True if sleeps else false.
    */
   private boolean overnight;
-
-  /**
-   * Main empty constructor.
-   */
-  public FoodHousingDataResponse() {
-    super();
-  }
-
-  /**
-   * Constructor with parameters.
-   *
-   * @param amountDays The amount of days.
-   * @param dayPrice   The price per day.
-   * @param overnight  The overnight or if sleeps.
-   */
-  public FoodHousingDataResponse(
-        final Integer amountDays, final double dayPrice, final boolean overnight
-  ) {
-    super();
-    this.amountDays = amountDays;
-    this.dayPrice = dayPrice;
-    this.overnight = overnight;
-  }
-
-  /**
-   * @return The amount of days.
-   */
-  public Integer getAmountDays() {
-    return amountDays;
-  }
-
-  /**
-   * @return The price per day.
-   */
-  public double getDayPrice() {
-    return dayPrice;
-  }
-
-  /**
-   * @return True if sleeps false else.
-   */
-  public boolean isOvernight() {
-    return overnight;
-  }
-
-  /**
-   * @param value The amount of days.
-   */
-  public void setAmountDays(final Integer value) {
-    this.amountDays = value;
-  }
-
-  /**
-   * @param value The price per day.
-   */
-  public void setDayPrice(final double value) {
-    this.dayPrice = value;
-  }
-
-  /**
-   * @param overnight The overnight.
-   */
-  public void setOvernight(final boolean overnight) {
-    this.overnight = overnight;
-  }
 
 }

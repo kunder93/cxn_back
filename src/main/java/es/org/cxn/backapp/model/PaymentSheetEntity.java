@@ -24,13 +24,12 @@
 
 package es.org.cxn.backapp.model;
 
+import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
-import es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity;
-import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
-import es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 /**
  * A payment sheet entity interface.
@@ -121,7 +120,7 @@ public interface PaymentSheetEntity extends Serializable {
    *
    * @return the payment sheet user owner.
    */
-  PersistentUserEntity getUserOwner();
+  UserEntity getUserOwner();
 
   /**
    * Get the regular transport entities associated with this payment sheet.
@@ -133,27 +132,17 @@ public interface PaymentSheetEntity extends Serializable {
   /**
    * @return Self vehicle entity associated with this payment sheet.
    */
-  PersistentSelfVehicleEntity getSelfVehicle();
+  SelfVehicleEntity getSelfVehicle();
 
   /**
    * @return Food housing associated with this payment sheet.
    */
-  PersistentFoodHousingEntity getFoodHousing();
+  FoodHousingEntity getFoodHousing();
 
   /**
    * @param value Set with regular transport entities associated with this
    *              payment sheet.
    */
   void setRegularTransports(Set<PersistentRegularTransportEntity> value);
-
-  /**
-   * @param value Self vehicle entity associated with this payment sheet.
-   */
-  void setSelfVehicle(PersistentSelfVehicleEntity value);
-
-  /**
-   * @param value Food housing entity associated with this payment sheet.
-   */
-  void setFoodHousing(PersistentFoodHousingEntity value);
 
 }

@@ -24,11 +24,13 @@
 
 package es.org.cxn.backapp.model;
 
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
-import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 
 /**
  * A User entity interface.
@@ -92,6 +94,13 @@ public interface UserEntity extends Serializable {
    * @return the user email.
    */
   String getEmail();
+
+  /**
+   * Get the user kind member.
+   *
+   * @return the user kind member.
+   */
+  UserType getKindMember();
 
   /**
    * Return user roles.
@@ -192,5 +201,10 @@ public interface UserEntity extends Serializable {
    * @param address The address entity.
    */
   void setAddress(PersistentAddressEntity address);
+
+  /**
+   * @param kindMember the kindMember to set
+   */
+  void setKindMember(UserType kindMember);
 
 }

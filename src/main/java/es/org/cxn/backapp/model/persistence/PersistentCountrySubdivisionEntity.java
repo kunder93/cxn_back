@@ -41,6 +41,9 @@ import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  * Country subdivision Entity.
  * <p>
@@ -50,6 +53,8 @@ import java.util.List;
  */
 @Entity(name = "CountrySubdivision")
 @Table(name = "country_subdivision")
+@Data
+@NoArgsConstructor
 public class PersistentCountrySubdivisionEntity
       implements CountrySubdivisionEntity {
 
@@ -97,120 +102,5 @@ public class PersistentCountrySubdivisionEntity
    */
   @OneToMany(mappedBy = "countrySubdivision")
   private List<PersistentAddressEntity> addressList = new ArrayList<>();
-
-  /**
-   * Constructs a country subdivision entity.
-   */
-  public PersistentCountrySubdivisionEntity() {
-    super();
-  }
-
-  /**
-   * Get country subdivision code.
-   *
-   * @return The country subdivision code.
-   */
-  public String getCode() {
-    return code;
-  }
-
-  /**
-   * Set country subdivision code.
-   *
-   * @param code The code.
-   */
-  public void setCode(final String code) {
-    this.code = code;
-  }
-
-  /**
-   * Get country subdivision id aka identifier.
-   *
-   * @return The identifier.
-   */
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * Get country subdivision kind.
-   *
-   * @return The kind subdivision name.
-   */
-  public String getKindSubdivisionName() {
-    return kindSubdivisionName;
-  }
-
-  /**
-   * Get country subdivision name.
-   *
-   * @return The name.
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Get country subdivision country.
-   *
-   * @return The country.
-   */
-  public PersistentCountryEntity getCountry() {
-    return country;
-  }
-
-  /**
-   * Get the address list that have this country subdivision.
-   *
-   * @return The address list.
-   */
-  public List<PersistentAddressEntity> getAddressList() {
-    return new ArrayList<>(addressList);
-  }
-
-  /**
-   * Set country subdivision identifier.
-   *
-   * @param id The identifier.
-   */
-  public void setId(final Integer id) {
-    this.id = id;
-  }
-
-  /**
-   * Set country subdivision kind.
-   *
-   * @param kindSubdivisionName The kind of country subdivision.
-   */
-  public void setKindSubdivisionName(final String kindSubdivisionName) {
-    this.kindSubdivisionName = kindSubdivisionName;
-  }
-
-  /**
-   * Set country subdivision name.
-   *
-   * @param name The name.
-   */
-  public void setName(final String name) {
-    this.name = name;
-  }
-
-  /**
-   * Set country subdivision country.
-   *
-   * @param country The country.
-   */
-  public void setCountry(final PersistentCountryEntity country) {
-    this.country = country;
-  }
-
-  /**
-   * Set country subdivision address list.
-   *
-   * @param addressList The address list.
-   */
-  public void setAddressList(final List<PersistentAddressEntity> addressList) {
-    this.addressList = new ArrayList<>(addressList);
-  }
 
 }

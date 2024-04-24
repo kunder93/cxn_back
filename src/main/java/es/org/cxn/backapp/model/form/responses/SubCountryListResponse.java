@@ -8,6 +8,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Data;
+
 /**
  * Represents the form used by controller as response for requesting one
  * company.
@@ -20,6 +22,7 @@ import java.util.List;
  *
  * @author Santiago Paz.
  */
+@Data
 public final class SubCountryListResponse implements Serializable {
 
   /**
@@ -46,19 +49,4 @@ public final class SubCountryListResponse implements Serializable {
       );
     }
   }
-
-  /**
-   * @return The subcountry list response.
-   */
-  public List<SubCountryResponse> getSubCountryList() {
-    return new ArrayList<>(subCountryList);
-  }
-
-  /**
-   * @param subCountryList The subcountry list response.
-   */
-  public void setSubCountryList(final List<SubCountryResponse> subCountryList) {
-    this.subCountryList = new ArrayList<>(subCountryList);
-  }
-
 }

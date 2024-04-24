@@ -4,6 +4,8 @@ package es.org.cxn.backapp.config;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Spring CacheConfig class.
  *
@@ -12,13 +14,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @EnableCaching
+@NoArgsConstructor
 public class CacheConfig {
-
-  /**
-   * Main empty constructor.
-   */
-  public CacheConfig() {
-    super();
-  }
 
 }

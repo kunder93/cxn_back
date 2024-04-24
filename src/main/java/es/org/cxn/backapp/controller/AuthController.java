@@ -34,6 +34,8 @@ import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.dto.AddressRegistrationDetails;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
 
 import jakarta.validation.Valid;
 
@@ -108,6 +110,35 @@ public class AuthController {
 
   }
 
+  private static AddressRegistrationDetails
+        createAddressDetails(final SignUpRequestForm signUpRequestForm) {
+    return AddressRegistrationDetails.builder()
+          .apartmentNumber(signUpRequestForm.getApartmentNumber())
+          .building(signUpRequestForm.getBuilding())
+          .city(signUpRequestForm.getCity())
+          .postalCode(signUpRequestForm.getPostalCode())
+          .street(signUpRequestForm.getStreet())
+          .countryNumericCode(signUpRequestForm.getCountryNumericCode())
+          .countrySubdivisionName(signUpRequestForm.getCountrySubdivisionName())
+          .build();
+  }
+
+  private static UserRegistrationDetails createUserDetails(
+        final SignUpRequestForm signUpRequestForm,
+        final AddressRegistrationDetails addressDetails
+  ) {
+    return UserRegistrationDetails.builder().dni(signUpRequestForm.getDni())
+          .name(signUpRequestForm.getName())
+          .firstSurname(signUpRequestForm.getFirstSurname())
+          .secondSurname(signUpRequestForm.getSecondSurname())
+          .birthDate(signUpRequestForm.getBirthDate())
+          .gender(signUpRequestForm.getGender())
+          .password(signUpRequestForm.getPassword())
+          .email(signUpRequestForm.getEmail())
+          .kindMember(signUpRequestForm.getKindMember())
+          .addressDetails(addressDetails).build();
+  }
+
   /**
    * Creates an user with default user Role.
    *
@@ -120,35 +151,23 @@ public class AuthController {
         registerUser(final @Valid @RequestBody
   SignUpRequestForm signUpRequestForm) {
     final var DEFAULT_USER_ROLE = "ROLE_SOCIO";
+
+    final var addressDetails = createAddressDetails(signUpRequestForm);
+    final var userDetails =
+          createUserDetails(signUpRequestForm, addressDetails);
+
     try {
-      userService.add(
-            signUpRequestForm.getDni(), signUpRequestForm.getName(),
-            signUpRequestForm.getFirstSurname(),
-            signUpRequestForm.getSecondSurname(),
-            signUpRequestForm.getBirthDate(), signUpRequestForm.getGender(),
-            signUpRequestForm.getPassword(), signUpRequestForm.getEmail(),
-            signUpRequestForm.getApartmentNumber(),
-            signUpRequestForm.getBuilding(), signUpRequestForm.getCity(),
-            signUpRequestForm.getPostalCode(), signUpRequestForm.getStreet(),
-            signUpRequestForm.getCountryNumericCode(),
-            signUpRequestForm.getCountrySubdivisionName()
-      );
+      userService.add(userDetails);
       final var createdUser = userService
             .addRole(signUpRequestForm.getEmail(), DEFAULT_USER_ROLE);
-      final var signUpRspnsFrm = new SignUpResponseForm(
-            createdUser.getDni(), createdUser.getName(),
-            createdUser.getFirstSurname(), createdUser.getSecondSurname(),
-            createdUser.getBirthDate(), createdUser.getGender(),
-            createdUser.getEmail(), createdUser.getRoles()
-      );
+      final var signUpRspnsFrm = new SignUpResponseForm(createdUser);
 
       return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
-
     } catch (UserServiceException e) {
-
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
-
   }
 
   /**
@@ -163,26 +182,25 @@ public class AuthController {
   public ResponseEntity<AuthenticationResponse>
         authenticateUser(final @Valid @RequestBody
   AuthenticationRequest loginRequest) {
+    final var email = loginRequest.getEmail();
+    final var password = loginRequest.getPassword();
     try {
       authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                  loginRequest.getEmail(), loginRequest.getPassword()
-            )
+            new UsernamePasswordAuthenticationToken(email, password)
       );
     } catch (BadCredentialsException | DisabledException e) {
       throw new ResponseStatusException(
-            HttpStatus.UNAUTHORIZED, e.getMessage()
+            HttpStatus.UNAUTHORIZED, e.getMessage(), e
       );
     } catch (LockedException e) {
-      throw new ResponseStatusException(HttpStatus.LOCKED, e.getMessage());
+      throw new ResponseStatusException(HttpStatus.LOCKED, e.getMessage(), e);
     }
     final MyPrincipalUser userDetails;
     try {
-      userDetails = (MyPrincipalUser) usrDtlsSrv
-            .loadUserByUsername(loginRequest.getEmail());
+      userDetails = (MyPrincipalUser) usrDtlsSrv.loadUserByUsername(email);
     } catch (UsernameNotFoundException e) {
       throw new ResponseStatusException(
-            HttpStatus.UNAUTHORIZED, e.getMessage()
+            HttpStatus.UNAUTHORIZED, e.getMessage(), e
       );
     }
     final var jwt = jwtUtils.generateToken(userDetails);

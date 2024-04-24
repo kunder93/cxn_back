@@ -24,8 +24,6 @@
 
 package es.org.cxn.backapp.model.persistence;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import es.org.cxn.backapp.model.RoleEntity;
 
 import jakarta.persistence.Column;
@@ -38,8 +36,10 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Role entity.
@@ -50,6 +50,8 @@ import java.util.Set;
  */
 @Entity(name = "RoleEntity")
 @Table(name = "roles")
+@Data
+@NoArgsConstructor
 public class PersistentRoleEntity implements RoleEntity {
 
   /**
@@ -81,13 +83,6 @@ public class PersistentRoleEntity implements RoleEntity {
   private Set<PersistentUserEntity> users = new HashSet<>();
 
   /**
-   * Constructs a role entity.
-   */
-  public PersistentRoleEntity() {
-    super();
-  }
-
-  /**
    * Constructs a role entity with given name.
    *
    * @param value the role name.
@@ -96,92 +91,4 @@ public class PersistentRoleEntity implements RoleEntity {
     super();
     this.name = value;
   }
-
-  /**
-   * Returns the identifier assigned to this entity.
-   * <p>
-   * If no identifier has been assigned yet, then the value will be lower than
-   * zero.
-   *
-   * @return the entity's identifier
-   */
-  @Override
-  public Integer getId() {
-    return id;
-  }
-
-  /**
-   * Get role name.
-   */
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Get users from role.
-   */
-  @Override
-  public Set<PersistentUserEntity> getUsers() {
-    return new HashSet<>(users);
-  }
-
-  /**
-   * Set role Id.
-   */
-  @Override
-  public void setId(final Integer value) {
-    id = checkNotNull(value, "Received a null pointer as identifier");
-  }
-
-  /**
-   * Set role name.
-   */
-  @Override
-  public void setName(final String roleName) {
-    name = checkNotNull(roleName, "Received a null pointer as name");
-  }
-
-  /**
-   * Set role users.
-   */
-  @Override
-  public void setUsers(final Set<PersistentUserEntity> users) {
-    this.users = new HashSet<>(users);
-  }
-
-  /**
-   * Hash code method.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, name);
-  }
-
-  /**
-   * Equals method.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final var other = (PersistentRoleEntity) obj;
-    return Objects.equals(id, other.id) && Objects.equals(name, other.name);
-  }
-
-  /**
-   * To string method.
-   */
-  @Override
-  public String toString() {
-    return "PersistentRoleEntity [id=" + id + ", name=" + name + "]";
-  }
-
 }

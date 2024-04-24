@@ -11,6 +11,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Spring Web Configuration.
  *
@@ -18,14 +20,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  *
  */
 @Configuration
+@NoArgsConstructor
 public class WebConfiguration implements WebMvcConfigurer {
-
-  /**
-   * Main constructor.
-   */
-  public WebConfiguration() {
-    super();
-  }
 
   @Override
   public final void addCorsMappings(final CorsRegistry registry) {
@@ -48,7 +44,7 @@ public class WebConfiguration implements WebMvcConfigurer {
   @Bean
   WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>
         containerCustomizer() {
-    return (var container) -> container
+    return container -> container
           .addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
 
   }

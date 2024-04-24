@@ -14,6 +14,9 @@ databaseChangeLog:
   - include:
       file: structure/user_address.yaml
       relativeToChangelogFile: true
+  - include:
+      file: structure/library_tables.yaml
+      relativeToChangelogFile: true
   - changeSet:
       id: initial_data
       author: Santiago

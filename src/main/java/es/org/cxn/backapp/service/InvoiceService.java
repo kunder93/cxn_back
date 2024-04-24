@@ -24,12 +24,13 @@
 
 package es.org.cxn.backapp.service;
 
-import java.time.LocalDate;
-import java.util.List;
 import es.org.cxn.backapp.exceptions.InvoiceServiceException;
 import es.org.cxn.backapp.model.InvoiceEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
+
+import java.time.LocalDate;
+import java.util.List;
 
 /**
  * Service for the Invoice entity domain.
@@ -78,7 +79,7 @@ public interface InvoiceService {
    *
    * @return all invoices.
    */
-  List<PersistentInvoiceEntity> getInvoices();
+  List<InvoiceEntity> getInvoices();
 
   /**
    * Remove invoice locating it with number and series.

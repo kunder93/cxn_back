@@ -24,12 +24,12 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Represents the form used for response change role user.
@@ -42,6 +42,9 @@ import java.util.Objects;
  *
  * @author Santiago Paz Perez.
  */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public final class UserChangeRoleResponseForm implements Serializable {
 
   /**
@@ -56,98 +59,5 @@ public final class UserChangeRoleResponseForm implements Serializable {
    * userRoles field.
    */
   private List<String> userRoles;
-
-  /**
-   * Constructs a DTO for user info response.
-   */
-  public UserChangeRoleResponseForm() {
-    super();
-  }
-
-  /**
-   * Constructs a DTO for user info response with fields values.
-   *
-   * @param userNameValue the userName field.
-   * @param userRolesList the userRoles field.
-   */
-  public UserChangeRoleResponseForm(
-        final String userNameValue, final List<String> userRolesList
-  ) {
-    super();
-    this.userName = userNameValue;
-    this.userRoles = new ArrayList<>(userRolesList);
-  }
-
-  /**
-   * Returns the value userName field with user email.
-   *
-   * @return the value userName field same as email.
-   */
-  public String getUserName() {
-    return userName;
-  }
-
-  /**
-   * Returns the value of the userRoles field.
-   *
-   * @return the value of the userRoles field.
-   */
-  public List<String> getUserRoles() {
-    return new ArrayList<>(userRoles);
-  }
-
-  /**
-   * Sets the value of the userName field.
-   *
-   * @param userName the new value for the userName field.
-   */
-  public void setUserName(final String userName) {
-    this.userName = checkNotNull(userName, "Received a null pointer as name");
-  }
-
-  /**
-   * Sets the value of the userRoles field.
-   *
-   * @param userRoles the new value for the userName field.
-   */
-  public void setUserName(final List<String> userRoles) {
-    this.userRoles = checkNotNull(userRoles, "Received a null pointer as name");
-  }
-
-  /**
-   * Hash code method.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(userName, userRoles);
-  }
-
-  /**
-   * Equals method.
-   */
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (UserChangeRoleResponseForm) obj;
-    return Objects.equals(userName, other.userName)
-          && Objects.equals(userRoles, other.userRoles);
-  }
-
-  /**
-   * To string method.
-   */
-  @Override
-  public String toString() {
-    return "UserChangeRoleResponseForm [userName=" + userName + ", userRoles="
-          + userRoles + "]";
-  }
 
 }

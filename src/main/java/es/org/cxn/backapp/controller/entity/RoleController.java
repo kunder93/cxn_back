@@ -86,7 +86,7 @@ public class RoleController {
   public ResponseEntity<UserChangeRoleResponseForm> addRoleToUser(@RequestBody
   final UserChangeRoleRequestForm userChangeRoleRequestForm) {
 
-    List<String> roleList = new ArrayList<>();
+    final List<String> roleList = new ArrayList<>();
 
     UserEntity userWithAddedRole;
     try {
@@ -117,7 +117,7 @@ public class RoleController {
   public ResponseEntity<UserChangeRoleResponseForm>
         deleteRoleFromUser(@RequestBody
   final UserChangeRoleRequestForm userChangeRoleRequestForm) {
-    List<String> roleList = new ArrayList<>();
+    final List<String> roleList = new ArrayList<>();
     UserEntity userWithAddedRole;
     try {
       userWithAddedRole = userService.removeRole(

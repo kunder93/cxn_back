@@ -70,7 +70,7 @@ public final class MyPrincipalUser implements UserDetails {
   /**
    * User role Names.
    */
-  private Set<String> rolesNames = new HashSet<>();
+  private Set<String> rolesNames;
 
   /**
    * Constructor with provided UserEntity.
@@ -86,18 +86,17 @@ public final class MyPrincipalUser implements UserDetails {
     secondSurname = userEntity.getSecondSurname();
     birthDate = userEntity.getBirthDate();
     gender = userEntity.getGender();
+    rolesNames = new HashSet<>();
     userEntity.getRoles().forEach(
           (PersistentRoleEntity role) -> rolesNames.add(role.getName())
     );
-
   }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    Set<GrantedAuthority> authorities = new HashSet<>();
+    final Set<GrantedAuthority> authorities = new HashSet<>();
     rolesNames
           .forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
-
     return authorities;
   }
 

@@ -24,8 +24,6 @@
 
 package es.org.cxn.backapp.model.persistence;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import es.org.cxn.backapp.model.UserEntity;
 
 import jakarta.persistence.CascadeType;
@@ -50,6 +48,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+
 /**
  * User Entity.
  * <p>
@@ -59,7 +63,36 @@ import java.util.Set;
  */
 @Entity(name = "UserEntity")
 @Table(name = "users")
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
+@Builder
 public class PersistentUserEntity implements UserEntity {
+
+  /**
+   * kind of member that users can be.
+   *
+   * @author Santi
+   *
+   */
+  public enum UserType {
+    /**
+     * Socio numerario, cuota de 30, mayor de 18 independiente economicamente.
+     */
+    SOCIO_NUMERO,
+    /**
+    * Socio aspirante, menor de 18, sin voto en junta.
+    */
+    SOCIO_ASPIRANTE,
+    /**
+    * Socio honorario, cuota de 0, sin voto en junta.
+    */
+    SOCIO_HONORARIO,
+    /**
+    * Depende economicamente de socio de numero, cuota 0, sin voto en junta.
+    */
+    SOCIO_FAMILIAR
+  }
 
   /**
    * Serialization ID.
@@ -72,7 +105,8 @@ public class PersistentUserEntity implements UserEntity {
    */
   @Id
   @Column(name = "dni", nullable = false, unique = true)
-  private String dni = "";
+  @NonNull
+  private String dni;
 
   /**
    * Name of the user.
@@ -80,7 +114,8 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "name", nullable = false, unique = false)
-  private String name = "";
+  @NonNull
+  private String name;
 
   /**
    * First surname of the user.
@@ -88,7 +123,8 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "first_surname", nullable = false, unique = false)
-  private String firstSurname = "";
+  @NonNull
+  private String firstSurname;
 
   /**
    * Second surname of the user.
@@ -96,7 +132,8 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "second_surname", nullable = false, unique = false)
-  private String secondSurname = "";
+  @NonNull
+  private String secondSurname;
 
   /**
    * Birth date of the user.
@@ -105,6 +142,7 @@ public class PersistentUserEntity implements UserEntity {
    */
   @Temporal(TemporalType.DATE)
   @Column(name = "birth_date", nullable = false, unique = false)
+  @NonNull
   private LocalDate birthDate;
 
   /**
@@ -113,21 +151,33 @@ public class PersistentUserEntity implements UserEntity {
    * This is to have additional data apart from the id, to be used on the tests.
    */
   @Column(name = "gender", nullable = false, unique = false)
-  private String gender = "";
+  @NonNull
+  private String gender;
 
   /**
    * Password of the user.
    *
    */
   @Column(name = "password", nullable = false, unique = false)
-  private String password = "";
+  @NonNull
+  private String password;
 
   /**
    * Email of the user.
    *
    */
   @Column(name = "email", nullable = false, unique = true)
-  private String email = "";
+  @NonNull
+  private String email;
+
+  /**
+   * Kind of user member.
+   *
+   */
+  @Column(name = "kind_member", nullable = false, unique = false)
+  @Builder.Default
+  @NonNull
+  private UserType kindMember = UserType.SOCIO_NUMERO;
 
   /**
    * Roles associated with this user.
@@ -137,12 +187,14 @@ public class PersistentUserEntity implements UserEntity {
         name = "role_users", joinColumns = @JoinColumn(name = "user_dni"),
         inverseJoinColumns = @JoinColumn(name = "role_id")
   )
+  @Builder.Default
   private Set<PersistentRoleEntity> roles = new HashSet<>();
 
   /**
    * The payment sheet user owner.
    */
   @OneToMany(mappedBy = "userOwner")
+  @Builder.Default
   private List<PersistentPaymentSheetEntity> paymentSheets = new ArrayList<>();
 
   /**
@@ -150,236 +202,6 @@ public class PersistentUserEntity implements UserEntity {
    */
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   private PersistentAddressEntity address;
-
-  /**
-   * Constructs an example entity.
-   */
-  public PersistentUserEntity() {
-    super();
-  }
-
-  /**
-   * Constructs an example entity with provided params.
-   *
-   * @param dniValue           the user dni.
-   * @param nameValue          the user name.
-   * @param firstSurnameValue  the user first surname.
-   * @param secondSurnameValue the user second surname.
-   * @param birthDateValue     the user birth date.
-   * @param genderValue        the user gender.
-   * @param passwordValue      the user password.
-   * @param emailValue         the user email.
-   * @param address            the user address.
-   */
-  public PersistentUserEntity(
-        final String dniValue, final String nameValue,
-        final String firstSurnameValue, final String secondSurnameValue,
-        final LocalDate birthDateValue, final String genderValue,
-        final String passwordValue, final String emailValue,
-        final PersistentAddressEntity address
-  ) {
-    super();
-
-    this.dni = checkNotNull(dniValue, "Received a null pointer as dni");
-    this.name = checkNotNull(nameValue, "Received a null pointer as name");
-    this.firstSurname = checkNotNull(
-          firstSurnameValue, "Received a null pointer as first surname"
-    );
-    this.secondSurname = checkNotNull(
-          secondSurnameValue, "Received a null pointer as second surname"
-    );
-    this.birthDate =
-          checkNotNull(birthDateValue, "Received a null pointer as birth date");
-    this.gender =
-          checkNotNull(genderValue, "Received a null pointer as gender");
-    this.password =
-          checkNotNull(passwordValue, "Received a null pointer as password");
-    this.email = checkNotNull(emailValue, "Received a null pointer as email");
-    this.address = address;
-  }
-
-  /**
-   * Returns the dni aka identifier assigned to this user entity.
-   *
-   * @return the user's identifier
-   */
-  @Override
-  public String getDni() {
-    return dni;
-  }
-
-  /**
-   * Get address entity.
-   */
-  @Override
-  public PersistentAddressEntity getAddress() {
-    return address;
-  }
-
-  /**
-   * Set address entity.
-   */
-  @Override
-  public void setAddress(final PersistentAddressEntity address) {
-    this.address = address;
-  }
-
-  /**
-   * Get user name.
-   */
-  @Override
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Get user first surname.
-   */
-  @Override
-  public String getFirstSurname() {
-    return firstSurname;
-  }
-
-  /**
-   * Get user second surname.
-   */
-  @Override
-  public String getSecondSurname() {
-    return secondSurname;
-  }
-
-  /**
-   * Get user birth date.
-   */
-  @Override
-  public LocalDate getBirthDate() {
-    return birthDate;
-  }
-
-  /**
-   * Get user gender.
-   */
-  @Override
-  public String getGender() {
-    return gender;
-  }
-
-  /**
-   * Get user password.
-   */
-  @Override
-  public String getPassword() {
-    return password;
-  }
-
-  /**
-   * Get user email.
-   */
-  @Override
-  public String getEmail() {
-    return email;
-  }
-
-  /**
-   * Get user set of roles.
-   */
-  @Override
-  public Set<PersistentRoleEntity> getRoles() {
-    return new HashSet<>(roles);
-  }
-
-  /**
-   * @return The payment sheet list.
-   */
-  public List<PersistentPaymentSheetEntity> getPaymentSheets() {
-    return new ArrayList<>(paymentSheets);
-  }
-
-  /**
-   * @param paymentSheets The payment sheet list.
-   */
-  public void setPaymentSheets(
-        final List<PersistentPaymentSheetEntity> paymentSheets
-  ) {
-    this.paymentSheets = new ArrayList<>(paymentSheets);
-  }
-
-  /**
-   * Set user id.
-   */
-  @Override
-  public void setDni(final String value) {
-    dni = checkNotNull(value, "Received a null pointer as id");
-  }
-
-  /**
-   * Set user name.
-   */
-  @Override
-  public void setName(final String value) {
-    this.name = checkNotNull(value, "Received a null pointer as name");
-  }
-
-  /**
-   * Set first surname.
-   */
-  @Override
-  public void setFirstSurname(final String value) {
-    this.firstSurname =
-          checkNotNull(value, "Received a null pointer as first surname");
-  }
-
-  /**
-   * Set second surname.
-   */
-  @Override
-  public void setSecondSurname(final String value) {
-    this.secondSurname =
-          checkNotNull(value, "Received a null pointer as second surname");
-  }
-
-  /**
-   * Set birth date.
-   */
-  @Override
-  public void setBirthDate(final LocalDate value) {
-    this.birthDate =
-          checkNotNull(value, "Received a null pointer as birth date");
-  }
-
-  /**
-   * Set gender.
-   */
-  @Override
-  public void setGender(final String value) {
-    this.gender = checkNotNull(value, "Received a null pointer as gender");
-  }
-
-  /**
-   * Set password.
-   */
-  @Override
-  public void setPassword(final String value) {
-    this.password = checkNotNull(value, "Received a null pointer as password");
-
-  }
-
-  /**
-   * Set email.
-   */
-  @Override
-  public void setEmail(final String value) {
-    this.email = checkNotNull(value, "Received a null pointer as email");
-
-  }
-
-  /**
-   * Put a Set of Roles.
-   */
-  @Override
-  public void setRoles(final Set<PersistentRoleEntity> roles) {
-    this.roles = new HashSet<>(roles);
-  }
 
   /**
    * Add new role.
@@ -399,21 +221,11 @@ public class PersistentUserEntity implements UserEntity {
     final var result = this.roles.remove(role);
     role.getUsers().remove(this);
     return result;
+
   }
 
   /**
-   * Hash code method.
-   */
-  @Override
-  public int hashCode() {
-    return Objects.hash(
-          birthDate, email, firstSurname, gender, dni, name, password,
-          secondSurname
-    );
-  }
-
-  /**
-   * Equals method.
+   * Equals with dni and email field.
    */
   @Override
   public boolean equals(final Object obj) {
@@ -426,25 +238,16 @@ public class PersistentUserEntity implements UserEntity {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final var other = (PersistentUserEntity) obj;
-    return Objects.equals(birthDate, other.birthDate)
-          && Objects.equals(email, other.email)
-          && Objects.equals(firstSurname, other.firstSurname)
-          && Objects.equals(gender, other.gender)
-          && Objects.equals(dni, other.dni) && Objects.equals(name, other.name)
-          && Objects.equals(password, other.password)
-          && Objects.equals(secondSurname, other.secondSurname);
+    var other = (PersistentUserEntity) obj;
+    return Objects.equals(dni, other.dni) && Objects.equals(email, other.email);
   }
 
   /**
-   * To string method.
+   * Hash code with dni and email fields.
    */
   @Override
-  public String toString() {
-    return "PersistentUserEntity [dni=" + dni + ", name=" + name
-          + ", first_surname=" + firstSurname + ", second_surname="
-          + secondSurname + ", birth_date=" + birthDate + ", gender=" + gender
-          + ", password=" + password + ", email=" + email + "]";
+  public int hashCode() {
+    return Objects.hash(dni, email);
   }
 
 }

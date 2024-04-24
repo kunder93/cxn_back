@@ -24,11 +24,8 @@
 
 package es.org.cxn.backapp.model;
 
-import es.org.cxn.backapp.model.persistence.PersistentOperationEntity;
-
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Set;
 
 /**
  * A Invoice entity interface.
@@ -73,13 +70,6 @@ public interface InvoiceEntity extends Serializable {
   Boolean getTaxExempt();
 
   /**
-   * Return invoice operations.
-   *
-   * @return the invoice operations.
-   */
-  Set<PersistentOperationEntity> getOperations();
-
-  /**
    * Changes the number of the invoice entity.
    *
    * @param value the number to set on the invoice entity.
@@ -113,12 +103,5 @@ public interface InvoiceEntity extends Serializable {
    * @param value the tax exempt to set on the invoice.
    */
   void setTaxExempt(Boolean value);
-
-  /**
-   * Changes the operations of the invoice.
-   *
-   * @param value the operations to set on user.
-   */
-  void setOperations(Set<PersistentOperationEntity> value);
 
 }

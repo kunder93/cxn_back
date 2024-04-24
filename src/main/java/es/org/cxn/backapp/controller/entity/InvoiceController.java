@@ -28,12 +28,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.CompanyServiceException;
 import es.org.cxn.backapp.exceptions.InvoiceServiceException;
+import es.org.cxn.backapp.model.InvoiceEntity;
 import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.service.CompanyService;
+import es.org.cxn.backapp.service.DefaultCompanyService;
 import es.org.cxn.backapp.service.InvoiceService;
 
 import jakarta.validation.Valid;
@@ -78,7 +80,8 @@ public class InvoiceController {
    * @param companyServ The company service.
    */
   public InvoiceController(
-        final InvoiceService invoiceServ, final CompanyService companyServ
+        final InvoiceService invoiceServ,
+        final DefaultCompanyService companyServ
   ) {
     super();
     invoiceService =
@@ -98,26 +101,27 @@ public class InvoiceController {
   @PostMapping()
   public ResponseEntity<InvoiceResponse> createInvoice(@RequestBody @Valid
   final CreateInvoiceRequestForm invoiceCreateRequestForm) {
-
+    final var sellerNif = invoiceCreateRequestForm.getSellerNif();
+    final var buyerNif = invoiceCreateRequestForm.getBuyerNif();
     try {
-      var sellerCompany = (PersistentCompanyEntity) companyService
-            .findById(invoiceCreateRequestForm.getSellerNif());
-      var buyerCompany = (PersistentCompanyEntity) companyService
-            .findById(invoiceCreateRequestForm.getBuyerNif());
+      final var sellerCompany =
+            (PersistentCompanyEntity) companyService.findById(sellerNif);
+      final var buyerCompany =
+            (PersistentCompanyEntity) companyService.findById(buyerNif);
 
       if (sellerCompany.getNif().equals(buyerCompany.getNif())) {
         throw new ResponseStatusException(
               HttpStatus.BAD_REQUEST, "Seller and buyer cannot be the same"
         );
       }
-      var result = invoiceService.add(
+      final var result = invoiceService.add(
             invoiceCreateRequestForm.getNumber(),
             invoiceCreateRequestForm.getSeries(),
             invoiceCreateRequestForm.getExpeditionDate(),
             invoiceCreateRequestForm.getAdvancePaymentDate(),
             invoiceCreateRequestForm.getTaxExempt(), sellerCompany, buyerCompany
       );
-      var response = new InvoiceResponse(
+      final var response = new InvoiceResponse(
             result.getNumber(), result.getSeries(),
             result.getAdvancePaymentDate(), result.getExpeditionDate(),
             result.getTaxExempt(), result.getSeller().getNif(),
@@ -125,7 +129,9 @@ public class InvoiceController {
       );
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (CompanyServiceException | InvoiceServiceException e) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
   }
 
@@ -139,22 +145,21 @@ public class InvoiceController {
   public ResponseEntity<InvoiceListResponse> getAllInvoices() {
 
     final var invoices = invoiceService.getInvoices();
-    var invoiceResponseList = new ArrayList<InvoiceResponse>();
+    final var invoiceResponseList = new ArrayList<InvoiceResponse>();
     invoices.forEach(
-          (PersistentInvoiceEntity invoice) -> invoiceResponseList.add(
+          (InvoiceEntity invoice) -> invoiceResponseList.add(
                 new InvoiceResponse(
                       invoice.getNumber(), invoice.getSeries(),
                       invoice.getAdvancePaymentDate(),
                       invoice.getExpeditionDate(), invoice.getTaxExempt(),
-                      invoice.getSeller().getNif(), invoice.getBuyer().getNif()
+                      ((PersistentInvoiceEntity) invoice).getSeller().getNif(),
+                      ((PersistentInvoiceEntity) invoice).getBuyer().getNif()
                 )
           )
     );
-
     return new ResponseEntity<>(
           new InvoiceListResponse(invoiceResponseList), HttpStatus.OK
     );
-
   }
 
   /**
@@ -165,14 +170,16 @@ public class InvoiceController {
    * @return Response status 200 OK or some error.
    */
   @CrossOrigin
-  @DeleteMapping(value = "/{series}/{number}")
+  @DeleteMapping("/{series}/{number}")
   public ResponseEntity<Boolean> deleteInvoice(@PathVariable
   final String series, @PathVariable
   final int number) {
     try {
       invoiceService.remove(series, number);
     } catch (InvoiceServiceException e) {
-      return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
     return new ResponseEntity<>(true, HttpStatus.OK);
   }

@@ -24,12 +24,13 @@
 
 package es.org.cxn.backapp.repository;
 
+import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import es.org.cxn.backapp.model.persistence.PersistentOperationEntity;
 
 /**
- * Spring-JPA repository for {@link PersistentOperationEntity}.
+ * Spring-JPA repository for {@link PersistentBookEntity}.
  * <p>
  * This is a simple repository just to allow the endpoints querying the entities
  * they are asked for.
@@ -37,7 +38,7 @@ import es.org.cxn.backapp.model.persistence.PersistentOperationEntity;
  * @author Santiago Paz Perez.
  */
 @Repository
-public interface OperationEntityRepository
-      extends JpaRepository<PersistentOperationEntity, Integer> {
+public interface BookEntityRepository
+      extends JpaRepository<PersistentBookEntity, Long> {
 
 }
