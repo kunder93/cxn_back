@@ -78,7 +78,7 @@ public class UserController {
    *
    * @return info for this user.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "*")
   @GetMapping()
   public ResponseEntity<UserDataResponse> getUserData() {
     final var authName =
@@ -101,7 +101,7 @@ public class UserController {
    * @return form with the updated user data.
    */
   @PostMapping()
-  @CrossOrigin
+  @CrossOrigin(origins = "*")
   public ResponseEntity<UserUpdateResponseForm> updateUserData(@RequestBody
   final UserUpdateRequestForm userUpdateRequestForm) {
     final var userName =
@@ -134,7 +134,7 @@ public class UserController {
    *
    * @return list with all users info.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "*")
   @GetMapping("/getAll")
   public ResponseEntity<UserListDataResponse> getAllUserData() {
     final var users = userService.getAll();
@@ -147,7 +147,7 @@ public class UserController {
    * @param userChangeKindMemberRequest The email as user identifier and new kind of member.
    * @return user data with new kind of member.
    */
-  @CrossOrigin
+  @CrossOrigin(origins = "*")
   @PatchMapping("/changeKindOfMember")
   public ResponseEntity<UserDataResponse> changeUserKindOfMember(@RequestBody
   final UserChangeKindMemberRequest userChangeKindMemberRequest) {
