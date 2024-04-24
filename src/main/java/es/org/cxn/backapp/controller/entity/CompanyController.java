@@ -38,6 +38,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -82,6 +83,7 @@ public class CompanyController {
   //  @PreAuthorize("hasRole('PRESIDENTE')")
   //  @PreAuthorize("isAuthenticated()")
   @GetMapping()
+  @CrossOrigin
   public ResponseEntity<CompanyListResponse> getAllCompanies() {
     final var companiesList = companyService.getCompanies();
     return new ResponseEntity<>(
@@ -97,6 +99,7 @@ public class CompanyController {
    * @return form with the created company data.
    */
   @PostMapping()
+  @CrossOrigin
   public ResponseEntity<CompanyResponse> createCompany(@RequestBody @Valid
   final CreateCompanyRequestForm createCompanyRequestForm) {
     try {
@@ -122,6 +125,7 @@ public class CompanyController {
    * @return Ok or error.
    */
   @DeleteMapping("/{nif}")
+  @CrossOrigin
   public ResponseEntity<Boolean> deleteCompany(@PathVariable
   final String nif) {
     try {
@@ -143,6 +147,7 @@ public class CompanyController {
    * @return The company with data updated.
    */
   @PutMapping("/{nif}")
+  @CrossOrigin
   public ResponseEntity<CompanyUpdateResponse> updateCompany(@PathVariable
   final String nif, @RequestBody
   final CompanyUpdateRequestForm requestForm) {

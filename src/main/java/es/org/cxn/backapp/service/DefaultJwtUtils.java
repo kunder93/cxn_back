@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  */
 @Service
 @NoArgsConstructor
-public final class DefaultJwtUtils implements JwtUtils {
+public class DefaultJwtUtils implements JwtUtils {
 
   /**
    * Temporary for develop, must change.

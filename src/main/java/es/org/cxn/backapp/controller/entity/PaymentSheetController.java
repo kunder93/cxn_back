@@ -40,6 +40,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -80,6 +81,7 @@ public class PaymentSheetController {
    * @return List with all payment sheets.
    */
   @GetMapping
+  @CrossOrigin
   public ResponseEntity<PaymentSheetListResponse> getPaymentSheets() {
     final var paymentSheetsEntityList = paymentSheetService.getPaymentSheets();
     final var responseList =
@@ -95,6 +97,7 @@ public class PaymentSheetController {
    * @return form with the created company data.
    */
   @GetMapping("/{paymentSheetId}")
+  @CrossOrigin
   public ResponseEntity<PaymentSheetResponse> getPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
@@ -116,6 +119,7 @@ public class PaymentSheetController {
    * @return form with the created payment sheet data.
    */
   @PostMapping()
+  @CrossOrigin
   public ResponseEntity<PaymentSheetResponse>
         createPaymentSheet(@RequestBody @Valid
   final CreatePaymentSheetRequestForm createPaymentSheetRequestForm) {
@@ -145,6 +149,7 @@ public class PaymentSheetController {
    * @return The regular transport data.
    */
   @PostMapping("/{paymentSheetId}" + "/addRegularTransport")
+  @CrossOrigin
   public ResponseEntity<String> addRegularTransportToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddRegularTransportRequestForm requestForm) {
@@ -170,6 +175,7 @@ public class PaymentSheetController {
    * @return The payment sheet without regular transport that has been deleted.
    */
   @PostMapping("/{paymentSheetId}" + "/{regularTransportId}")
+  @CrossOrigin
   public ResponseEntity<String>
         removeRegularTransportFromPaymentSheet(@PathVariable
   final Integer paymentSheetId, @PathVariable
@@ -195,6 +201,7 @@ public class PaymentSheetController {
    * @return The payment sheet data with self vehicle assocaited.
    */
   @PostMapping("/{paymentSheetId}" + "/addSelfVehicle")
+  @CrossOrigin
   public ResponseEntity<String> addSelfVehicleToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddSelfVehicleRequestForm requestForm) {
@@ -221,6 +228,7 @@ public class PaymentSheetController {
    * @return The payment sheet data without self vehicle.
    */
   @PostMapping("/{paymentSheetId}" + "/removeSelfVehicle")
+  @CrossOrigin
   public ResponseEntity<String> removeSelfVehicleFromPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
@@ -241,6 +249,7 @@ public class PaymentSheetController {
    * @return The payment sheet with data added.
    */
   @PostMapping("/{paymentSheetId}" + "/addFoodHousing")
+  @CrossOrigin
   public ResponseEntity<String> addFoodHousingToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddFoodHousingToPaymentSheetRequestForm requestForm) {
@@ -266,6 +275,7 @@ public class PaymentSheetController {
    * @return The payment sheet data without food housing.
    */
   @PostMapping("/{paymentSheetId}" + "/removeFoodHousing")
+  @CrossOrigin
   public ResponseEntity<String> removeFoodHousingFromPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
