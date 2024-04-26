@@ -24,6 +24,8 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
+import es.org.cxn.backapp.model.UserRoleName;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -58,6 +60,6 @@ public final class UserChangeRoleResponseForm implements Serializable {
   /**
    * userRoles field.
    */
-  private List<String> userRoles;
+  private List<UserRoleName> userRoles;
 
 }

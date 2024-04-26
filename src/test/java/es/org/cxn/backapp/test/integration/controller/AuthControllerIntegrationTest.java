@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
@@ -39,7 +40,8 @@ import utils.LocalDateAdapter;
 @TestPropertySource("/application.properties")
 class AuthControllerIntegrationTest {
 
-  private final static String DEFAULT_USER_ROLE = "ROLE_SOCIO";
+  private final static UserRoleName DEFAULT_USER_ROLE =
+        UserRoleName.ROLE_CANDIDATO_SOCIO;
   private final static String SIGN_UP_URL = "/api/auth/signup";
   private final static String SIGN_IN_URL = "/api/auth/signinn";
 

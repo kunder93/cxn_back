@@ -28,7 +28,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
@@ -41,8 +43,10 @@ import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -221,40 +225,28 @@ public final class DefaultUserService implements UserService {
 
   @Override
   @Transactional
-  public UserEntity addRole(final String email, final String roleName)
-        throws UserServiceException {
+  public UserEntity changeUserRoles(
+        final String email, final List<UserRoleName> roleNameList
+  ) throws UserServiceException {
     final var user = userRepository.findByEmail(email);
     if (user.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    final var role = roleRepository.findByName(roleName);
-    if (role.isEmpty()) {
-      throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
+    Set<PersistentRoleEntity> rolesSet = new HashSet<>();
+    for (UserRoleName roleName : roleNameList) {
+      try {
+        final var role = roleRepository.findByName(roleName);
+        if (role.isEmpty()) {
+          throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
+        }
+        rolesSet.add(role.get());
+      } catch (UserServiceException e) {
+        throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
+      }
     }
     final var userEntity = user.get();
-    userEntity.addRole(role.get());
+    userEntity.setRoles(rolesSet);
     return userRepository.save(userEntity);
-
-  }
-
-  @Override
-  @Transactional
-  public UserEntity removeRole(final String email, final String roleName)
-        throws UserServiceException {
-    final var userOptional = userRepository.findByEmail(email);
-
-    if (userOptional.isEmpty()) {
-      throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
-    }
-    final var user = userOptional.get();
-    final var roleOptional = roleRepository.findByName(roleName);
-    if (roleOptional.isEmpty()
-          || !user.getRoles().contains(roleOptional.get())) {
-      throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
-    }
-    user.removeRole(roleOptional.get());
-    return userRepository.save(user);
-
   }
 
   @Override

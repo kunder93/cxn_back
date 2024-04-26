@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.model.RoleEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 
@@ -65,7 +66,8 @@ public final class DefaultRoleService implements RoleService {
   }
 
   @Override
-  public RoleEntity add(final String name) throws RoleNameExistsException {
+  public RoleEntity add(final UserRoleName name)
+        throws RoleNameExistsException {
     final PersistentRoleEntity save;
     final var nameNotNull =
           checkNotNull(name, "Received a null pointer as name");
@@ -102,7 +104,7 @@ public final class DefaultRoleService implements RoleService {
   }
 
   @Override
-  public RoleEntity findByName(final String name)
+  public RoleEntity findByName(final UserRoleName name)
         throws RoleNameNotFoundException {
     checkNotNull(name, "Received a null pointer as identifier");
     final var entity = entityRepository.findByName(name);
@@ -119,7 +121,7 @@ public final class DefaultRoleService implements RoleService {
   }
 
   @Override
-  public void remove(final String name) throws RoleNameNotFoundException {
+  public void remove(final UserRoleName name) throws RoleNameNotFoundException {
     final var delete = entityRepository.findByName(name);
     if (delete.isEmpty()) {
       throw new RoleNameNotFoundException(name);

@@ -27,19 +27,14 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
 import es.org.cxn.backapp.service.UserService;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,59 +76,24 @@ public class RoleController {
    * @param userChangeRoleRequestForm form with data to change user role.
    * @return form with the deleted user data.
    */
-  @CrossOrigin
-  @PostMapping()
-  public ResponseEntity<UserChangeRoleResponseForm> addRoleToUser(@RequestBody
+  @CrossOrigin(origins = "*")
+  @PatchMapping()
+  public ResponseEntity<UserChangeRoleResponseForm> changeUserRoles(@RequestBody
   final UserChangeRoleRequestForm userChangeRoleRequestForm) {
 
-    final List<String> roleList = new ArrayList<>();
-
-    UserEntity userWithAddedRole;
+    var roles = userChangeRoleRequestForm.getUserRoles();
     try {
-      userWithAddedRole = userService.addRole(
-            userChangeRoleRequestForm.getUserEmail(),
-            userChangeRoleRequestForm.getRoleName()
-      );
-      userWithAddedRole.getRoles().forEach(e -> roleList.add(e.getName()));
-      return new ResponseEntity<>(
-            new UserChangeRoleResponseForm(
-                  userWithAddedRole.getEmail(), roleList
-            ), HttpStatus.OK
-      );
+      userService.changeUserRoles(userChangeRoleRequestForm.getEmail(), roles);
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
       );
     }
-  }
-
-  /**
-   * Delete role from user.
-   *
-   * @param userChangeRoleRequestForm form with data to change user role.
-   * @return form with the deleted user data.
-   */
-  @DeleteMapping()
-  public ResponseEntity<UserChangeRoleResponseForm>
-        deleteRoleFromUser(@RequestBody
-  final UserChangeRoleRequestForm userChangeRoleRequestForm) {
-    final List<String> roleList = new ArrayList<>();
-    UserEntity userWithAddedRole;
-    try {
-      userWithAddedRole = userService.removeRole(
-            userChangeRoleRequestForm.getUserEmail(),
-            userChangeRoleRequestForm.getRoleName()
-      );
-      userWithAddedRole.getRoles().forEach(e -> roleList.add(e.getName()));
-      return new ResponseEntity<>(
-            new UserChangeRoleResponseForm(
-                  userWithAddedRole.getEmail(), roleList
-            ), null, HttpStatus.OK
-      );
-    } catch (UserServiceException e) {
-      throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, e.getMessage(), e
-      );
-    }
+    return new ResponseEntity<>(
+          new UserChangeRoleResponseForm(
+                userChangeRoleRequestForm.getEmail(),
+                userChangeRoleRequestForm.getUserRoles()
+          ), HttpStatus.OK
+    );
   }
 }

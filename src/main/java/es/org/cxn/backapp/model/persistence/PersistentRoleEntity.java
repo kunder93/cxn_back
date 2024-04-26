@@ -25,9 +25,12 @@
 package es.org.cxn.backapp.model.persistence;
 
 import es.org.cxn.backapp.model.RoleEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -73,8 +76,9 @@ public class PersistentRoleEntity implements RoleEntity {
    * <p>
    * This is to have additional data apart from the id, to be used on the tests.
    */
+  @Enumerated(EnumType.STRING)
   @Column(name = "name", nullable = false, unique = true)
-  private String name = "";
+  private UserRoleName name = UserRoleName.ROLE_CANDIDATO_SOCIO;
 
   /**
    * Role associated users.
@@ -87,7 +91,7 @@ public class PersistentRoleEntity implements RoleEntity {
    *
    * @param value the role name.
    */
-  public PersistentRoleEntity(final String value) {
+  public PersistentRoleEntity(final UserRoleName value) {
     super();
     this.name = value;
   }

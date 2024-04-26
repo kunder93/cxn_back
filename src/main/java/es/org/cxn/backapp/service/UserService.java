@@ -26,6 +26,7 @@ package es.org.cxn.backapp.service;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
@@ -99,25 +100,14 @@ public interface UserService {
    * Add role to an existing user.
    *
    * @param email    user unique email acting as identifier.
-   * @param roleName Name of the role which add to user, must exists.
+   * @param roleNameList List with role names that user want to add.
    * @return UserEntity with role added.
    * @throws UserServiceException When an role with given name no exists or When
-   *                              an user with given email no exists.
+   *                              user with given email that no exist.
    */
-  UserEntity addRole(String email, String roleName) throws UserServiceException;
-
-  /**
-   * Remove role from user.
-   *
-   * @param userEmail The email for locate user.
-   * @param roleName  The role name for locate role entity.
-   * @return User entity with role removed from role list @see UserEntity.
-   * @throws UserServiceException When role with provided name not found or user
-   *                              not have role or When user with provided email
-   *                              not found.
-   */
-  UserEntity removeRole(String userEmail, String roleName)
-        throws UserServiceException;
+  UserEntity changeUserRoles(
+        final String email, final List<UserRoleName> roleNameList
+  ) throws UserServiceException;
 
   /**
    * @return Get list with all users.

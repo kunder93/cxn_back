@@ -27,6 +27,7 @@ package es.org.cxn.backapp.service;
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.model.RoleEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 
 /**
  * Service for the Role entity domain. {@link RoleEntity}
@@ -45,7 +46,7 @@ public interface RoleService {
    * @return the persisted role entity
    * @throws RoleNameExistsException when role with this name already exists
    */
-  RoleEntity add(String name) throws RoleNameExistsException;
+  RoleEntity add(UserRoleName name) throws RoleNameExistsException;
 
   /**
    * Returns a role with the given id.
@@ -66,7 +67,7 @@ public interface RoleService {
    * @throws RoleNameNotFoundException when cannot find a Role with provided
    *                                   name
    */
-  RoleEntity findByName(String name) throws RoleNameNotFoundException;
+  RoleEntity findByName(UserRoleName name) throws RoleNameNotFoundException;
 
   /**
    * Returns all the roles entities from the DB.
@@ -82,6 +83,6 @@ public interface RoleService {
    * @throws RoleNameNotFoundException when a Role entity with provided name not
    *                                   found.
    */
-  void remove(String name) throws RoleNameNotFoundException;
+  void remove(UserRoleName name) throws RoleNameNotFoundException;
 
 }
