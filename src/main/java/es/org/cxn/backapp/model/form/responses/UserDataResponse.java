@@ -90,6 +90,11 @@ public final class UserDataResponse implements Serializable {
   private final UserType kindMember;
 
   /**
+   * The user address response.
+   */
+  private final AddressResponse userAddress;
+
+  /**
    * List of rolenames owned by one user.
    */
   private Set<UserRoleName> userRoles;
@@ -114,6 +119,7 @@ public final class UserDataResponse implements Serializable {
     user.getRoles().forEach(
           (PersistentRoleEntity role) -> userRoles.add(role.getName())
     );
+    userAddress = new AddressResponse(user.getAddress());
   }
 
   /**

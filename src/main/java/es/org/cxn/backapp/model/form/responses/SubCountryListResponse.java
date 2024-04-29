@@ -1,6 +1,7 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
+import es.org.cxn.backapp.model.CountrySubdivisionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 
@@ -44,8 +45,11 @@ public final class SubCountryListResponse implements Serializable {
     super();
     if (!country.getSubdivisions().isEmpty()) {
       country.getSubdivisions().forEach(
-            (PersistentCountrySubdivisionEntity cs) -> subCountryList
-                  .add(new SubCountryResponse(cs))
+            (CountrySubdivisionEntity cs) -> subCountryList.add(
+                  new SubCountryResponse(
+                        (PersistentCountrySubdivisionEntity) cs
+                  )
+            )
       );
     }
   }
