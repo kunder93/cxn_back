@@ -2,7 +2,6 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.AuthorEntity;
-import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -38,7 +37,7 @@ public final class AuthorListResponse implements Serializable {
    *
    * @param authorList The authors entities list.
    */
-  public AuthorListResponse(final List<PersistentAuthorEntity> authorList) {
+  public AuthorListResponse(final List<AuthorEntity> authorList) {
     super();
     authorList.forEach(
           (AuthorEntity e) -> this.authorList.add(new AuthorResponse(e))

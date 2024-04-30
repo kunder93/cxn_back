@@ -61,6 +61,9 @@ public class SecurityConfiguration {
     return authConfig.getAuthenticationManager();
   }
 
+  /**
+   * @return The cors configuration.
+   */
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
     var configuration = new CorsConfiguration();

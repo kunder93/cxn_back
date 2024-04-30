@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
@@ -156,6 +157,29 @@ public class UserController {
       result = userService.changeKindMember(
             userChangeKindMemberRequest.getEmail(),
             userChangeKindMemberRequest.getKindMember()
+      );
+    } catch (UserServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    }
+    return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+  }
+
+  /**
+   * Change user email.
+   * @param userChangeEmailRequest The current and new emails.
+   * @return user data with new email.
+   */
+  @CrossOrigin(origins = "*")
+  @PatchMapping("/changeEmail")
+  public ResponseEntity<UserDataResponse> changeUserEmail(@RequestBody
+  final UserChangeEmailRequest userChangeEmailRequest) {
+    UserEntity result;
+    try {
+      result = userService.changeUserEmail(
+            userChangeEmailRequest.getEmail(),
+            userChangeEmailRequest.getNewEmail()
       );
     } catch (UserServiceException e) {
       throw new ResponseStatusException(

@@ -41,6 +41,12 @@ import org.springframework.stereotype.Repository;
 public interface AuthorEntityRepository
       extends JpaRepository<PersistentAuthorEntity, Long> {
 
+  /**
+   * @param firstName The author first name.
+   * @param lastName The author last name.
+   * @param nationality The author nationality.
+   * @return The author entity.
+   */
   PersistentAuthorEntity findByFirstNameAndLastNameAndNationality(
         String firstName, String lastName, String nationality
   );

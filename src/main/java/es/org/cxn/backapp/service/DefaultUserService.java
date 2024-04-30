@@ -250,6 +250,19 @@ public final class DefaultUserService implements UserService {
   }
 
   @Override
+  @Transactional
+  public UserEntity changeUserEmail(final String email, final String newEmail)
+        throws UserServiceException {
+    final var user = userRepository.findByEmail(email);
+    if (user.isEmpty()) {
+      throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
+    }
+    var userEntity = user.get();
+    userEntity.setEmail(newEmail);
+    return userRepository.save(userEntity);
+  }
+
+  @Override
   public UserEntity findByEmail(final String email)
         throws UserServiceException {
     checkNotNull(email, "Received a null pointer as identifier");

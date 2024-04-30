@@ -125,4 +125,14 @@ public interface UserService {
   UserEntity changeKindMember(String userEmail, UserType newKindMember)
         throws UserServiceException;
 
+  /**
+   * Change the user email.
+   * @param email The current user email.
+   * @param newEmail The new user email.
+   * @return The user entity with new email.
+   * @throws UserServiceException  When user with email not found.
+   */
+  UserEntity changeUserEmail(String email, String newEmail)
+        throws UserServiceException;
+
 }
