@@ -1,9 +1,12 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
+import es.org.cxn.backapp.model.UserRoleName;
+
 import jakarta.validation.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,12 +39,13 @@ public final class UserChangeRoleRequestForm implements Serializable {
    * This is a required field and can't be empty.
    */
   @NotEmpty
-  private String userEmail;
+  private String email;
 
   /**
    * User role name field.
+   * No empty and not null, user almost have one role.
    */
   @NotEmpty
-  private String roleName;
+  private List<UserRoleName> userRoles;
 
 }

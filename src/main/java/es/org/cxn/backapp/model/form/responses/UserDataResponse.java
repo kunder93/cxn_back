@@ -25,6 +25,7 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
@@ -89,9 +90,14 @@ public final class UserDataResponse implements Serializable {
   private final UserType kindMember;
 
   /**
+   * The user address response.
+   */
+  private final AddressResponse userAddress;
+
+  /**
    * List of rolenames owned by one user.
    */
-  private Set<String> userRoles;
+  private Set<UserRoleName> userRoles;
 
   /**
    * Constructs a DTO for user data response with fields values.
@@ -113,7 +119,7 @@ public final class UserDataResponse implements Serializable {
     user.getRoles().forEach(
           (PersistentRoleEntity role) -> userRoles.add(role.getName())
     );
-
+    userAddress = new AddressResponse(user.getAddress());
   }
 
   /**
@@ -182,7 +188,7 @@ public final class UserDataResponse implements Serializable {
    *
    * @return the userRoles.
    */
-  public Set<String> getUserRoles() {
+  public Set<UserRoleName> getUserRoles() {
     return new HashSet<>(userRoles);
   }
 

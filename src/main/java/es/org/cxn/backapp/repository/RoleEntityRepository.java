@@ -24,12 +24,15 @@
 
 package es.org.cxn.backapp.repository;
 
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+
 import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 
 /**
  * Spring-JPA repository for {@link PersistentRoleEntity}.
@@ -50,7 +53,8 @@ public interface RoleEntityRepository
    * @param page pagination to apply.
    * @return all entities at least partially matching the name.
    */
-  Page<PersistentRoleEntity> findByNameContaining(String name, Pageable page);
+  Page<PersistentRoleEntity>
+        findByNameContaining(UserRoleName name, Pageable page);
 
   /**
    * Find privilege entity with provided name.
@@ -58,7 +62,7 @@ public interface RoleEntityRepository
    * @param name the privilege name.
    * @return privilege entity with name.
    */
-  Optional<PersistentRoleEntity> findByName(String name);
+  Optional<PersistentRoleEntity> findByName(UserRoleName name);
 
   /**
    * Check privilege entity with provided name.
@@ -66,6 +70,6 @@ public interface RoleEntityRepository
    * @param name the privilege name.
    * @return true if exists.
    */
-  boolean existsByName(String name);
+  boolean existsByName(UserRoleName name);
 
 }

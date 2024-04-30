@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.exceptions;
 
+import es.org.cxn.backapp.model.UserRoleName;
+
 /**
  * Exception thrown by service when role with provided name not found.
  *
@@ -16,15 +18,15 @@ public final class RoleNameNotFoundException extends Exception {
   /**
    * The role name field.
    */
-  private final String roleName;
+  private final UserRoleName roleName;
 
   /**
    * Main constructor.
    *
    * @param value the role name that throw exception.
    */
-  public RoleNameNotFoundException(final String value) {
-    super(value);
+  public RoleNameNotFoundException(final UserRoleName value) {
+    super(value.toString());
     this.roleName = value;
   }
 
@@ -33,7 +35,7 @@ public final class RoleNameNotFoundException extends Exception {
    *
    * @return the role name.
    */
-  public String getRoleName() {
+  public UserRoleName getRoleName() {
     return roleName;
   }
 

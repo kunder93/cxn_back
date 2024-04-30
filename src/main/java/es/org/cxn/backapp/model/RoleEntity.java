@@ -24,9 +24,10 @@
 
 package es.org.cxn.backapp.model;
 
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+
 import java.io.Serializable;
 import java.util.Set;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 /**
  * A simple entity to be used as an example.
@@ -50,7 +51,7 @@ public interface RoleEntity extends Serializable {
    *
    * @return the role name
    */
-  String getName();
+  UserRoleName getName();
 
   /**
    * Returns the users associated to this role.
@@ -71,7 +72,7 @@ public interface RoleEntity extends Serializable {
    *
    * @param roleName the name to set on role
    */
-  void setName(String roleName);
+  void setName(UserRoleName roleName);
 
   /**
    * Changes the users associated to this role.

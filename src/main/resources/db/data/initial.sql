@@ -34,6 +34,7 @@ INSERT INTO roles (name) VALUES
    ('ROLE_ADMIN'),
    ('ROLE_PRESIDENTE'),
    ('ROLE_SECRETARIO'),
+   ('ROLE_CANDIDATO_SOCIO'),
    ('ROLE_TESORERO');   
        
    

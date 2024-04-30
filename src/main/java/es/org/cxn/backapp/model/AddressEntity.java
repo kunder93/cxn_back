@@ -32,5 +32,49 @@ import java.io.Serializable;
  * @author Santiago Paz Perez
  */
 public interface AddressEntity extends Serializable {
+  /**
+   * @return The Address user's dni.
+   */
+  String getUserDni();
+
+  /**
+   * @return The address postal code.
+   */
+  String getPostalCode();
+
+  /**
+   * @return The address apartment number.
+   */
+  String getApartmentNumber();
+
+  /**
+   * @return The address building.
+   */
+  String getBuilding();
+
+  /**
+   * @return The address street.
+   */
+  String getStreet();
+
+  /**
+   * @return The address city.
+   */
+  String getCity();
+
+  /**
+   * @return The address user entity.
+   */
+  UserEntity getUser();
+
+  /**
+   * @return The address country.
+   */
+  CountryEntity getCountry();
+
+  /**
+   * @return The address country subdivision.
+   */
+  CountrySubdivisionEntity getCountrySubdivision();
 
 }

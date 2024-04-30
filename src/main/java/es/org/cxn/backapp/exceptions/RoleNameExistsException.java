@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.exceptions;
 
+import es.org.cxn.backapp.model.UserRoleName;
+
 /**
  * Exception thrown by service when role with this name is found Cannot exist
  * more than one role with same name.
@@ -18,15 +20,15 @@ public final class RoleNameExistsException extends Exception {
   /**
    * The role name field.
    */
-  private final String roleName;
+  private final UserRoleName roleName;
 
   /**
    * Main constructor.
    *
    * @param value the role name.
    */
-  public RoleNameExistsException(final String value) {
-    super(value);
+  public RoleNameExistsException(final UserRoleName value) {
+    super(value.toString());
     this.roleName = value;
   }
 
@@ -35,7 +37,7 @@ public final class RoleNameExistsException extends Exception {
    *
    * @return the role name.
    */
-  public String getRoleName() {
+  public UserRoleName getRoleName() {
     return roleName;
   }
 

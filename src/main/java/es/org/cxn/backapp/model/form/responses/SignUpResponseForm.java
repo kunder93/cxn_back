@@ -2,6 +2,7 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
@@ -76,7 +77,7 @@ public final class SignUpResponseForm implements Serializable {
   /**
    * User roles set field.
    */
-  private Set<String> userRoles = new HashSet<>();
+  private Set<UserRoleName> userRoles = new HashSet<>();
 
   /**
    * @param user User entity with data for construct DTO.
@@ -99,7 +100,7 @@ public final class SignUpResponseForm implements Serializable {
    *
    * @return the value of the userRoles field.
    */
-  public Set<String> getUserRoles() {
+  public Set<UserRoleName> getUserRoles() {
     return new HashSet<>(userRoles);
   }
 

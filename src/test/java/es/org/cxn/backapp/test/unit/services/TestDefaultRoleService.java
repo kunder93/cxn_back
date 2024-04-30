@@ -29,6 +29,7 @@ import static org.mockito.Mockito.times;
 
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
@@ -66,7 +67,7 @@ final class TestDefaultRoleService {
   @MockBean
   private RoleEntityRepository roleEntityRepository;
 
-  String roleName = "roleName";
+  UserRoleName roleName = UserRoleName.ROLE_CANDIDATO_SOCIO;
   Integer roleId = Integer.valueOf(79);
 
   /**
