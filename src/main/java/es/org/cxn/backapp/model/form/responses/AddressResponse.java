@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Represents the form used by controller as response for requesting one
- * book.
+ * address.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -31,7 +31,7 @@ public final class AddressResponse implements Serializable {
   /**
    * Serial UID.
    */
-  private static final long serialVersionUID = -3160023841222437705L;
+  private static final long serialVersionUID = -3160012341222437705L;
 
   /**
    * The address postal code.
@@ -69,9 +69,9 @@ public final class AddressResponse implements Serializable {
   private String subCountryName;
 
   /**
-   * Build response using author entity.
+   * Build response using address entity.
    *
-   * @param author The author entity.
+   * @param address The address entity.
    */
   public AddressResponse(final AddressEntity address) {
     postalCode = address.getPostalCode();

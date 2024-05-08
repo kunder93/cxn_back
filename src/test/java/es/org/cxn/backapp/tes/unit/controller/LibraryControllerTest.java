@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.controller.entity.LibraryController;
 import es.org.cxn.backapp.exceptions.LibraryServiceException;
+import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
 import es.org.cxn.backapp.model.form.responses.BookListResponse;
 import es.org.cxn.backapp.model.form.responses.BookResponse;
@@ -19,6 +20,7 @@ import es.org.cxn.backapp.service.DefaultLibraryService;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -76,7 +78,7 @@ class LibraryControllerTest {
     var book2 = bookBuilder.build();
     bookBuilder.isbn(5555532432L).title("t3");
     var book3 = bookBuilder.build();
-    var books = new ArrayList<PersistentBookEntity>();
+    List<BookEntity> books = new ArrayList<BookEntity>();
     books.add(book1);
     books.add(book2);
     books.add(book3);

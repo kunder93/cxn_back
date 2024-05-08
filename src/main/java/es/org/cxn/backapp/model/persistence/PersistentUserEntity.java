@@ -180,6 +180,13 @@ public class PersistentUserEntity implements UserEntity {
   private UserType kindMember = UserType.SOCIO_NUMERO;
 
   /**
+   * User status boolean,  enabled or disiabled, true or false.
+   */
+  @Column(name = "enabled", nullable = false, unique = false)
+  @Builder.Default
+  private boolean enabled = true;
+
+  /**
    * Roles associated with this user.
    */
   @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })

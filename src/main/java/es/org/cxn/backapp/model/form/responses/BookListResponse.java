@@ -2,7 +2,6 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.BookEntity;
-import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 
 import java.io.Serializable;
 import java.util.List;
@@ -38,7 +37,7 @@ public final class BookListResponse implements Serializable {
    *
    * @param bookList2 The countries list.
    */
-  public BookListResponse(final List<PersistentBookEntity> bookList2) {
+  public BookListResponse(final List<BookEntity> bookList2) {
     super();
     bookList2.forEach((BookEntity e) -> this.bookList.add(new BookResponse(e)));
   }

@@ -74,6 +74,11 @@ public final class MyPrincipalUser implements UserDetails {
   private Set<UserRoleName> rolesNames;
 
   /**
+   * Indicador de estado de activacion/desactivacion de la cuenta.
+   */
+  private boolean accountEnabled;
+
+  /**
    * Constructor with provided UserEntity.
    *
    * @param userEntity User data to build MyPrincipalUser.
@@ -87,6 +92,7 @@ public final class MyPrincipalUser implements UserDetails {
     secondSurname = userEntity.getSecondSurname();
     birthDate = userEntity.getBirthDate();
     gender = userEntity.getGender();
+    accountEnabled = userEntity.isEnabled();
     rolesNames = new HashSet<>();
     userEntity.getRoles().forEach(
           (PersistentRoleEntity role) -> rolesNames.add(role.getName())
@@ -194,7 +200,7 @@ public final class MyPrincipalUser implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return accountEnabled;
   }
 
 }

@@ -2,10 +2,9 @@
 package es.org.cxn.backapp.service;
 
 import es.org.cxn.backapp.exceptions.LibraryServiceException;
+import es.org.cxn.backapp.model.AuthorEntity;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
-import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
-import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 
 import java.util.List;
 
@@ -20,14 +19,14 @@ public interface LibraryService {
   /**
    * @return List with all books.
    */
-  List<PersistentBookEntity> getAllBooks();
+  List<BookEntity> getAllBooks();
 
   /**
    * Find book using isbn.
    *
    * @param l the isbn.
    * @return Book entity found.
-   * @throws LibraryServiceException When book cannot found or cant find..
+   * @throws LibraryServiceException When book cannot be found.
    */
   BookEntity findByIsbn(long l) throws LibraryServiceException;
 
@@ -35,7 +34,7 @@ public interface LibraryService {
    * Remove book found using isbn.
    *
    * @param val The isbn.
-   * @throws LibraryServiceException When book not found or cannot find.
+   * @throws LibraryServiceException When book cannot be found.
    */
   void removeBookByIsbn(long val) throws LibraryServiceException;
 
@@ -51,7 +50,8 @@ public interface LibraryService {
 
   /**
    * Get all authors.
+   * @return List wiht authors entities.
    */
-  List<PersistentAuthorEntity> getAllAuthors();
+  List<AuthorEntity> getAllAuthors();
 
 }

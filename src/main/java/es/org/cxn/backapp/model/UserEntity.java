@@ -68,6 +68,11 @@ public interface UserEntity extends Serializable {
   String getSecondSurname();
 
   /**
+   * @return account state as true is enabled or false not is enabled.
+   */
+  boolean isEnabled();
+
+  /**
    * Get the user birth date.
    *
    * @return the user birth date
@@ -206,5 +211,10 @@ public interface UserEntity extends Serializable {
    * @param kindMember the kindMember to set
    */
   void setKindMember(UserType kindMember);
+
+  /**
+   * @param value The account state: true enabled or false disabled.
+   */
+  void setEnabled(boolean value);
 
 }

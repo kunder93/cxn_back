@@ -4,6 +4,7 @@ package es.org.cxn.backapp.service;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.LibraryServiceException;
+import es.org.cxn.backapp.model.AuthorEntity;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
 import es.org.cxn.backapp.model.form.requests.AuthorRequestDto;
@@ -61,8 +62,11 @@ public class DefaultLibraryService implements LibraryService {
    * Get all books.
    */
   @Override
-  public List<PersistentBookEntity> getAllBooks() {
-    return libraryRepository.findAll();
+  public List<BookEntity> getAllBooks() {
+    var persistentBooks = libraryRepository.findAll();
+
+    // PersistentBookEntity a BookEntity
+    return persistentBooks.stream().map(BookEntity.class::cast).toList();
   }
 
   /**
@@ -147,8 +151,9 @@ public class DefaultLibraryService implements LibraryService {
    * Get all authors.
    */
   @Override
-  public List<PersistentAuthorEntity> getAllAuthors() {
-    return authorRepository.findAll();
+  public List<AuthorEntity> getAllAuthors() {
+    var persistentAuthors = authorRepository.findAll();
+    // Convertir cada PersistentAuthorEntity a AuthorEntity
+    return persistentAuthors.stream().map(AuthorEntity.class::cast).toList();
   }
-
 }

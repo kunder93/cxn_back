@@ -24,14 +24,12 @@
 
 package es.org.cxn.backapp.model;
 
-import java.io.Serializable;
-
 /**
  * An Address entity interface.
  *
  * @author Santiago Paz Perez
  */
-public interface AddressEntity extends Serializable {
+public interface AddressEntity extends java.io.Serializable {
   /**
    * @return The Address user's dni.
    */
