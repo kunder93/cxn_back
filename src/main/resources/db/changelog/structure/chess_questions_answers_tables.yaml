@@ -1,0 +1,31 @@
+databaseChangeLog:
+- changeSet:
+    id: chess_questions_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: chess_questions
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: topic
+            type: varchar(50)
+            constraints:
+              nullable: false
+        - column:
+            name: message
+            type: clob
+            constraints:
+              nullable: false
+        - column:
+            name: category
+            type: varchar(30)
+            constraints:
+              nullable: false          
+  
