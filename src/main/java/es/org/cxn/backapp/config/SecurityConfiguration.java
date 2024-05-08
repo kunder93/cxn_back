@@ -38,6 +38,31 @@ import lombok.NoArgsConstructor;
 public class SecurityConfiguration {
 
   /**
+   * Filter chain applied to http petitions.
+   *
+   * @param http             the petition.
+   * @param jwtRequestFilter the jwt filter.
+   * @return object built.
+   * @throws Exception if fails.
+   */
+  @Bean
+  SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired
+  JwtRequestFilter jwtRequestFilter) throws Exception {
+    // Disabled csrf for API REST
+    http.csrf().disable().authorizeHttpRequests().requestMatchers("/**")
+          .permitAll().requestMatchers("/*").permitAll().anyRequest()
+          .authenticated().and().sessionManagement()
+          .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+          .cors(Customizer.withDefaults());
+
+    http.addFilterBefore(
+          jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
+    );
+
+    return http.build();
+  }
+
+  /**
    * Bean fork enconde password.
    *
    * @return password enconded.
@@ -73,31 +98,6 @@ public class SecurityConfiguration {
     var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
-  }
-
-  /**
-   * Filter chain applied to http petitions.
-   *
-   * @param http             the petition.
-   * @param jwtRequestFilter the jwt filter.
-   * @return object built.
-   * @throws Exception if fails.
-   */
-  @Bean
-  SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired
-  JwtRequestFilter jwtRequestFilter) throws Exception {
-    // Disabled csrf for API REST
-    http.csrf().disable().authorizeHttpRequests().requestMatchers("/**")
-          .permitAll().requestMatchers("/*").permitAll().anyRequest()
-          .authenticated().and().sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-          .cors(Customizer.withDefaults());
-
-    http.addFilterBefore(
-          jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
-    );
-
-    return http.build();
   }
 
 }

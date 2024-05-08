@@ -124,5 +124,17 @@ databaseChangeLog:
                   name: check_kind_member_values
                   checkSql: "kind_member IN ('socio_numero', 'socio_aspirante', 'socio_honorario', 'socio_familiar')"
                   nullable: false
-        
+
+- changeSet:
+      id: addUserStatusEnabled
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: enabled
+                  type: boolean
+                  defaultValueBoolean: true   # Set the default value
+              
   

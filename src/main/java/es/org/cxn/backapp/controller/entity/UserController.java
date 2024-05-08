@@ -30,6 +30,8 @@ import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
+import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
+import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
@@ -41,6 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -145,7 +148,8 @@ public class UserController {
   /**
    * Change user kind of member.
    *
-   * @param userChangeKindMemberRequest The email as user identifier and new kind of member.
+   * @param userChangeKindMemberRequest The email as user identifier and
+   * new kind of member.
    * @return user data with new kind of member.
    */
   @CrossOrigin(origins = "*")
@@ -187,6 +191,54 @@ public class UserController {
       );
     }
     return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+  }
+
+  /**
+   * Change user password.
+   * @param userChangePasswordRequest The current and
+   * new passwords and user email.
+   * @return user data.
+   */
+  @CrossOrigin(origins = "*")
+  @PatchMapping("/changePassword")
+  public ResponseEntity<UserDataResponse> changeUserPassword(@RequestBody
+  final UserChangePasswordRequest userChangePasswordRequest) {
+    UserEntity result;
+    try {
+      result = userService.changeUserPassword(
+            userChangePasswordRequest.getEmail(),
+            userChangePasswordRequest.getCurrentPassword(),
+            userChangePasswordRequest.getNewPassword()
+      );
+    } catch (UserServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    }
+    return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+  }
+
+  /**
+   * Unsubscribe an user.
+   * @param userUnsubscribeRequest The current user unsubscribe request
+   * with email and password.
+   * @return  Ok or error.
+   */
+  @CrossOrigin(origins = "*")
+  @DeleteMapping("/unsubscribe")
+  public ResponseEntity<?> unsubscribeUser(@RequestBody
+  final UserUnsubscribeRequest userUnsubscribeRequest) {
+    try {
+      userService.unsubscribe(
+            userUnsubscribeRequest.getEmail(),
+            userUnsubscribeRequest.getPassword()
+      );
+    } catch (UserServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    }
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
 }

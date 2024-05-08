@@ -35,11 +35,11 @@ public final class AuthorListResponse implements Serializable {
   /**
    * Constructor with provided parameters values.
    *
-   * @param authorList The authors entities list.
+   * @param value The authors entities list.
    */
-  public AuthorListResponse(final List<AuthorEntity> authorList) {
+  public AuthorListResponse(final List<AuthorEntity> value) {
     super();
-    authorList.forEach(
+    value.forEach(
           (AuthorEntity e) -> this.authorList.add(new AuthorResponse(e))
     );
   }

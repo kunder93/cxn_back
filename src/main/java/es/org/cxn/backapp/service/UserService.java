@@ -105,9 +105,8 @@ public interface UserService {
    * @throws UserServiceException When an role with given name no exists or When
    *                              user with given email that no exist.
    */
-  UserEntity changeUserRoles(
-        final String email, final List<UserRoleName> roleNameList
-  ) throws UserServiceException;
+  UserEntity changeUserRoles(String email, List<UserRoleName> roleNameList)
+        throws UserServiceException;
 
   /**
    * @return Get list with all users.
@@ -134,5 +133,27 @@ public interface UserService {
    */
   UserEntity changeUserEmail(String email, String newEmail)
         throws UserServiceException;
+
+  /**
+   * Change the current user password.
+   *
+   * @param email The user email.
+   * @param newPassword The user new password.
+   * @param currentPassword The user current password.
+   * @return The user entity with new password and user data.
+   * @throws UserServiceException When user with email not
+   * found or password dont match.
+   */
+  UserEntity changeUserPassword(
+        String email, String currentPassword, String newPassword
+  ) throws UserServiceException;
+
+  /**
+   * Unsubscribe an user.
+   * @param email The user email
+   * @param password The user password.
+   * @throws UserServiceException When user with provided email not found.
+   */
+  void unsubscribe(String email, String password) throws UserServiceException;
 
 }

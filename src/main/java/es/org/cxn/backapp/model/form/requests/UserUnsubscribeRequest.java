@@ -1,8 +1,7 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 
@@ -12,7 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Represents the form used by controller as request to change user email.
+ * Represents the form used by controller as request for unsubscribe an user.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -26,25 +25,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public final class UserChangeEmailRequest implements Serializable {
+public final class UserUnsubscribeRequest implements Serializable {
 
   /**
    * Serial UID.
    */
-  private static final long serialVersionUID = -3156145688215915714L;
+  private static final long serialVersionUID = -3112841234615975705L;
 
   /**
-   * The user current email.
+   * The user email.
    */
-  @NotBlank
-  @Email
+  @NotNull
   private String email;
 
   /**
-   * The user new email.
+   * The user password.
    */
-  @NotBlank
-  @Email
-  private String newEmail;
+  @NotNull
+  private String password;
 
 }
