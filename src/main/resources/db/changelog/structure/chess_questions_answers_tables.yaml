@@ -28,4 +28,10 @@ databaseChangeLog:
             type: varchar(30)
             constraints:
               nullable: false          
-  
+        - column:
+            name: email
+            type: varchar(50)
+            constraints:
+              nullable: false
+        - sql:
+            sql: "ADD CONSTRAINT check_email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}$')"
