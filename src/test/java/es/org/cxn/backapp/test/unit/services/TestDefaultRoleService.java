@@ -103,7 +103,10 @@ final class TestDefaultRoleService {
     roleEntityA.setId(diferentRoleId);
     Assertions
           .assertNotEquals(roleEntityA, roleEntityB, "same id and roleName");
-    Assertions.assertNotEquals(roleEntityA, null, "equals with null is false");
+    PersistentRoleEntity nullEntity = null;
+    Assertions.assertNotEquals(
+          nullEntity, roleEntityA, "equals with null is false"
+    );
   }
 
   /**

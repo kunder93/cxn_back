@@ -214,7 +214,8 @@ public class PersistentUserEntity implements UserEntity {
    * Add new role.
    */
   @Override
-  public boolean addRole(final PersistentRoleEntity role) {
+  public boolean addRole(@NonNull
+  final PersistentRoleEntity role) {
     final var result = this.roles.add(role);
     role.getUsers().add(this);
     return result;
@@ -224,7 +225,8 @@ public class PersistentUserEntity implements UserEntity {
    * Remove role.
    */
   @Override
-  public boolean removeRole(final PersistentRoleEntity role) {
+  public boolean removeRole(@NonNull
+  final PersistentRoleEntity role) {
     final var result = this.roles.remove(role);
     role.getUsers().remove(this);
     return result;

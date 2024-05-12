@@ -32,6 +32,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
+import lombok.NonNull;
+
 /**
  * A User entity interface.
  *
@@ -183,7 +185,8 @@ public interface UserEntity extends Serializable {
    * @param role the role entity to add.
    * @return true if added false if not.
    */
-  boolean addRole(PersistentRoleEntity role);
+  boolean addRole(@NonNull
+  PersistentRoleEntity role);
 
   /**
    * Remove existing role from user.
@@ -191,7 +194,8 @@ public interface UserEntity extends Serializable {
    * @param role the role entity to remove.
    * @return true if deleted false if not.
    */
-  boolean removeRole(PersistentRoleEntity role);
+  boolean removeRole(@NonNull
+  PersistentRoleEntity role);
 
   /**
    * Get the address entity associated.
