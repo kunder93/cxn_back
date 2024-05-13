@@ -2,6 +2,7 @@
 package es.org.cxn.backapp.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import lombok.NonNull;
 
@@ -43,6 +44,12 @@ public interface ChessQuestionEntity extends Serializable {
   String getTopic();
 
   /**
+   * @return date when chess question was received.
+   */
+  @NonNull
+  LocalDateTime getDate();
+
+  /**
    * @param category The new chess question category.
    */
   void setCategory(@NonNull
@@ -72,4 +79,9 @@ public interface ChessQuestionEntity extends Serializable {
   void setTopic(@NonNull
   String topic);
 
+  /**
+   * @param date The new chess question date.
+   */
+  void setDate(@NonNull
+  LocalDateTime date);
 }
