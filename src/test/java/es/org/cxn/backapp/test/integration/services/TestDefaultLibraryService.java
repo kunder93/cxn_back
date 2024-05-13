@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-package es.org.cxn.backapp.test.unit.services;
+package es.org.cxn.backapp.test.integration.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
