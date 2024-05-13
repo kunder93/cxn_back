@@ -57,7 +57,7 @@ import lombok.NonNull;
 public class PersistentChessQuestionEntity implements ChessQuestionEntity {
 
   /**
-   * Serial UID
+   * Serial UID.
    */
   private static final long serialVersionUID = 2897644409670798725L;
 

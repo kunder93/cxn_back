@@ -87,7 +87,8 @@ public class ChessQuestionsController {
   /**
    * Create a new chess question.
    *
-   * @param createChessQuestionRequestForm form with data to create a chess question.
+   * @param createChessQuestionRequestForm form with data to create a
+   * chess question.
    *                                 {@link CreateChessQuestionRequestForm}.
    * @return form with the created chess question data.
    */

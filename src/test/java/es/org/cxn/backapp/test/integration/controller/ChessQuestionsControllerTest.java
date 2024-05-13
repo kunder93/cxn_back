@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.annotation.Transactional;
 
 import utils.LocalDateTimeAdapter;
 
@@ -31,6 +32,7 @@ class ChessQuestionsControllerTest {
   private MockMvc mockMvc;
 
   @Test
+  @Transactional
   void testCreateChessQuestionReturnDataMatch() throws Exception {
     var gson = new GsonBuilder()
           .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
@@ -85,6 +87,7 @@ class ChessQuestionsControllerTest {
   }
 
   @Test
+  @Transactional
   void testCreateSeveralChessQuestionsRetrieveAll() throws Exception {
     var numberOfChessQuestions = 2;
     var gson = new GsonBuilder()

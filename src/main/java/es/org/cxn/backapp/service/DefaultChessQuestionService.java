@@ -65,8 +65,10 @@ public final class DefaultChessQuestionService
   }
 
   @Override
-  public ChessQuestionEntity
-        add(String email, String category, String topic, String message) {
+  public ChessQuestionEntity add(
+        final String email, final String category, final String topic,
+        final String message
+  ) {
     var chessQuestionEntity = PersistentChessQuestionEntity.builder()
           .email(email).category(category).topic(topic).message(message)
           .date(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)).build();
