@@ -32,6 +32,8 @@ import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
 import es.org.cxn.backapp.repository.CompanyEntityRepository;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -67,8 +69,13 @@ public final class DefaultChessQuestionService
         add(String email, String category, String topic, String message) {
     var chessQuestionEntity = PersistentChessQuestionEntity.builder()
           .email(email).category(category).topic(topic).message(message)
-          .date(LocalDateTime.now()).build();
+          .date(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)).build();
     return chessQuestionRepository.save(chessQuestionEntity);
+  }
+
+  @Override
+  public List<PersistentChessQuestionEntity> getAll() {
+    return chessQuestionRepository.findAll();
   }
 
 }

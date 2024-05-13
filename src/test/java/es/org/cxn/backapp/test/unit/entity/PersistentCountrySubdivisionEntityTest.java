@@ -77,9 +77,10 @@ class PersistentCountrySubdivisionEntityTest {
           countrySubdivision1.hashCode(), countrySubdivision2.hashCode(),
           "Verificar que los hash codes de countrySubdivision1 y countrySubdivision2 son diferentes después de modificar countrySubdivision2"
     );
-
+    PersistentCountrySubdivisionEntity nullCountrySubdivision = null;
     assertNotEquals(
-          countrySubdivision1, null, "Comprobar notEquals con un valor nulo"
+          countrySubdivision1, nullCountrySubdivision,
+          "Comprobar notEquals con un valor nulo"
     );
 
     var otherObject = "This is not a PersistentCountrySubdivisionEntity";

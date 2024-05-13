@@ -34,7 +34,7 @@ databaseChangeLog:
             constraints:
               nullable: false
         - column:
-            name: date
+            name: datetime
             type: date
             constraints:
               nullable: false            

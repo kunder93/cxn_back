@@ -8,6 +8,7 @@ import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -77,7 +78,7 @@ public final class SignUpResponseForm implements Serializable {
   /**
    * User roles set field.
    */
-  private Set<UserRoleName> userRoles = new HashSet<>();
+  private Set<UserRoleName> userRoles = EnumSet.noneOf(UserRoleName.class);
 
   /**
    * @param user User entity with data for construct DTO.

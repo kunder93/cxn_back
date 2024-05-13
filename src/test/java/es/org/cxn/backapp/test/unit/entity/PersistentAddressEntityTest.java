@@ -85,7 +85,10 @@ class PersistentAddressEntityTest {
           "Verificar que los hash codes de address1 y address2 son diferentes después de modificar address2"
     );
 
-    assertNotEquals(address1, null, "Comprobar notEquals con un valor nulo");
+    PersistentAddressEntity nullAddress = null;
+    assertNotEquals(
+          address1, nullAddress, "Comprobar notEquals con un valor nulo"
+    );
 
     var otherObject = "This is not a PersistentAddressEntity";
     assertNotEquals(

@@ -362,12 +362,12 @@ public final class DefaultUserService implements UserService {
   }
 
   private static boolean checkAgeUnder18(final PersistentUserEntity user) {
-    final var ageLimit = 18;
+    final var AGE_LIMIT = 18;
     final var birthDate = user.getBirthDate();
     final var today = LocalDate.now();
     var age = Period.between(birthDate, today).getYears();
     //Return if under 18.
-    return age < ageLimit;
+    return age < AGE_LIMIT;
   }
 
   private static boolean validateKindMemberChange(

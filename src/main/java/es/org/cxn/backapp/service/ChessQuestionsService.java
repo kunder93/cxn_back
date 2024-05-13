@@ -25,6 +25,9 @@
 package es.org.cxn.backapp.service;
 
 import es.org.cxn.backapp.model.ChessQuestionEntity;
+import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
+
+import java.util.List;
 
 /**
  * Service for the Company entity domain.
@@ -48,5 +51,10 @@ public interface ChessQuestionsService {
    */
   ChessQuestionEntity
         add(String email, String category, String topic, String message);
+
+  /**
+   * @return List with all chess questions.
+   */
+  List<PersistentChessQuestionEntity> getAll();
 
 }

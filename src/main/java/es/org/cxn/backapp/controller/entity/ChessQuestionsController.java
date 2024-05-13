@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
+import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.service.ChessQuestionsService;
 
 import jakarta.validation.Valid;
@@ -35,6 +36,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,6 +70,21 @@ public class ChessQuestionsController {
   }
 
   /**
+   * Return all stored chess questions with their data.
+   *
+   *
+   * @return all stored chess questions.
+   */
+  @CrossOrigin
+  @GetMapping
+  public ResponseEntity<ChessQuestionsListResponse> getAllChessQuestions() {
+    final var chessQuestionsList = chessQuestionsService.getAll();
+    return new ResponseEntity<>(
+          new ChessQuestionsListResponse(chessQuestionsList), HttpStatus.OK
+    );
+  }
+
+  /**
    * Create a new chess question.
    *
    * @param createChessQuestionRequestForm form with data to create a chess question.
@@ -90,7 +107,7 @@ public class ChessQuestionsController {
       final var response = new ChessQuestionResponse();
       response.setEmail(result.getEmail());
       response.setCategory(result.getCategory());
-      response.setMessage(response.getMessage());
+      response.setMessage(result.getMessage());
       response.setTopic(result.getTopic());
       response.setDate(result.getDate());
       return new ResponseEntity<>(response, HttpStatus.CREATED);

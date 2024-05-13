@@ -84,9 +84,9 @@ class PersistentSelfVehicleEntityTest {
           selfVehicle1.hashCode(), selfVehicle2.hashCode(),
           "Verificar que los hash codes de selfVehicle1 y selfVehicle2 son diferentes después de modificar selfVehicle2"
     );
-
+    PersistentSelfVehicleEntity nullVehicle = null;
     assertNotEquals(
-          selfVehicle1, null, "Comprobar notEquals con un valor nulo"
+          selfVehicle1, nullVehicle, "Comprobar notEquals con un valor nulo"
     );
 
     var otherObject = "This is not a PersistentSelfVehicleEntity";

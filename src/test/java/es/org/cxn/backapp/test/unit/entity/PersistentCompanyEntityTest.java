@@ -21,19 +21,20 @@ class PersistentCompanyEntityTest {
     var company = PersistentCompanyEntity.builder().nif("12345678A")
           .name("Example Company").address("123 Example Street").build();
 
-    // Test getter methods
-    assertEquals("12345678A", company.getNif());
-    assertEquals("Example Company", company.getName());
-    assertEquals("123 Example Street", company.getAddress());
+    assertEquals("12345678A", company.getNif(), "Test getter methods");
+    assertEquals("Example Company", company.getName(), "Test getter methods");
+    assertEquals(
+          "123 Example Street", company.getAddress(), "Test getter methods"
+    );
 
     // Test setter methods
     company.setNif("87654321B");
     company.setName("New Company Name");
     company.setAddress("456 New Street");
 
-    assertEquals("87654321B", company.getNif());
-    assertEquals("New Company Name", company.getName());
-    assertEquals("456 New Street", company.getAddress());
+    assertEquals("87654321B", company.getNif(), "setter/getter");
+    assertEquals("New Company Name", company.getName(), "setter/getter");
+    assertEquals("456 New Street", company.getAddress(), "setter/getter");
   }
 
   @Test
@@ -104,8 +105,8 @@ class PersistentCompanyEntityTest {
           company1.hashCode(), company2.hashCode(),
           "Verificar que los hash codes de company1 y company2 son diferentes después de modificar company2"
     );
-
-    assertNotEquals(company1, null, "Verificar no es equals con null");
+    PersistentCompanyEntity nullCompany = null;
+    assertNotEquals(company1, nullCompany, "Verificar no es equals con null");
 
     var otherObject = "This is not a PersistentCompanyEntity";
     assertNotEquals(
