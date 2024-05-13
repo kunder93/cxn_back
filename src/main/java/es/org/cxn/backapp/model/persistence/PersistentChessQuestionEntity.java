@@ -33,6 +33,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -80,6 +82,7 @@ public class PersistentChessQuestionEntity implements ChessQuestionEntity {
    *
    */
   @Column(name = "message", nullable = false, unique = false)
+  @NonNull
   private String message;
 
   /**
@@ -87,6 +90,7 @@ public class PersistentChessQuestionEntity implements ChessQuestionEntity {
    *
    */
   @Column(name = "category", nullable = false, unique = false)
+  @NonNull
   private String category;
 
   /**
@@ -94,6 +98,15 @@ public class PersistentChessQuestionEntity implements ChessQuestionEntity {
    *
    */
   @Column(name = "email", nullable = false, unique = false)
+  @NonNull
   private String email;
+
+  /**
+   * Chess question date.
+   *
+   */
+  @Column(name = "date", nullable = false, unique = false)
+  @NonNull
+  private LocalDateTime date;
 
 }

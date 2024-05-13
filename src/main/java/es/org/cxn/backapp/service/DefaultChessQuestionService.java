@@ -31,6 +31,8 @@ import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
 import es.org.cxn.backapp.repository.CompanyEntityRepository;
 
+import java.time.LocalDateTime;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -63,9 +65,9 @@ public final class DefaultChessQuestionService
   @Override
   public ChessQuestionEntity
         add(String email, String category, String topic, String message) {
-    var chessQuestionEntity =
-          PersistentChessQuestionEntity.builder().email(email)
-                .category(category).topic(topic).message(message).build();
+    var chessQuestionEntity = PersistentChessQuestionEntity.builder()
+          .email(email).category(category).topic(topic).message(message)
+          .date(LocalDateTime.now()).build();
     return chessQuestionRepository.save(chessQuestionEntity);
   }
 

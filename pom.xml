@@ -318,6 +318,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
                 <configuration>
                     <show>private</show>
                     <nohelp>true</nohelp>
@@ -384,7 +385,7 @@
                 <!-- Checks that the code complies with a series of code quality rules. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.21.0</version>
+                <version>3.22.0</version>
                 <configuration>
                     <rulesets>
                         <ruleset>/category/java/bestpractices.xml</ruleset>

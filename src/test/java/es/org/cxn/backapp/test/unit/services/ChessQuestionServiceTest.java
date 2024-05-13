@@ -12,6 +12,8 @@ import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
 import es.org.cxn.backapp.service.DefaultChessQuestionService;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -34,13 +36,14 @@ class ChessQuestionServiceTest {
   private static final String TEST_CATEGORY = "Test Category";
   private static final String TEST_TOPIC = "Test Topic";
   private static final String TEST_MESSAGE = "Test Message";
+  private static final LocalDateTime DATE_NOW = LocalDateTime.now();
 
   @Test
   void testAdd() {
     // Given
     var expectedEntity = PersistentChessQuestionEntity.builder()
           .email(TEST_EMAIL).category(TEST_CATEGORY).topic(TEST_TOPIC)
-          .message(TEST_MESSAGE).build();
+          .date(DATE_NOW).message(TEST_MESSAGE).build();
 
     when(mockRepository.save(any(PersistentChessQuestionEntity.class)))
           .thenReturn(expectedEntity);

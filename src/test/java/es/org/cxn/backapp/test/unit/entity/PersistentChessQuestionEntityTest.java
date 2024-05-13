@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
 
 class PersistentChessQuestionEntityTest {
@@ -53,17 +55,19 @@ class PersistentChessQuestionEntityTest {
 
   @Test
   void testToString() {
+    var dateNow = LocalDateTime.now();
     var entity = new PersistentChessQuestionEntity();
     entity.setIdentifier(1);
     entity.setTopic("Chess");
     entity.setMessage("How to checkmate?");
     entity.setCategory("Strategy");
+    entity.setDate(dateNow);
     entity.setEmail("example@example.com");
 
     var expectedToString =
           "PersistentChessQuestionEntity(identifier=1, topic=Chess,"
                 + " message=How to checkmate?, category=Strategy,"
-                + " email=example@example.com)";
+                + " email=example@example.com, date=" + dateNow + ")";
 
     assertEquals(
           expectedToString, entity.toString(),
