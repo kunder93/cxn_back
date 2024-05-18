@@ -1,8 +1,8 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
+import es.org.cxn.backapp.model.CountryEntity;
 import es.org.cxn.backapp.model.CountrySubdivisionEntity;
-import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 
 import java.io.Serializable;
@@ -41,7 +41,7 @@ public final class SubCountryListResponse implements Serializable {
    *
    * @param country The country entity.
    */
-  public SubCountryListResponse(final PersistentCountryEntity country) {
+  public SubCountryListResponse(final CountryEntity country) {
     super();
     if (!country.getSubdivisions().isEmpty()) {
       country.getSubdivisions().forEach(

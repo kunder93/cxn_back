@@ -33,6 +33,11 @@ public final class ChessQuestionResponse implements Serializable {
   private static final long serialVersionUID = -3199989826999937705L;
 
   /**
+   * The chess question identifier.
+   */
+  private int id;
+
+  /**
    * The email of who send the question.
    */
   private String email;
@@ -56,5 +61,10 @@ public final class ChessQuestionResponse implements Serializable {
    * The chess question date.
    */
   private LocalDateTime date;
+
+  /**
+   * The chess question seen state.
+   */
+  private boolean seen;
 
 }

@@ -109,4 +109,11 @@ public class PersistentChessQuestionEntity implements ChessQuestionEntity {
   @NonNull
   private LocalDateTime date;
 
+  /**
+   * Chess question seen state.
+   *
+   */
+  @Column(name = "seen", nullable = false, unique = false)
+  private boolean seen;
+
 }

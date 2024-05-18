@@ -13,6 +13,7 @@ import lombok.NonNull;
  *
  */
 public interface ChessQuestionEntity extends Serializable {
+
   /**
    * @return The chess question category.
    */
@@ -44,10 +45,21 @@ public interface ChessQuestionEntity extends Serializable {
   String getTopic();
 
   /**
+   * @return true if chess question has been seen false else.
+   */
+  boolean isSeen();
+
+  /**
    * @return date when chess question was received.
    */
   @NonNull
   LocalDateTime getDate();
+
+  /**
+   * @param identifier The new chess question number identifier.
+   */
+  void setIdentifier(@NonNull
+  Integer identifier);
 
   /**
    * @param category The new chess question category.
@@ -60,12 +72,6 @@ public interface ChessQuestionEntity extends Serializable {
    */
   void setEmail(@NonNull
   String email);
-
-  /**
-   * @param identifier The new chess question number identifier.
-   */
-  void setIdentifier(@NonNull
-  Integer identifier);
 
   /**
    * @param message The new chess question message.
@@ -84,4 +90,10 @@ public interface ChessQuestionEntity extends Serializable {
    */
   void setDate(@NonNull
   LocalDateTime date);
+
+  /**
+   * @param value the new boolean value for question seen state.
+   */
+  void setSeen(boolean value);
+
 }

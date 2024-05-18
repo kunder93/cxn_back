@@ -26,6 +26,7 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequestForm;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
@@ -103,14 +104,46 @@ public class ChessQuestionsController {
             createChessQuestionRequestForm.getCategory(),
             createChessQuestionRequestForm.getTopic(),
             createChessQuestionRequestForm.getMessage()
-
       );
       final var response = new ChessQuestionResponse();
+      response.setId(result.getIdentifier());
       response.setEmail(result.getEmail());
       response.setCategory(result.getCategory());
       response.setMessage(result.getMessage());
       response.setTopic(result.getTopic());
       response.setDate(result.getDate());
+      response.setSeen(result.isSeen());
+      return new ResponseEntity<>(response, HttpStatus.CREATED);
+    } catch (Exception e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    }
+  }
+
+  /**
+   * Change chess question has been seen state.
+   *
+   * @param chessQuestionHasSeenRequestForm form with chess question identifier.
+   *                                 {@link ChangeChessQuestionHasSeenRequestForm}.
+   * @return form with the modified chess question.
+   */
+  @PostMapping("/changeChessQuestionHasSeen")
+  @CrossOrigin(origins = "*")
+  public ResponseEntity<ChessQuestionResponse>
+        changeChessQuestionHasSeen(@RequestBody @Valid
+  final ChangeChessQuestionHasSeenRequestForm chessQuestionHasSeenRequestForm) {
+    try {
+      final var result = chessQuestionsService
+            .changeChessQuestionSeen(chessQuestionHasSeenRequestForm.getId());
+      final var response = new ChessQuestionResponse();
+      response.setId(result.getIdentifier());
+      response.setEmail(result.getEmail());
+      response.setCategory(result.getCategory());
+      response.setMessage(result.getMessage());
+      response.setTopic(result.getTopic());
+      response.setDate(result.getDate());
+      response.setSeen(result.isSeen());
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (Exception e) {
       throw new ResponseStatusException(

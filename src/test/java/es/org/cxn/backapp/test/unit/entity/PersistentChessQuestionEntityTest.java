@@ -67,8 +67,8 @@ class PersistentChessQuestionEntityTest {
     var expectedToString =
           "PersistentChessQuestionEntity(identifier=1, topic=Chess,"
                 + " message=How to checkmate?, category=Strategy,"
-                + " email=example@example.com, date=" + dateNow + ")";
-
+                + " email=example@example.com, date=" + dateNow + ", seen=false"
+                + ")";
     assertEquals(
           expectedToString, entity.toString(),
           "toString() method should return expected string representation"

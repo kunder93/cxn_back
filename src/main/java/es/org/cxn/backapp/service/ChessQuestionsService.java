@@ -24,6 +24,7 @@
 
 package es.org.cxn.backapp.service;
 
+import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 
@@ -56,5 +57,15 @@ public interface ChessQuestionsService {
    * @return List with all chess questions.
    */
   List<PersistentChessQuestionEntity> getAll();
+
+  /**
+   * Change chess question seen value.
+   *
+   * @param id The chess question identifier.
+   * @return The chess question entity with senn value changed.
+   * @throws ChessQuestionServiceException When chess question not found.
+   */
+  ChessQuestionEntity changeChessQuestionSeen(Integer id)
+        throws ChessQuestionServiceException;
 
 }

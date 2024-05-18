@@ -38,5 +38,15 @@ databaseChangeLog:
             type: datetime
             constraints:
               nullable: false            
-              
+- changeSet:
+      id: addUserStatusEnabled
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: chess_questions
+            columns:
+              - column:
+                  name: seen
+                  type: boolean
+                  defaultValueBoolean: false   # Set the default value              
               

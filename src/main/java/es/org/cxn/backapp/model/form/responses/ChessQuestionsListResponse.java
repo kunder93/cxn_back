@@ -42,9 +42,10 @@ public final class ChessQuestionsListResponse implements Serializable {
     super();
     value.forEach(
           (ChessQuestionEntity e) -> this.chessQuestionList.add(
-                ChessQuestionResponse.builder().email(e.getEmail())
-                      .topic(e.getTopic()).category(e.getCategory())
-                      .message(e.getMessage()).date(e.getDate()).build()
+                ChessQuestionResponse.builder().id(e.getIdentifier())
+                      .email(e.getEmail()).topic(e.getTopic())
+                      .category(e.getCategory()).message(e.getMessage())
+                      .date(e.getDate()).seen(e.isSeen()).build()
           )
     );
   }

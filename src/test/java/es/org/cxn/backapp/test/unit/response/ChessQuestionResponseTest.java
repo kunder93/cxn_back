@@ -42,13 +42,13 @@ class ChessQuestionResponseTest {
     // Given
     var now = LocalDateTime.now();
     var response1 = new ChessQuestionResponse(
-          "test@example.com", "Category", "Topic", "Message", now
+          1, "test@example.com", "Category", "Topic", "Message", now, false
     );
     var response2 = new ChessQuestionResponse(
-          "test@example.com", "Category", "Topic", "Message", now
+          1, "test@example.com", "Category", "Topic", "Message", now, false
     );
     var response3 = new ChessQuestionResponse(
-          "another@example.com", "Category", "Topic", "Message", now
+          2, "another@example.com", "Category", "Topic", "Message", now, false
     );
 
     ChessQuestionResponse nullResponse = null;
@@ -64,10 +64,10 @@ class ChessQuestionResponseTest {
     // Given
     var now = LocalDateTime.now();
     var response1 = new ChessQuestionResponse(
-          "test@example.com", "Category", "Topic", "Message", now
+          1, "test@example.com", "Category", "Topic", "Message", now, false
     );
     var response2 = new ChessQuestionResponse(
-          "test@example.com", "Category", "Topic", "Message", now
+          1, "test@example.com", "Category", "Topic", "Message", now, false
     );
 
     // Then

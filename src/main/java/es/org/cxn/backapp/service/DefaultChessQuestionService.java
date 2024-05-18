@@ -26,6 +26,7 @@ package es.org.cxn.backapp.service;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
@@ -46,6 +47,11 @@ import org.springframework.stereotype.Service;
 @Service
 public final class DefaultChessQuestionService
       implements ChessQuestionsService {
+
+  /**
+   * Chess question not found exception message.
+   */
+  public static final String QUESTION_NOT_FOUND = "Question not found.";
 
   /**
    * Repository for the invoice entities handled by the service.
@@ -71,13 +77,27 @@ public final class DefaultChessQuestionService
   ) {
     var chessQuestionEntity = PersistentChessQuestionEntity.builder()
           .email(email).category(category).topic(topic).message(message)
-          .date(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS)).build();
+          .seen(false).date(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+          .build();
     return chessQuestionRepository.save(chessQuestionEntity);
   }
 
   @Override
   public List<PersistentChessQuestionEntity> getAll() {
     return chessQuestionRepository.findAll();
+  }
+
+  @Override
+  public ChessQuestionEntity changeChessQuestionSeen(final Integer id)
+        throws ChessQuestionServiceException {
+    var question = chessQuestionRepository.findById(id);
+    if (question.isPresent()) {
+      var entity = question.get();
+      entity.setSeen(!entity.isSeen());
+      return chessQuestionRepository.save(entity);
+    } else {
+      throw new ChessQuestionServiceException(QUESTION_NOT_FOUND);
+    }
   }
 
 }
