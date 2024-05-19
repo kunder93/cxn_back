@@ -26,6 +26,7 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequestForm;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
@@ -37,7 +38,9 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -145,7 +148,27 @@ public class ChessQuestionsController {
       response.setDate(result.getDate());
       response.setSeen(result.isSeen());
       return new ResponseEntity<>(response, HttpStatus.CREATED);
-    } catch (Exception e) {
+    } catch (ChessQuestionServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    }
+  }
+
+  /**
+   * Delete chess question by ID.
+   *
+   * @param id the identifier of the chess question to delete.
+   * @return response OK if delete is successful.
+   */
+  @DeleteMapping("/{id}")
+  @CrossOrigin(origins = "*")
+  public ResponseEntity<Void> deleteChessQuestion(@PathVariable("id")
+  Integer id) {
+    try {
+      chessQuestionsService.delete(id);
+      return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    } catch (ChessQuestionServiceException e) {
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
       );

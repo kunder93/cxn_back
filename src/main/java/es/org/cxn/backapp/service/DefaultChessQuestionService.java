@@ -100,4 +100,14 @@ public final class DefaultChessQuestionService
     }
   }
 
+  @Override
+  public void delete(int id) throws ChessQuestionServiceException {
+    var optionalQuestion = chessQuestionRepository.findById(id);
+    if (optionalQuestion.isPresent()) {
+      chessQuestionRepository.delete(optionalQuestion.get());
+    } else {
+      throw new ChessQuestionServiceException(QUESTION_NOT_FOUND);
+    }
+  }
+
 }

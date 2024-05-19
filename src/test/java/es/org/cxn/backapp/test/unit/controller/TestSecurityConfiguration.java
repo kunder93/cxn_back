@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.tes.unit.controller;
+package es.org.cxn.backapp.test.unit.controller;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

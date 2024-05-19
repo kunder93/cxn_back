@@ -68,4 +68,12 @@ public interface ChessQuestionsService {
   ChessQuestionEntity changeChessQuestionSeen(Integer id)
         throws ChessQuestionServiceException;
 
+  /**
+   * Delaete chess question using a provided identifier.
+   *
+   * @param id The chess question identifier.
+   * @throws ChessQuestionServiceException when cannot be deleted or fails.
+   */
+  void delete(int id) throws ChessQuestionServiceException;
+
 }
