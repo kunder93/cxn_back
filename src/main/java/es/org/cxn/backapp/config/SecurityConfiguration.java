@@ -1,9 +1,15 @@
+
 package es.org.cxn.backapp.config;
+
+import es.org.cxn.backapp.filter.JwtRequestFilter;
+
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,8 +19,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import es.org.cxn.backapp.filter.JwtRequestFilter;
+import lombok.NoArgsConstructor;
 
 /**
  * Spring security configuration.
@@ -25,63 +34,70 @@ import es.org.cxn.backapp.filter.JwtRequestFilter;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
+@NoArgsConstructor
 public class SecurityConfiguration {
 
-    /**
-     * Default constructor.
-     */
-    public SecurityConfiguration() {
-        super();
-    }
+  /**
+   * Filter chain applied to http petitions.
+   *
+   * @param http             the petition.
+   * @param jwtRequestFilter the jwt filter.
+   * @return object built.
+   * @throws Exception if fails.
+   */
+  @Bean
+  SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired
+  JwtRequestFilter jwtRequestFilter) throws Exception {
+    // Disabled csrf for API REST
+    http.csrf().disable().authorizeHttpRequests().requestMatchers("/**")
+          .permitAll().requestMatchers("/*").permitAll().anyRequest()
+          .authenticated().and().sessionManagement()
+          .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+          .cors(Customizer.withDefaults());
 
-    /**
-     * Bean fork enconde password.
-     *
-     * @return password enconded.
-     */
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    http.addFilterBefore(
+          jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
+    );
 
-    /**
-     * Bean for managing user authentication.
-     *
-     * @param authConfig actual authentication configuration.
-     * @return authentication manager.
-     * @throws Exception when fails.
-     */
-    @Bean
-    AuthenticationManager authenticationManager(
-            final AuthenticationConfiguration authConfig
-    ) throws Exception {
-        return authConfig.getAuthenticationManager();
-    }
+    return http.build();
+  }
 
-    /**
-     * Filter chain applied to http petitions.
-     *
-     * @param http             the petition.
-     * @param jwtRequestFilter the jwt filter.
-     * @return object built.
-     * @throws Exception if fails.
-     */
-    @Bean
-    SecurityFilterChain filterChain(
-            final HttpSecurity http,
-            final @Autowired JwtRequestFilter jwtRequestFilter
-    ) throws Exception {
-        // Disabled csrf for API REST
-        http.csrf().disable().authorizeHttpRequests().requestMatchers("/**")
-                .permitAll().requestMatchers("/*").permitAll().anyRequest()
-                .authenticated().and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+  /**
+   * Bean fork enconde password.
+   *
+   * @return password enconded.
+   */
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 
-        http.addFilterBefore(
-                jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
-        );
+  /**
+   * Bean for managing user authentication.
+   *
+   * @param authConfig actual authentication configuration.
+   * @return authentication manager.
+   * @throws Exception when fails.
+   */
+  @Bean
+  AuthenticationManager
+        authenticationManager(final AuthenticationConfiguration authConfig)
+              throws Exception {
+    return authConfig.getAuthenticationManager();
+  }
 
-        return http.build();
-    }
+  /**
+   * @return The cors configuration.
+   */
+  @Bean
+  CorsConfigurationSource corsConfigurationSource() {
+    var configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedMethods(Arrays.asList("*"));
+    configuration.setAllowedHeaders(Arrays.asList("*"));
+    var source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
 
 }

@@ -4,6 +4,8 @@ package es.org.cxn.backapp.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Aspect config Spring.
  *
@@ -12,13 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  */
 @Configuration
 @EnableAspectJAutoProxy
+@NoArgsConstructor
 public class AspectConfig {
-
-    /**
-     * The aspectConfig.
-     */
-    public AspectConfig() {
-        super();
-    }
 
 }

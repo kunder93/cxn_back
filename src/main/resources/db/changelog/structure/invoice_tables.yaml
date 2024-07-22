@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: invoice_operations_table
+    id: invoice_table
     author: Santiago
     changes:
     - createTable:
@@ -39,71 +39,15 @@ databaseChangeLog:
             constraints:
               nullable: false
         - column:
-            name: buyer_cif_nif  
+            name: buyer_nif  
             type: varchar(40)
             constraints:
               nullable: false
         - column:
-            name: seller_cif_nif
+            name: seller_nif
             type: varchar(40)
             constraints:
               nullable: false        
-    - createTable:
-        tableName: operations
-        columns:
-        - column:
-            name: id
-            type: bigint
-            autoIncrement: true
-            constraints:
-              primaryKey: true
-              nullable: false
-        - column:
-            name: price
-            type: decimal
-            constraints:
-              nullable: false
-        - column:
-            name: description
-            type: varchar(255)
-            constraints:
-              nullable: false
-        - column:
-            name: discount
-            type: integer
-            constraints:
-              nullable: false
-        - column:
-            name: tax_rate
-            type: integer
-            constraints:
-              nullable: false
-        - column:
-            name: operation_date
-            type: date
-            constraints:
-              nullable: false
-        - column:
-            name: quantity
-            type: integer
-            constraints:
-              nullable: false
-        - column:
-            name: invoice_id
-            type: bigint
-            constraints:
-              nullable: false             
-
-- changeSet:
-    id: invoice_operations_realtion
-    author: Santiago
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: invoice_id
-        baseTableName: operations
-        constraintName: fk_invoice_operations
-        referencedColumnNames: id
-        referencedTableName: invoices
         
 - changeSet:
     id: company_table        
@@ -113,22 +57,17 @@ databaseChangeLog:
         tableName: companies
         columns:
         - column:
-            name: cifnif
-            type: varchar(40)
+            name: nif
+            type: varchar(10)
             autoIncrement: false
             constraints:
               primaryKey: true
               nullable: false
         - column:
             name: name
-            type: varchar(60)
-            constraints:
-                nullable: false
-        - column:
-            name: identity_tax_number
             type: varchar(40)
             constraints:
-                nullable: true        
+                nullable: false      
         - column:
             name: address
             type: varchar(60)
@@ -140,18 +79,18 @@ databaseChangeLog:
     author: Santiago
     changes:
     - addForeignKeyConstraint:
-        baseColumnNames: seller_cif_nif
+        baseColumnNames: seller_nif
         baseTableName: invoices
         constraintName: fk_invoice_seller
-        referencedColumnNames: cifnif
+        referencedColumnNames: nif
         referencedTableName: companies
 - changeSet:
     id: invoices_buyer_realtion
     author: Santiago
     changes:
     - addForeignKeyConstraint:
-        baseColumnNames: buyer_cif_nif
+        baseColumnNames: buyer_nif
         baseTableName: invoices
         constraintName: fk_invoice_buyer
-        referencedColumnNames: cifnif
+        referencedColumnNames: nif
         referencedTableName: companies        

@@ -1,9 +1,12 @@
+
 package es.org.cxn.backapp;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
+ * Main executable app class.
+ *
  * @author Santi
  *
  *         Spring Boot application
@@ -11,10 +14,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class BackAppApplication {
 
-    /**
-     * @param args the application initial arguments.
-     */
-    public static void main(String[] args) {
-        SpringApplication.run(BackAppApplication.class, args);
-    }
+  /**
+   * The application main method.
+   *
+   * @param args the application initial arguments.
+   */
+  public static void main(final String[] args) {
+    SpringApplication.run(BackAppApplication.class, args);
+  }
 }

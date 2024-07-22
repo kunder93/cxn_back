@@ -5,14 +5,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.0.0</version>
-        <relativePath />
     </parent>
     <groupId>es.org.cxn</groupId>
     <artifactId>back-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>back-app</name>
     <description>BackEnd app para CXN naron</description>
-    <url>https://github.com/santi/cxn-app</url>
+    <url>https://github.com/kunder93/cxn_back</url>
     <inceptionYear>2022</inceptionYear>
     <licenses>
         <license>
@@ -27,7 +26,7 @@
 
     <organization>
         <name>Circulo Xadrez Naron</name>
-        <url>https://cxn.es</url>
+        <url>https://xadreznaron.es</url>
     </organization>
 
     <developers>
@@ -37,7 +36,7 @@
             <email>santi93.09@gmail.com</email>
             <url>https://santipaz.es</url>
             <organization>Circulo Xadrez Naron</organization>
-            <organizationUrl>https://cxn.es</organizationUrl>
+            <organizationUrl>https://xadreznaron.es</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -155,6 +154,7 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
+            <version>10.1.20</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -225,7 +225,23 @@
             <artifactId>jakarta.el</artifactId>
             <version>4.0.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
+            <scope>test</scope>
+        </dependency>
         <!-- ============================================== -->
         <!-- ================= ASPECTJ ==================== -->
         <!-- ============================================== -->
@@ -254,8 +270,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -264,13 +278,27 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
-
+             <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-compiler-plugin</artifactId>
+                  <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.24</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <source>17</source>
+                    <target>17</target>
+                  </configuration>
+                </plugin>
             <plugin>
                 <!-- JaCoCo -->
                 <!-- Generates coverage data from Surefire. -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>0.8.12</version>
                 <executions>
                     <!-- Jacoco is bound to the initialize and verify phases -->
                     <execution>
@@ -290,6 +318,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
                 <configuration>
                     <show>private</show>
                     <nohelp>true</nohelp>
@@ -314,7 +343,7 @@
                 <!-- Generates general information reports. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -343,7 +372,7 @@
                 <!-- Generates the unit tests report. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
+                <version>3.2.5</version>
             </plugin>
             <plugin>
                 <!-- JaCoCo -->
@@ -356,12 +385,22 @@
                 <!-- Checks that the code complies with a series of code quality rules. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.19.0</version>
+                <version>3.22.0</version>
                 <configuration>
+                    <rulesets>
+                        <ruleset>/category/java/bestpractices.xml</ruleset>
+                        <ruleset>/category/java/codestyle.xml</ruleset>
+                        <ruleset>/category/java/design.xml</ruleset>
+                        <ruleset>/category/java/documentation.xml</ruleset>
+                        <ruleset>/category/java/errorprone.xml</ruleset>
+                        <ruleset>/category/java/multithreading.xml</ruleset>
+                        <ruleset>/category/java/performance.xml</ruleset>
+                        <ruleset>/category/java/security.xml</ruleset>
+                    </rulesets>
                     <skipEmptyReport>false</skipEmptyReport>
                     <linkXref>true</linkXref>
                     <inputEncoding>utf-8</inputEncoding>
-                     <targetJdk>17</targetJdk>
+                    <targetJdk>17</targetJdk>
                     <excludes>
                         <exclude>**/*Bean.java</exclude>
                         <exclude>**/generated/*.java</exclude>
@@ -377,11 +416,12 @@
                   reports. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
                 <configuration>
                     <show>public</show>
                     <additionalOptions>-package</additionalOptions>
@@ -395,13 +435,13 @@
                 </reportSets>
             </plugin>
 
-            <plugin>
+            <plugin> 
                 <!-- Checkstyle -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>3.3.1</version>
                 <configuration>
-                    <configLocation>google_checks.xml</configLocation>
+                    <configLocation>sun_checks.xml</configLocation>
                 </configuration>
                 <reportSets>
                     <reportSet>

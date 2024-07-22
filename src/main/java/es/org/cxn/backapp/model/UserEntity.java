@@ -4,10 +4,10 @@
  * Copyright (c) 2021 the original author or authors.
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  * <p>
  * The above copyright notice and this permission notice shall be included in
@@ -17,18 +17,22 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package es.org.cxn.backapp.model;
+
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import lombok.NonNull;
 
 /**
  * A User entity interface.
@@ -37,149 +41,184 @@ import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
  */
 public interface UserEntity extends Serializable {
 
-    /**
-     * Returns the identifier assigned to this user entity.
-     * <p>
-     * If no identifier has been assigned yet, then the value is expected to be
-     * {@code null} or lower than zero.
-     *
-     * @return the user entity's identifier
-     */
-    Integer getId();
+  /**
+   * Returns the identifier assigned to this user entity.
+   *
+   * @return the user entity's identifier
+   */
+  String getDni();
 
-    /**
-     * Returns the name of the user entity.
-     *
-     * @return the user entity's name
-     */
-    String getName();
+  /**
+   * Returns the name of the user entity.
+   *
+   * @return the user entity's name
+   */
+  String getName();
 
-    /**
-     * Get the user first surname.
-     *
-     * @return first surname
-     */
-    String getFirstSurname();
+  /**
+   * Get the user first surname.
+   *
+   * @return first surname
+   */
+  String getFirstSurname();
 
-    /**
-     * Get the user second surname.
-     *
-     * @return second surname
-     */
-    String getSecondSurname();
+  /**
+   * Get the user second surname.
+   *
+   * @return second surname
+   */
+  String getSecondSurname();
 
-    /**
-     * Get the user birth date.
-     *
-     * @return the user birth date
-     */
-    LocalDate getBirthDate();
+  /**
+   * @return account state as true is enabled or false not is enabled.
+   */
+  boolean isEnabled();
 
-    /**
-     * Get the user gender.
-     *
-     * @return the user gender.
-     */
-    String getGender();
+  /**
+   * Get the user birth date.
+   *
+   * @return the user birth date
+   */
+  LocalDate getBirthDate();
 
-    /**
-     * Get the user password.
-     *
-     * @return the user password.
-     */
-    String getPassword();
+  /**
+   * Get the user gender.
+   *
+   * @return the user gender.
+   */
+  String getGender();
 
-    /**
-     * Get the user email.
-     *
-     * @return the user email.
-     */
-    String getEmail();
+  /**
+   * Get the user password.
+   *
+   * @return the user password.
+   */
+  String getPassword();
 
-    /**
-     * Return user roles.
-     *
-     * @return the user roles.
-     */
-    Set<PersistentRoleEntity> getRoles();
+  /**
+   * Get the user email.
+   *
+   * @return the user email.
+   */
+  String getEmail();
 
-    /**
-     * Sets the identifier assigned to this user entity.
-     *
-     * @param identifier the identifier for the user entity.
-     */
-    void setId(Integer identifier);
+  /**
+   * Get the user kind member.
+   *
+   * @return the user kind member.
+   */
+  UserType getKindMember();
 
-    /**
-     * Changes the name of the user entity.
-     *
-     * @param name the name to set on the user entity.
-     */
-    void setName(String name);
+  /**
+   * Return user roles.
+   *
+   * @return the user roles.
+   */
+  Set<PersistentRoleEntity> getRoles();
 
-    /**
-     * Set user first surname.
-     *
-     * @param firstSurname the first surname.
-     */
-    void setFirstSurname(String firstSurname);
+  /**
+   * Sets the dni aka identifier assigned to this user entity.
+   *
+   * @param value the identifier for the user entity.
+   */
+  void setDni(String value);
 
-    /**
-     * Set user Second surname.
-     *
-     * @param secondSurname the second surname.
-     */
-    void setSecondSurname(String secondSurname);
+  /**
+   * Changes the name of the user entity.
+   *
+   * @param name the name to set on the user entity.
+   */
+  void setName(String name);
 
-    /**
-     * Set the user birth date.
-     *
-     * @param birthDate the birth date.
-     */
-    void setBirthDate(LocalDate birthDate);
+  /**
+   * Set user first surname.
+   *
+   * @param firstSurname the first surname.
+   */
+  void setFirstSurname(String firstSurname);
 
-    /**
-     * Set the user gender.
-     *
-     * @param gender the user gender.
-     */
-    void setGender(String gender);
+  /**
+   * Set user Second surname.
+   *
+   * @param secondSurname the second surname.
+   */
+  void setSecondSurname(String secondSurname);
 
-    /**
-     * Set the user password.
-     *
-     * @param password the user password.
-     */
-    void setPassword(String password);
+  /**
+   * Set the user birth date.
+   *
+   * @param birthDate the birth date.
+   */
+  void setBirthDate(LocalDate birthDate);
 
-    /**
-     * Set the user email.
-     *
-     * @param email the user email.
-     */
-    void setEmail(String email);
+  /**
+   * Set the user gender.
+   *
+   * @param gender the user gender.
+   */
+  void setGender(String gender);
 
-    /**
-     * Changes the roles of the user.
-     *
-     * @param roles the roles to set on user.
-     */
-    void setRoles(Set<PersistentRoleEntity> roles);
+  /**
+   * Set the user password.
+   *
+   * @param password the user password.
+   */
+  void setPassword(String password);
 
-    /**
-     * Add existing role to user.
-     *
-     * @param role the role entity to add.
-     * @return true if added false if not.
-     */
-    boolean addRole(PersistentRoleEntity role);
+  /**
+   * Set the user email.
+   *
+   * @param email the user email.
+   */
+  void setEmail(String email);
 
-    /**
-     * Remove existing role from user.
-     *
-     * @param role the role entity to remove.
-     * @return true if deleted false if not.
-     */
-    boolean removeRole(PersistentRoleEntity role);
+  /**
+   * Changes the roles of the user.
+   *
+   * @param roles the roles to set on user.
+   */
+  void setRoles(Set<PersistentRoleEntity> roles);
+
+  /**
+   * Add existing role to user.
+   *
+   * @param role the role entity to add.
+   * @return true if added false if not.
+   */
+  boolean addRole(@NonNull
+  PersistentRoleEntity role);
+
+  /**
+   * Remove existing role from user.
+   *
+   * @param role the role entity to remove.
+   * @return true if deleted false if not.
+   */
+  boolean removeRole(@NonNull
+  PersistentRoleEntity role);
+
+  /**
+   * Get the address entity associated.
+   *
+   * @return The address entity.
+   */
+  PersistentAddressEntity getAddress();
+
+  /**
+   * Associate address entity.
+   *
+   * @param address The address entity.
+   */
+  void setAddress(PersistentAddressEntity address);
+
+  /**
+   * @param kindMember the kindMember to set
+   */
+  void setKindMember(UserType kindMember);
+
+  /**
+   * @param value The account state: true enabled or false disabled.
+   */
+  void setEnabled(boolean value);
 
 }

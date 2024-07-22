@@ -6,4 +6,5 @@
  *
  * @author Santiago Paz.
  */
+
 package es.org.cxn.backapp.controller.entity;

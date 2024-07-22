@@ -7,9 +7,8 @@ databaseChangeLog:
         tableName: users
         columns:
         - column:
-            name: id
-            type: bigint
-            autoIncrement: true
+            name: dni
+            type: varchar(9)
             constraints:
               primaryKey: true
               nullable: false
@@ -83,12 +82,12 @@ databaseChangeLog:
             constraints:
               nullable: false
         - column:
-            name: user_id
-            type: bigint
+            name: user_dni
+            type: varchar(9)
             constraints:
               nullable: false
     - addPrimaryKey:
-        columnNames: role_id, user_id
+        columnNames: role_id, user_dni
         tableName: role_users
         constraintName: pk_role_users
 - changeSet:
@@ -102,8 +101,40 @@ databaseChangeLog:
         referencedColumnNames: id
         referencedTableName: roles
     - addForeignKeyConstraint:
-        baseColumnNames: user_id
+        baseColumnNames: user_dni
         baseTableName: role_users
         constraintName: fk_roles_users_users
-        referencedColumnNames: id
+        referencedColumnNames: dni
         referencedTableName: users
+
+
+- changeSet:
+      id: addColumnKindMember
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: kind_member
+                  type: varchar(20)  
+                  defaultValue: socio_numero  # Set the default value
+            constraints:
+              - validCheckConstraint:
+                  name: check_kind_member_values
+                  checkSql: "kind_member IN ('socio_numero', 'socio_aspirante', 'socio_honorario', 'socio_familiar')"
+                  nullable: false
+
+- changeSet:
+      id: addUserStatusEnabled
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: enabled
+                  type: boolean
+                  defaultValueBoolean: true   # Set the default value
+              
+  

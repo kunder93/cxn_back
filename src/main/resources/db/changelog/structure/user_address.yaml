@@ -1,0 +1,152 @@
+databaseChangeLog:
+- changeSet:
+    id: address_country_countrysubdivision_tables
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: address
+        columns:
+        - column:
+            name: postal_code
+            type: varchar(10)
+            constraints:
+              nullable: false
+        - column:
+            name: apartment_number
+            type: varchar(15)
+            constraints:
+              nullable: false
+        - column:
+            name: building
+            type: varchar(20)
+            constraints:
+              nullable: false
+        - column:
+            name: street
+            type: varchar(100)
+            constraints:
+              nullable: false
+        - column:
+            name: city
+            type: varchar(50)
+            constraints:
+              nullable: false
+        - column:
+            name: user_dni
+            type: varchar(9)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: country_numeric_code
+            type: bigint
+            constraints:
+              nullable: false            
+        - column:
+            name: country_subdivision_id
+            type: bigint
+            constraints:
+              nullable: false
+                
+    - createTable:
+        tableName: country
+        columns:
+        - column:
+            name: numeric_code
+            type: bigint
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: short_name
+            type: varchar(80)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: full_name
+            type: varchar(200)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: alpha_2_code
+            type: varchar(2)
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: alpha_3_code
+            type: varchar(3)
+            constraints:
+              nullable: false
+              unique: true     
+                       
+    - createTable:
+        tableName: country_subdivision
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: name
+            type: varchar(150)
+            constraints:
+              nullable: false
+        - column:
+            name: kind_subdivision_name
+            type: varchar(50)
+            constraints:
+              nullable: false
+        - column:
+            name: code
+            type: varchar(10)
+            constraints:
+              nullable: false
+        - column:
+            name: country_numeric_code
+            type: bigint
+            constraints:
+              nullable: false
+                        
+- changeSet:
+    id: FK_country_address_subdivisions
+    author: Santiago
+    changes:
+    - addPrimaryKey: 
+        columnNames: user_dni
+        constraintName: pk_address_user_dni
+        tableName: address      
+    - addForeignKeyConstraint:
+        baseColumnNames: user_dni
+        baseTableName: address
+        constraintName: fk_users_has_address
+        referencedColumnNames: dni
+        referencedTableName: users
+        onDelete:  CASCADE  
+        onUpdate:  RESTRICT
+    - addForeignKeyConstraint:
+        baseColumnNames: country_numeric_code
+        baseTableName: address
+        constraintName: fk_address_country
+        referencedColumnNames: numeric_code
+        referencedTableName: country     
+    - addForeignKeyConstraint:
+        baseColumnNames: country_subdivision_id
+        baseTableName: address
+        constraintName: fk_address_country_subdivision
+        referencedColumnNames: id
+        referencedTableName: country_subdivision 
+    - addForeignKeyConstraint:
+        baseColumnNames: country_numeric_code
+        baseTableName: country_subdivision
+        constraintName: fk_country_country_subdivision
+        referencedColumnNames: numeric_code
+        referencedTableName: country        
+            
+
+

@@ -1,9 +1,24 @@
+
 package es.org.cxn.backapp.test.integration.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
+import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.service.DefaultJwtUtils;
+import es.org.cxn.backapp.service.JwtUtils;
+
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,10 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.gson.JsonParser;
-
-import es.org.cxn.backapp.model.form.Constants;
-import es.org.cxn.backapp.service.JwtUtils;
+import utils.LocalDateAdapter;
 
 /**
  * @author Santiago Paz. Authentication controller integration tests.
@@ -28,153 +40,320 @@ import es.org.cxn.backapp.service.JwtUtils;
 @TestPropertySource("/application.properties")
 class AuthControllerIntegrationTest {
 
-    private final static String SIGN_UP_URL = "/api/auth/signup";
-    private final static String SIGN_IN_URL = "/api/auth/signinn";
+  private final static UserRoleName DEFAULT_USER_ROLE =
+        UserRoleName.ROLE_CANDIDATO_SOCIO;
+  private final static String SIGN_UP_URL = "/api/auth/signup";
+  private final static String SIGN_IN_URL = "/api/auth/signinn";
 
-    private final static String USER_A_VALID_DATA_SIGN_UP = "{ \"name\": \"Santiago\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
-            + " \"birthDate\": \"1993-05-08\", " + " \"gender\": \"male\", "
-            + " \"password\": \"123123\"," + " \"email\": Santi@santi.es }";
+  private final static String userA_dni = "32721859N";
+  private final static String userA_name = "Santiago";
+  private final static String userA_firstSurname = "Paz";
+  private final static String userA_secondSurname = "Perez";
+  private final static LocalDate userA_birthDate = LocalDate.of(1993, 5, 8); // aaaa,mm,dd
+  private final static String userA_gender = "Male";
+  private final static String userA_password = "fakeValidPassword";
+  private final static String userA_email = "santi@santi.es";
+  private final static String userA_postalCode = "15570";
+  private final static String userA_apartmentNumber = "1D";
+  private final static String userA_building = "7";
+  private final static String userA_street = "Marina Espanola";
+  private final static String userA_city = "Naron";
+  private final static Integer userA_countryNumericCode = 724;
+  private final static String userA_countrySubdivisionName = "Lugo";
 
-    private final static String USER_A_VALID_DATA_SIGN_UP_RESPONSE = "{ \"name\": \"Santiago\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
-            + " \"birthDate\": \"1993-05-08\", " + " \"gender\": \"male\", "
-            + " \"email\": \"Santi@santi.es\"," + " \"userRoles\": [USER] }";
+  private final static String userB_dni = "32721860J";
+  private final static String userB_email = "adri@adri.es";
+  private final static String userB_name = "Adrian";
+  private final static String userB_firstSurname = "Paz";
+  private final static String userB_secondSurname = "Perez";
+  public final static LocalDate userB_birthDate = LocalDate.of(1996, 2, 8); // aaaa,mm,dd
+  private final static String userB_gender = "Male";
+  private final static String userB_password = "fakeValidPassword";
+  private final static String userB_postalCode = "15570";
+  private final static String userB_apartmentNumber = "1D";
+  private final static String userB_building = "7";
+  private final static String userB_street = "Marina Espanola";
+  private final static String userB_city = "Naron";
+  private final static Integer userB_countryNumericCode = 724;
+  private final static String userB_countrySubdivisionName = "Lugo";
 
-    private final static String USER_A_VALID_CREDENTIALS = "{ \"email\": \"Santi@santi.es\","
-            + " \"password\": 123123 }";
+  private final static UserType kindMember = UserType.SOCIO_NUMERO;
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired
+  private MockMvc mockMvc;
 
-    @Autowired
-    UserDetailsService myUserDetailsService;
-    @Autowired
-    JwtUtils jwtUtils;
+  @Autowired
+  UserDetailsService myUserDetailsService;
+  @Autowired
+  JwtUtils jwtUtils;
 
-    @BeforeEach
-    void setup() {
+  private static Gson gson;
 
-    }
+  @BeforeAll
+  static void createUsersData() {
+    gson = new GsonBuilder()
+          .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+          .create();
 
-    /**
-     * Main class constructor
-     */
-    public AuthControllerIntegrationTest() {
-        super();
-    }
+  }
 
-    @Test
-    @Transactional
-    void testCreateUsersWithSameEmailReturnError() throws Exception {
-        final var jSonUserDataRequest = JsonParser
-                .parseString(USER_A_VALID_DATA_SIGN_UP).getAsJsonObject()
-                .toString();
-        // First user created
-        // Response CREATED 201 with user data with Role
-        mockMvc.perform(
+  /**
+   * Main class constructor
+   */
+  public AuthControllerIntegrationTest() {
+    super();
+  }
+
+  /**
+   * SingUp new user return user info with default role "ROLE_SOCIO".
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testSignUpReturnUserDataWithDefautlRole() throws Exception {
+    var numberOfRoles = 1;
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    var controllerResponse = mockMvc
+          .perform(
                 post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest)
-        ).andExpect(MockMvcResultMatchers.status().isCreated());
-        // Second user with same email already exists
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest)
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest());
-    }
+                      .content(userARequestJson)
+          ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
+          .getResponse().getContentAsString();
 
-    @Test
-    @Transactional
-    void testCreateUserWithDataReturnUserDataWithRole() throws Exception {
-        final var jSonUserDataRequest = JsonParser
-                .parseString(USER_A_VALID_DATA_SIGN_UP).getAsJsonObject()
-                .toString();
-        final var userDataResponse = JsonParser
-                .parseString(USER_A_VALID_DATA_SIGN_UP_RESPONSE)
-                .getAsJsonObject().toString();
+    var signUpResponse =
+          gson.fromJson(controllerResponse, SignUpResponseForm.class);
 
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest)
-        ).andExpect(MockMvcResultMatchers.status().isCreated()).andExpect(
-                MockMvcResultMatchers.content().json(userDataResponse)
-        );
+    Assertions.assertEquals(
+          signUpResponse.getDni(), userARequest.getDni(), "Dni field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getEmail(), userARequest.getEmail(), "Email field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getName(), userARequest.getName(), "Dni field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getFirstSurname(), userARequest.getFirstSurname(),
+          "First surname field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getSecondSurname(), userARequest.getSecondSurname(),
+          "Second surname field."
+    );
 
-    }
+    Assertions.assertEquals(
+          signUpResponse.getGender(), userARequest.getGender(), "Gender field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getBirthDate(), userARequest.getBirthDate(),
+          "Birth date field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getKindMember(), userARequest.getKindMember(),
+          "kind of member field."
+    );
+    Assertions.assertEquals(
+          signUpResponse.getUserRoles().size(), numberOfRoles, "Only one role."
+    );
+    Assertions.assertTrue(
+          signUpResponse.getUserRoles().contains(DEFAULT_USER_ROLE),
+          "Role is default user role."
+    );
+  }
 
-    @Test
-    @Transactional
-    void testRequestFormValidationNovalidName() throws Exception {
-        final var noValidLongName = "FakeNameTooLongForUseInTest"; // Max 25
-        var userAData = JsonParser.parseString(USER_A_VALID_DATA_SIGN_UP)
-                .getAsJsonObject();
-        userAData.remove("name");
-        userAData.addProperty("name", noValidLongName);
-        // No valid name, name length max is 25.
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userAData.toString())
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andExpect(
-                MockMvcResultMatchers.content().string(
-                        "{\"content\":[\"" + Constants.NAME_MAX_LENGTH_MESSAGE
-                                + "\"]," + "\"status\":\"warning\"}"
-                )
-        );
+  /**
+   * SingUp second user with same email as userA bad request cause email is in using.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testSignUpSecondUserWithSameEmailBadRequest() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-        // Remove name key and add name key with empty string
-        userAData.remove("name");
-        userAData.addProperty("name", "");
-        // Empty values are no valid.
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userAData.toString())
-        ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andExpect(
-                MockMvcResultMatchers.content().string(
-                        "{\"content\":[\"" + Constants.NAME_NOT_BLANK_MESSAGE
-                                + "\"]," + "\"status\":\"warning\"}"
-                )
-        );
-    }
+    var userBRequest = SignUpRequestForm.builder().dni(userB_dni)
+          .name(userB_name).firstSurname(userB_firstSurname)
+          .secondSurname(userB_secondSurname).birthDate(userB_birthDate)
+          .gender(userB_gender).password(userB_password).email(userA_email)
+          .postalCode(userB_postalCode).apartmentNumber(userB_apartmentNumber)
+          .building(userB_building).street(userB_street).city(userB_city)
+          .countryNumericCode(userB_countryNumericCode)
+          .countrySubdivisionName(userB_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userBRequestJson = gson.toJson(userBRequest);
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userBRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
 
-    @Test
-    @Transactional
-    void testSignInValidateJwtToken() throws Exception {
-        final var userCredentials = JsonParser
-                .parseString(USER_A_VALID_CREDENTIALS).getAsJsonObject()
-                .toString();
+  /**
+   * SingUp second user with same dni as userA bad request cause dni is in using.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testSignUpSecondUserWithSameDniBadRequest() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-        final var userData = JsonParser.parseString(USER_A_VALID_DATA_SIGN_UP)
-                .getAsJsonObject().toString();
+    var userBRequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userB_name).firstSurname(userB_firstSurname)
+          .secondSurname(userB_secondSurname).birthDate(userB_birthDate)
+          .gender(userB_gender).password(userB_password).email(userB_email)
+          .postalCode(userB_postalCode).apartmentNumber(userB_apartmentNumber)
+          .building(userB_building).street(userB_street).city(userB_city)
+          .countryNumericCode(userB_countryNumericCode)
+          .countrySubdivisionName(userB_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userBRequestJson = gson.toJson(userBRequest);
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userBRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+  }
 
-        // User not registered, unauthorized
-        mockMvc.perform(
+  /**
+   * SignIn return valid jwt.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testAuthenticateUserReturnJwt() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    var authenticationRequest =
+          new AuthenticationRequest(userA_email, userA_password);
+    var authenticationRequestJson = gson.toJson(authenticationRequest);
+
+    // Second user with same email as userA bad request.
+    var authenticationResponseJson = mockMvc
+          .perform(
                 post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userCredentials)
-        ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
-        // Register user correctly
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userData)
-        ).andExpect(MockMvcResultMatchers.status().isCreated());
+                      .content(authenticationRequestJson)
+          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+          .getResponse().getContentAsString();
 
-        // Login return jwt for registered user
-        final var responseContent = mockMvc
-                .perform(
-                        post(SIGN_IN_URL)
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(userCredentials)
-                ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-                .getResponse().getContentAsString();
-        final var jwtToken = responseContent
-                .substring(8, responseContent.length() - 2);
-        // Validate jwt token
-        Assertions.assertTrue(
-                jwtUtils.validateToken(
-                        jwtToken,
-                        myUserDetailsService
-                                .loadUserByUsername("Santi@santi.es")
-                ), "jwt response token is valid"
-        );
-    }
+    var ar = gson
+          .fromJson(authenticationResponseJson, AuthenticationResponse.class);
+    var jwtToken = ar.getJwt();
+    JwtUtils jwtUtil = new DefaultJwtUtils();
+    var jwtUsername = jwtUtil.extractUsername(jwtToken);
+    Assertions.assertEquals(
+          userA_email, jwtUsername, "Jwt username is same as user signUp"
+    );
+  }
+
+  /**
+   * SignIn not existing user is unauthorized.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testAuthenticateUserNotExistingUserUnauthorized() throws Exception {
+    // Authenticate not existing user (no signUp)
+    var authenticationRequest =
+          new AuthenticationRequest(userA_email, userA_password);
+    var authenticationRequestJson = gson.toJson(authenticationRequest);
+
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(authenticationRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+  }
+
+  /**
+   * SignIn with bad password unauthorized.
+   *
+   * @throws Exception When fails.
+   */
+  @Test
+  @Transactional
+  void testAuthenticateUserBadPasswordUnauthorized() throws Exception {
+    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
+          .name(userA_name).firstSurname(userA_firstSurname)
+          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
+          .gender(userA_gender).password(userA_password).email(userA_email)
+          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
+          .building(userA_building).street(userA_street).city(userA_city)
+          .countryNumericCode(userA_countryNumericCode)
+          .countrySubdivisionName(userA_countrySubdivisionName)
+          .kindMember(kindMember).build();
+    var userARequestJson = gson.toJson(userARequest);
+    // Register user correctly
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userARequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    var notValidPassword = "NotValidPassword";
+    var authenticationRequest =
+          new AuthenticationRequest(userA_email, notValidPassword);
+    var authenticationRequestJson = gson.toJson(authenticationRequest);
+
+    // Second user with same email as userA bad request.
+    mockMvc.perform(
+          post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(authenticationRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
+  }
 
 }

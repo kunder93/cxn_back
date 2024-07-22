@@ -3,6 +3,8 @@ package es.org.cxn.backapp.config;
 
 import org.springframework.context.annotation.Configuration;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Service configuration class.
  *
@@ -10,13 +12,7 @@ import org.springframework.context.annotation.Configuration;
  *
  */
 @Configuration
+@NoArgsConstructor
 public class ServiceConfig {
-
-    /**
-     * Default constructor.
-     */
-    public ServiceConfig() {
-        super();
-    }
 
 }

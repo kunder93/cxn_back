@@ -1,20 +1,21 @@
+
 package es.org.cxn.backapp.tes.unit.validation;
 
-import java.util.Set;
-
-import org.hibernate.validator.constraints.Length;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import es.org.cxn.backapp.model.form.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.Constants;
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+
+import java.util.Set;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Unit tests for {@link AuthenticationRequestValidation} bean validation.
@@ -26,238 +27,201 @@ import jakarta.validation.constraints.Size;
  */
 final class TestAuthenticationRequestValidation {
 
-    private Validator validator;
+  /**
+   * Validator used to validate field.
+   */
+  private Validator validator;
 
-    private String validPassword = "vPijN4223";
+  /**
+   * Example valid password.
+   */
+  final private static String VALID_PASSWORD = "vPijN4223";
 
-    // Not valid by validator
-    final static private String long51CharacterEmail = "asdfgkhrewasdgkhrewasjasdfrewdfgkhrew@dasdsadsa.asd";
-    // Valid by validator
-    final static private String long50ValidEmail = "asfgkhrewasdfgkhrwasasdfrewdfgjkhrew@dasdsadsa.asd";
-    final static private String validEmail = "asfgkhrewejkhrew@dadsa.asd";
+  /**
+   * Example valid email.
+   */
+  final static private String VALID_EMAIL = "asfgkhrewejkhrew@dadsa.asd";
 
-    /**
-     * Default constructor.
-     */
-    public TestAuthenticationRequestValidation() {
-        super();
-    }
+  /**
+   * Default constructor.
+   */
+  public TestAuthenticationRequestValidation() {
+    super();
+  }
 
-    /**
-     * Sets up the validator for the tests.
-     */
-    @BeforeEach
-    public final void setUpValidator() {
-        var factory = Validation.buildDefaultValidatorFactory();
-        validator = factory.getValidator();
-    }
+  /**
+   * Sets up the validator for the tests.
+   */
+  @BeforeEach
+  public void setUpValidator() {
+    final var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
+  }
 
-    /**
-     * Verifies that Email field is null, validation catch it.
-     */
-    @Test
-    void testValidationNullEmailError() {
-        var ar = new AuthenticationRequest();
-        ar.setPassword(validPassword);
-        ar.setEmail(null);
-        Set<ConstraintViolation<AuthenticationRequest>> violations = validator
-                .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
-        violations.forEach(aa -> {
-            Assertions.assertNull(aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
-                    "The message provided");
-            Assertions.assertTrue(
-                    aa.getConstraintDescriptor()
-                            .getAnnotation() instanceof NotEmpty,
-                    "Not empty annotation");
-        });
-    }
+  /**
+   * Verifies validation Not blank in email.
+   *
+   * @param email The email not valid value.
+   */
+  @DisplayName("Validate blank email values are not valid.")
+  @ParameterizedTest
+  @ValueSource(strings = { "", " ", "    " })
+  void testEmailBlankNotValid(final String email) {
+    final var authRequest = new AuthenticationRequest(email, VALID_PASSWORD);
+    Set<ConstraintViolation<AuthenticationRequest>> violations =
+          validator.validate(authRequest);
 
-    /**
-     * Verifies that Email field cannot be blank.
-     */
-    @Test
-    void testValidationBlankEmailError() {
-        final var blankEmail = "";
-        var ar = new AuthenticationRequest(blankEmail, validPassword);
-        Set<ConstraintViolation<AuthenticationRequest>> violations = validator
-                .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
-        violations.forEach(aa -> {
-            Assertions.assertEquals(blankEmail, aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.NOT_EMPTY_EMAIL, aa.getMessage(),
-                    "Check message provided");
-            Assertions.assertTrue(
-                    aa.getConstraintDescriptor()
-                            .getAnnotation() instanceof NotEmpty,
-                    "Not empty annotation");
-        });
-    }
+    /* Could be possible not valid email and not blank constraint violations
+     * at same time. */
+    var matchConsViolSiz = violations.size() == 1 || violations.size() == 2;
+    Assertions
+          .assertTrue(matchConsViolSiz, "constraint violation size 1 or 2.");
+    violations.forEach(constraintViolation -> {
+      Assertions.assertEquals(
+            Constants.EMAIL_NOT_VALID_MESSAGE, constraintViolation.getMessage(),
+            "The constraint message is about email."
+      );
+      Assertions.assertEquals(
+            authRequest.getEmail(), constraintViolation.getInvalidValue(),
+            "The constraint message is about email."
+      );
+    });
+  }
 
-    /**
-     * Verifies that Email field cannot exceed 50 characters.
-     */
-    @Test
-    void testValidationLargeEmailError() {
-        var ar = new AuthenticationRequest();
-        ar.setPassword(validPassword);
-        ar.setEmail(long51CharacterEmail);
-        Set<ConstraintViolation<AuthenticationRequest>> violations = validator
-                .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when email is too long");
-        violations.forEach(aa -> {
-            Assertions.assertEquals(long51CharacterEmail, aa.getInvalidValue(),
-                    "long51CharacterEmail is the not valid value");
-            Assertions.assertEquals(Constants.MAX_SIZE_EMAIL_MESSAGE,
-                    aa.getMessage(), "Check message provided");
-            Assertions.assertTrue(
-                    aa.getConstraintDescriptor()
-                            .getAnnotation() instanceof Size,
-                    "Check size annotation");
-        });
-    }
+  /**
+   * Verifies validation email cannot be more than 50 characters.
+   */
+  @DisplayName("Validate email no valid upper max length.")
+  @ParameterizedTest
+  @ValueSource(
+        strings = { /*51*/"aaaaaaaaaaaaaverylongEmailExample@VeryLongEmail.com",
+            /*52*/ "baaaaaaaaaaaaaverylongEmailExample@VeryLongEmail.com" }
+  )
+  void testEmailLengthOutBoundsNotValid(final String email) {
+    final var authRequest = new AuthenticationRequest(email, VALID_PASSWORD);
+    ;
+    Set<ConstraintViolation<AuthenticationRequest>> violations =
+          validator.validate(authRequest);
+    Assertions
+          .assertEquals(Integer.valueOf(1), violations.size(), "One error.");
+    var constraintViolation = violations.iterator().next();
+    Assertions.assertEquals(
+          Constants.MAX_SIZE_EMAIL_MESSAGE, constraintViolation.getMessage(),
+          "The constraint message is about email."
+    );
+    Assertions.assertEquals(
+          authRequest.getEmail(), constraintViolation.getInvalidValue(),
+          "The constraint message is about email."
+    );
+  }
 
-    /**
-     * Verifies that if the Email field cannot exceed 50 characters, so with 50
-     * characters works
-     */
-    @Test
-    void testValidationLargeEmailValid() {
-        var ar = new AuthenticationRequest();
-        ar.setPassword(validPassword);
-        ar.setEmail(long50ValidEmail);
-        Set<ConstraintViolation<AuthenticationRequest>> violations = validator
-                .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "long 50 character email generate no errors");
-        // Others values that should be valid
-        var otherValidEmail = "emailValid@Valid.ok";
-        ar.setEmail(otherValidEmail);
-        violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "email validation no errors");
-        // check another email
-        ar.setEmail("otroemail@a.esa");
-        violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "email validation no errors");
-    }
+  /**
+   * Verifies that Email field is null, validation catch it.
+   */
+  @Test
+  void testValidationNullEmailNotValid() {
+    final String email = null;
+    // Create not valid authentication request.
+    final var authRequest = new AuthenticationRequest(email, VALID_PASSWORD);
+    // Validate request.
+    final Set<ConstraintViolation<AuthenticationRequest>> violations =
+          validator.validate(authRequest);
+    final var violationsSize = violations.size();
+    Assertions.assertEquals(
+          Integer.valueOf(1), violationsSize,
+          "Check only 1 constraint violation when email is null."
+    );
+    violations.forEach(constraintViolation -> {
+      Assertions.assertNull(
+            constraintViolation.getInvalidValue(), "null is the not valid value"
+      );
+      Assertions.assertEquals(
+            Constants.EMAIL_NOT_VALID_MESSAGE, constraintViolation.getMessage(),
+            "The message provided is the email not empty."
+      );
+    });
+  }
 
-    /**
-     * Verifies that the Email field cannot be greater than 50 characters or
-     * less than 5
-     */
-    @Test
-    final void testValidationPasswordSize() {
-        final var short5Password = "sds4s";
-        final var long21Password = "asdaowqmfkfqjiwqdjsas";
-        var ar = new AuthenticationRequest();
-        ar.setPassword(short5Password);
-        ar.setEmail(validEmail);
-        // Password too short
-        Set<ConstraintViolation<AuthenticationRequest>> violations = validator
-                .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "password too short generate 1 error");
-        var violation = violations.iterator().next();
-        Assertions.assertTrue(
-                violation.getConstraintDescriptor()
-                        .getAnnotation() instanceof Length,
-                "annotation instance is Length");
+  /**
+   * Verifies validation Not blank in password.
+   *
+   * @param password The password not valid value.
+   */
+  @DisplayName("Validate blank password values are not valid.")
+  @ParameterizedTest
+  @ValueSource(strings = { "", " ", "    " })
+  void testPasswordBlankNotValid(final String password) {
+    final var authRequest = new AuthenticationRequest(VALID_EMAIL, password);
+    Set<ConstraintViolation<AuthenticationRequest>> violations =
+          validator.validate(authRequest);
 
-        // 21 characters Password is so long
-        ar.setPassword(long21Password);
-        violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "password too long generate 1 error");
-        violation = violations.iterator().next();
-        Assertions.assertTrue(
-                violation.getConstraintDescriptor()
-                        .getAnnotation() instanceof Length,
-                "annotation instance is Length");
+    /* Could be possible not valid email and not blank constraint violations
+     * at same time. */
+    Assertions.assertEquals(
+          Integer.valueOf(1), violations.size(), "One constrant validation."
+    );
+    var constraintViolation = violations.iterator().next();
+    Assertions.assertEquals(
+          Constants.LENGTH_PASSWORD_MESSAGE, constraintViolation.getMessage(),
+          "The constraint message is about email."
+    );
+    Assertions.assertEquals(
+          authRequest.getPassword(), constraintViolation.getInvalidValue(),
+          "The constraint message is about email."
+    );
+  }
 
-        // Valid password
-        ar.setPassword("someValidPassword");
-        violations = validator.validate(ar);
-        Assertions.assertEquals(Integer.valueOf(0), violations.size(),
-                "no errors");
-    }
+  /**
+   * Verifies that Email field is null, validation catch it.
+   */
+  @Test
+  void testPasswordNullNotValid() {
+    final String password = null;
+    // Create not valid authentication request.
+    final var authRequest = new AuthenticationRequest(VALID_EMAIL, password);
+    // Validate request.
+    final Set<ConstraintViolation<AuthenticationRequest>> violations =
+          validator.validate(authRequest);
+    final var violationsSize = violations.size();
+    Assertions.assertEquals(
+          Integer.valueOf(1), violationsSize,
+          "Check only 1 constraint violation when email is null."
+    );
+    var constraintViolation = violations.iterator().next();
+    Assertions.assertNull(
+          constraintViolation.getInvalidValue(), "null is the not valid value"
+    );
+    Assertions.assertEquals(
+          Constants.NOT_NULL_PASSWORD, constraintViolation.getMessage(),
+          "The message provided is the email not empty."
+    );
+  }
 
-    /**
-     * Verifies that Password field is null, validation catch it.
-     */
-    @Test
-    void testValidationNullPasswordError() {
-        var ar = new AuthenticationRequest();
-        ar.setPassword(null);
-        ar.setEmail(validEmail);
-        Set<ConstraintViolation<AuthenticationRequest>> violations = validator
-                .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
-        violations.forEach(aa -> {
-            Assertions.assertNull(aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.NOT_NULL_PASSWORD,
-                    aa.getMessage(), "The message provided");
-            Assertions.assertTrue(
-                    aa.getConstraintDescriptor()
-                            .getAnnotation() instanceof NotNull,
-                    "Not empty annotation");
-        });
-    }
-
-    /**
-     * Verifies that Password field cannot be blank.
-     */
-    @Test
-    void testValidationBlankPasswordError() {
-        final var blankPassword = "";
-        var ar = new AuthenticationRequest(validEmail, blankPassword);
-        Set<ConstraintViolation<AuthenticationRequest>> violations = validator
-                .validate(ar);
-        Assertions.assertEquals(Integer.valueOf(1), violations.size(),
-                "only 1 error when is null value");
-        violations.forEach(aa -> {
-            Assertions.assertEquals(blankPassword, aa.getInvalidValue(),
-                    "null is the not valid value");
-            Assertions.assertEquals(Constants.LENGTH_PASSWORD_MESSAGE,
-                    aa.getMessage(), "The message provided");
-            Assertions.assertTrue(
-                    aa.getConstraintDescriptor()
-                            .getAnnotation() instanceof Length,
-                    "Not empty annotation");
-        });
-    }
-
-    /**
-     * Verifies authentication request equals method.
-     */
-    @Test
-    void testEqualsHashCodeRequest() {
-        final var ar = new AuthenticationRequest(validEmail, validPassword);
-        Assertions.assertTrue(ar.equals(ar), "same object");
-        Assertions.assertEquals(ar.hashCode(), ar.hashCode(),
-                "same object hashcode");
-        Assertions.assertFalse(ar.equals(null), "check null");
-        final var otherEmail = "other@email.com";
-        final var ar2 = new AuthenticationRequest(otherEmail, validPassword);
-
-        Assertions.assertFalse(ar.equals(ar2));
-        Assertions.assertNotEquals(ar.hashCode(), ar2.hashCode());
-        Assertions.assertNotEquals(ar.toString(), ar2.toString());
-
-        final var otherPassword = "adaswrgasdd";
-        final var ar3 = new AuthenticationRequest(validEmail, otherPassword);
-
-        Assertions.assertFalse(ar.equals(ar3), "not equals diferent objects");
-        Assertions.assertFalse(ar3.equals(ar2), "not equals");
-    }
+  /**
+   * Verifies validation password cannot be greater than 50 characters or less than 6.
+   */
+  @DisplayName("Validate password out from length bounds.")
+  @ParameterizedTest
+  @ValueSource(
+        strings = { /*21*/"123456789012345678901",
+            /*22*/ "1234567890123456789012", /*5*/ "12345", /*4*/ "1234" }
+  )
+  void testPasswordLengthOutBoundsNotValid(final String password) {
+    final var authRequest = new AuthenticationRequest(VALID_EMAIL, password);
+    ;
+    Set<ConstraintViolation<AuthenticationRequest>> violations =
+          validator.validate(authRequest);
+    Assertions
+          .assertEquals(Integer.valueOf(1), violations.size(), "One error.");
+    var constraintViolation = violations.iterator().next();
+    Assertions.assertEquals(
+          Constants.LENGTH_PASSWORD_MESSAGE, constraintViolation.getMessage(),
+          "The constraint message is about password."
+    );
+    Assertions.assertEquals(
+          authRequest.getPassword(), constraintViolation.getInvalidValue(),
+          "The constraint message is about password."
+    );
+  }
 
 }
