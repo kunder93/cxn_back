@@ -60,7 +60,7 @@ class ChessQuestionsControllerTest {
 
   @BeforeEach
   void setUp() {
-    // Configura los comportamientos simulados de los mocks aquí si es necesario
+
   }
 
   @Test
