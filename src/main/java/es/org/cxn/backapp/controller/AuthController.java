@@ -153,9 +153,9 @@ public class AuthController {
   public ResponseEntity<SignUpResponseForm>
         registerUser(final @Valid @RequestBody
   SignUpRequestForm signUpRequestForm) {
-    final var DEFAULT_USER_ROLE = UserRoleName.ROLE_CANDIDATO_SOCIO;
+    final var defaultUserRole = UserRoleName.ROLE_CANDIDATO_SOCIO;
     final var initialUserRolesSet = new ArrayList<UserRoleName>();
-    initialUserRolesSet.add(DEFAULT_USER_ROLE);
+    initialUserRolesSet.add(defaultUserRole);
 
     final var addressDetails = createAddressDetails(signUpRequestForm);
     final var userDetails =

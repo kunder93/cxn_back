@@ -174,4 +174,13 @@ public interface PaymentSheetService {
         Integer paymentSheetId, Integer regularTransportId
   ) throws PaymentSheetServiceException;
 
+  /**
+   * Delete payment sheet.
+   *
+   * @param paymentSheetId The payment sheet identifier.
+   * @throws PaymentSheetServiceException When paymentSheet witth id not found.
+   */
+  void deletePaymentSheet(Integer paymentSheetId)
+        throws PaymentSheetServiceException;
+
 }

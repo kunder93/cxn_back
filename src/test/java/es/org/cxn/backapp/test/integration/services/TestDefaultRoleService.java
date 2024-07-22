@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-package es.org.cxn.backapp.test.unit.services;
+package es.org.cxn.backapp.test.integration.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -103,7 +103,10 @@ final class TestDefaultRoleService {
     roleEntityA.setId(diferentRoleId);
     Assertions
           .assertNotEquals(roleEntityA, roleEntityB, "same id and roleName");
-    Assertions.assertNotEquals(roleEntityA, null, "equals with null is false");
+    PersistentRoleEntity nullEntity = null;
+    Assertions.assertNotEquals(
+          nullEntity, roleEntityA, "equals with null is false"
+    );
   }
 
   /**

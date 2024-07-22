@@ -22,7 +22,7 @@
  * IN THE SOFTWARE.
  */
 
-package es.org.cxn.backapp.test.unit.services;
+package es.org.cxn.backapp.test.integration.services;
 
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;

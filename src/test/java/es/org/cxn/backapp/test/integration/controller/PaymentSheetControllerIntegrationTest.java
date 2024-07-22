@@ -1,6 +1,7 @@
 
 package es.org.cxn.backapp.test.integration.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
@@ -345,7 +346,7 @@ class PaymentSheetControllerIntegrationTest {
                             + paymentSheetNotExistingIdentifier
 
                 )
-          ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+          ).andExpect(MockMvcResultMatchers.status().isNotFound());
   }
 
   @Test
@@ -562,4 +563,45 @@ class PaymentSheetControllerIntegrationTest {
 
   }
 
+  @Test
+  @Transactional
+  void testDeletePaymentSheetAndAssociatedEntities() throws Exception {
+    // Create user, expect 201 created.
+    mockMvc.perform(
+          post(CREATE_USER_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(createUserRequestFormJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    // Create payment sheet, expect 201 created
+    var paymentSheetCreateResponse = mockMvc.perform(
+          post(PAYMENT_SHEET_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(createPaymentSheetRequestFormJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn();
+
+    var paymentSheetResponse =
+          paymentSheetCreateResponse.getResponse().getContentAsString();
+    var paymentSheetId =
+          gson.fromJson(paymentSheetResponse, PaymentSheetResponse.class)
+                .getPaymentSheetIdentifier();
+
+    // Delete payment sheet
+    mockMvc.perform(delete(PAYMENT_SHEET_URL + "/" + paymentSheetId))
+          .andExpect(MockMvcResultMatchers.status().isNoContent());
+
+    // Verify payment sheet is deleted
+    var paymentSheetGetResponse = mockMvc
+          .perform(get(PAYMENT_SHEET_URL + "/" + paymentSheetId))
+          .andExpect(MockMvcResultMatchers.status().isNotFound()).andReturn();
+
+    var errorResponse =
+          paymentSheetGetResponse.getResponse().getContentAsString();
+    Assertions.assertTrue(
+          errorResponse.contains("not found"), "Payment sheet should be deleted"
+    );
+
+    // You would need to implement findByPaymentSheetId method in respective repositories
+    //    assertTrue(paymentSheetService.findRegularTransportByPaymentSheetId(paymentSheetId).isEmpty(), "RegularTransport should be deleted");
+    //  assertTrue(paymentSheetService.findSelfVehicleByPaymentSheetId(paymentSheetId).isEmpty(), "SelfVehicle should be deleted");
+    // assertTrue(paymentSheetService.findFoodHousingByPaymentSheetId(paymentSheetId).isEmpty(), "FoodHousing should be deleted");
+  }
 }

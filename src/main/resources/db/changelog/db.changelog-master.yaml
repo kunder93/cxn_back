@@ -17,6 +17,9 @@ databaseChangeLog:
   - include:
       file: structure/library_tables.yaml
       relativeToChangelogFile: true
+  - include:
+      file: structure/chess_questions_answers_tables.yaml
+      relativeToChangelogFile: true
   - changeSet:
       id: initial_data
       author: Santiago

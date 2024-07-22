@@ -27,9 +27,13 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.AddressServiceException;
+import es.org.cxn.backapp.model.CountryEntity;
 import es.org.cxn.backapp.model.form.responses.CountryListResponse;
 import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
+import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.service.AddressService;
+
+import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,7 +79,8 @@ public class AddressController {
   @CrossOrigin
   @GetMapping(path = "/getCountries")
   public ResponseEntity<CountryListResponse> getAllCountries() {
-    final var countryList = addressService.getCountries();
+    final var countryList =
+          addressService.getCountries();
     return new ResponseEntity<>(
           new CountryListResponse(countryList), HttpStatus.OK
     );
@@ -95,7 +100,7 @@ public class AddressController {
         getAllSubCountriesFromCountry(@PathVariable
   final Integer countryCode) {
     try {
-      final var country = addressService.getCountry(countryCode);
+      final CountryEntity country = addressService.getCountry(countryCode);
       return new ResponseEntity<>(
             new SubCountryListResponse(country), HttpStatus.OK
       );

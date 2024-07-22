@@ -26,6 +26,7 @@ package es.org.cxn.backapp.model.persistence;
 
 import es.org.cxn.backapp.model.PaymentSheetEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -120,7 +121,10 @@ public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
   /**
    * Roles associated with this user.
    */
-  @OneToMany(mappedBy = "paymentSheet")
+  @OneToMany(
+        mappedBy = "paymentSheet", cascade = CascadeType.ALL,
+        orphanRemoval = true
+  )
   @Builder.Default
   private Set<PersistentRegularTransportEntity> regularTransports =
         new HashSet<>();
@@ -128,13 +132,19 @@ public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
   /**
    * Self vehicle transport if have. Can be null.
    */
-  @OneToOne(mappedBy = "paymentSheet")
+  @OneToOne(
+        mappedBy = "paymentSheet", cascade = CascadeType.ALL,
+        orphanRemoval = true
+  )
   private PersistentSelfVehicleEntity selfVehicle;
 
   /**
    * Food and housing if have.Can be null.
    */
-  @OneToOne(mappedBy = "paymentSheet")
+  @OneToOne(
+        mappedBy = "paymentSheet", cascade = CascadeType.ALL,
+        orphanRemoval = true
+  )
   private PersistentFoodHousingEntity foodHousing;
 
 }

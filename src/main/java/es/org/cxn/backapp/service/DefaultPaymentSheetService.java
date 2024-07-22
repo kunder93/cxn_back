@@ -358,4 +358,14 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
     }
     regularTransportRepository.delete(regularTransportOptional.get());
   }
+
+  @Override
+  public void deletePaymentSheet(final Integer paymentSheetId)
+        throws PaymentSheetServiceException {
+    final var paymentSheetOpt = paymentSheetRepository.findById(paymentSheetId);
+    if (paymentSheetOpt.isEmpty()) {
+      throw new PaymentSheetServiceException(PAYMENT_SHEET_NOT_FOUND_MESSAGE);
+    }
+    paymentSheetRepository.delete(paymentSheetOpt.get());
+  }
 }
