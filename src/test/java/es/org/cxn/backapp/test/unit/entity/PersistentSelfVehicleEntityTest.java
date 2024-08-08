@@ -37,6 +37,7 @@ class PersistentSelfVehicleEntityTest {
   void testEqualsAndHashCode() {
     // Crear dos instancias de PersistentSelfVehicleEntity con los mismos atributos
     var selfVehicle1 = new PersistentSelfVehicleEntity();
+    selfVehicle1.setIdentifier(1);
     selfVehicle1.setPlaces("Example Places");
     selfVehicle1.setDistance(100.0f);
     selfVehicle1.setKmPrice(1.5);
@@ -44,6 +45,7 @@ class PersistentSelfVehicleEntityTest {
     selfVehicle1.setPaymentSheet(paymentSheet1);
 
     var selfVehicle2 = new PersistentSelfVehicleEntity();
+    selfVehicle2.setIdentifier(1);
     selfVehicle2.setPlaces("Example Places");
     selfVehicle2.setDistance(100.0f);
     selfVehicle2.setKmPrice(1.5);

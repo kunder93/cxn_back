@@ -108,14 +108,11 @@ public final class DefaultInvoiceService implements InvoiceService {
   @Override
   public void remove(final String series, final int number)
         throws InvoiceServiceException {
-    final var invoicesList =
-          invoiceRepository.findByNumberAndSeries(number, series);
-    if (invoicesList.size() == 1) {
-      final var invoice = invoicesList.get(0);
-      invoiceRepository.delete(invoice);
-    } else {
+    final var invoice = invoiceRepository.findByNumberAndSeries(number, series);
+    if (invoice.isEmpty()) {
       throw new InvoiceServiceException(INVOICE_NOT_FOUND_MESSAGE);
     }
+    invoiceRepository.delete(invoice.get());
   }
 
   @Override
@@ -130,6 +127,18 @@ public final class DefaultInvoiceService implements InvoiceService {
     final Optional<PersistentInvoiceEntity> entity;
     checkNotNull(identifier, "Received a null pointer as identifier");
     entity = invoiceRepository.findById(identifier);
+    if (entity.isEmpty()) {
+      throw new InvoiceServiceException(INVOICE_NOT_FOUND_MESSAGE);
+    }
+    return entity.get();
+  }
+
+  @Override
+  public InvoiceEntity
+        findBySeriesAndNumber(final String series, final int number)
+              throws InvoiceServiceException {
+    final Optional<PersistentInvoiceEntity> entity;
+    entity = invoiceRepository.findByNumberAndSeries(number, series);
     if (entity.isEmpty()) {
       throw new InvoiceServiceException(INVOICE_NOT_FOUND_MESSAGE);
     }

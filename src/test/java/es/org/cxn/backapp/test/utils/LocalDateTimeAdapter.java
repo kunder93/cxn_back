@@ -1,6 +1,4 @@
-
-package utils;
-
+package es.org.cxn.backapp.test.utils;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -10,27 +8,27 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class LocalDateAdapter
-      implements JsonSerializer<LocalDate>, JsonDeserializer<LocalDate> {
+public class LocalDateTimeAdapter implements JsonSerializer<LocalDateTime>,
+      JsonDeserializer<LocalDateTime> {
+
   private static final DateTimeFormatter formatter =
-        DateTimeFormatter.ISO_LOCAL_DATE;
+        DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
   @Override
   public JsonElement serialize(
-        LocalDate date, Type typeOfSrc, JsonSerializationContext context
+        LocalDateTime src, Type typeOfSrc, JsonSerializationContext context
   ) {
-    var formattedDate = date.format(formatter);
-    return new JsonPrimitive(formattedDate);
+    return new JsonPrimitive(formatter.format(src));
   }
 
   @Override
-  public LocalDate deserialize(
+  public LocalDateTime deserialize(
         JsonElement json, Type typeOfT, JsonDeserializationContext context
   ) throws JsonParseException {
     var dateString = json.getAsString();
-    return LocalDate.parse(dateString, formatter);
+    return LocalDateTime.parse(dateString, formatter);
   }
 }

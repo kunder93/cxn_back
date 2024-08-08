@@ -1,7 +1,7 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
-import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
+import es.org.cxn.backapp.model.InvoiceEntity;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -69,7 +69,7 @@ public final class InvoiceResponse implements Serializable {
    *
    * @param entity The invoice entity.
    */
-  public InvoiceResponse(final PersistentInvoiceEntity entity) {
+  public InvoiceResponse(final InvoiceEntity entity) {
     super();
     this.number = entity.getNumber();
     this.series = entity.getSeries();
