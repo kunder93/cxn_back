@@ -2,11 +2,13 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -76,7 +78,7 @@ public final class SignUpResponseForm implements Serializable {
   /**
    * User roles set field.
    */
-  private Set<String> userRoles = new HashSet<>();
+  private Set<UserRoleName> userRoles = EnumSet.noneOf(UserRoleName.class);
 
   /**
    * @param user User entity with data for construct DTO.
@@ -99,7 +101,7 @@ public final class SignUpResponseForm implements Serializable {
    *
    * @return the value of the userRoles field.
    */
-  public Set<String> getUserRoles() {
+  public Set<UserRoleName> getUserRoles() {
     return new HashSet<>(userRoles);
   }
 

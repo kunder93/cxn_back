@@ -28,7 +28,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
@@ -41,8 +43,10 @@ import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -75,6 +79,12 @@ public final class DefaultUserService implements UserService {
    */
   public static final String USER_DNI_EXISTS_MESSAGE =
         "User dni already exists.";
+
+  /**
+   * User password not match with provided message for exception.
+   */
+  public static final String USER_PASSWORD_NOT_MATCH =
+        "User current password dont match.";
   /**
    * Repository for the user entities handled by the service.
    */
@@ -221,40 +231,68 @@ public final class DefaultUserService implements UserService {
 
   @Override
   @Transactional
-  public UserEntity addRole(final String email, final String roleName)
+  public UserEntity changeUserRoles(
+        final String email, final List<UserRoleName> roleNameList
+  ) throws UserServiceException {
+    final var user = userRepository.findByEmail(email);
+    if (user.isEmpty()) {
+      throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
+    }
+    Set<PersistentRoleEntity> rolesSet = new HashSet<>();
+    for (UserRoleName roleName : roleNameList) {
+      try {
+        final var role = roleRepository.findByName(roleName);
+        if (role.isEmpty()) {
+          throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
+        }
+        rolesSet.add(role.get());
+      } catch (UserServiceException e) {
+        throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
+      }
+    }
+    final var userEntity = user.get();
+    userEntity.setRoles(rolesSet);
+    return userRepository.save(userEntity);
+  }
+
+  @Override
+  @Transactional
+  public UserEntity changeUserPassword(
+        final String email, final String currentPassword,
+        final String newPassword
+  ) throws UserServiceException {
+    var passwordEncoder = new BCryptPasswordEncoder();
+    // Buscar al usuario por su correo electrónico en la base de datos
+    var userOptional = userRepository.findByEmail(email);
+    if (userOptional.isEmpty()) {
+      throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
+    }
+    // Obtener la entidad de usuario desde el Optional
+    var userEntity = userOptional.get();
+    // Verificar la contraseña proporcionada coincide con la almacenada
+    String storedPassword = userEntity.getPassword();
+    if (!passwordEncoder.matches(currentPassword, storedPassword)) {
+      throw new UserServiceException(USER_PASSWORD_NOT_MATCH);
+    }
+    // Hash de la nueva contraseña antes de guardarla en la base de datos
+    var hashedNewPassword = passwordEncoder.encode(newPassword);
+    // Actualizar la contraseña del usuario con la nueva contraseña hash
+    userEntity.setPassword(hashedNewPassword);
+    // Guardar la entidad de usuario actualizada en la base de datos
+    return userRepository.save(userEntity);
+  }
+
+  @Override
+  @Transactional
+  public UserEntity changeUserEmail(final String email, final String newEmail)
         throws UserServiceException {
     final var user = userRepository.findByEmail(email);
     if (user.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    final var role = roleRepository.findByName(roleName);
-    if (role.isEmpty()) {
-      throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
-    }
-    final var userEntity = user.get();
-    userEntity.addRole(role.get());
+    var userEntity = user.get();
+    userEntity.setEmail(newEmail);
     return userRepository.save(userEntity);
-
-  }
-
-  @Override
-  @Transactional
-  public UserEntity removeRole(final String email, final String roleName)
-        throws UserServiceException {
-    final var userOptional = userRepository.findByEmail(email);
-
-    if (userOptional.isEmpty()) {
-      throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
-    }
-    final var user = userOptional.get();
-    final var roleOptional = roleRepository.findByName(roleName);
-    if (roleOptional.isEmpty()
-          || !user.getRoles().contains(roleOptional.get())) {
-      throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
-    }
-    user.removeRole(roleOptional.get());
-    return userRepository.save(user);
-
   }
 
   @Override
@@ -270,6 +308,7 @@ public final class DefaultUserService implements UserService {
     return result.get();
   }
 
+  @Transactional
   @Override
   public void remove(final String email) throws UserServiceException {
     final Optional<PersistentUserEntity> userOptional;
@@ -280,6 +319,22 @@ public final class DefaultUserService implements UserService {
     userRepository.delete(userOptional.get());
   }
 
+  @Transactional
+  @Override
+  public void unsubscribe(final String email, final String password)
+        throws UserServiceException {
+    final Optional<PersistentUserEntity> userOptional;
+    userOptional = userRepository.findByEmail(email);
+    if (userOptional.isEmpty()) {
+      throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
+    }
+    var userEntity = userOptional.get();
+
+    userEntity.setEnabled(false);
+    userRepository.save(userEntity);
+  }
+
+  @Transactional
   @Override
   public UserEntity
         update(final UserServiceUpdateForm userForm, final String userEmail)
@@ -307,12 +362,12 @@ public final class DefaultUserService implements UserService {
   }
 
   private static boolean checkAgeUnder18(final PersistentUserEntity user) {
-    final var LIMIT_AGE = 18;
+    final var AGE_LIMIT = 18;
     final var birthDate = user.getBirthDate();
     final var today = LocalDate.now();
     var age = Period.between(birthDate, today).getYears();
     //Return if under 18.
-    return age < LIMIT_AGE;
+    return age < AGE_LIMIT;
   }
 
   private static boolean validateKindMemberChange(

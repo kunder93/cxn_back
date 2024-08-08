@@ -27,6 +27,7 @@ package es.org.cxn.backapp.controller;
 import com.google.common.base.Preconditions;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
@@ -38,6 +39,8 @@ import es.org.cxn.backapp.service.dto.AddressRegistrationDetails;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
 
 import jakarta.validation.Valid;
+
+import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -150,7 +153,9 @@ public class AuthController {
   public ResponseEntity<SignUpResponseForm>
         registerUser(final @Valid @RequestBody
   SignUpRequestForm signUpRequestForm) {
-    final var DEFAULT_USER_ROLE = "ROLE_SOCIO";
+    final var defaultUserRole = UserRoleName.ROLE_CANDIDATO_SOCIO;
+    final var initialUserRolesSet = new ArrayList<UserRoleName>();
+    initialUserRolesSet.add(defaultUserRole);
 
     final var addressDetails = createAddressDetails(signUpRequestForm);
     final var userDetails =
@@ -159,7 +164,7 @@ public class AuthController {
     try {
       userService.add(userDetails);
       final var createdUser = userService
-            .addRole(signUpRequestForm.getEmail(), DEFAULT_USER_ROLE);
+            .changeUserRoles(signUpRequestForm.getEmail(), initialUserRolesSet);
       final var signUpRspnsFrm = new SignUpResponseForm(createdUser);
 
       return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);

@@ -17,6 +17,7 @@ import es.org.cxn.backapp.model.form.responses.CompanyResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyUpdateResponse;
 import es.org.cxn.backapp.service.DefaultCompanyService;
 import es.org.cxn.backapp.service.JwtUtils;
+import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 import jakarta.transaction.Transactional;
 
@@ -35,8 +36,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import utils.LocalDateAdapter;
-
 /**
  * @author Santiago Paz. User controller integration tests.
  */
@@ -46,11 +45,9 @@ import utils.LocalDateAdapter;
 class CompanyControllerIntegrationTest {
 
   private final static String COMPANY_URL = "/api/company";
-
   private final static String COMPANY_NIF = "45235234G";
   private final static String COMPANY_NAME = "MyCompanyName";
   private final static String COMPANY_ADDRESS = "MyCompanyAddress";
-
   private final static String SECOND_COMPANY_NIFCIF = "99988834-G";
   private final static String SECOND_COMPANY_NAME = "SecondCompanyName";
   private final static String SECOND_COMPANY_ADDRESS = "SecondCompanyAddress";

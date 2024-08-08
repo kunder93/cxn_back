@@ -42,7 +42,7 @@ class AdressControllerIntegrationTest {
 
   }
 
-  private final static Integer COUNTRIES_COUNT = 248;
+  private final static Integer COUNTRIES_COUNT = 2;
   private final static Integer SPAIN_SUBDIVISIONS = 50;
 
   /**

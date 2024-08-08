@@ -2,6 +2,7 @@
 package es.org.cxn.backapp.service;
 
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 
 import java.time.LocalDate;
@@ -70,7 +71,12 @@ public final class MyPrincipalUser implements UserDetails {
   /**
    * User role Names.
    */
-  private Set<String> rolesNames;
+  private Set<UserRoleName> rolesNames;
+
+  /**
+   * Indicador de estado de activacion/desactivacion de la cuenta.
+   */
+  private boolean accountEnabled;
 
   /**
    * Constructor with provided UserEntity.
@@ -86,6 +92,7 @@ public final class MyPrincipalUser implements UserDetails {
     secondSurname = userEntity.getSecondSurname();
     birthDate = userEntity.getBirthDate();
     gender = userEntity.getGender();
+    accountEnabled = userEntity.isEnabled();
     rolesNames = new HashSet<>();
     userEntity.getRoles().forEach(
           (PersistentRoleEntity role) -> rolesNames.add(role.getName())
@@ -95,8 +102,9 @@ public final class MyPrincipalUser implements UserDetails {
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     final Set<GrantedAuthority> authorities = new HashSet<>();
-    rolesNames
-          .forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
+    rolesNames.forEach(
+          role -> authorities.add(new SimpleGrantedAuthority(role.toString()))
+    );
     return authorities;
   }
 
@@ -171,7 +179,7 @@ public final class MyPrincipalUser implements UserDetails {
    *
    * @return the user roles hashSet.
    */
-  public Set<String> getRoles() {
+  public Set<UserRoleName> getRoles() {
     return new HashSet<>(rolesNames);
   }
 
@@ -192,7 +200,7 @@ public final class MyPrincipalUser implements UserDetails {
 
   @Override
   public boolean isEnabled() {
-    return true;
+    return accountEnabled;
   }
 
 }

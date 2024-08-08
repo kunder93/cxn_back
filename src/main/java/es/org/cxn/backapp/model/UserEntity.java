@@ -32,6 +32,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
+import lombok.NonNull;
+
 /**
  * A User entity interface.
  *
@@ -66,6 +68,11 @@ public interface UserEntity extends Serializable {
    * @return second surname
    */
   String getSecondSurname();
+
+  /**
+   * @return account state as true is enabled or false not is enabled.
+   */
+  boolean isEnabled();
 
   /**
    * Get the user birth date.
@@ -178,7 +185,8 @@ public interface UserEntity extends Serializable {
    * @param role the role entity to add.
    * @return true if added false if not.
    */
-  boolean addRole(PersistentRoleEntity role);
+  boolean addRole(@NonNull
+  PersistentRoleEntity role);
 
   /**
    * Remove existing role from user.
@@ -186,7 +194,8 @@ public interface UserEntity extends Serializable {
    * @param role the role entity to remove.
    * @return true if deleted false if not.
    */
-  boolean removeRole(PersistentRoleEntity role);
+  boolean removeRole(@NonNull
+  PersistentRoleEntity role);
 
   /**
    * Get the address entity associated.
@@ -206,5 +215,10 @@ public interface UserEntity extends Serializable {
    * @param kindMember the kindMember to set
    */
   void setKindMember(UserType kindMember);
+
+  /**
+   * @param value The account state: true enabled or false disabled.
+   */
+  void setEnabled(boolean value);
 
 }

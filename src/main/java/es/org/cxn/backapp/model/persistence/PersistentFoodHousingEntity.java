@@ -39,6 +39,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -112,4 +113,23 @@ public class PersistentFoodHousingEntity implements FoodHousingEntity {
   @Builder.Default
   private Set<PersistentInvoiceEntity> invoices = new HashSet<>();
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    var that = (PersistentFoodHousingEntity) o;
+    return Double.compare(that.dayPrice, dayPrice) == 0
+          && Objects.equals(id, that.id)
+          && Objects.equals(amountDays, that.amountDays)
+          && Objects.equals(overnight, that.overnight);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, amountDays, dayPrice, overnight);
+  }
 }

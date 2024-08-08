@@ -91,4 +91,15 @@ public interface InvoiceService {
    */
   void remove(String series, int number) throws InvoiceServiceException;
 
+  /**
+   * Get Invoice by number and series.
+   *
+   * @param number The invoice number.
+   * @param series The invoice series.
+   * @return Invoice that match number and series.
+   * @throws InvoiceServiceException When no invoice found.
+   */
+  InvoiceEntity findBySeriesAndNumber(String series, int number)
+        throws InvoiceServiceException;
+
 }

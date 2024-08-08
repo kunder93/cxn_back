@@ -1,5 +1,4 @@
-
-package utils;
+package es.org.cxn.backapp.test.utils;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;

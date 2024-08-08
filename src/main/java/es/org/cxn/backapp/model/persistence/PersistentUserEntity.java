@@ -180,6 +180,13 @@ public class PersistentUserEntity implements UserEntity {
   private UserType kindMember = UserType.SOCIO_NUMERO;
 
   /**
+   * User status boolean,  enabled or disiabled, true or false.
+   */
+  @Column(name = "enabled", nullable = false, unique = false)
+  @Builder.Default
+  private boolean enabled = true;
+
+  /**
    * Roles associated with this user.
    */
   @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
@@ -207,7 +214,8 @@ public class PersistentUserEntity implements UserEntity {
    * Add new role.
    */
   @Override
-  public boolean addRole(final PersistentRoleEntity role) {
+  public boolean addRole(@NonNull
+  final PersistentRoleEntity role) {
     final var result = this.roles.add(role);
     role.getUsers().add(this);
     return result;
@@ -217,7 +225,8 @@ public class PersistentUserEntity implements UserEntity {
    * Remove role.
    */
   @Override
-  public boolean removeRole(final PersistentRoleEntity role) {
+  public boolean removeRole(@NonNull
+  final PersistentRoleEntity role) {
     final var result = this.roles.remove(role);
     role.getUsers().remove(this);
     return result;

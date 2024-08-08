@@ -24,7 +24,11 @@
 
 package es.org.cxn.backapp.model;
 
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * An Address entity interface.
@@ -32,5 +36,35 @@ import java.io.Serializable;
  * @author Santiago Paz Perez
  */
 public interface CountrySubdivisionEntity extends Serializable {
+
+  /**
+   * @return The country subdivision identifier.
+   */
+  Integer getId();
+
+  /**
+   * @return The kind subdivision name.
+   */
+  String getKindSubdivisionName();
+
+  /**
+   * @return The country subdivision name.
+   */
+  String getName();
+
+  /**
+   * @return The country subdivision code.
+   */
+  String getCode();
+
+  /**
+   * @return The country subdivision country.
+   */
+  PersistentCountryEntity getCountry();
+
+  /**
+   * @return The address list that uses this country subdivision.
+   */
+  List<PersistentAddressEntity> getAddressList();
 
 }

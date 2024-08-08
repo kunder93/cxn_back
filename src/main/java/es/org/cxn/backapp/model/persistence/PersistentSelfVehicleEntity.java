@@ -37,6 +37,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import java.util.Objects;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -99,6 +101,26 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    */
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "payment_sheet_id", nullable = false)
-  @NonNull
   private PersistentPaymentSheetEntity paymentSheet;
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    var that = (PersistentSelfVehicleEntity) o;
+    return Float.compare(that.distance, distance) == 0
+          && Double.compare(that.kmPrice, kmPrice) == 0
+          && Objects.equals(identifier, that.identifier)
+          && Objects.equals(places, that.places);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(identifier, places, distance, kmPrice);
+  }
+
 }

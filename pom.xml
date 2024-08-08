@@ -11,7 +11,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>back-app</name>
     <description>BackEnd app para CXN naron</description>
-    <url>https://github.com/santi/cxn-app</url>
+    <url>https://github.com/kunder93/cxn_back</url>
     <inceptionYear>2022</inceptionYear>
     <licenses>
         <license>
@@ -26,7 +26,7 @@
 
     <organization>
         <name>Circulo Xadrez Naron</name>
-        <url>https://cxn.es</url>
+        <url>https://xadreznaron.es</url>
     </organization>
 
     <developers>
@@ -36,7 +36,7 @@
             <email>santi93.09@gmail.com</email>
             <url>https://santipaz.es</url>
             <organization>Circulo Xadrez Naron</organization>
-            <organizationUrl>https://cxn.es</organizationUrl>
+            <organizationUrl>https://xadreznaron.es</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -298,7 +298,7 @@
                 <!-- Generates coverage data from Surefire. -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.8</version>
+                <version>0.8.12</version>
                 <executions>
                     <!-- Jacoco is bound to the initialize and verify phases -->
                     <execution>
@@ -318,6 +318,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
                 <configuration>
                     <show>private</show>
                     <nohelp>true</nohelp>
@@ -342,7 +343,7 @@
                 <!-- Generates general information reports. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-project-info-reports-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.0</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -371,7 +372,7 @@
                 <!-- Generates the unit tests report. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
+                <version>3.2.5</version>
             </plugin>
             <plugin>
                 <!-- JaCoCo -->
@@ -384,7 +385,7 @@
                 <!-- Checks that the code complies with a series of code quality rules. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.21.0</version>
+                <version>3.22.0</version>
                 <configuration>
                     <rulesets>
                         <ruleset>/category/java/bestpractices.xml</ruleset>
@@ -415,12 +416,12 @@
                   reports. -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.5.0</version>
+                <version>3.6.3</version>
                 <configuration>
                     <show>public</show>
                     <additionalOptions>-package</additionalOptions>
@@ -438,8 +439,7 @@
                 <!-- Checkstyle -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.3.0</version>
-                
+                <version>3.3.1</version>
                 <configuration>
                     <configLocation>sun_checks.xml</configLocation>
                 </configuration>
