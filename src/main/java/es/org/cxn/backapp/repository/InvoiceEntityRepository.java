@@ -24,10 +24,12 @@
 
 package es.org.cxn.backapp.repository;
 
-import java.util.List;
+import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
+
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 
 /**
  * Spring-JPA repository for {@link PersistentInvoiceEntity}.
@@ -48,8 +50,7 @@ public interface InvoiceEntityRepository
    * @param series The invoice series.
    * @return The invoices list.
    */
-  List<PersistentInvoiceEntity> findByNumberAndSeries(
-        int number, String series
-  );
+  Optional<PersistentInvoiceEntity>
+        findByNumberAndSeries(int number, String series);
 
 }

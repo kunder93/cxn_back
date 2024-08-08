@@ -23,6 +23,7 @@ import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.service.ChessQuestionsService;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
+import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -39,8 +40,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-
-import utils.LocalDateTimeAdapter;
 
 @WebMvcTest(ChessQuestionsController.class)
 @Import(TestSecurityConfiguration.class)

@@ -136,6 +136,30 @@ public class InvoiceController {
   }
 
   /**
+   * Get invoice providing a invoice series and number.
+   *
+   * @param series The invoice series.
+   * @param number The invoice number.
+   * @return Response status 200 OK or some error.
+   */
+  @CrossOrigin
+  @GetMapping("/{series}/{number}")
+  public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable
+  final String series, @PathVariable
+  final int number) {
+    InvoiceEntity invoiceEntity;
+    try {
+      invoiceEntity = invoiceService.findBySeriesAndNumber(series, number);
+    } catch (InvoiceServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    }
+    var response = new InvoiceResponse(invoiceEntity);
+    return new ResponseEntity<>(response, HttpStatus.OK);
+  }
+
+  /**
    * Returns all stored invoices.
    *
    * @return all stored invoices.

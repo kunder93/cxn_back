@@ -104,4 +104,14 @@ public interface InvoiceEntity extends Serializable {
    */
   void setTaxExempt(Boolean value);
 
+  /**
+   * @return The company that is invoices seller.
+   */
+  CompanyEntity getSeller();
+
+  /**
+   * @return The company that is invoices buyer.
+   */
+  CompanyEntity getBuyer();
+
 }

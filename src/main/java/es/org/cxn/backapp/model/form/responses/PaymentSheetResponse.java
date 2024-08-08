@@ -156,12 +156,13 @@ public final class PaymentSheetResponse implements Serializable {
             paymentSheetEntity.getFoodHousing().getDayPrice(),
             paymentSheetEntity.getFoodHousing().getOvernight()
       );
-      if (!paymentSheetEntity.getRegularTransports().isEmpty()) {
-        final var regularTransports = paymentSheetEntity.getRegularTransports();
-        final List<PersistentRegularTransportEntity> lista = new ArrayList<>();
-        lista.addAll(regularTransports);
-        regularTransportList = new RegularTransportListResponse(lista);
-      }
     }
+    if (!paymentSheetEntity.getRegularTransports().isEmpty()) {
+      final var regularTransports = paymentSheetEntity.getRegularTransports();
+      final List<PersistentRegularTransportEntity> lista = new ArrayList<>();
+      lista.addAll(regularTransports);
+      regularTransportList = new RegularTransportListResponse(lista);
+    }
+
   }
 }

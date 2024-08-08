@@ -16,6 +16,7 @@ import es.org.cxn.backapp.model.form.responses.BookResponse;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.DefaultLibraryService;
+import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,8 +38,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.web.server.ResponseStatusException;
-
-import utils.LocalDateAdapter;
 
 @WebMvcTest(LibraryController.class)
 @Import(TestSecurityConfiguration.class)

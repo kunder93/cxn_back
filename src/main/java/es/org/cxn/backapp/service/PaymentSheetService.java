@@ -26,10 +26,7 @@ package es.org.cxn.backapp.service;
 
 import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
 import es.org.cxn.backapp.model.PaymentSheetEntity;
-import es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
-import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
-import es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -110,7 +107,7 @@ public interface PaymentSheetService {
    * @return The regular transport entity created.
    * @throws PaymentSheetServiceException If fails.
    */
-  PersistentRegularTransportEntity addRegularTransportToPaymentSheet(
+  PersistentPaymentSheetEntity addRegularTransportToPaymentSheet(
         Integer paymentSheetId, String regularTransportCategory,
         String regularTransportDescription, Integer invoiceNumber,
         String invoiceSeries
@@ -123,10 +120,10 @@ public interface PaymentSheetService {
    * @param places         The self vehicle places visited.
    * @param distance       The total distance traveled.
    * @param kmPrice        The price for one kilometer.
-   * @return Self vehicle entity created.
+   * @return PersistentPaymentSheetEntity payment sheet with self vehicle added
    * @throws PaymentSheetServiceException If fails.
    */
-  PersistentSelfVehicleEntity addSelfVehicleToPaymentSheet(
+  PersistentPaymentSheetEntity addSelfVehicleToPaymentSheet(
         Integer paymentSheetId, String places, float distance, double kmPrice
   ) throws PaymentSheetServiceException;
 
@@ -137,10 +134,10 @@ public interface PaymentSheetService {
    * @param amountDays     The amount of days that food or housing last.
    * @param dayPrice       The price per day.
    * @param overnight      If sleeps true else false.
-   * @return The FoodHousing entity created.
+   * @return The payment sheet entity with food housing.
    * @throws PaymentSheetServiceException If fails.
    */
-  PersistentFoodHousingEntity addFoodHousingToPaymentSheet(
+  PersistentPaymentSheetEntity addFoodHousingToPaymentSheet(
         Integer paymentSheetId, Integer amountDays, float dayPrice,
         boolean overnight
   ) throws PaymentSheetServiceException;

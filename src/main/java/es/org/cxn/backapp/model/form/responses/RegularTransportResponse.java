@@ -31,6 +31,7 @@ public final class RegularTransportResponse implements Serializable {
    */
   private static final long serialVersionUID = -3180089459011962505L;
 
+  private int identifier;
   /**
    * The response regular transport category.
    */
@@ -53,6 +54,7 @@ public final class RegularTransportResponse implements Serializable {
         final PersistentRegularTransportEntity entity
   ) {
     super();
+    this.identifier = entity.getId();
     this.category = entity.getCategory();
     this.description = entity.getDescription();
     this.invoiceResponse = new InvoiceResponse(entity.getTransportInvoice());

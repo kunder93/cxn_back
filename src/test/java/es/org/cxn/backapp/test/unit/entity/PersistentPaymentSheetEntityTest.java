@@ -110,11 +110,13 @@ class PersistentPaymentSheetEntityTest {
     regularTransports.add(transport2);
 
     // Crear una instancia de PersistentPaymentSheetEntity con el conjunto simulado
-    var paymentSheet =
-          PersistentPaymentSheetEntity.builder().userOwner(userOwner)
-                .regularTransports(regularTransports).reason("Event reason")
-                .place("Event place").startDate(LocalDate.of(2024, 5, 1))
-                .endDate(LocalDate.of(2024, 5, 5)).build();
+    var paymentSheet = PersistentPaymentSheetEntity.builder()
+          .userOwner(userOwner)
+          .regularTransports(
+                (HashSet<PersistentRegularTransportEntity>) regularTransports
+          ).reason("Event reason").place("Event place")
+          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
+          .build();
 
     assertTrue(
           paymentSheet.getRegularTransports().contains(transport1),

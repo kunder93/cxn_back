@@ -14,6 +14,7 @@ import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.JwtUtils;
+import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 import java.time.LocalDate;
 
@@ -29,8 +30,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
-
-import utils.LocalDateAdapter;
 
 /**
  * @author Santiago Paz. Authentication controller integration tests.

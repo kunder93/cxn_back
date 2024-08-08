@@ -43,6 +43,7 @@ import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -150,8 +151,9 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
   public PersistentInvoiceEntity(
         final int numberValue, final String seriesValue,
         final LocalDate expeditionDateValue,
-        final LocalDate advancePaymentDateValue, final Boolean taxExemptValue
-
+        final LocalDate advancePaymentDateValue, final Boolean taxExemptValue,
+        final PersistentCompanyEntity seller,
+        final PersistentCompanyEntity buyer
   ) {
     super();
     this.number = checkNotNull(
@@ -167,6 +169,27 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
     this.taxExempt = checkNotNull(
           taxExemptValue, "Received a null pointer as tax  Exempt"
     );
+    this.seller =
+          checkNotNull(seller, "Received a null pointer as tax  seller");
+    this.buyer = checkNotNull(buyer, "Received a null pointer as tax  seller");
 
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    var that = (PersistentInvoiceEntity) o;
+    return number == that.number && series.equals(that.series)
+          && buyer.equals(that.buyer) && seller.equals(that.seller);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(number, series, buyer, seller);
   }
 }
