@@ -1,6 +1,7 @@
 
 package es.org.cxn.backapp.test.integration.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -12,6 +13,7 @@ import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
+import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
@@ -495,7 +497,8 @@ class UserControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
     // get authorization jwt token
     var authReq = new AuthenticationRequest(
-          UsersControllerFactory.USER_A_EMAIL, UsersControllerFactory.USER_A_PASSWORD
+          UsersControllerFactory.USER_A_EMAIL,
+          UsersControllerFactory.USER_A_PASSWORD
     );
     var authReqJson = gson.toJson(authReq);
     var authResponseJson = mockMvc
@@ -513,6 +516,61 @@ class UserControllerIntegrationTest {
           get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
     ).andReturn().getResponse().getContentAsString();
+  }
+
+  @Transactional
+  @Test
+  void testUnsubscribeUserCheckUnsubscriber() throws Exception {
+    var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+    var userRequestJson = gson.toJson(userRequest);
+    // Register user correctly.
+    mockMvc.perform(
+          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(userRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isCreated());
+
+    // Sign in with user data, get jwt token.
+    var authReq = new AuthenticationRequest();
+    authReq.setEmail(UsersControllerFactory.USER_A_EMAIL);
+    authReq.setPassword(UsersControllerFactory.USER_A_PASSWORD);
+    var authReqJson = gson.toJson(authReq);
+    var authResponseJson = mockMvc
+          .perform(
+                post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
+                      .content(authReqJson)
+          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
+          .getResponse().getContentAsString();
+
+    var authResponse =
+          gson.fromJson(authResponseJson, AuthenticationResponse.class);
+    var jwtToken = authResponse.getJwt();
+
+    // Check that user was unsubscribed succesfully.
+    mockMvc.perform(
+          get(GET_USER_DATA_URL)
+
+                .header("Authorization", "Bearer " + jwtToken)
+    );
+
+    // Unsubscribe user.
+    final var userUnsubscribeRequest = UserUnsubscribeRequest.builder()
+          .email(UsersControllerFactory.USER_A_EMAIL)
+          .password(UsersControllerFactory.USER_A_PASSWORD).build();
+
+    final var userUnsubscribeRequestJson = gson.toJson(userUnsubscribeRequest);
+
+    mockMvc.perform(
+          delete(GET_USER_DATA_URL + "/unsubscribe")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(userUnsubscribeRequestJson)
+    ).andExpect(MockMvcResultMatchers.status().isOk());
+
+    // Check that user was unsubscribed succesfully.
+    mockMvc.perform(
+          get(GET_USER_DATA_URL)
+
+                .header("Authorization", "Bearer " + jwtToken)
+    ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
   }
 
 }
