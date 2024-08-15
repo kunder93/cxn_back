@@ -66,12 +66,12 @@ public final class AuthenticationRequest implements Serializable {
    * <p>
    * This is a required field and can't be empty.
    */
-  @NotBlank(message = Constants.EMAIL_NOT_VALID_MESSAGE)
+  @NotBlank(message = Constants.EMAIL_NOT_VALID)
   @Size(
         max = Constants.EMAIL_MAX_SIZE,
         message = Constants.MAX_SIZE_EMAIL_MESSAGE
   )
-  @Email(message = Constants.EMAIL_NOT_VALID_MESSAGE)
+  @Email(message = Constants.EMAIL_NOT_VALID)
   private String email;
 
   /**

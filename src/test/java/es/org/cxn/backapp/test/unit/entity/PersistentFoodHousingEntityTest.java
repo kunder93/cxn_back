@@ -15,125 +15,183 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the {@link PersistentFoodHousingEntity} class.
+ * This class tests the getters, setters, equality, hash code, and
+ * specific functionality of the {@link PersistentFoodHousingEntity} class.
+ */
 class PersistentFoodHousingEntityTest {
+
+  /**
+   * The amount of days used for testing the
+   * {@link PersistentFoodHousingEntity}.
+   * This value is used to validate the getter and setter methods for the
+   * number of days in food and housing.
+   */
+  private static final int TEST_AMOUNT_DAYS = 5;
+
+  /**
+   * The price per day used for testing the {@link PersistentFoodHousingEntity}.
+   * This value is used to validate the getter and setter methods for the
+   * daily price in food and housing.
+   */
+  private static final double TEST_DAY_PRICE = 50.0;
+
+  /**
+   * Indicates whether the overnight option is enabled, used for testing the
+   * {@link PersistentFoodHousingEntity}. This boolean value is used to verify
+   * the getter and setter methods for the overnight stay option.
+   */
+  private static final boolean TEST_OVERNIGHT = true;
+
+  /**
+   * Tests the getter and setter methods of {@link PersistentFoodHousingEntity}.
+   * Verifies that the values set using setters are correctly retrieved
+   * using getters.
+   */
   @Test
   void testGettersAndSetters() {
-    // Crear instancia de PersistentFoodHousingEntity
     var foodHousing = new PersistentFoodHousingEntity();
 
-    // Establecer valores
-    foodHousing.setAmountDays(5);
-    foodHousing.setDayPrice(50.0);
-    foodHousing.setOvernight(true);
+    foodHousing.setAmountDays(TEST_AMOUNT_DAYS);
+    foodHousing.setDayPrice(TEST_DAY_PRICE);
+    foodHousing.setOvernight(TEST_OVERNIGHT);
 
-    // Verificar valores obtenidos
-    assertEquals(5, foodHousing.getAmountDays(), "getter");
-    assertEquals(50.0, foodHousing.getDayPrice(), "getter");
-    assertTrue(foodHousing.getOvernight(), "getter");
+    assertEquals(
+          TEST_AMOUNT_DAYS, foodHousing.getAmountDays(),
+          "The amount days getter/setter"
+    );
+    assertEquals(
+          TEST_DAY_PRICE, foodHousing.getDayPrice(),
+          "The day price getter/setter"
+    );
+    assertTrue(foodHousing.getOvernight(), "The overnight getter/setter");
   }
 
+  /**
+   * Tests the hash code implementation of {@link PersistentFoodHousingEntity}.
+   * Verifies that two instances with the same values have the same hash code.
+   */
   @Test
   void testHashCode() {
     var paymentSheet = mock(PersistentPaymentSheetEntity.class);
-    // Crear dos instancias con los mismos valores
-    var foodHousing1 = PersistentFoodHousingEntity.builder().amountDays(5)
-          .dayPrice(50.0).overnight(true).paymentSheet(paymentSheet).build();
+    var foodHousing1 = PersistentFoodHousingEntity.builder()
+          .amountDays(TEST_AMOUNT_DAYS).dayPrice(TEST_DAY_PRICE)
+          .overnight(TEST_OVERNIGHT).paymentSheet(paymentSheet).build();
 
-    var foodHousing2 = PersistentFoodHousingEntity.builder().amountDays(5)
-          .dayPrice(50.0).overnight(true).paymentSheet(paymentSheet).build();
+    var foodHousing2 = PersistentFoodHousingEntity.builder()
+          .amountDays(TEST_AMOUNT_DAYS).dayPrice(TEST_DAY_PRICE)
+          .overnight(TEST_OVERNIGHT).paymentSheet(paymentSheet).build();
 
     assertEquals(
           foodHousing1.hashCode(), foodHousing2.hashCode(),
-          "los hashcodes son iguales"
+          "Hash codes should be equal for objects with the same values"
     );
   }
 
+  /**
+   * Tests the equality implementation of {@link PersistentFoodHousingEntity}.
+   * Verifies that two instances with the same values are considered equal,
+   * and instances are not equal to null or objects of different classes.
+   */
   @Test
   void testEquals() {
     var paymentSheet = mock(PersistentPaymentSheetEntity.class);
-    // Crear dos instancias con los mismos valores
-    var foodHousing1 = PersistentFoodHousingEntity.builder().amountDays(5)
-          .dayPrice(50.0).overnight(true).paymentSheet(paymentSheet).build();
+    var foodHousing1 = PersistentFoodHousingEntity.builder()
+          .amountDays(TEST_AMOUNT_DAYS).dayPrice(TEST_DAY_PRICE)
+          .overnight(TEST_OVERNIGHT).paymentSheet(paymentSheet).build();
 
-    var foodHousing2 = PersistentFoodHousingEntity.builder().amountDays(5)
-          .dayPrice(50.0).overnight(true).paymentSheet(paymentSheet).build();
-
-    assertEquals(foodHousing1, foodHousing2, "las instancias son iguales");
-    assertEquals(foodHousing2, foodHousing1, "las instancias son iguales");
+    var foodHousing2 = PersistentFoodHousingEntity.builder()
+          .amountDays(TEST_AMOUNT_DAYS).dayPrice(TEST_DAY_PRICE)
+          .overnight(TEST_OVERNIGHT).paymentSheet(paymentSheet).build();
 
     assertEquals(
-          foodHousing1, foodHousing1, "una instancia es igual a sí misma"
+          foodHousing1, foodHousing2,
+          "Instances with the same values should be equal"
+    );
+    assertEquals(foodHousing2, foodHousing1, "Equality should be symmetric");
+
+    assertEquals(
+          foodHousing1, foodHousing1, "An instance should be equal to itself"
     );
 
     PersistentFoodHousingEntity foodHousingNull = null;
     assertNotEquals(
-          foodHousing1, foodHousingNull, "una instancia no es igual a null"
+          foodHousing1, foodHousingNull,
+          "An instance should not be equal to null"
     );
 
     var otherObject = "other";
     assertNotEquals(
           foodHousing1, otherObject,
-          "una instancia no es igual a una clase diferente"
+          "An instance should not be equal to an object of a different class"
     );
   }
 
+  /**
+   * Tests the {@link PersistentFoodHousingEntity#getPaymentSheet()} method.
+   * Verifies that the payment sheet returned is the same as the one set.
+   */
   @Test
   void testGetPaymentSheet() {
-    // Mockear la entidad externa PersistentPaymentSheetEntity
     var paymentSheet = mock(PersistentPaymentSheetEntity.class);
 
-    // Crear una instancia de PersistentFoodHousingEntity con el objeto mockeado
-    var foodHousing =
-          PersistentFoodHousingEntity.builder().paymentSheet(paymentSheet)
-                .amountDays(5).dayPrice(50.0).overnight(true).build();
+    var foodHousing = PersistentFoodHousingEntity.builder()
+          .paymentSheet(paymentSheet).amountDays(TEST_AMOUNT_DAYS)
+          .dayPrice(TEST_DAY_PRICE).overnight(TEST_OVERNIGHT).build();
 
     assertEquals(
           paymentSheet, foodHousing.getPaymentSheet(),
-          "el objeto devuelto es el mismo que el objeto mockeado"
+          "The payment sheet returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the
+   * {@link PersistentFoodHousingEntity#setPaymentSheet
+   * (PersistentPaymentSheetEntity)}
+   * method.
+   * Verifies that the payment sheet set is correctly retrieved.
+   */
   @Test
   void testSetPaymentSheet() {
-    // Mockear la entidad externa PersistentPaymentSheetEntity
     var paymentSheet = mock(PersistentPaymentSheetEntity.class);
 
-    // Crear una instancia de PersistentFoodHousingEntity
     var foodHousing = new PersistentFoodHousingEntity();
-
-    // Establecer el objeto mockeado
     foodHousing.setPaymentSheet(paymentSheet);
 
     assertEquals(
           paymentSheet, foodHousing.getPaymentSheet(),
-          "el objeto devuelto es el mismo que el objeto mockeado"
+          "The payment sheet set should be the same as the one retrieved"
     );
   }
 
+  /**
+   * Tests the
+   * {@link PersistentFoodHousingEntity#getInvoices()} method.
+   * Verifies that the set of invoices contains the expected items.
+   */
   @Test
   void testGetInvoices() {
-    // Mockear la entidad externa PersistentInvoiceEntity
     var invoice1 = mock(PersistentInvoiceEntity.class);
     var invoice2 = mock(PersistentInvoiceEntity.class);
     var paymentSheet = mock(PersistentPaymentSheetEntity.class);
-    // Crear un conjunto de facturas simulado
+
     Set<PersistentInvoiceEntity> invoices = new HashSet<>();
     invoices.add(invoice1);
     invoices.add(invoice2);
 
-    // Crear una instancia de PersistentFoodHousingEntity con el conjunto simulado
     var foodHousing = PersistentFoodHousingEntity.builder().invoices(invoices)
-          .amountDays(5).dayPrice(50.0).overnight(true)
-          .paymentSheet(paymentSheet).build();
+          .amountDays(TEST_AMOUNT_DAYS).dayPrice(TEST_DAY_PRICE)
+          .overnight(TEST_OVERNIGHT).paymentSheet(paymentSheet).build();
 
     assertTrue(
           foodHousing.getInvoices().contains(invoice1),
-          "el conjunto devuelto contiene las facturas simuladas"
+          "The set of invoices should contain the mock invoice1"
     );
     assertTrue(
           foodHousing.getInvoices().contains(invoice2),
-          "el conjunto devuelto contiene las facturas simuladas"
+          "The set of invoices should contain the mock invoice2"
     );
   }
-
 }

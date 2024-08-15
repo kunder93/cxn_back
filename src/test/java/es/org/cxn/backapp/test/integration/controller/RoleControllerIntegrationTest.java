@@ -11,7 +11,6 @@ import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
-import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -41,19 +39,25 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource("/application.properties")
 class RoleControllerIntegrationTest {
 
-  private final static String SIGN_UP_URL = "/api/auth/signup";
-  private final static String ROLES_URL = "/api/user/role";
+  /**
+   * URL endpoint for user signup.
+   */
+  private static final String SIGN_UP_URL = "/api/auth/signup";
 
-  public final static LocalDate userB_birthDate = LocalDate.of(1996, 2, 8); // aaaa,mm,dd
+  /**
+   * URL endpoint for role management.
+   */
+  private static final String ROLES_URL = "/api/user/role";
 
+  /**
+   * MockMvc instance used for performing HTTP requests in tests.
+   */
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  UserDetailsService myUserDetailsService;
-  @Autowired
-  JwtUtils jwtUtils;
-
+  /**
+   * Gson instance for JSON serialization and deserialization.
+   */
   private static Gson gson;
 
   @BeforeAll
@@ -64,9 +68,9 @@ class RoleControllerIntegrationTest {
   }
 
   /**
-   * Main class constructor
+   * Main class constructor.
    */
-  public RoleControllerIntegrationTest() {
+  RoleControllerIntegrationTest() {
     super();
   }
 
@@ -223,9 +227,9 @@ class RoleControllerIntegrationTest {
     var userRolesList = new ArrayList<UserRoleName>();
     userRolesList.add(UserRoleName.ROLE_TESORERO);
 
-    var NotExisitngUserEmail = "NotExistingEmail@Email.com";
+    var notExisitngUserEmail = "NotExistingEmail@Email.com";
     var userChangeRoleRequest =
-          new UserChangeRoleRequestForm(NotExisitngUserEmail, userRolesList);
+          new UserChangeRoleRequestForm(notExisitngUserEmail, userRolesList);
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
     mockMvc.perform(
           patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON)

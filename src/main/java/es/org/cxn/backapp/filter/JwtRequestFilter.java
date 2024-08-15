@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,20 +30,25 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   /**
    * The jwt utilities.
    */
-  @Autowired
   private DefaultJwtUtils jwtUtils;
 
   /**
    * The user details service.
    */
-  @Autowired
   private UserDetailsService userDetailsService;
 
   /**
-   * Default constructor.
+   * Constructor for JwtRequestFilter.
+   *
+   * @param jwtUtils the JWT utilities
+   * @param userDetailsService the user details service
    */
-  public JwtRequestFilter() {
+  public JwtRequestFilter(
+        DefaultJwtUtils jwtUtils, UserDetailsService userDetailsService
+  ) {
     super();
+    this.jwtUtils = jwtUtils;
+    this.userDetailsService = userDetailsService;
   }
 
   /**

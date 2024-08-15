@@ -117,8 +117,8 @@ public final class DefaultInvoiceService implements InvoiceService {
 
   @Override
   public List<InvoiceEntity> getInvoices() {
-    var a = invoiceRepository.findAll();
-    return new ArrayList<>(a);
+    final var invoicesList = invoiceRepository.findAll();
+    return new ArrayList<>(invoicesList);
   }
 
   @Override

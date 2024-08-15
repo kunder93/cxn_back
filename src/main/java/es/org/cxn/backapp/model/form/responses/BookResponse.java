@@ -6,6 +6,7 @@ import es.org.cxn.backapp.model.BookEntity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -62,22 +63,23 @@ public final class BookResponse
   /**
    * The book authors set.
    */
-  private HashSet<AuthorResponse> authors;
+  private Set<AuthorResponse> authors;
 
   /**
    * Constructor with provided Company entity.
    *
-   * @param e The book entity for get data.
+   * @param book The book entity for get data.
    */
-  public BookResponse(final BookEntity e) {
+  public BookResponse(final BookEntity book) {
     super();
-    title = e.getTitle();
-    isbn = e.getIsbn();
-    gender = e.getGender();
-    publishYear = e.getPublishYear();
-    language = e.getLanguage();
+    title = book.getTitle();
+    isbn = book.getIsbn();
+    gender = book.getGender();
+    publishYear = book.getPublishYear();
+    language = book.getLanguage();
     authors = new HashSet<>();
-    e.getAuthors().forEach(author -> authors.add(new AuthorResponse(author)));
+    book.getAuthors()
+          .forEach(author -> authors.add(new AuthorResponse(author)));
   }
 
   /**

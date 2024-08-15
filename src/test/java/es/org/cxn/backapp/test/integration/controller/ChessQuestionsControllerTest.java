@@ -30,9 +30,25 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 @TestPropertySource("/application.properties")
 class ChessQuestionsControllerTest {
+  /**
+   * Used to simulate HTTP requests and perform assertions on the results
+   * within the test cases.
+   *
+   * <p>It allows the tests to be run in a way that simulates sending requests
+   * to the application's controllers without needing to start a full
+   *  HTTP server.</p>
+   */
   @Autowired
   private MockMvc mockMvc;
 
+  /**
+   * Gson instance for serializing and deserializing JSON objects during tests.
+   *
+   * <p>This is particularly useful for converting Java objects to their JSON
+   * representation when sending HTTP requests, and for parsing JSON responses
+   * received from the controllers back into Java objects.</p>
+   *
+   */
   private static Gson gson;
 
   @BeforeAll

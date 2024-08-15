@@ -45,11 +45,11 @@ public interface InvoiceService {
   /**
    * Creates a new invoice entity.
    *
-   * @param numberValue             The invoice number.
-   * @param seriesValue             The invoice series.
-   * @param expeditionDateValue     The invoice expedition date.
-   * @param advancePaymentDateValue The invoice advance payment date value.
-   * @param taxExemptValue          The invoice tax exempt.
+   * @param number             The invoice number.
+   * @param series             The invoice series.
+   * @param expeditionDate     The invoice expedition date.
+   * @param advancePaymentDate The invoice advance payment date value.
+   * @param taxExempt          The invoice tax exempt.
    * @param seller                  The seller company.
    * @param buyer                   The buyer company.
    * @return The Invoice entity persisted.
@@ -57,8 +57,8 @@ public interface InvoiceService {
    *                                 exists.
    */
   PersistentInvoiceEntity add(
-        int numberValue, String seriesValue, LocalDate expeditionDateValue,
-        LocalDate advancePaymentDateValue, Boolean taxExemptValue,
+        int number, String series, LocalDate expeditionDate,
+        LocalDate advancePaymentDate, Boolean taxExempt,
         PersistentCompanyEntity seller, PersistentCompanyEntity buyer
   ) throws InvoiceServiceException;
 

@@ -30,10 +30,7 @@ import es.org.cxn.backapp.exceptions.AddressServiceException;
 import es.org.cxn.backapp.model.CountryEntity;
 import es.org.cxn.backapp.model.form.responses.CountryListResponse;
 import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
-import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.service.AddressService;
-
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,8 +76,7 @@ public class AddressController {
   @CrossOrigin
   @GetMapping(path = "/getCountries")
   public ResponseEntity<CountryListResponse> getAllCountries() {
-    final var countryList =
-          addressService.getCountries();
+    final var countryList = addressService.getCountries();
     return new ResponseEntity<>(
           new CountryListResponse(countryList), HttpStatus.OK
     );

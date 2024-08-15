@@ -147,7 +147,7 @@ public class InvoiceController {
   public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable
   final String series, @PathVariable
   final int number) {
-    InvoiceEntity invoiceEntity;
+    final InvoiceEntity invoiceEntity;
     try {
       invoiceEntity = invoiceService.findBySeriesAndNumber(series, number);
     } catch (InvoiceServiceException e) {
@@ -155,7 +155,7 @@ public class InvoiceController {
             HttpStatus.BAD_REQUEST, e.getMessage(), e
       );
     }
-    var response = new InvoiceResponse(invoiceEntity);
+    final var response = new InvoiceResponse(invoiceEntity);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

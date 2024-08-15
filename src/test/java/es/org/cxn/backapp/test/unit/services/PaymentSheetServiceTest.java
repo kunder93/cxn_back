@@ -40,36 +40,176 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+/**
+ * Unit tests for the {@link DefaultPaymentSheetService} class.
+ *
+ * This test class verifies the functionality of the
+ * {@link DefaultPaymentSheetService} service, including methods for adding,
+ * updating, finding, and removing payment sheets.
+ * It uses mocks to simulate interactions with repositories and ensure
+ * the service behaves as expected in various scenarios.
+ *
+ * @author Santi
+ */
 class PaymentSheetServiceTest {
 
+  /**
+   * Mock for the {@link PaymentSheetEntityRepository} used to interact
+   * with payment sheet entities.
+   *
+   * This mock simulates the behavior of the payment sheet repository,
+   * allowing tests to focus on the service logic without requiring a real
+   *  database.
+   */
   @Mock
   private PaymentSheetEntityRepository paymentSheetRepository;
 
+  /**
+   * Mock for the {@link UserEntityRepository} used to interact with
+   * user entities.
+   *
+   * This mock simulates the behavior of the user repository, providing
+   * predefined responses for user-related operations during testing.
+   */
   @Mock
   private UserEntityRepository userRepository;
 
+  /**
+   * Mock for the {@link InvoiceEntityRepository} used to interact with
+   * invoice entities.
+   *
+   * This mock simulates the behavior of the invoice repository, enabling tests
+   *  to handle invoice-related scenarios without accessing a real database.
+   */
   @Mock
   private InvoiceEntityRepository invoiceRepository;
 
+  /**
+   * Mock for the {@link RegularTransportRepository} used to interact with
+   *  regular transport entities.
+   *
+   * This mock simulates the behavior of the regular transport repository,
+   *  allowing for the testing of transport-related functionality within
+   *  the payment sheet service.
+   */
   @Mock
   private RegularTransportRepository regularTransportRepository;
 
+  /**
+   * Mock for the {@link SelfVehicleRepository} used to interact with
+   * self-vehicle entities.
+   *
+   * This mock simulates the behavior of the self-vehicle repository,
+   *  providing controlled responses for self-vehicle operations during
+   *  the tests.
+   */
   @Mock
   private SelfVehicleRepository selfVehicleRepository;
 
+  /**
+   * Mock for the {@link FoodHousingRepository} used to interact with food
+   * housing entities.
+   *
+   * This mock simulates the behavior of the food housing repository,
+   * facilitating tests that involve food housing operations within the
+   * payment sheet service.
+   */
   @Mock
   private FoodHousingRepository foodHousingRepository;
 
+  /**
+   * Service under test, {@link DefaultPaymentSheetService}.
+   *
+   * This is the actual service class being tested. It is instantiated with
+   * the mocked repositories to isolate the service logic and ensure
+   * tests focus on its behavior.
+   */
   @InjectMocks
   private DefaultPaymentSheetService paymentSheetService;
 
+  /**
+   * The ID used to identify a specific payment sheet in tests.
+   */
+  private static final int PAYMENT_SHEET_ID = 1;
+
+  /**
+   * The number associated with the invoice used in tests.
+   */
+  private static final int INVOICE_NUMBER = 123;
+
+  /**
+   * The series identifier for the invoice used in tests.
+   */
+  private static final String INVOICE_SERIES = "A";
+
+  /**
+   * The category of the regular transport used in tests.
+   */
+  private static final String TRANSPORT_CATEGORY = "category";
+
+  /**
+   * The description of the regular transport used in tests.
+   */
+  private static final String TRANSPORT_DESCRIPTION = "description";
+
+  /**
+   * A sample value for the distance in self-vehicle entity.
+   */
+  private static final float VEHICLE_DISTANCE = 100.0f;
+
+  /**
+   * A sample value for the kilometer price in self-vehicle entity.
+   */
+  private static final double VEHICLE_KM_PRICE = 0.50;
+
+  /**
+   * A sample reason for the payment sheet entity.
+   */
+  private static final String PAYMENT_SHEET_REASON = "sample reason";
+
+  /**
+   * A sample place for the payment sheet entity.
+   */
+  private static final String PAYMENT_SHEET_PLACE = "Feorae";
+
+  /**
+   * The place associated with the self-vehicle.
+   */
+  private static final String SELF_VEHICLE_PLACES = "Some Place";
+
+  /**
+   * The quantity of food housing used in the test.
+   */
+  private static final int FOOD_HOUSING_QUANTITY = 5;
+
+  /**
+   * The amount for food housing used in the test.
+   */
+  private static final float FOOD_HOUSING_AMOUNT = 100.0f;
+
+  /**
+   * A flag indicating whether the food housing is provided or not.
+   */
+  private static final boolean FOOD_HOUSING_PROVIDED = true;
+
+  /**
+   * The ID used to identify a specific regular transport in tests.
+   */
+  private static final int REGULAR_TRANSPORT_ID = 99;
+
+  /**
+   * Sets up the test environment before each test case.
+   *
+   * Initializes the mocks and prepares the test environment by opening
+   * mock annotations.
+   */
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
   }
 
   @Test
-  void testAddPaymentSheet_Success() throws PaymentSheetServiceException {
+  void testAddPaymentSheetSuccess() throws PaymentSheetServiceException {
     var reason = "Business trip";
     var place = "Office";
     var startDate = LocalDate.now();
@@ -85,14 +225,14 @@ class PaymentSheetServiceTest {
 
     var result =
           paymentSheetService.add(reason, place, startDate, endDate, userEmail);
-    assertNotNull(result);
-    assertEquals(reason, result.getReason());
+    assertNotNull(result, "result is not null.");
+    assertEquals(reason, result.getReason(), "result have expected reason.");
     verify(paymentSheetRepository, times(1))
           .save(any(PersistentPaymentSheetEntity.class));
   }
 
   @Test
-  void testAddPaymentSheet_UserNotFound() {
+  void testAddPaymentSheetUserNotFound() {
     var userEmail = "user@example.com";
     when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
 
@@ -101,17 +241,20 @@ class PaymentSheetServiceTest {
             "reason", "place", LocalDate.now(), LocalDate.now().plusDays(1),
             userEmail
       );
-    });
+    }, "Exception are thrown when userEmail is not found. ");
     assertEquals(
-          DefaultPaymentSheetService.USER_NOT_FOUND_MESSAGE, thrown.getMessage()
+          DefaultPaymentSheetService.USER_NOT_FOUND, thrown.getMessage(),
+          "Exception message is user not found message."
     );
   }
 
   @Test
-  void testFindById_Success() throws PaymentSheetServiceException {
-    // Construcción de un objeto `PersistentPaymentSheetEntity` con parámetros necesarios
+  void testFindByIdSuccess() throws PaymentSheetServiceException {
+    // Construcción de un objeto `PersistentPaymentSheetEntity`
+    //con parámetros necesarios
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(new PersistentUserEntity()) // Asegúrate de proporcionar un usuario válido
+          .userOwner(new PersistentUserEntity())
+          // Asegúrate de proporcionar un usuario válido
           .reason("Business trip") // Razón de la hoja de pago
           .place("Office") // Lugar asociado a la hoja de pago
           .startDate(LocalDate.now()) // Fecha de inicio
@@ -126,22 +269,22 @@ class PaymentSheetServiceTest {
     var result = paymentSheetService.findById(1);
 
     // Verificación de que el resultado no es nulo
-    assertNotNull(result);
+    assertNotNull(result, "result is not null.");
 
     // Verificación de que el repositorio fue llamado exactamente una vez
     verify(paymentSheetRepository, times(1)).findById(1);
   }
 
   @Test
-  void testFindById_NotFound() {
+  void testFindByIdNotFound() {
     when(paymentSheetRepository.findById(1)).thenReturn(Optional.empty());
 
     var thrown = assertThrows(PaymentSheetServiceException.class, () -> {
       paymentSheetService.findById(1);
-    });
+    }, "Exception is thrown when paytment sheet with id not found.");
     assertEquals(
-          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND_MESSAGE,
-          thrown.getMessage()
+          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND,
+          thrown.getMessage(), "Exception message is payment sheet not found."
     );
   }
 
@@ -157,33 +300,36 @@ class PaymentSheetServiceTest {
     when(paymentSheetRepository.findById(1))
           .thenReturn(Optional.of(paymentSheet));
 
-    // Configurar el mock para el repositorio de entidades de pago para que no haga nada en delete().
+    // Configurar el mock para el repositorio de entidades de pago para
+    // que no haga nada en delete().
     doNothing().when(paymentSheetRepository).delete(paymentSheet);
 
     // Ejecutar el método bajo prueba.
     paymentSheetService.remove(1);
 
-    // Verificar que el método delete() del repositorio de entidades de pago fue llamado exactamente una vez.
+    // Verificar que el método delete() del repositorio de entidades de
+    // pago fue llamado exactamente una vez.
     verify(paymentSheetRepository, times(1)).delete(paymentSheet);
   }
 
   @Test
-  void testRemove_NotFound() {
+  void testRemoveNotFound() {
     when(paymentSheetRepository.findById(1)).thenReturn(Optional.empty());
 
     var thrown = assertThrows(PaymentSheetServiceException.class, () -> {
       paymentSheetService.remove(1);
-    });
+    }, "Exception thrown when payment sheet with identifier not found.");
     assertEquals(
-          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND_MESSAGE,
-          thrown.getMessage()
+          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND,
+          thrown.getMessage(), "Exception message is payment sheet not found."
     );
   }
 
   @Test
-  void testUpdatePaymentSheet_Success() throws PaymentSheetServiceException {
+  void testUpdatePaymentSheetSuccess() throws PaymentSheetServiceException {
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(new PersistentUserEntity()) // Asegúrate de proporcionar un usuario válido
+          .userOwner(new PersistentUserEntity())
+          // Asegúrate de proporcionar un usuario válido
           .reason("Business trip") // Razón de la hoja de pago
           .place("Office") // Lugar asociado a la hoja de pago
           .startDate(LocalDate.now()) // Fecha de inicio
@@ -198,12 +344,12 @@ class PaymentSheetServiceTest {
           1, "new reason", "new place", LocalDate.now(),
           LocalDate.now().plusDays(1)
     );
-    assertNotNull(result);
+    assertNotNull(result, "result is not null.");
     verify(paymentSheetRepository, times(1)).save(paymentSheet);
   }
 
   @Test
-  void testUpdatePaymentSheet_NotFound() {
+  void testUpdatePaymentSheetNotFound() {
     when(paymentSheetRepository.findById(1)).thenReturn(Optional.empty());
 
     var thrown = assertThrows(PaymentSheetServiceException.class, () -> {
@@ -211,10 +357,11 @@ class PaymentSheetServiceTest {
             1, "new reason", "new place", LocalDate.now(),
             LocalDate.now().plusDays(1)
       );
-    });
+    }, "Exception thrown when payment sheet with identifier not found.");
     assertEquals(
-          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND_MESSAGE,
-          thrown.getMessage()
+          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND,
+          thrown.getMessage(),
+          "The exception message is payment sheet not found."
     );
   }
 
@@ -235,20 +382,22 @@ class PaymentSheetServiceTest {
 
     // Inicializar la entidad de factura
     var invoice = new PersistentInvoiceEntity(
-          123, "A", LocalDate.now(), LocalDate.now().plusDays(1), false, seller,
-          buyer
+          INVOICE_NUMBER, INVOICE_SERIES, LocalDate.now(),
+          LocalDate.now().plusDays(1), false, seller, buyer
     );
 
     // Configuración del transporte regular con campos necesarios
-    var regularTransport =
-          PersistentRegularTransportEntity.builder().transportInvoice(invoice)
-                .category("category").description("description").build();
+    var regularTransport = PersistentRegularTransportEntity.builder()
+          .transportInvoice(invoice).category(TRANSPORT_CATEGORY)
+          .description(TRANSPORT_DESCRIPTION).build();
 
     // Configuración de mocks
-    when(paymentSheetRepository.findById(1))
+    when(paymentSheetRepository.findById(PAYMENT_SHEET_ID))
           .thenReturn(Optional.of(paymentSheet));
-    when(invoiceRepository.findByNumberAndSeries(123, "A"))
-          .thenReturn(Optional.of(invoice));
+    when(
+          invoiceRepository
+                .findByNumberAndSeries(INVOICE_NUMBER, INVOICE_SERIES)
+    ).thenReturn(Optional.of(invoice));
     when(
           regularTransportRepository
                 .save(any(PersistentRegularTransportEntity.class))
@@ -260,11 +409,12 @@ class PaymentSheetServiceTest {
 
     // Ejecutar el método bajo prueba
     var result = paymentSheetService.addRegularTransportToPaymentSheet(
-          1, "category", "description", 123, "A"
+          PAYMENT_SHEET_ID, TRANSPORT_CATEGORY, TRANSPORT_DESCRIPTION,
+          INVOICE_NUMBER, INVOICE_SERIES
     );
 
     // Verificar que el resultado no sea nulo
-    assertNotNull(result);
+    assertNotNull(result, "result is not null.");
 
     // Verificar que el repositorio de pago fue guardado
     verify(paymentSheetRepository, times(1)).save(paymentSheet);
@@ -275,102 +425,141 @@ class PaymentSheetServiceTest {
   }
 
   @Test
-  void testAddRegularTransportToPaymentSheet_PaymentSheetNotFound() {
+  void testAddRegularTransportToPaymentSheetPaymentSheetNotFound() {
     when(paymentSheetRepository.findById(1)).thenReturn(Optional.empty());
 
     var thrown = assertThrows(PaymentSheetServiceException.class, () -> {
       paymentSheetService.addRegularTransportToPaymentSheet(
             1, "category", "description", 1, "series"
       );
-    });
+    }, "Exception is thown when call service with payment sheet with"
+          + " identifier not existing."
+    );
     assertEquals(
-          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND_MESSAGE,
-          thrown.getMessage()
+          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND,
+          thrown.getMessage(), "Exception message is payment sheet not found."
     );
   }
 
+  /**
+   * Tests the successful removal of a self-vehicle from a payment sheet.
+   *
+   * This test verifies that a self-vehicle associated with a payment sheet is
+   * correctly removed. It sets up mock responses for the repositories involved,
+   * performs the removal operation, and asserts that the vehicle is deleted
+   * and the payment sheet no longer contains the self-vehicle.
+   *
+   * @throws PaymentSheetServiceException if an error occurs during operation
+   */
   @Test
-  void testRemoveSelfVehicle_Success() throws PaymentSheetServiceException {
-    // Crear una entidad de pago con un vehículo asociado.
-    var selfVehicle = PersistentSelfVehicleEntity.builder().places("Some Place") // Proporciona un valor no nulo para 'places'
-          .distance(100.0f) // Proporciona un valor para 'distance'
-          .kmPrice(0.50) // Proporciona un valor para 'kmPrice'
-          .build();
+  void testRemoveSelfVehicleSuccess() throws PaymentSheetServiceException {
+    // Create a self-vehicle entity with associated values.
+    var selfVehicle =
+          PersistentSelfVehicleEntity.builder().places(SELF_VEHICLE_PLACES)
+                // Use constant for 'places'
+                .distance(VEHICLE_DISTANCE) // Use constant for 'distance'
+                .kmPrice(VEHICLE_KM_PRICE) // Use constant for 'kmPrice'
+                .build();
 
-    var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .reason("sample reason").place("Feorae").startDate(LocalDate.now())
-          .endDate(LocalDate.now()).userOwner(new PersistentUserEntity())
-          .selfVehicle(selfVehicle) // Asigna el vehículo al pago
-          .build();
+    var paymentSheet =
+          PersistentPaymentSheetEntity.builder().reason(PAYMENT_SHEET_REASON)
+                // Use constant for 'reason'
+                .place(PAYMENT_SHEET_PLACE) // Use constant for 'place'
+                .startDate(LocalDate.now()).endDate(LocalDate.now())
+                .userOwner(new PersistentUserEntity()).selfVehicle(selfVehicle)
+                // Assign the vehicle to the payment sheet
+                .build();
 
-    // Configurar el mock para el repositorio de pago.
-    when(paymentSheetRepository.findById(1))
+    // Configure the mock for the payment sheet repository.
+    when(paymentSheetRepository.findById(PAYMENT_SHEET_ID))
           .thenReturn(Optional.of(paymentSheet));
 
-    // Configurar el mock para el repositorio de vehículos para que no haga nada en delete().
+    // Configure mock for the self-vehicle repository to do nothing on delete().
     doNothing().when(selfVehicleRepository)
           .delete(any(PersistentSelfVehicleEntity.class));
 
-    // Ejecutar el método bajo prueba.
-    paymentSheetService.removeSelfVehicle(1);
+    // Execute the method under test.
+    paymentSheetService.removeSelfVehicle(PAYMENT_SHEET_ID);
 
-    // Capturar el argumento pasado al método delete().
+    // Capture the argument passed to the delete() method.
     var captor = ArgumentCaptor.forClass(PersistentSelfVehicleEntity.class);
     verify(selfVehicleRepository, times(1)).delete(captor.capture());
 
-    // Verificar que el argumento capturado es el mismo objeto que se esperaba.
+    // Verify that the captured argument is the same as expected.
     assertEquals(
           selfVehicle, captor.getValue(),
-          "El vehículo eliminado no coincide con el esperado."
+          "The removed vehicle does not match the expected one."
     );
 
-    // Verificar que el vehículo se eliminó correctamente (es decir, que ahora es nulo en la entidad de pago).
-    assertNull(paymentSheet.getSelfVehicle());
+    // Verify that the vehicle was correctly removed from the payment sheet
+    // (i.e., it should now be null in the payment sheet).
+    assertNull(
+          paymentSheet.getSelfVehicle(),
+          "Payment sheet self vehicle cannot be null."
+    );
   }
 
   @Test
-  void testRemoveSelfVehicle_NotFound() {
+  void testRemoveSelfVehicleNotFound() {
     when(paymentSheetRepository.findById(1)).thenReturn(Optional.empty());
 
     var thrown = assertThrows(PaymentSheetServiceException.class, () -> {
       paymentSheetService.removeSelfVehicle(1);
-    });
+    }, "Exception is thrown when service remove self "
+          + "vehicle from payment sheet " + "with id not found."
+    );
     assertEquals(
-          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND_MESSAGE,
-          thrown.getMessage()
+          DefaultPaymentSheetService.PAYMENT_SHEET_NOT_FOUND,
+          thrown.getMessage(), "Exception message is payment sheet not found."
     );
   }
 
+  /**
+   * Tests the scenario where an invoice is not found when adding a regular
+   * transport to a payment sheet.
+   *
+   * This test verifies that when the invoice is not found, a
+   * PaymentSheetServiceException is thrown with the appropriate message.
+   */
   @Test
   void testAddRegularTransportToPaymentSheetInvoiceNotFound() {
-    // Crear un objeto User para el campo userOwner
+    // Create a User object for the userOwner field
     var user = new PersistentUserEntity();
 
-    // Configuración de la entidad de pago con campos necesarios
+    // Set up the payment sheet entity with necessary fields
     var paymentSheet = PersistentPaymentSheetEntity.builder().userOwner(user)
-          .reason("Business trip").place("Office").startDate(LocalDate.now())
-          .endDate(LocalDate.now().plusDays(1)).build();
+          .reason(PAYMENT_SHEET_REASON) // Use constant for reason
+          .place(PAYMENT_SHEET_PLACE) // Use constant for place
+          .startDate(LocalDate.now()).endDate(LocalDate.now().plusDays(1))
+          .build();
 
-    // Configuración de mocks
-    when(paymentSheetRepository.findById(1))
+    // Configure mocks
+    when(paymentSheetRepository.findById(PAYMENT_SHEET_ID))
           .thenReturn(Optional.of(paymentSheet));
-    when(invoiceRepository.findByNumberAndSeries(123, "A"))
-          .thenReturn(Optional.empty()); // Simula que la factura no se encuentra
+    when(
+          invoiceRepository
+                .findByNumberAndSeries(INVOICE_NUMBER, INVOICE_SERIES)
+    ).thenReturn(Optional.empty()); // Simulate invoice not found
 
-    // Ejecutar el método bajo prueba y verificar que se lanza la excepción esperada
+    // Execute the method under test, verify that exception is thrown
     var exception = assertThrows(
           PaymentSheetServiceException.class,
           () -> paymentSheetService.addRegularTransportToPaymentSheet(
-                1, "category", "description", 123, "A"
-          )
+                PAYMENT_SHEET_ID, TRANSPORT_CATEGORY, TRANSPORT_DESCRIPTION,
+                INVOICE_NUMBER, INVOICE_SERIES
+          ),
+          "Exception is thrown when service adds regular transport to payment "
+                + "sheet but regular transport invoice "
+                + "with series and number not found."
     );
 
-    // Verificar que el mensaje de la excepción es el esperado
+    // Verify that the exception message is as expected
     assertEquals(
-          DefaultPaymentSheetService.INVOICE_NOT_FOUND, exception.getMessage()
+          DefaultPaymentSheetService.INVOICE_NOT_FOUND, exception.getMessage(),
+          "Exception message is invoice not found."
     );
 
-    // Verificar que ningún transporte regular se guardó
+    // Verify that no regular transport was saved
     verify(regularTransportRepository, never())
           .save(any(PersistentRegularTransportEntity.class));
     verify(invoiceRepository, never()).save(any(PersistentInvoiceEntity.class));
@@ -378,36 +567,49 @@ class PaymentSheetServiceTest {
           .save(any(PersistentPaymentSheetEntity.class));
   }
 
+  /**
+   * Tests the scenario where a food housing already exists when adding
+   * it to a payment sheet.
+   *
+   * This test verifies that when a food housing already exists
+   * in the payment sheet, a PaymentSheetServiceException is thrown with
+   * the appropriate message.
+   */
   @Test
   void testAddFoodHousingToPaymentSheetFoodHousingExists() {
-    // Crear un objeto User para el campo userOwner
+    // Create a User object for the userOwner field
     var user = new PersistentUserEntity();
 
-    // Configuración de la entidad de pago con un FoodHousing ya existente
+    // Set up the payment sheet entity with an existing FoodHousing
     var paymentSheet = PersistentPaymentSheetEntity.builder().userOwner(user)
-          .reason("Business trip").place("Office").startDate(LocalDate.now())
-          .endDate(LocalDate.now().plusDays(1))
-          .foodHousing(new PersistentFoodHousingEntity()) // Simula que ya existe un FoodHousing
+          .reason(PAYMENT_SHEET_REASON) // Use constant for reason
+          .place(PAYMENT_SHEET_PLACE) // Use constant for place
+          .startDate(LocalDate.now()).endDate(LocalDate.now().plusDays(1))
+          .foodHousing(new PersistentFoodHousingEntity())
+          // Existing FoodHousing
           .build();
 
-    // Configuración de mocks
-    when(paymentSheetRepository.findById(1))
+    // Configure mocks
+    when(paymentSheetRepository.findById(PAYMENT_SHEET_ID))
           .thenReturn(Optional.of(paymentSheet));
 
-    // Ejecutar el método bajo prueba y verificar que se lanza la excepción esperada
+    // Execute the method under test and verify expected exception thrown
     var exception = assertThrows(
           PaymentSheetServiceException.class,
-          () -> paymentSheetService
-                .addFoodHousingToPaymentSheet(1, 5, 100.0f, true)
+          () -> paymentSheetService.addFoodHousingToPaymentSheet(
+                PAYMENT_SHEET_ID, FOOD_HOUSING_QUANTITY, FOOD_HOUSING_AMOUNT,
+                FOOD_HOUSING_PROVIDED
+          ), "Exception is thrown when food housing already exists."
     );
 
-    // Verificar que el mensaje de la excepción es el esperado
+    // Verify that the exception message is as expected
     assertEquals(
           DefaultPaymentSheetService.PAYMENT_SHEET_FOOD_HOUSING_EXISTS,
-          exception.getMessage()
+          exception.getMessage(),
+          "Exception message indicates food housing exists."
     );
 
-    // Verificar que ningún FoodHousing fue guardado
+    // Verify that no FoodHousing was saved
     verify(foodHousingRepository, never())
           .save(any(PersistentFoodHousingEntity.class));
     verify(paymentSheetRepository, never())
@@ -415,105 +617,125 @@ class PaymentSheetServiceTest {
   }
 
   @Test
-  void testRemoveSelfVehicleSelfVehicleNotFound()
-        throws PaymentSheetServiceException {
+  void testRemoveSelfVehicleSelfVehicleNotFound() {
     // Crear una entidad PaymentSheet sin SelfVehicle
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(new PersistentUserEntity()) // Proporcionar el User necesario
+          .userOwner(new PersistentUserEntity())
+          // Proporcionar el User necesario
           .reason("Business trip").place("Office").startDate(LocalDate.now())
-          .endDate(LocalDate.now().plusDays(1)).selfVehicle(null) // Simula que el PaymentSheet no tiene un SelfVehicle
+          .endDate(LocalDate.now().plusDays(1)).selfVehicle(null)
+          // Simula que el PaymentSheet no tiene un SelfVehicle
           .build();
 
     // Configuración de mocks
     when(paymentSheetRepository.findById(1))
           .thenReturn(Optional.of(paymentSheet));
 
-    // Ejecutar el método bajo prueba y verificar que se lanza la excepción esperada
+    // Ejecutar el método bajo prueba y verificar la excepción
     var exception = assertThrows(
           PaymentSheetServiceException.class,
-          () -> paymentSheetService.removeSelfVehicle(1)
+          () -> paymentSheetService.removeSelfVehicle(1),
+          "Exception is thrown when self vehicle with identifier not found."
     );
 
     // Verificar que el mensaje de la excepción es el esperado
     assertEquals(
-          DefaultPaymentSheetService.SELF_VEHICLE_NOT_FOUND_MESSAGE,
-          exception.getMessage()
+          DefaultPaymentSheetService.SELF_VEHICLE_NOT_FOUND,
+          exception.getMessage(), "Exception message is vehicle not found."
     );
 
     // Verificar que el SelfVehicle no fue eliminado
     verify(selfVehicleRepository, times(0))
           .delete(any(PersistentSelfVehicleEntity.class));
 
-    // Verificar que el PaymentSheet no fue guardado, ya que la excepción fue lanzada antes
+    //  PaymentSheet no fue guardado, la excepción fue lanzada antes
     verify(paymentSheetRepository, times(0))
           .save(any(PersistentPaymentSheetEntity.class));
 
   }
 
   @Test
-  void testRemoveFoodHousingFoodHousingNotFound()
-        throws PaymentSheetServiceException {
+  void testRemoveFoodHousingFoodHousingNotFound() {
     // Crear una entidad PaymentSheet sin FoodHousing
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(new PersistentUserEntity()) // Proporcionar el User necesario
+          .userOwner(new PersistentUserEntity())
+          // Proporcionar el User necesario
           .reason("Business trip").place("Office").startDate(LocalDate.now())
-          .endDate(LocalDate.now().plusDays(1)).foodHousing(null) // Simula que el PaymentSheet no tiene FoodHousing
+          .endDate(LocalDate.now().plusDays(1)).foodHousing(null)
+          // Simula que el PaymentSheet no tiene FoodHousing
           .build();
 
     // Configuración de mocks
     when(paymentSheetRepository.findById(1))
           .thenReturn(Optional.of(paymentSheet));
 
-    // Ejecutar el método bajo prueba y verificar que se lanza la excepción esperada
+    // Ejecutar el método y verificar que se lanza la excepción esperada
     var exception = assertThrows(
           PaymentSheetServiceException.class,
-          () -> paymentSheetService.removeFoodHousing(1)
+          () -> paymentSheetService.removeFoodHousing(1),
+          "Exception is thrown when food housing with identifier not found."
     );
 
     // Verificar que el mensaje de la excepción es el esperado
     assertEquals(
-          DefaultPaymentSheetService.FOOD_HOUSING_NOT_FOUND_MESSAGE,
-          exception.getMessage()
+          DefaultPaymentSheetService.FOOD_HOUSING_NOT_FOUND,
+          exception.getMessage(), "Exception message is food housing not found."
     );
 
-    // Verificar que el FoodHousing no fue eliminado (debe ser 0 ya que no había FoodHousing para eliminar)
+    // Verificar  FoodHousing no eliminado
+    // (debe ser 0 ya que no había FoodHousing para eliminar)
     verify(foodHousingRepository, times(0))
           .delete(any(PersistentFoodHousingEntity.class));
 
-    // Verificar que el PaymentSheet no fue guardado, ya que la excepción fue lanzada antes
+    //  PaymentSheet no guardado,la excepción fue lanzada antes
     verify(paymentSheetRepository, times(0))
           .save(any(PersistentPaymentSheetEntity.class));
   }
 
+  /**
+   * Tests the scenario where a regular transport cannot be found
+   * when attempting to remove it from a payment sheet.
+   *
+   * This test verifies that when a regular transport does not exist
+   * in the repository, a PaymentSheetServiceException is thrown
+   * with the appropriate message.
+   */
   @Test
   void testRemoveRegularTransportRegularTransportNotFound() {
-    // Crear una entidad PaymentSheet con una lista vacía de RegularTransports
+    // Create a PaymentSheet entity with an empty list of RegularTransports
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(new PersistentUserEntity()) // Proporcionar el User necesario
-          .reason("Business trip").place("Office").startDate(LocalDate.now())
-          .endDate(LocalDate.now().plusDays(1))
-          .regularTransports(new HashSet<>()) // Lista vacía
+          .userOwner(new PersistentUserEntity()) // Provide the necessary User
+          .reason(PAYMENT_SHEET_REASON) // Use constant for reason
+          .place(PAYMENT_SHEET_PLACE) // Use constant for place
+          .startDate(LocalDate.now()).endDate(LocalDate.now().plusDays(1))
+          .regularTransports(new HashSet<>()) // Empty list
           .build();
 
-    // Configuración de mocks
-    when(paymentSheetRepository.findById(1))
+    // Configure mocks
+    when(paymentSheetRepository.findById(PAYMENT_SHEET_ID))
           .thenReturn(Optional.of(paymentSheet));
-    when(regularTransportRepository.findById(99)).thenReturn(Optional.empty());
+    when(regularTransportRepository.findById(REGULAR_TRANSPORT_ID))
+          .thenReturn(Optional.empty());
+    // Simulate that the transport is not found
 
-    // Ejecutar el método bajo prueba y verificar que se lanza la excepción esperada
+    // Execute the method under test and verify expected exception thrown
     var exception = assertThrows(
           PaymentSheetServiceException.class,
-          () -> paymentSheetService
-                .removeRegularTransportFromPaymentSheet(1, 99)
+          () -> paymentSheetService.removeRegularTransportFromPaymentSheet(
+                PAYMENT_SHEET_ID, REGULAR_TRANSPORT_ID
+          ),
+          "Exception is thrown when regular transport with "
+                + "identifier not found."
     );
 
-    // Verificar el mensaje de la excepción
+    // Verify that the exception message is as expected
     assertEquals(
-          DefaultPaymentSheetService.REGULAR_TRANSPORT_NOT_FOUND_MESSAGE,
-          exception.getMessage()
+          DefaultPaymentSheetService.REGULAR_TRANSPORT_NOT_FOUND,
+          exception.getMessage(),
+          "Exception message indicates regular transport not found."
     );
 
-    // Verificar que el PaymentSheet no fue modificado ni guardado
+    // Verify that the PaymentSheet was not modified or saved
     verify(paymentSheetRepository, times(0))
           .save(any(PersistentPaymentSheetEntity.class));
     verify(regularTransportRepository, times(0))
@@ -522,7 +744,8 @@ class PaymentSheetServiceTest {
 
   @Test
   void testRemoveRegularTransportNotInPaymentSheet() {
-    // Crear una entidad PaymentSheet con una lista que no contiene el RegularTransport a eliminar
+    // Crear una entidad PaymentSheet con una lista que no contiene
+    // el RegularTransport a eliminar
     var regularTransportNotInSheet = PersistentRegularTransportEntity.builder()
           .category("Category").description("Description")
           .transportInvoice(new PersistentInvoiceEntity()).build();
@@ -532,10 +755,12 @@ class PaymentSheetServiceTest {
           .transportInvoice(new PersistentInvoiceEntity()).build();
 
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(new PersistentUserEntity()) // Proporcionar el User necesario
+          .userOwner(new PersistentUserEntity())
+          // Proporcionar el User necesario
           .reason("Business trip").place("Office").startDate(LocalDate.now())
           .endDate(LocalDate.now().plusDays(1))
-          .regularTransports(Set.of(regularTransportNotInSheet)) // Lista sin el RegularTransport a eliminar
+          .regularTransports(Set.of(regularTransportNotInSheet))
+          // Lista sin el RegularTransport a eliminar
           .build();
 
     // Configuración de mocks
@@ -544,16 +769,21 @@ class PaymentSheetServiceTest {
     when(regularTransportRepository.findById(2))
           .thenReturn(Optional.of(regularTransportToRemove));
 
-    // Ejecutar el método bajo prueba y verificar que se lanza la excepción esperada
+    // Ejecutar el método bajo prueba y verificar
+    // que se lanza la excepción esperada
     var exception = assertThrows(
           PaymentSheetServiceException.class,
-          () -> paymentSheetService.removeRegularTransportFromPaymentSheet(1, 2)
+          () -> paymentSheetService
+                .removeRegularTransportFromPaymentSheet(1, 2),
+          "Exception is thrown when we delete regular transport from payment"
+                + " sheet but regular transport is in other payment sheet."
     );
 
     // Verificar el mensaje de la excepción
     assertEquals(
-          DefaultPaymentSheetService.REGULAR_TRANSPORT_NOT_IN_PAYMENT_SHEET_MESSAGE,
-          exception.getMessage()
+          DefaultPaymentSheetService.REGULAR_TRANSPORT_NOT_IN_PAYMENT_SHEET,
+          exception.getMessage(),
+          "Exception have message regular transport not in payment sheet."
     );
 
     // Verificar que el RegularTransport no fue eliminado

@@ -35,7 +35,6 @@ import es.org.cxn.backapp.repository.RoleEntityRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -91,16 +90,20 @@ public final class DefaultRoleService implements RoleService {
    */
   @Override
   public RoleEntity findById(final Integer identifier) {
-    final Optional<PersistentRoleEntity> entityOpt;
-
     checkNotNull(identifier, "Received a null pointer as identifier");
 
-    entityOpt = entityRepository.findById(identifier);
+    final var entityOpt = entityRepository.findById(identifier);
+
+    // Variable para almacenar el resultado
+    final RoleEntity result;
 
     if (entityOpt.isEmpty()) {
-      return new PersistentRoleEntity();
+      result = new PersistentRoleEntity();
+    } else {
+      result = entityOpt.get();
     }
-    return entityOpt.get();
+
+    return result;
   }
 
   @Override
@@ -116,8 +119,8 @@ public final class DefaultRoleService implements RoleService {
 
   @Override
   public List<RoleEntity> getAllRoles() {
-    var tmp = entityRepository.findAll();
-    return new ArrayList<>(tmp);
+    final var usersList = entityRepository.findAll();
+    return new ArrayList<>(usersList);
   }
 
   @Override

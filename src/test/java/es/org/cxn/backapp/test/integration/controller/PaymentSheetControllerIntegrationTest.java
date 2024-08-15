@@ -14,7 +14,6 @@ import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequestForm;
 import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
-import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.utils.CompanyControllerFactory;
 import es.org.cxn.backapp.test.utils.InvoicesControllerFactory;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
@@ -33,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -46,22 +44,86 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @TestPropertySource("/application.properties")
 class PaymentSheetControllerIntegrationTest {
 
-  private final static String PAYMENT_SHEET_URL = "/api/paymentSheet";
-  private final static String CREATE_USER_URL = "/api/auth/signup";
+  /**
+   * The URL endpoint for interacting with payment sheets.
+   * This endpoint is used for creating, retrieving, and managing
+   * payment sheets.
+   */
+  private static final String PAYMENT_SHEET_URL = "/api/paymentSheet";
 
-  private final static String REGULAR_TRANSPORT_CATEGORY = "taxi";
-  private final static String REGULAR_TRANSPORT_DESCRIPTION = "Description";
+  /**
+   * The URL endpoint for user creation.
+   * This endpoint is used for signing up new users via the
+   * authentication service.
+   */
+  private static final String CREATE_USER_URL = "/api/auth/signup";
 
-  private final static String INVOICE_URL = "/api/invoice";
-  private final static String COMPANY_URL = "/api/company";
+  /**
+   * The category of regular transport, specifically set to "taxi".
+   * This value is used to categorize regular transport entries within
+   * the system.
+   */
+  private static final String REGULAR_TRANSPORT_CATEGORY = "taxi";
 
+  /**
+   * The default description for regular transport.
+   * This value is used as a placeholder or default description for regular
+   * transport entries.
+   */
+  private static final String REGULAR_TRANSPORT_DESCRIPTION = "Description";
+
+  /**
+   * The URL endpoint for interacting with invoices.
+   * This endpoint is used for creating, retrieving, and managing invoices.
+   */
+  private static final String INVOICE_URL = "/api/invoice";
+
+  /**
+   * The URL endpoint for interacting with company information.
+   * This endpoint is used for creating, retrieving, and managing company data.
+   */
+  private static final String COMPANY_URL = "/api/company";
+
+  /**
+   * The URL endpoint for interacting adding self vehicles.
+   */
+  private static final String ADD_SELF_VEHICLE_ENDPOINT = "/addSelfVehicle";
+
+  /**
+   * The identifier for a payment sheet that does not exist.
+   * This value is used to test scenarios where a payment sheet
+   * with the given identifier is not found.
+   */
+  private static final int NON_EXISTING_PAYMENT_SHEET_ID = 99;
+
+  /**
+   * MockMvc instance used for performing HTTP requests and testing
+   * the web layer.
+   * This bean is automatically injected by the Spring framework.
+   */
   @Autowired
   private MockMvc mockMvc;
-  @Autowired
-  UserDetailsService myUserDetailsService;
-  @Autowired
-  JwtUtils jwtUtils;
 
+  /**
+   * The places associated with the self vehicle for testing.
+   */
+  private static final String SELF_VEHICLE_PLACES = "place1 place2";
+
+  /**
+   * The distance of the self vehicle in kilometers used in testing.
+   */
+  private static final float SELF_VEHICLE_DISTANCE = 145.24f;
+
+  /**
+   * The price per kilometer of the self vehicle used in testing.
+   */
+  private static final double SELF_VEHICLE_KM_PRICE = 0.19;
+
+  /**
+   * Gson instance used for JSON serialization and deserialization.
+   * This static field provides a single instance of Gson for the entire class,
+   *  ensuring consistency and avoiding repeated instantiation.
+   */
   private static Gson gson;
 
   @BeforeAll
@@ -72,14 +134,14 @@ class PaymentSheetControllerIntegrationTest {
   }
 
   /**
-   * Main class constructor
+   * Main class constructor.
    */
-  public PaymentSheetControllerIntegrationTest() {
+  PaymentSheetControllerIntegrationTest() {
     super();
   }
 
   @BeforeEach
-  public void BeforeTestCase() throws Exception {
+  public void beforeTestCase() throws Exception {
     // Create user, expect 201 created.
     mockMvc.perform(
           post(CREATE_USER_URL).contentType(MediaType.APPLICATION_JSON)
@@ -88,7 +150,7 @@ class PaymentSheetControllerIntegrationTest {
   }
 
   private void assertResponseContains(
-        String responseContent, String... expectedValues
+        final String responseContent, final String... expectedValues
   ) {
     for (String expectedValue : expectedValues) {
       Assertions.assertTrue(
@@ -99,7 +161,8 @@ class PaymentSheetControllerIntegrationTest {
   }
 
   /**
-   * Create payment sheet request, check data returned and request all payment sheets.
+   * Create payment sheet request, check data returned and request
+   *  all payment sheets.
    * Check that are only one payment sheet and containing data.
    *
    * @throws Exception
@@ -275,15 +338,12 @@ class PaymentSheetControllerIntegrationTest {
   @Test
   @Transactional
   void testGetDataFromIdNotExistingPaymentSheetBadRequest() throws Exception {
-    var paymentSheetNotExistingIdentifier = 99;
-    mockMvc
-          .perform(
-                get(
-                      PAYMENT_SHEET_URL + "/"
-                            + paymentSheetNotExistingIdentifier
+    mockMvc.perform(
+          get(
+                PAYMENT_SHEET_URL + "/" + NON_EXISTING_PAYMENT_SHEET_ID
 
-                )
-          ).andExpect(MockMvcResultMatchers.status().isNotFound());
+          )
+    ).andExpect(MockMvcResultMatchers.status().isNotFound());
   }
 
   @Test
@@ -347,7 +407,7 @@ class PaymentSheetControllerIntegrationTest {
   @Transactional
   void testNotExistingPaymentSheetAddRegularTransportBadRequest()
         throws Exception {
-    var paymentSheetIdentifier = 88;
+
     var addRegularTransportRequest = new AddRegularTransportRequestForm(
           REGULAR_TRANSPORT_CATEGORY, REGULAR_TRANSPORT_DESCRIPTION,
           InvoicesControllerFactory.INVOICE_A_NUMBER,
@@ -358,7 +418,7 @@ class PaymentSheetControllerIntegrationTest {
     // Add regular transport not existing payment sheet identifier.
     mockMvc.perform(
           post(
-                PAYMENT_SHEET_URL + "/" + paymentSheetIdentifier
+                PAYMENT_SHEET_URL + "/" + NON_EXISTING_PAYMENT_SHEET_ID
                       + "/addRegularTransport"
           ).contentType(MediaType.APPLICATION_JSON)
                 .content(addRegularTransportRequestJson)
@@ -401,24 +461,29 @@ class PaymentSheetControllerIntegrationTest {
 
   }
 
+  /**
+   * Tests the scenario where an attempt is made to add a self vehicle
+   * to a payment sheet with an identifier that does not exist. This
+   * should result in a "Bad Request" status being returned.
+   *
+   * @throws Exception if an error occurs during the test execution
+   */
   @Test
   @Transactional
   void testNotExistingPaymentSheetAddSelfVehicleBadRequest() throws Exception {
-
-    var paymentSheetIdentifier = 99;
-
-    // add self vehicle
-    // String places,  float distance,  double kmPrice
-    var svrequest =
-          new AddSelfVehicleRequestForm("place1 place2", (float) 145.24, 0.19);
+    // Prepare the request to add a self vehicle
+    var svrequest = new AddSelfVehicleRequestForm(
+          SELF_VEHICLE_PLACES, SELF_VEHICLE_DISTANCE, SELF_VEHICLE_KM_PRICE
+    );
     var svrequestJson = gson.toJson(svrequest);
+
+    // Perform the request and expect a Bad Request status
     mockMvc.perform(
           post(
-                PAYMENT_SHEET_URL + "/" + paymentSheetIdentifier
-                      + "/addSelfVehicle"
+                PAYMENT_SHEET_URL + "/" + NON_EXISTING_PAYMENT_SHEET_ID
+                      + ADD_SELF_VEHICLE_ENDPOINT
           ).contentType(MediaType.APPLICATION_JSON).content(svrequestJson)
     ).andExpect(MockMvcResultMatchers.status().isBadRequest());
-
   }
 
   @Test
@@ -512,10 +577,6 @@ class PaymentSheetControllerIntegrationTest {
           errorResponse.contains("not found"), "Payment sheet should be deleted"
     );
 
-    // You would need to implement findByPaymentSheetId method in respective repositories
-    //    assertTrue(paymentSheetService.findRegularTransportByPaymentSheetId(paymentSheetId).isEmpty(), "RegularTransport should be deleted");
-    //  assertTrue(paymentSheetService.findSelfVehicleByPaymentSheetId(paymentSheetId).isEmpty(), "SelfVehicle should be deleted");
-    // assertTrue(paymentSheetService.findFoodHousingByPaymentSheetId(paymentSheetId).isEmpty(), "FoodHousing should be deleted");
   }
 
   @Test
@@ -591,7 +652,6 @@ class PaymentSheetControllerIntegrationTest {
                       )
           ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
           .getResponse().getContentAsString();
-    ;
 
     var paymentSheetResponse =
           gson.fromJson(paymentSheetResponseJson, PaymentSheetResponse.class);
@@ -733,7 +793,6 @@ class PaymentSheetControllerIntegrationTest {
                       )
           ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
           .getResponse().getContentAsString();
-    ;
 
     var paymentSheetResponse =
           gson.fromJson(paymentSheetResponseJson, PaymentSheetResponse.class);
@@ -861,10 +920,6 @@ class PaymentSheetControllerIntegrationTest {
                 .content(CompanyControllerFactory.getCompanyBRequestJson())
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    // Create invoices for first and second regular transport.
-    var invoiceRequestFormJSon =
-          InvoicesControllerFactory.getInvoiceARequestJson();
-
     // Create invoice
     mockMvc.perform(
           post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
@@ -875,7 +930,7 @@ class PaymentSheetControllerIntegrationTest {
     var invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
     invoiceRequestForm.setNumber(InvoicesControllerFactory.INVOICE_B_NUMBER);
     invoiceRequestForm.setSeries(InvoicesControllerFactory.INVOICE_B_SERIES);
-    invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
+    var invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
     mockMvc.perform(
           post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(invoiceRequestFormJSon)
@@ -891,7 +946,7 @@ class PaymentSheetControllerIntegrationTest {
                       )
           ).andExpect(MockMvcResultMatchers.status().isCreated()).andReturn()
           .getResponse().getContentAsString();
-    ;
+
     var paymentSheetResponse =
           gson.fromJson(paymentSheetResponseJson, PaymentSheetResponse.class);
     var paymentSheetIdentifier =
@@ -992,18 +1047,5 @@ class PaymentSheetControllerIntegrationTest {
           REGULAR_TRANSPORT_DESCRIPTION, regularTransport.getDescription(),
           "Los valores deberían ser iguales"
     );
-    /* Assertions.assertEquals(
-          InvoicesControllerFactory.INVOICE_B_NUMBER,
-          regularTransport.getInvoiceResponse().getNumber(),
-          "El numero de factura asignado es el B, de la segunda"
-    );
-    COMPROBAR ESTO
-    *
-    */
-    //    Assertions.assertEquals(
-    //          InvoicesControllerFactory.INVOICE_B_SERIES,
-    //          regularTransport.getInvoiceResponse().getSeries(),
-    //          "La serie de la factura asignada al transporte regular es el de la segunda."
-    //    );
   }
 }

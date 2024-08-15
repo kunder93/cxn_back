@@ -30,7 +30,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -45,22 +44,48 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @Import(TestSecurityConfiguration.class)
 class ChessQuestionsControllerTest {
 
+  /**
+   * MockMvc instance used for performing HTTP requests in the tests.
+   * <p>
+   * This is used to simulate HTTP requests and validate responses in the
+   * context of integration testing.
+   * </p>
+   */
   @Autowired
   private MockMvc mockMvc;
 
+  /**
+   * Mock of the {@link ChessQuestionsService} used to simulate interactions
+   * with the chess questions service layer.
+   * <p>
+   * This mock is used to stub and verify interactions with the chess questions
+   * service during testing, without invoking the actual service layer logic.
+   * </p>
+   */
   @MockBean
   private ChessQuestionsService chessQuestionsService;
 
+  /**
+   * ObjectMapper instance used for serializing and deserializing JSON
+   * in the tests.
+   * <p>
+   * This is used to convert Java objects to JSON and vice versa, which is
+   * necessary for testing JSON-based requests and responses.
+   * </p>
+   */
   @Autowired
   private ObjectMapper objectMapper;
 
+  /**
+   * Mock of the {@link DefaultJwtUtils} used to simulate interactions
+   * with JWT utilities.
+   * <p>
+   * This mock is used to stub and verify interactions with JWT utilities,
+   * which may be required for security-related operations in the controller.
+   * </p>
+   */
   @MockBean
   private DefaultJwtUtils jwtUtils;
-
-  @BeforeEach
-  void setUp() {
-
-  }
 
   @Test
   void testCreateChessQuestionSuccess() throws Exception {
@@ -134,7 +159,8 @@ class ChessQuestionsControllerTest {
     var gson = new GsonBuilder()
           .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
           .create();
-    // Mockear el comportamiento del servicio para devolver una lista de preguntas de ajedrez
+    // Mockear el comportamiento del servicio para devolver una lista de
+    // preguntas de ajedrez
     when(chessQuestionsService.getAll()).thenReturn(
           Arrays.asList(
                 new PersistentChessQuestionEntity(

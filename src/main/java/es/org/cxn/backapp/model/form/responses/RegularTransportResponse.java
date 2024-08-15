@@ -31,7 +31,11 @@ public final class RegularTransportResponse implements Serializable {
    */
   private static final long serialVersionUID = -3180089459011962505L;
 
+  /**
+   * The regular transport identifier.
+   */
   private int identifier;
+
   /**
    * The response regular transport category.
    */

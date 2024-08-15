@@ -27,25 +27,69 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+/**
+ * Unit tests for the {@link DefaultChessQuestionService} class.
+ *
+ * This test class uses Mockito to mock dependencies and verify the behavior
+ * of the {@link DefaultChessQuestionService} methods. The tests cover scenarios
+ * such as adding a chess question, changing the "seen" status of a chess
+ * question, and handling cases where the chess question is not found.
+ *
+ * <p>Each test verifies that the service methods interact correctly with the
+ * {@link ChessQuestionEntityRepository} and that the service's behavior aligns
+ * with the expected outcomes.</p>
+ *
+ * @author Santi
+ */
 @ExtendWith(MockitoExtension.class)
 class ChessQuestionServiceTest {
+  /**
+   * Mock instance of {@link ChessQuestionEntityRepository} to simulate
+   * repository behavior for testing purposes.
+   */
   @Mock
   private ChessQuestionEntityRepository mockRepository;
 
+  /**
+   * Instance of {@link DefaultChessQuestionService} with mocks injected.
+   * This service is under test in this class.
+   */
   @InjectMocks
   private DefaultChessQuestionService chessQuestionService;
 
+  /**
+   * Sets up the test environment before each test method.
+   * Initializes mock objects and the service instance.
+   */
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
     chessQuestionService = new DefaultChessQuestionService(mockRepository);
   }
 
-  //Declarar constantes para valores comunes
+  /**
+   * Constant representing a sample email address used for testing.
+   */
   private static final String TEST_EMAIL = "test@example.com";
+
+  /**
+   * Constant representing a sample category used for testing.
+   */
   private static final String TEST_CATEGORY = "Test Category";
+
+  /**
+   * Constant representing a sample topic used for testing.
+   */
   private static final String TEST_TOPIC = "Test Topic";
+
+  /**
+   * Constant representing a sample message used for testing.
+   */
   private static final String TEST_MESSAGE = "Test Message";
+
+  /**
+   * Constant representing the current date and time used for testing.
+   */
   private static final LocalDateTime DATE_NOW = LocalDateTime.now();
 
   @Test

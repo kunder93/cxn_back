@@ -10,98 +10,166 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the {@link CreatePaymentSheetRequestForm} class.
+ * This class tests the getter and setter methods, equality comparison,
+ * and hash code computation of the {@link CreatePaymentSheetRequestForm} class.
+ */
 class CreatePaymentSheetRequestTest {
 
+  /**
+   * Constant for the user email value used in tests.
+   */
+  private static final String USER_EMAIL = "user@example.com";
+
+  /**
+   * Constant for the event reason value used in tests.
+   */
+  private static final String EVENT_REASON = "Event reason";
+
+  /**
+   * Constant for the event place value used in tests.
+   */
+  private static final String EVENT_PLACE = "Event place";
+
+  /**
+   * Constant for the start date value used in tests.
+   */
+  private static final LocalDate START_DATE = LocalDate.now();
+
+  /**
+   * Constant for the end date value used in tests.
+   */
+  private static final LocalDate END_DATE = LocalDate.now().plusDays(7);
+
+  /**
+   * Constant for a different user email value used in tests.
+   */
+  private static final String DIFFERENT_USER_EMAIL = "user1@example.com";
+
+  /**
+   * Constant for a different event reason value used in tests.
+   */
+  private static final String DIFFERENT_EVENT_REASON = "Event reason 1";
+
+  /**
+   * Constant for a different event place value used in tests.
+   */
+  private static final String DIFFERENT_EVENT_PLACE = "Event place 1";
+
+  /**
+   * Constant for a different start date value used in tests.
+   */
+  private static final LocalDate DIFFERENT_START_DATE =
+        LocalDate.now().plusDays(1);
+
+  /**
+   * Constant for a different end date value used in tests.
+   */
+  private static final LocalDate DIFFERENT_END_DATE =
+        LocalDate.now().plusDays(8);
+
+  /**
+   * Tests getter and setter methods of the
+   * {@link CreatePaymentSheetRequestForm} class.
+   * This method verifies that values set using setters are correctly retrieved
+   * using getters.
+   */
   @Test
   void testGettersAndSetters() {
-    // Crear una instancia de CreatePaymentSheetRequestForm
     var paymentSheetRequestForm = new CreatePaymentSheetRequestForm();
 
-    // Establecer valores usando setters
-    paymentSheetRequestForm.setUserEmail("user@example.com");
-    paymentSheetRequestForm.setReason("Event reason");
-    paymentSheetRequestForm.setPlace("Event place");
-    paymentSheetRequestForm.setStartDate(LocalDate.now());
-    paymentSheetRequestForm.setEndDate(LocalDate.now().plusDays(7));
+    paymentSheetRequestForm.setUserEmail(USER_EMAIL);
+    paymentSheetRequestForm.setReason(EVENT_REASON);
+    paymentSheetRequestForm.setPlace(EVENT_PLACE);
+    paymentSheetRequestForm.setStartDate(START_DATE);
+    paymentSheetRequestForm.setEndDate(END_DATE);
 
     assertEquals(
-          "user@example.com", paymentSheetRequestForm.getUserEmail(),
-          "Verifica los valores usando getters"
+          USER_EMAIL, paymentSheetRequestForm.getUserEmail(),
+          "Verify values using getters"
     );
     assertEquals(
-          "Event reason", paymentSheetRequestForm.getReason(),
-          "Verifica los valores usando getters"
+          EVENT_REASON, paymentSheetRequestForm.getReason(),
+          "Verify values using getters"
     );
     assertEquals(
-          "Event place", paymentSheetRequestForm.getPlace(),
-          "Verifica los valores usando getters"
+          EVENT_PLACE, paymentSheetRequestForm.getPlace(),
+          "Verify values using getters"
     );
     assertEquals(
-          LocalDate.now(), paymentSheetRequestForm.getStartDate(),
-          "Verifica los valores usando getters"
+          START_DATE, paymentSheetRequestForm.getStartDate(),
+          "Verify values using getters"
     );
     assertEquals(
-          LocalDate.now().plusDays(7), paymentSheetRequestForm.getEndDate(),
-          "Verifica los valores usando getters"
+          END_DATE, paymentSheetRequestForm.getEndDate(),
+          "Verify values using getters"
     );
   }
 
+  /**
+   * Tests the {@link CreatePaymentSheetRequestForm#equals(Object)} method.
+   * This method checks that two instances with the same values
+   * are considered equal.
+   */
   @Test
   void testEquals() {
-    // Crear dos instancias de CreatePaymentSheetRequestForm con los mismos valores
     var paymentSheetRequestForm1 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
+          USER_EMAIL, EVENT_REASON, EVENT_PLACE, START_DATE, END_DATE
     );
     var paymentSheetRequestForm2 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
+          USER_EMAIL, EVENT_REASON, EVENT_PLACE, START_DATE, END_DATE
     );
 
     assertEquals(
           paymentSheetRequestForm1, paymentSheetRequestForm2,
-          "las instancias son iguales usando equals"
+          "Instances should be equal using equals"
     );
   }
 
+  /**
+   * Tests the inequality comparison of the
+   * {@link CreatePaymentSheetRequestForm#equals(Object)} method.
+   * This method verifies that two instances with different values are
+   *  not considered equal.
+   */
   @Test
   void testNotEquals() {
-    // Crear dos instancias de CreatePaymentSheetRequestForm con diferentes valores
     var paymentSheetRequestForm1 = new CreatePaymentSheetRequestForm(
-          "user1@example.com", "Event reason 1", "Event place 1",
-          LocalDate.now(), LocalDate.now().plusDays(7)
+          DIFFERENT_USER_EMAIL, DIFFERENT_EVENT_REASON, DIFFERENT_EVENT_PLACE,
+          DIFFERENT_START_DATE, DIFFERENT_END_DATE
     );
     var paymentSheetRequestForm2 = new CreatePaymentSheetRequestForm(
-          "user2@example.com", "Event reason 2", "Event place 2",
-          LocalDate.now(), LocalDate.now().plusDays(7)
+          USER_EMAIL, EVENT_REASON, EVENT_PLACE, START_DATE, END_DATE
     );
 
     assertNotEquals(
           paymentSheetRequestForm1, paymentSheetRequestForm2,
-          "las instancias no son iguales usando equals"
+          "Instances should not be equal using equals"
     );
     assertNotEquals(
           paymentSheetRequestForm2, paymentSheetRequestForm1,
-          "las instancias no son iguales usando equals"
+          "Instances should not be equal using equals"
     );
   }
 
+  /**
+   * Tests the {@link CreatePaymentSheetRequestForm#hashCode()} method.
+   * This method verifies that two instances with the same values
+   *  have the same hash code.
+   */
   @Test
   void testHashCode() {
-    // Crear dos instancias de CreatePaymentSheetRequestForm con los mismos valores
     var paymentSheetRequestForm1 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
+          USER_EMAIL, EVENT_REASON, EVENT_PLACE, START_DATE, END_DATE
     );
     var paymentSheetRequestForm2 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
+          USER_EMAIL, EVENT_REASON, EVENT_PLACE, START_DATE, END_DATE
     );
 
     assertEquals(
           paymentSheetRequestForm1.hashCode(),
-          paymentSheetRequestForm2.hashCode(), "los hashCodes son iguales"
+          paymentSheetRequestForm2.hashCode(), "Hash codes should be equal"
     );
   }
-
 }

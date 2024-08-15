@@ -61,19 +61,19 @@ public interface ChessQuestionsService {
   /**
    * Change chess question seen value.
    *
-   * @param id The chess question identifier.
+   * @param identifier The chess question identifier.
    * @return The chess question entity with senn value changed.
    * @throws ChessQuestionServiceException When chess question not found.
    */
-  ChessQuestionEntity changeChessQuestionSeen(Integer id)
+  ChessQuestionEntity changeChessQuestionSeen(Integer identifier)
         throws ChessQuestionServiceException;
 
   /**
    * Delaete chess question using a provided identifier.
    *
-   * @param id The chess question identifier.
+   * @param identifier The chess question identifier.
    * @throws ChessQuestionServiceException when cannot be deleted or fails.
    */
-  void delete(int id) throws ChessQuestionServiceException;
+  void delete(int identifier) throws ChessQuestionServiceException;
 
 }

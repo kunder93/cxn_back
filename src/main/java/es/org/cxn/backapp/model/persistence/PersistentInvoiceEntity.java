@@ -87,7 +87,7 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
    *
    */
   @Column(name = "series", nullable = false, unique = false)
-  private String series = "";
+  private String series;
 
   /**
    * Expedition date of the invoice.
@@ -140,20 +140,22 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
   private PersistentFoodHousingEntity foodHousing;
 
   /**
-   * Main arguments contructor.
+   * Main arguments constructor.
    *
-   * @param numberValue             the invoice number
-   * @param seriesValue             the invoice series
-   * @param expeditionDateValue     the invoice expedition date
-   * @param advancePaymentDateValue the advance payment date or null
-   * @param taxExemptValue          the tax exempt
+   * @param numberValue             the invoice number.
+   * @param seriesValue             the invoice series.
+   * @param expeditionDateValue     the invoice expedition date.
+   * @param advancePaymentDateValue the advance payment date or null.
+   * @param taxExemptValue          the tax exempt.
+   * @param sellerComp                 the invoice's company seller.
+   * @param buyerComp                   the invoice's company buyer.
    */
   public PersistentInvoiceEntity(
         final int numberValue, final String seriesValue,
         final LocalDate expeditionDateValue,
         final LocalDate advancePaymentDateValue, final Boolean taxExemptValue,
-        final PersistentCompanyEntity seller,
-        final PersistentCompanyEntity buyer
+        final PersistentCompanyEntity sellerComp,
+        final PersistentCompanyEntity buyerComp
   ) {
     super();
     this.number = checkNotNull(
@@ -170,24 +172,109 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
           taxExemptValue, "Received a null pointer as tax  Exempt"
     );
     this.seller =
-          checkNotNull(seller, "Received a null pointer as tax  seller");
-    this.buyer = checkNotNull(buyer, "Received a null pointer as tax  seller");
+          checkNotNull(sellerComp, "Received a null pointer as  seller");
+    this.buyer = checkNotNull(buyerComp, "Received a null pointer as buyer");
 
   }
 
+  /**
+   * Compares this object with the specified object for equality.
+   * <p>
+   * The {@code equals} method implements a comparison of this object
+   * with another object. To be considered equal,
+   * both objects must be of the same class and have equal values for
+   * all fields that are used in the comparison.
+   * <p>
+   * The general contract of {@code equals} is:
+   * <ul>
+   *   <li>It is reflexive: for any non-null reference value {@code x},
+   *   {@code x.equals(x)} should return {@code true}.</li>
+   *   <li>It is symmetric: for any non-null reference values {@code x}
+   *   and {@code y}, {@code x.equals(y)} should return
+   *       {@code true} if and only if {@code y.equals(x)}
+   *       returns {@code true}.</li>
+   *   <li>It is transitive: for any non-null reference values {@code x},
+   *    {@code y}, and {@code z}, if {@code x.equals(y)}
+   *       returns {@code true} and {@code y.equals(z)} returns {@code true},
+   *        then {@code x.equals(z)} should return {@code true}.</li>
+   *   <li>It is consistent: for any non-null reference values {@code x}
+   *   and {@code y}, multiple invocations of {@code x.equals(y)}
+   *       consistently return {@code true} or consistently return
+   *       {@code false}, provided no information used in equality comparisons
+   *       on the object is modified.</li>
+   *   <li>For any non-null reference value {@code x}, {@code x.equals(null)}
+   *   should return {@code false}.</li>
+   * </ul>
+   *
+   * <p>
+   * This implementation considers two {@code PersistentInvoiceEntity} objects
+   *  equal if they have the same {@code number},
+   * {@code series}, {@code buyer}, and {@code seller} values.
+   *
+   * <p>
+   * Subclasses should override this method to ensure consistency with
+   * {@code hashCode}. When overriding {@code equals},
+   * make sure to include all fields used in the comparison and follow
+   * the general contract of {@code equals}.
+   *
+   * @param object the reference object with which to compare
+   * @return {@code true} if this object is the same as the {@code object};
+   * {@code false} otherwise
+   */
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+  public boolean equals(final Object object) {
+    boolean result;
+
+    if (this == object) {
+      result = true;
+    } else if (object == null || getClass() != object.getClass()) {
+      result = false;
+    } else {
+      final var that = (PersistentInvoiceEntity) object;
+      result = number == that.number && series.equals(that.series)
+            && buyer.equals(that.buyer) && seller.equals(that.seller);
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    var that = (PersistentInvoiceEntity) o;
-    return number == that.number && series.equals(that.series)
-          && buyer.equals(that.buyer) && seller.equals(that.seller);
+
+    return result;
   }
 
+  /**
+   * Returns a hash code value for the object.
+   * <p>
+   * The {@code hashCode} method must be overridden to ensure that
+   * it is consistent with {@link #equals(Object)}.
+   * The hash code value should be computed based on the same fields
+   *  that are used in the {@code equals} method.
+   * <p>
+   * The general contract of {@code hashCode} is:
+   * <ul>
+   *   <li>Whenever it is invoked on the same object more than once
+   *   during an execution of an application,
+   *       the {@code hashCode} method must consistently return the
+   *       same integer, provided no information used
+   *       in {@code equals} comparisons on the object is modified.</li>
+   *   <li>If two objects are equal according to the {@code equals(Object)}
+   *    method, then calling the {@code hashCode}
+   *       method on each of the two objects must produce the same
+   *       integer result.</li>
+   *   <li>It is not required that if two objects are unequal according to
+   *    the {@code equals(Object)} method,
+   *       then calling the {@code hashCode} method on each of the two objects
+   *        must produce distinct integer results.
+   *       However, the programmer should be aware that producing distinct
+   *        integer results for unequal objects
+   *       can improve the performance of hash-based collections.</li>
+   * </ul>
+   *
+   * <p>
+   * This implementation computes the hash code based on the {@code number},
+   *  {@code series}, {@code buyer}, and
+   * {@code seller} fields. Subclasses should override this method to include
+   *  all fields that are used in the
+   * {@code equals} method to ensure consistency.
+   *
+   * @return a hash code value for this object
+   */
   @Override
   public int hashCode() {
     return Objects.hash(number, series, buyer, seller);

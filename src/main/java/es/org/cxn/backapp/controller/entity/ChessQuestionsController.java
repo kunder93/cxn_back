@@ -128,7 +128,7 @@ public class ChessQuestionsController {
    * Change chess question has been seen state.
    *
    * @param chessQuestionHasSeenRequestForm form with chess question identifier.
-   *                                 {@link ChangeChessQuestionHasSeenRequestForm}.
+   * {@link ChangeChessQuestionHasSeenRequestForm}.
    * @return form with the modified chess question.
    */
   @PostMapping("/changeChessQuestionHasSeen")
@@ -164,7 +164,7 @@ public class ChessQuestionsController {
   @DeleteMapping("/{id}")
   @CrossOrigin(origins = "*")
   public ResponseEntity<Void> deleteChessQuestion(@PathVariable("id")
-  Integer id) {
+  final Integer id) {
     try {
       chessQuestionsService.delete(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);

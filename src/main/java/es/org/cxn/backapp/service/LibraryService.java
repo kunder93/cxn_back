@@ -24,11 +24,11 @@ public interface LibraryService {
   /**
    * Find book using isbn.
    *
-   * @param l the isbn.
+   * @param isbn the isbn.
    * @return Book entity found.
    * @throws LibraryServiceException When book cannot be found.
    */
-  BookEntity findByIsbn(long l) throws LibraryServiceException;
+  BookEntity findByIsbn(long isbn) throws LibraryServiceException;
 
   /**
    * Remove book found using isbn.

@@ -8,77 +8,122 @@ import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequestForm;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the {@link AddRegularTransportRequestForm} class.
+ * This class tests the getter and setter methods, equality comparison,
+ * and hash code computation of the {@link AddRegularTransportRequestForm}
+ * class.
+ */
 class RegularTransportRequestTest {
+
+  /** Constant for category value used in tests. */
+  private static final String CATEGORY = "Category";
+
+  /** Constant for description value used in tests. */
+  private static final String DESCRIPTION = "Description";
+
+  /** Constant for invoice number used in tests. */
+  private static final int INVOICE_NUMBER = 123;
+
+  /** Constant for invoice series used in tests. */
+  private static final String INVOICE_SERIES = "Series";
+
+  /** Constant for a different category value used in tests. */
+  private static final String DIFFERENT_CATEGORY = "Category1";
+
+  /** Constant for a different description value used in tests. */
+  private static final String DIFFERENT_DESCRIPTION = "Description1";
+
+  /** Constant for a different invoice number used in tests. */
+  private static final int DIFFERENT_INVOICE_NUMBER = 456;
+
+  /** Constant for a different invoice series used in tests. */
+  private static final String DIFFERENT_INVOICE_SERIES = "Series1";
+
+  /**
+   * Tests getter and setter methods of the
+   * {@link AddRegularTransportRequestForm} class.
+   * This method verifies that values set using setters are correctly retrieved
+   * using getters.
+   */
   @Test
   void testGettersAndSetters() {
-    // Crear una instancia de AddRegularTransportRequestForm
     var request = new AddRegularTransportRequestForm();
 
-    // Establecer valores usando setters
-    request.setCategory("Category");
-    request.setDescription("Description");
-    request.setInvoiceNumber(123);
-    request.setInvoiceSeries("Series");
+    request.setCategory(CATEGORY);
+    request.setDescription(DESCRIPTION);
+    request.setInvoiceNumber(INVOICE_NUMBER);
+    request.setInvoiceSeries(INVOICE_SERIES);
 
-    assertEquals("Category", request.getCategory(), "valores usando getters");
+    assertEquals(CATEGORY, request.getCategory(), "values using getters");
+    assertEquals(DESCRIPTION, request.getDescription(), "values using getters");
     assertEquals(
-          "Description", request.getDescription(), "valores usando getters"
+          INVOICE_NUMBER, request.getInvoiceNumber(), "values using getters"
     );
-    assertEquals(123, request.getInvoiceNumber(), "valores usando getters");
     assertEquals(
-          "Series", request.getInvoiceSeries(), "valores usando getters"
+          INVOICE_SERIES, request.getInvoiceSeries(), "values using getters"
     );
   }
 
+  /**
+   * Tests the {@link AddRegularTransportRequestForm#equals(Object)} method.
+   * This method checks that two instances with the same values are
+   * considered equal.
+   */
   @Test
   void testEquals() {
-    // Crear dos instancias de AddRegularTransportRequestForm con los mismos valores
     var request1 = new AddRegularTransportRequestForm(
-          "Category", "Description", 123, "Series"
+          CATEGORY, DESCRIPTION, INVOICE_NUMBER, INVOICE_SERIES
     );
     var request2 = new AddRegularTransportRequestForm(
-          "Category", "Description", 123, "Series"
+          CATEGORY, DESCRIPTION, INVOICE_NUMBER, INVOICE_SERIES
     );
 
-    // Verificar que
-    assertEquals(
-          request1, request2, "las instancias son iguales usando equals"
-    );
-    assertEquals(
-          request2, request1, "las instancias son iguales usando equals"
-    );
+    assertEquals(request1, request2, "instances should be equal using equals");
+    assertEquals(request2, request1, "instances should be equal using equals");
   }
 
+  /**
+   * Tests the inequality comparison of the
+   * {@link AddRegularTransportRequestForm#equals(Object)} method.
+   * This method verifies that two instances with different values are
+   * not considered equal.
+   */
   @Test
   void testNotEquals() {
-    // Crear dos instancias de AddRegularTransportRequestForm con diferentes valores
     var request1 = new AddRegularTransportRequestForm(
-          "Category1", "Description1", 123, "Series1"
+          DIFFERENT_CATEGORY, DIFFERENT_DESCRIPTION, INVOICE_NUMBER,
+          DIFFERENT_INVOICE_SERIES
     );
     var request2 = new AddRegularTransportRequestForm(
-          "Category2", "Description2", 456, "Series2"
+          CATEGORY, DESCRIPTION, DIFFERENT_INVOICE_NUMBER,
+          DIFFERENT_INVOICE_SERIES
     );
 
     assertNotEquals(
-          request1, request2, "las instancias no son iguales usando equals"
+          request1, request2, "instances should not be equal using equals"
     );
     assertNotEquals(
-          request2, request1, "las instancias no son iguales usando equals"
+          request2, request1, "instances should not be equal using equals"
     );
   }
 
+  /**
+   * Tests the {@link AddRegularTransportRequestForm#hashCode()} method.
+   * This method verifies that two instances with the same values
+   *  have the same hash code.
+   */
   @Test
   void testHashCode() {
-    // Crear dos instancias de AddRegularTransportRequestForm con los mismos valores
     var request1 = new AddRegularTransportRequestForm(
-          "Category", "Description", 123, "Series"
+          CATEGORY, DESCRIPTION, INVOICE_NUMBER, INVOICE_SERIES
     );
     var request2 = new AddRegularTransportRequestForm(
-          "Category", "Description", 123, "Series"
+          CATEGORY, DESCRIPTION, INVOICE_NUMBER, INVOICE_SERIES
     );
 
     assertEquals(
-          request1.hashCode(), request2.hashCode(), "los hashCodes son iguales"
+          request1.hashCode(), request2.hashCode(), "hashCodes should be equal"
     );
   }
 }

@@ -55,8 +55,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 /**
  * Unit tests for {@link DefaultLibraryService}.
  * <p>
- * These tests verify that the bean applies the correct Java validation
- * annotations.
+ * This class contains tests to verify the functionality of the
+ * {@link DefaultLibraryService} service. It ensures that various methods
+ * of the service behave as expected and handle different scenarios correctly.
+ * The tests use mocks to simulate interactions with dependencies.
+ * </p>
  *
  * @author Santiago Paz
  */
@@ -66,29 +69,110 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 )
 final class TestDefaultLibraryService {
 
+  /**
+   * ISBN number for the first book used in test cases.
+   * <p>
+   * This ISBN is used to simulate a book with a specific identifier in
+   * various test scenarios.
+   * </p>
+   */
+  private static final Long BOOK_ISBN_1 = 235235234L;
+
+  /**
+   * ISBN number for the second book used in test cases.
+   * <p>
+   * This ISBN is used to simulate another book with a different identifier
+   * in various test scenarios.
+   * </p>
+   */
+  private static final Long BOOK_ISBN_2 = 42341232134L;
+
+  /**
+   * ISBN number for the third book used in test cases.
+   * <p>
+   * This ISBN is used to simulate a third book with yet another identifier
+   * in various test scenarios.
+   * </p>
+   */
+  private static final Long BOOK_ISBN_3 = 41523523352L;
+
+  /**
+   * ISBN number used for adding a new book in test cases.
+   * <p>
+   * This ISBN is used to test the addition of a new book to the repository
+   * and to verify that the service handles book creation correctly.
+   * </p>
+   */
+  private static final Long ADD_BOOK_ISBN = 21321321421L;
+
+  /**
+   * ISBN number for a non-existing book used in test cases.
+   * <p>
+   * This ISBN is used to simulate a scenario where a book with the specified
+   * identifier does not exist in the repository, allowing tests to verify
+   * how the service handles the removal or retrieval of non-existing books.
+   * </p>
+   */
+  private static final Long NON_EXISTING_BOOK_ISBN = 1234567890L;
+
+  /**
+   * The {@link LibraryService} bean used in the tests.
+   * <p>
+   * This bean is injected into the test class and is used to call service
+   * methods to be tested.
+   * </p>
+   */
   @Autowired
   private LibraryService libraryService;
 
+  /**
+   * Mock of the {@link BookEntityRepository}.
+   * <p>
+   * This mock is used to simulate interactions with the book repository
+   * without invoking the actual data access layer.
+   * </p>
+   */
   @MockBean
   private BookEntityRepository libraryRepository;
 
+  /**
+   * Mock of the {@link AuthorEntityRepository}.
+   * <p>
+   * This mock is used to simulate interactions with the author repository
+   * without invoking the actual data access layer.
+   * </p>
+   */
   @MockBean
   private AuthorEntityRepository authorRepository;
 
+  /**
+   * Initializes the mocks before each test.
+   * <p>
+   * This method is called before each test method to set up the mocks
+   * and prepare the test environment.
+   * </p>
+   */
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#getAllBooks()} method.
+   * <p>
+   * This test verifies that the service correctly retrieves all books
+   * from the repository and matches the expected results.
+   * </p>
+   */
   @Test
   void testFindAllBooks() {
     // Arrange
     var bookBuilder = PersistentBookEntity.builder();
-    bookBuilder.isbn(235235234L).title("Book 1");
+    bookBuilder.isbn(BOOK_ISBN_1).title("Book 1");
     var book1 = bookBuilder.build();
-    bookBuilder.isbn(42341232134L).title("Book 2");
+    bookBuilder.isbn(BOOK_ISBN_2).title("Book 2");
     var book2 = bookBuilder.build();
-    bookBuilder.isbn(41523523352L).title("Book 3");
+    bookBuilder.isbn(BOOK_ISBN_3).title("Book 3");
     var book3 = bookBuilder.build();
 
     List<PersistentBookEntity> expectedBooks =
@@ -108,80 +192,138 @@ final class TestDefaultLibraryService {
     assertEquals(expectedBooks, actualBooks, "Books should be the same.");
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#addBook(AddBookRequestDto)} method.
+   * <p>
+   * This test verifies that the service correctly saves a book and
+   * returns the saved book entity.
+   * </p>
+   *
+   * @throws LibraryServiceException if an error occurs during the book addition
+   */
   @Test
-  void testAddBookRetunrsBookSaved() throws LibraryServiceException {
+  void testAddBookReturnsBookSaved() throws LibraryServiceException {
     // Arrange
-    var book1 = AddBookRequestDto.builder().isbn(21321321421L).title("Book 1")
+    var book1 = AddBookRequestDto.builder().isbn(ADD_BOOK_ISBN).title("Book 1")
           .build();
-    var book1Entity = PersistentBookEntity.builder().isbn(21321321421L)
+    var book1Entity = PersistentBookEntity.builder().isbn(ADD_BOOK_ISBN)
           .title("Book 1").build();
 
-    // Mock the repository to return the expected books when save() is called
+    // Mock the repository to return the expected book entity when save()
+    // is called
     when(libraryRepository.save(book1Entity)).thenReturn(book1Entity);
     var bookSaved = libraryService.addBook(book1);
 
+    // Verify that the save method was called once and check the saved book data
     verify(libraryRepository, times(1)).save(book1Entity);
     Assertions.assertEquals(
-          book1.getIsbn(), bookSaved.getIsbn(),
-          "book isbn stored is same as book with data created."
+          book1.getIsbn(), bookSaved.getIsbn(), "Book ISBN should match."
     );
     Assertions.assertEquals(
-          book1.getTitle(), bookSaved.getTitle(),
-          "book isbn stored is same as book with data created."
+          book1.getTitle(), bookSaved.getTitle(), "Book title should match."
     );
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#addBook(AddBookRequestDto)} method
+   * when a null book is provided.
+   * <p>
+   * This test verifies that a {@link NullPointerException} is thrown when
+   * trying to add a null book.
+   * </p>
+   */
   @Test
-  void testAddNullBookRaiseServiceException() {
+  void testAddNullBookRaisesServiceException() {
     // Arrange
     AddBookRequestDto book1 = null;
+
+    // Act and Assert
     Assertions.assertThrows(
           NullPointerException.class, () -> libraryService.addBook(book1),
-          "book1 is null so exception is thrown."
+          "Null book should raise NullPointerException."
     );
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#findByIsbn(Long)} method.
+   * <p>
+   * This test verifies that the service correctly finds a book by its ISBN
+   * and returns the expected book entity.
+   * </p>
+   *
+   * @throws LibraryServiceException if an error occurs during the book
+   * retrieval
+   */
   @Test
   void testFindBookByISBN() throws LibraryServiceException {
-    var bookIsbn = 21321321421L;
-    var book1 =
-          PersistentBookEntity.builder().isbn(bookIsbn).title("Book 1").build();
-    var bookOptional = Optional.of(book1);
-    // Mock the repository to return the expected book when findById is called
-    when(libraryRepository.findById(bookIsbn)).thenReturn(bookOptional);
+    var bookOptional = Optional.of(
+          PersistentBookEntity.builder().isbn(ADD_BOOK_ISBN).title("Book 1")
+                .build()
+    );
 
-    var bookFound = libraryService.findByIsbn(21321321421L);
-    verify(libraryRepository, times(1)).findById(bookIsbn);
-    Assertions.assertEquals(bookFound, book1, "return the correct book.");
+    // Mock the repository to return the expected book when findById() is called
+    when(libraryRepository.findById(ADD_BOOK_ISBN)).thenReturn(bookOptional);
+
+    var bookFound = libraryService.findByIsbn(ADD_BOOK_ISBN);
+    verify(libraryRepository, times(1)).findById(ADD_BOOK_ISBN);
+    Assertions.assertEquals(
+          bookFound, bookOptional.get(),
+          "Returned book should match the expected book."
+    );
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#findByIsbn(Long)} method
+   * with a null ISBN value.
+   * <p>
+   * This test verifies that a {@link LibraryServiceException} is thrown
+   * when a null ISBN is provided.
+   * </p>
+   */
   @Test
   void testFindByIsbnWithNullValue() {
     // Arrange: Prepare the test scenario
-    var isbn = 0L; // You can choose any valid ISBN value here
+    var isbn = 0L; // Choose a valid ISBN value here
 
     // Act and Assert: Test the behavior when a null value is passed
     Assertions.assertThrows(LibraryServiceException.class, () -> {
       libraryService.findByIsbn(isbn);
-    }, "null value raise exception.");
+    }, "Null ISBN should raise LibraryServiceException.");
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#removeBookByIsbn(Long)} method.
+   * <p>
+   * This test verifies that the service correctly removes a book by its ISBN
+   * when the book exists in the repository.
+   * </p>
+   */
   @Test
   void testRemoveBookWithIsbn() {
     // Arrange
-    var bookIsbn = 21321321421L;
-    when(libraryRepository.existsById(bookIsbn)).thenReturn(Boolean.TRUE);
-    doNothing().when(libraryRepository).deleteById(bookIsbn);
+    when(libraryRepository.existsById(ADD_BOOK_ISBN)).thenReturn(Boolean.TRUE);
+    doNothing().when(libraryRepository).deleteById(ADD_BOOK_ISBN);
+
     // Act
     try {
-      libraryService.removeBookByIsbn(bookIsbn);
+      libraryService.removeBookByIsbn(ADD_BOOK_ISBN);
     } catch (LibraryServiceException e) {
       // Handle exceptions as needed in your test
     }
+
     // Assert
-    verify(libraryRepository, times(1)).deleteById(bookIsbn);
+    verify(libraryRepository, times(1)).deleteById(ADD_BOOK_ISBN);
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#removeBookByIsbn(Long)} method
+   * with a null ISBN value.
+   * <p>
+   * This test verifies that a {@link LibraryServiceException} is thrown
+   * when a null ISBN is provided and ensures that the delete method is not
+   * called.
+   * </p>
+   */
   @Test
   void testRemoveBookWithNullIsbn() {
     // Arrange
@@ -190,27 +332,32 @@ final class TestDefaultLibraryService {
     // Act and Assert
     Assertions.assertThrows(LibraryServiceException.class, () -> {
       libraryService.removeBookByIsbn(nullIsbn);
-    }, "null identifier raises exception");
+    }, "Null ISBN should raise LibraryServiceException.");
 
     // Ensure that libraryRepository.deleteById is not called
     verify(libraryRepository, never()).deleteById(anyLong());
   }
 
+  /**
+   * Tests the {@link DefaultLibraryService#removeBookByIsbn(Long)} method
+   * when attempting to remove a non-existing book.
+   * <p>
+   * This test verifies that a {@link LibraryServiceException} is thrown
+   * when trying to remove a book that does not exist in the repository.
+   * </p>
+   */
   @Test
   void testRemoveNonExistingBookByIsbn() {
     // Arrange
-    var nonExistingIsbn = 1234567890L;
-
-    // Mock the behavior of libraryRepository.existsById
-    when(libraryRepository.existsById(nonExistingIsbn)).thenReturn(false);
+    when(libraryRepository.existsById(NON_EXISTING_BOOK_ISBN))
+          .thenReturn(false);
 
     // Act and Assert
     Assertions.assertThrows(LibraryServiceException.class, () -> {
-      libraryService.removeBookByIsbn(nonExistingIsbn);
-    }, "non existing book by isbn raises service exception.");
+      libraryService.removeBookByIsbn(NON_EXISTING_BOOK_ISBN);
+    }, "Removing a non-existing book should raise LibraryServiceException.");
 
     // Ensure that libraryRepository.deleteById is not called
     verify(libraryRepository, never()).deleteById(anyLong());
   }
-
 }

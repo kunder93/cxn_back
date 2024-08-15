@@ -49,9 +49,9 @@ public final class SignUpRequestForm implements Serializable {
    */
   @Pattern(
         regexp = "^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$",
-        message = Constants.DNI_BAD_FORMAT_MESSAGE
+        message = Constants.DNI_BAD_FORMAT
   )
-  @NotNull(message = Constants.DNI_BAD_FORMAT_MESSAGE)
+  @NotNull(message = Constants.DNI_BAD_FORMAT)
   private String dni;
 
   /**
@@ -60,7 +60,7 @@ public final class SignUpRequestForm implements Serializable {
    * Name must not be null and must contain at least one non-whitespace
    * character. Max name length is NAME_MAX_LENGHT.
    */
-  @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.NAME_NOT_BLANK)
   @Size(
         max = Constants.NAME_MAX_LENGTH,
         message = Constants.NAME_MAX_LENGTH_MESSAGE
@@ -73,7 +73,7 @@ public final class SignUpRequestForm implements Serializable {
    * First surname must not be null and must contain at least one non-whitespace
    * character. Max first surname length is FIRST_SURNAME_MAX_LENGHT.
    */
-  @NotBlank(message = Constants.FIRST_SURNAME_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.FIRST_SURNAME_NOT_BLANK)
   @Size(
         max = Constants.FIRST_SURNAME_MAX_LENGTH,
         message = Constants.FIRST_SURNAME_MAX_LENGTH_MESSAGE
@@ -87,7 +87,7 @@ public final class SignUpRequestForm implements Serializable {
    * non-whitespace character. Max second surname length is
    * SECOND_SURNAME_MAX_LENGHT.
    */
-  @NotBlank(message = Constants.SECOND_SURNAME_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.SECOND_SURNAME_NOT_BLANK)
   @Size(
         max = Constants.SECOND_SURNAME_MAX_LENGTH,
         message = Constants.SECOND_SURNAME_MAX_LENGTH_MESSAGE
@@ -99,7 +99,7 @@ public final class SignUpRequestForm implements Serializable {
    * <p>
    * Birth date must be an instant, date or time in the past.
    */
-  @Past(message = Constants.BIRTH_DATE_PAST_MESSAGE)
+  @Past(message = Constants.BIRTH_DATE_PAST)
   private LocalDate birthDate;
 
   /**
@@ -108,7 +108,7 @@ public final class SignUpRequestForm implements Serializable {
    * Gender must not be null and must contain at least one non-whitespace
    * character. Max gender length is SECOND_SURNAME_MAX_LENGHT.
    */
-  @NotBlank(message = Constants.GENDER_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.GENDER_NOT_BLANK)
   @Size(
         max = Constants.GENDER_MAX_LENGTH,
         message = Constants.GENDER_MAX_LENGTH_MESSAGE
@@ -135,12 +135,12 @@ public final class SignUpRequestForm implements Serializable {
    * Email must not be null and must contain at least PASSWORD_MIN_LENGTH
    * non-whitespace character. String well formated email.
    */
-  @NotBlank(message = Constants.EMAIL_NOT_VALID_MESSAGE)
+  @NotBlank(message = Constants.EMAIL_NOT_VALID)
   @Size(
         max = Constants.EMAIL_MAX_SIZE,
         message = Constants.MAX_SIZE_EMAIL_MESSAGE
   )
-  @Email(message = Constants.EMAIL_NOT_VALID_MESSAGE)
+  @Email(message = Constants.EMAIL_NOT_VALID)
   private String email;
 
   /**
@@ -166,7 +166,7 @@ public final class SignUpRequestForm implements Serializable {
   /**
    * User building address.
    */
-  @NotBlank(message = Constants.BUILDING_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.BUILDING_NOT_BLANK)
   @Size(
         max = Constants.BUILDING_MAX_LENGHT,
         message = Constants.BUILDING_MAX_LENGHT_MESSAGE
@@ -176,7 +176,7 @@ public final class SignUpRequestForm implements Serializable {
   /**
    * User street address.
    */
-  @NotBlank(message = Constants.STREET_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.STREET_NOT_BLANK)
   @Size(
         max = Constants.STREET_MAX_LENGHT,
         message = Constants.STREET_MAX_LENGHT_MESSAGE
@@ -186,7 +186,7 @@ public final class SignUpRequestForm implements Serializable {
   /**
    * User city address.
    */
-  @NotBlank(message = Constants.CITY_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.CITY_NOT_BLANK)
   @Size(
         max = Constants.CITY_MAX_LENGHT,
         message = Constants.CITY_MAX_LENGHT_MESSAGE

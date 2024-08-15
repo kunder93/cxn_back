@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -66,5 +66,5 @@ public final class AddBookRequestDto implements Serializable {
   /**
    * The book authors list.
    */
-  private ArrayList<AuthorRequestDto> authorsList;
+  private List<AuthorRequestDto> authorsList;
 }

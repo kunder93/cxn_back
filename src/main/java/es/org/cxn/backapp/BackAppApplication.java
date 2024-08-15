@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * @author Santi
  *
+ *
  *         Spring Boot application
  */
 @SpringBootApplication

@@ -22,7 +22,8 @@ class PersistentAddressEntityTest {
     address.setStreet("Example Street");
     address.setCity("Example City");
 
-    // Verificar que los valores se establecieron correctamente utilizando los métodos getter
+    // Verificar que los valores se establecieron correctamente
+    // utilizando los métodos getter
     assertEquals("12345678A", address.getUserDni(), "getter");
     assertEquals("12345", address.getPostalCode(), "getter");
     assertEquals("A1", address.getApartmentNumber(), "getter");
@@ -82,7 +83,8 @@ class PersistentAddressEntityTest {
 
     assertNotEquals(
           address1.hashCode(), address2.hashCode(),
-          "Verificar que los hash codes de address1 y address2 son diferentes después de modificar address2"
+          "Verificar que los hash codes de address1 y address2 son diferentes"
+                + " después de modificar address2"
     );
 
     PersistentAddressEntity nullAddress = null;

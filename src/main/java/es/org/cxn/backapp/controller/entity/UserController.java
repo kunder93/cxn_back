@@ -148,19 +148,19 @@ public class UserController {
   /**
    * Change user kind of member.
    *
-   * @param userChangeKindMemberRequest The email as user identifier and
+   * @param userChangeKindMemberReq The email as user identifier and
    * new kind of member.
    * @return user data with new kind of member.
    */
   @CrossOrigin(origins = "*")
   @PatchMapping("/changeKindOfMember")
   public ResponseEntity<UserDataResponse> changeUserKindOfMember(@RequestBody
-  final UserChangeKindMemberRequest userChangeKindMemberRequest) {
-    UserEntity result;
+  final UserChangeKindMemberRequest userChangeKindMemberReq) {
+    final UserEntity result;
     try {
       result = userService.changeKindMember(
-            userChangeKindMemberRequest.getEmail(),
-            userChangeKindMemberRequest.getKindMember()
+            userChangeKindMemberReq.getEmail(),
+            userChangeKindMemberReq.getKindMember()
       );
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
@@ -179,7 +179,7 @@ public class UserController {
   @PatchMapping("/changeEmail")
   public ResponseEntity<UserDataResponse> changeUserEmail(@RequestBody
   final UserChangeEmailRequest userChangeEmailRequest) {
-    UserEntity result;
+    final UserEntity result;
     try {
       result = userService.changeUserEmail(
             userChangeEmailRequest.getEmail(),
@@ -203,7 +203,7 @@ public class UserController {
   @PatchMapping("/changePassword")
   public ResponseEntity<UserDataResponse> changeUserPassword(@RequestBody
   final UserChangePasswordRequest userChangePasswordRequest) {
-    UserEntity result;
+    final UserEntity result;
     try {
       result = userService.changeUserPassword(
             userChangePasswordRequest.getEmail(),

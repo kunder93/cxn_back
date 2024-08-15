@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.tes.unit.validation;
+package es.org.cxn.backapp.test.unit.validation;
 
 import es.org.cxn.backapp.model.form.Constants;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
@@ -35,17 +35,17 @@ final class TestAuthenticationRequestValidation {
   /**
    * Example valid password.
    */
-  final private static String VALID_PASSWORD = "vPijN4223";
+  private static final String VALID_PASSWORD = "vPijN4223";
 
   /**
    * Example valid email.
    */
-  final static private String VALID_EMAIL = "asfgkhrewejkhrew@dadsa.asd";
+  private static final String VALID_EMAIL = "asfgkhrewejkhrew@dadsa.asd";
 
   /**
    * Default constructor.
    */
-  public TestAuthenticationRequestValidation() {
+  TestAuthenticationRequestValidation() {
     super();
   }
 
@@ -78,7 +78,7 @@ final class TestAuthenticationRequestValidation {
           .assertTrue(matchConsViolSiz, "constraint violation size 1 or 2.");
     violations.forEach(constraintViolation -> {
       Assertions.assertEquals(
-            Constants.EMAIL_NOT_VALID_MESSAGE, constraintViolation.getMessage(),
+            Constants.EMAIL_NOT_VALID, constraintViolation.getMessage(),
             "The constraint message is about email."
       );
       Assertions.assertEquals(
@@ -89,7 +89,8 @@ final class TestAuthenticationRequestValidation {
   }
 
   /**
-   * Verifies validation email cannot be more than 50 characters.
+   *  Verifies validation email cannot be more than 50 characters.
+   * @param email The auth request email.
    */
   @DisplayName("Validate email no valid upper max length.")
   @ParameterizedTest
@@ -99,7 +100,7 @@ final class TestAuthenticationRequestValidation {
   )
   void testEmailLengthOutBoundsNotValid(final String email) {
     final var authRequest = new AuthenticationRequest(email, VALID_PASSWORD);
-    ;
+
     Set<ConstraintViolation<AuthenticationRequest>> violations =
           validator.validate(authRequest);
     Assertions
@@ -136,7 +137,7 @@ final class TestAuthenticationRequestValidation {
             constraintViolation.getInvalidValue(), "null is the not valid value"
       );
       Assertions.assertEquals(
-            Constants.EMAIL_NOT_VALID_MESSAGE, constraintViolation.getMessage(),
+            Constants.EMAIL_NOT_VALID, constraintViolation.getMessage(),
             "The message provided is the email not empty."
       );
     });
@@ -198,7 +199,9 @@ final class TestAuthenticationRequestValidation {
   }
 
   /**
-   * Verifies validation password cannot be greater than 50 characters or less than 6.
+   * Verifies validation password cannot be greater than 50
+   * characters or less than 6.
+   * @param password The auth request password.
    */
   @DisplayName("Validate password out from length bounds.")
   @ParameterizedTest
@@ -208,7 +211,7 @@ final class TestAuthenticationRequestValidation {
   )
   void testPasswordLengthOutBoundsNotValid(final String password) {
     final var authRequest = new AuthenticationRequest(VALID_EMAIL, password);
-    ;
+
     Set<ConstraintViolation<AuthenticationRequest>> violations =
           validator.validate(authRequest);
     Assertions

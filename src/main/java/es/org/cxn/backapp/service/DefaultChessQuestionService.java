@@ -30,7 +30,6 @@ import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
-import es.org.cxn.backapp.repository.CompanyEntityRepository;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -61,7 +60,8 @@ public final class DefaultChessQuestionService
   /**
    * Constructs an entities service with the specified repositories.
    *
-   * @param repo The company repository{@link CompanyEntityRepository}
+   * @param repo The chess questions repository.
+   * {@link ChessQuestionEntityRepository}
    */
   public DefaultChessQuestionService(final ChessQuestionEntityRepository repo) {
     super();
@@ -75,7 +75,7 @@ public final class DefaultChessQuestionService
         final String email, final String category, final String topic,
         final String message
   ) {
-    var chessQuestionEntity = PersistentChessQuestionEntity.builder()
+    final var chessQuestionEntity = PersistentChessQuestionEntity.builder()
           .email(email).category(category).topic(topic).message(message)
           .seen(false).date(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
           .build();
@@ -88,11 +88,11 @@ public final class DefaultChessQuestionService
   }
 
   @Override
-  public ChessQuestionEntity changeChessQuestionSeen(final Integer id)
+  public ChessQuestionEntity changeChessQuestionSeen(final Integer identifier)
         throws ChessQuestionServiceException {
-    var question = chessQuestionRepository.findById(id);
+    final var question = chessQuestionRepository.findById(identifier);
     if (question.isPresent()) {
-      var entity = question.get();
+      final var entity = question.get();
       entity.setSeen(!entity.isSeen());
       return chessQuestionRepository.save(entity);
     } else {
@@ -101,8 +101,9 @@ public final class DefaultChessQuestionService
   }
 
   @Override
-  public void delete(int id) throws ChessQuestionServiceException {
-    var optionalQuestion = chessQuestionRepository.findById(id);
+  public void delete(final int identifier)
+        throws ChessQuestionServiceException {
+    final var optionalQuestion = chessQuestionRepository.findById(identifier);
     if (optionalQuestion.isPresent()) {
       chessQuestionRepository.delete(optionalQuestion.get());
     } else {

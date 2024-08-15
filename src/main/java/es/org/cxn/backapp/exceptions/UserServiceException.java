@@ -1,3 +1,4 @@
+
 package es.org.cxn.backapp.exceptions;
 
 /**
@@ -20,6 +21,16 @@ public final class UserServiceException extends Exception {
    */
   public UserServiceException(final String value) {
     super(value);
+  }
+
+  /**
+   * Constructor with message and cause.
+   *
+   * @param value exception message.
+   * @param cause the cause of the exception.
+   */
+  public UserServiceException(final String value, final Throwable cause) {
+    super(value, cause);
   }
 
 }

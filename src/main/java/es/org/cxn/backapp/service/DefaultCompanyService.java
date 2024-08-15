@@ -47,15 +47,15 @@ public final class DefaultCompanyService implements CompanyService {
   /**
    * Message company already exists for exception.
    */
-  public static final String COMPANY_EXISTS_MESSAGE = "Company already exists.";
+  public static final String COMPANY_EXISTS = "Company already exists.";
   /**
    * Message company not found for exception.
    */
-  public static final String COMPANY_NOT_FOUND_MESSAGE = "Company not found.";
+  public static final String COMPANY_NOT_FOUND = "Company not found.";
   /**
    * Message company cannot be deleted for exception.
    */
-  public static final String COMPANY_CANNOT_DELETE_MESSAGE =
+  public static final String COMPANY_CANNOT_DELETE =
         "Company can not be deleted.";
 
   /**
@@ -81,7 +81,7 @@ public final class DefaultCompanyService implements CompanyService {
         add(final String nif, final String name, final String address)
               throws CompanyServiceException {
     if (Boolean.TRUE.equals(companyRepository.existsByNif(nif))) {
-      throw new CompanyServiceException(COMPANY_EXISTS_MESSAGE);
+      throw new CompanyServiceException(COMPANY_EXISTS);
     }
     final var company = PersistentCompanyEntity.builder().nif(nif).name(name)
           .address(address).build();
@@ -93,7 +93,7 @@ public final class DefaultCompanyService implements CompanyService {
         throws CompanyServiceException {
     final var company = companyRepository.findByNif(nifCif);
     if (company.isEmpty()) {
-      throw new CompanyServiceException(COMPANY_NOT_FOUND_MESSAGE);
+      throw new CompanyServiceException(COMPANY_NOT_FOUND);
     }
     return company.get();
   }
@@ -103,14 +103,14 @@ public final class DefaultCompanyService implements CompanyService {
 
     final var companyOptional = companyRepository.findByNif(nifCif);
     if (companyOptional.isEmpty()) {
-      throw new CompanyServiceException(COMPANY_NOT_FOUND_MESSAGE);
+      throw new CompanyServiceException(COMPANY_NOT_FOUND);
     }
     final var numberInvoicesAsBuyer =
           companyOptional.get().getInvoicesAsBuyer().size();
     final var numberInvoicesAsSeller =
           companyOptional.get().getInvoicesAsSeller().size();
     if (numberInvoicesAsBuyer > 0 || numberInvoicesAsSeller > 0) {
-      throw new CompanyServiceException(COMPANY_CANNOT_DELETE_MESSAGE);
+      throw new CompanyServiceException(COMPANY_CANNOT_DELETE);
     }
     companyRepository.delete(companyOptional.get());
   }

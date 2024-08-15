@@ -11,106 +11,159 @@ import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the {@link CreateInvoiceRequestForm} class.
+ * This class tests the getter and setter methods, equality comparison,
+ * hash code computation, and builder functionality of the
+ * {@link CreateInvoiceRequestForm} class.
+ */
 class CreateInvoiceRequestTest {
+
+  /**
+   * The invoice number used for testing.
+   */
+  private static final int INVOICE_NUMBER = 123;
+
+  /**
+   * The invoice series used for testing.
+   */
+  private static final String INVOICE_SERIES = "A";
+
+  /**
+   * The advance payment date used for testing.
+   */
+  private static final LocalDate ADVANCE_PAYMENT_DATE =
+        LocalDate.of(2022, 5, 1);
+
+  /**
+   * The expedition date used for testing.
+   */
+  private static final LocalDate EXPEDITION_DATE = LocalDate.of(2022, 5, 15);
+
+  /**
+   * Indicates whether the invoice is tax-exempt, used for testing.
+   */
+  private static final boolean TAX_EXEMPT = true;
+
+  /**
+   * The seller's NIF (tax identification number) used for testing.
+   */
+  private static final String SELLER_NIF = "123456789A";
+
+  /**
+   * The buyer's NIF (tax identification number) used for testing.
+   */
+  private static final String BUYER_NIF = "987654321B";
+
+  /**
+   * Tests getter and setter methods of the {@link CreateInvoiceRequestForm}
+   * class.
+   * This method verifies that values set using setters are correctly retrieved
+   * using getters.
+   */
   @Test
   void testGettersAndSetters() {
-    // Crear una instancia de CreateInvoiceRequestForm
     var invoiceRequestForm = new CreateInvoiceRequestForm();
 
-    // Establecer valores usando setters
-    invoiceRequestForm.setNumber(123);
-    invoiceRequestForm.setSeries("A");
-    invoiceRequestForm.setAdvancePaymentDate(LocalDate.of(2022, 5, 1));
-    invoiceRequestForm.setExpeditionDate(LocalDate.of(2022, 5, 15));
-    invoiceRequestForm.setTaxExempt(true);
-    invoiceRequestForm.setSellerNif("123456789A");
-    invoiceRequestForm.setBuyerNif("987654321B");
+    invoiceRequestForm.setNumber(INVOICE_NUMBER);
+    invoiceRequestForm.setSeries(INVOICE_SERIES);
+    invoiceRequestForm.setAdvancePaymentDate(ADVANCE_PAYMENT_DATE);
+    invoiceRequestForm.setExpeditionDate(EXPEDITION_DATE);
+    invoiceRequestForm.setTaxExempt(TAX_EXEMPT);
+    invoiceRequestForm.setSellerNif(SELLER_NIF);
+    invoiceRequestForm.setBuyerNif(BUYER_NIF);
 
-    // Verificar los valores usando getters
-    assertEquals(123, invoiceRequestForm.getNumber(), "getter");
-    assertEquals("A", invoiceRequestForm.getSeries(), "getter");
+    assertEquals(INVOICE_NUMBER, invoiceRequestForm.getNumber(), "getter");
+    assertEquals(INVOICE_SERIES, invoiceRequestForm.getSeries(), "getter");
     assertEquals(
-          LocalDate.of(2022, 5, 1), invoiceRequestForm.getAdvancePaymentDate(),
+          ADVANCE_PAYMENT_DATE, invoiceRequestForm.getAdvancePaymentDate(),
           "getter"
     );
     assertEquals(
-          LocalDate.of(2022, 5, 15), invoiceRequestForm.getExpeditionDate(),
-          "getter"
+          EXPEDITION_DATE, invoiceRequestForm.getExpeditionDate(), "getter"
     );
     assertTrue(invoiceRequestForm.getTaxExempt(), "getter");
-    assertEquals("123456789A", invoiceRequestForm.getSellerNif(), "getter");
-    assertEquals("987654321B", invoiceRequestForm.getBuyerNif(), "getter");
+    assertEquals(SELLER_NIF, invoiceRequestForm.getSellerNif(), "getter");
+    assertEquals(BUYER_NIF, invoiceRequestForm.getBuyerNif(), "getter");
   }
 
+  /**
+   * Tests the {@link CreateInvoiceRequestForm#equals(Object)} and
+   * {@link CreateInvoiceRequestForm#hashCode()} methods.
+   * This method verifies that two instances with the same values are considered
+   * equal and have the same hash code.
+   */
   @Test
   void testEqualsAndHashCode() {
-    // Crear dos instancias de CreateInvoiceRequestForm con los mismos valores
-    var invoiceRequestForm1 = CreateInvoiceRequestForm.builder().number(123)
-          .series("A").advancePaymentDate(LocalDate.of(2022, 5, 1))
-          .expeditionDate(LocalDate.of(2022, 5, 15)).taxExempt(true)
-          .sellerNif("123456789A").buyerNif("987654321B").build();
+    var invoiceRequestForm1 =
+          CreateInvoiceRequestForm.builder().number(INVOICE_NUMBER)
+                .series(INVOICE_SERIES).advancePaymentDate(ADVANCE_PAYMENT_DATE)
+                .expeditionDate(EXPEDITION_DATE).taxExempt(TAX_EXEMPT)
+                .sellerNif(SELLER_NIF).buyerNif(BUYER_NIF).build();
 
-    var invoiceRequestForm2 = CreateInvoiceRequestForm.builder().number(123)
-          .series("A").advancePaymentDate(LocalDate.of(2022, 5, 1))
-          .expeditionDate(LocalDate.of(2022, 5, 15)).taxExempt(true)
-          .sellerNif("123456789A").buyerNif("987654321B").build();
+    var invoiceRequestForm2 =
+          CreateInvoiceRequestForm.builder().number(INVOICE_NUMBER)
+                .series(INVOICE_SERIES).advancePaymentDate(ADVANCE_PAYMENT_DATE)
+                .expeditionDate(EXPEDITION_DATE).taxExempt(TAX_EXEMPT)
+                .sellerNif(SELLER_NIF).buyerNif(BUYER_NIF).build();
 
     assertEquals(
           invoiceRequestForm1, invoiceRequestForm2,
-          "las dos instancias son iguales usando equals"
+          "Instances should be equal using equals"
     );
-
     assertEquals(
           invoiceRequestForm1.hashCode(), invoiceRequestForm2.hashCode(),
-          "el hashcode de las dos instancias es el mismo"
+          "Hash codes should be equal"
     );
 
     CreateInvoiceRequestForm nullRequest = null;
-    assertNotEquals(invoiceRequestForm1, nullRequest, "not equals with null");
+    assertNotEquals(
+          invoiceRequestForm1, nullRequest,
+          "Instance should not be equal to null"
+    );
 
     var otherObject = " ";
     assertNotEquals(
-          invoiceRequestForm1, otherObject, "not equals with other object"
+          invoiceRequestForm1, otherObject,
+          "Instance should not be equal to a different object"
     );
-
   }
 
+  /**
+   * Tests the builder pattern of the {@link CreateInvoiceRequestForm} class.
+   * This method verifies that values set using the builder are correctly
+   * retrieved using getters.
+   */
   @Test
   void testBuilder() {
-    // Crear una instancia usando el builder
-    var invoiceRequestForm = CreateInvoiceRequestForm.builder().number(123)
-          .series("A").advancePaymentDate(LocalDate.of(2022, 5, 1))
-          .expeditionDate(LocalDate.of(2022, 5, 15)).taxExempt(true)
-          .sellerNif("123456789A").buyerNif("987654321B").build();
+    var invoiceRequestForm =
+          CreateInvoiceRequestForm.builder().number(INVOICE_NUMBER)
+                .series(INVOICE_SERIES).advancePaymentDate(ADVANCE_PAYMENT_DATE)
+                .expeditionDate(EXPEDITION_DATE).taxExempt(TAX_EXEMPT)
+                .sellerNif(SELLER_NIF).buyerNif(BUYER_NIF).build();
 
     assertEquals(
-          123, invoiceRequestForm.getNumber(),
-          "valores establecidos por el builder"
+          INVOICE_NUMBER, invoiceRequestForm.getNumber(),
+          "Values set by builder"
     );
     assertEquals(
-          "A", invoiceRequestForm.getSeries(),
-          "valores establecidos por el builder"
+          INVOICE_SERIES, invoiceRequestForm.getSeries(),
+          "Values set by builder"
     );
     assertEquals(
-          LocalDate.of(2022, 5, 1), invoiceRequestForm.getAdvancePaymentDate(),
-          "valores establecidos por el builder"
+          ADVANCE_PAYMENT_DATE, invoiceRequestForm.getAdvancePaymentDate(),
+          "Values set by builder"
     );
     assertEquals(
-          LocalDate.of(2022, 5, 15), invoiceRequestForm.getExpeditionDate(),
-          "valores establecidos por el builder"
+          EXPEDITION_DATE, invoiceRequestForm.getExpeditionDate(),
+          "Values set by builder"
     );
-    assertTrue(
-          invoiceRequestForm.getTaxExempt(),
-          "valores establecidos por el builder"
+    assertTrue(invoiceRequestForm.getTaxExempt(), "Values set by builder");
+    assertEquals(
+          SELLER_NIF, invoiceRequestForm.getSellerNif(), "Values set by builder"
     );
     assertEquals(
-          "123456789A", invoiceRequestForm.getSellerNif(),
-          "valores establecidos por el builder"
-    );
-    assertEquals(
-          "987654321B", invoiceRequestForm.getBuyerNif(),
-          "valores establecidos por el builder"
+          BUYER_NIF, invoiceRequestForm.getBuyerNif(), "Values set by builder"
     );
   }
-
 }

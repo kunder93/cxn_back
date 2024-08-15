@@ -41,7 +41,7 @@ public final class CreateCompanyRequestForm implements Serializable {
   /**
    * The company name.
    */
-  @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
+  @NotBlank(message = Constants.NAME_NOT_BLANK)
   @Size(
         max = Constants.NAME_MAX_LENGTH,
         message = Constants.NAME_MAX_LENGTH_MESSAGE

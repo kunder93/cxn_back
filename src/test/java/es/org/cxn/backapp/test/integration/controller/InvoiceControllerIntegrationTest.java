@@ -11,7 +11,6 @@ import com.google.gson.GsonBuilder;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.service.DefaultCompanyService;
-import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.utils.CompanyControllerFactory;
 import es.org.cxn.backapp.test.utils.InvoicesControllerFactory;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
@@ -27,32 +26,66 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Santiago Paz. User controller integration tests.
+ * Integration tests for the
+ * {@link es.org.cxn.backapp.controller.InvoiceController}.
+ * This test class verifies the end-to-end functionality of the Invoice API,
+ * ensuring that various invoice-related operations behave as expected within
+ * the application's context.
+ *
+ * <p>These tests involve interactions with the mock MVC framework to simulate
+ * HTTP requests and responses without requiring a running server.</p>
+ *
+ * <p>The tests cover scenarios such as creating invoices, validating that buyer
+ * and seller exist, handling duplicate invoice numbers, and verifying data
+ * integrity after CRUD operations.</p>
+ *
+ * <p>Test configuration is sourced from the application.properties file,
+ * ensuring that the tests run in an isolated environment.</p>
+ *
+ * <p>Author: Santiago Paz.</p>
  */
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application.properties")
 class InvoiceControllerIntegrationTest {
 
-  private final static String INVOICE_URL = "/api/invoice";
-  private final static String COMPANY_URL = "/api/company";
+  /**
+   * URL endpoint for accessing invoice-related operations.
+   */
+  private static final String INVOICE_URL = "/api/invoice";
 
+  /**
+   * URL endpoint for accessing company-related operations.
+   */
+  private static final String COMPANY_URL = "/api/company";
+
+  /**
+   * Gson instance for serializing and deserializing JSON objects, customized
+   * with a {@link LocalDateAdapter} to handle {@link LocalDate} objects.
+   */
   private static Gson gson;
+
+  /**
+   * MockMvc instance used to perform HTTP requests in the integration tests.
+   */
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  UserDetailsService myUserDetailsService;
-  @Autowired
-  JwtUtils jwtUtils;
-
+  /**
+   * Initializes the Gson instance before any tests are executed.
+   *
+   * <p>This method registers a custom {@link LocalDateAdapter} to handle
+   * the serialization and deserialization of {@link LocalDate} objects.</p>
+   *
+   * <p>Annotated with {@link BeforeAll} to ensure that it runs once before
+   * any test methods in this class.</p>
+   */
   @BeforeAll
   static void setup() {
     gson = new GsonBuilder()
@@ -60,6 +93,18 @@ class InvoiceControllerIntegrationTest {
           .create();
   }
 
+  /**
+   * Sets up the test environment before each individual test case is executed.
+   *
+   * <p>This method creates two companies by performing POST requests to the
+   * company API endpoint. These companies are used as buyers and sellers
+   * in the invoice-related tests.</p>
+   *
+   * <p>Annotated with {@link BeforeEach} to ensure that it runs before every
+   * test method in this class.</p>
+   *
+   * @throws Exception if an error occurs while setting up the test data.
+   */
   @BeforeEach
   void testSetup() throws Exception {
     // Create company
@@ -76,9 +121,9 @@ class InvoiceControllerIntegrationTest {
   }
 
   /**
-   * Main class constructor
+   * Main class constructor.
    */
-  public InvoiceControllerIntegrationTest() {
+  InvoiceControllerIntegrationTest() {
     super();
   }
 
@@ -114,8 +159,7 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
     // Explanation contains the problem
     Assertions.assertTrue(
-          responseContent
-                .contains(DefaultCompanyService.COMPANY_NOT_FOUND_MESSAGE),
+          responseContent.contains(DefaultCompanyService.COMPANY_NOT_FOUND),
           "Expect company not found service message"
     );
 
@@ -133,8 +177,7 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
     // Explanation contains the problem
     Assertions.assertTrue(
-          responseContent
-                .contains(DefaultCompanyService.COMPANY_NOT_FOUND_MESSAGE),
+          responseContent.contains(DefaultCompanyService.COMPANY_NOT_FOUND),
           "Expect company not found service message"
     );
 
@@ -152,8 +195,7 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
     // Explanation contains the problem
     Assertions.assertTrue(
-          responseContent
-                .contains(DefaultCompanyService.COMPANY_NOT_FOUND_MESSAGE),
+          responseContent.contains(DefaultCompanyService.COMPANY_NOT_FOUND),
           "Expect company not found service message."
     );
   }
@@ -162,8 +204,6 @@ class InvoiceControllerIntegrationTest {
   @Transactional
   void testCreateTwoInvoicesWithSameBuyerSellerDeleteOneBuyerSellerNotRemoved()
         throws Exception {
-    var invoiceRequestFormJSon =
-          InvoicesControllerFactory.getInvoiceARequestJson();
 
     // Create invoice
     mockMvc.perform(
@@ -175,7 +215,7 @@ class InvoiceControllerIntegrationTest {
     var invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
     invoiceRequestForm
           .setNumber(InvoicesControllerFactory.INVOICE_A_NUMBER + 1);
-    invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
+    var invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
     mockMvc.perform(
           post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(invoiceRequestFormJSon)
@@ -216,12 +256,10 @@ class InvoiceControllerIntegrationTest {
   void testCreateDeleteInvoices() throws Exception {
 
     // Retrieve invoices from controller.
-    var invoicesListResponse = mockMvc
-          .perform(
-                get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
+    mockMvc.perform(
+          get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
 
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
+    ).andExpect(MockMvcResultMatchers.status().isOk());
 
     // Create first invoice.
 
@@ -232,12 +270,10 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
 
     // Retrieve invoices from controller.
-    invoicesListResponse = mockMvc
-          .perform(
-                get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
+    mockMvc.perform(
+          get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
 
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
+    ).andExpect(MockMvcResultMatchers.status().isOk());
 
     // Create second invoice
 
@@ -248,7 +284,7 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
 
     // Retrieve invoices from controller.
-    invoicesListResponse = mockMvc
+    var invoicesListResponse = mockMvc
           .perform(
                 get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
 
@@ -395,7 +431,6 @@ class InvoiceControllerIntegrationTest {
                 )
           ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
           .getResponse().getContentAsString();
-    ;
 
     var response = gson.fromJson(responseJson, InvoiceResponse.class);
 

@@ -63,7 +63,7 @@ public class DefaultLibraryService implements LibraryService {
    */
   @Override
   public List<BookEntity> getAllBooks() {
-    var persistentBooks = libraryRepository.findAll();
+    final var persistentBooks = libraryRepository.findAll();
 
     // PersistentBookEntity a BookEntity
     return persistentBooks.stream().map(BookEntity.class::cast).toList();
@@ -76,33 +76,33 @@ public class DefaultLibraryService implements LibraryService {
   @Override
   public BookEntity addBook(final AddBookRequestDto bookRequest)
         throws LibraryServiceException {
-    var book = new PersistentBookEntity();
+    final var book = new PersistentBookEntity();
     book.setTitle(bookRequest.getTitle());
     book.setIsbn(bookRequest.getIsbn());
     book.setGender(bookRequest.getGender());
     book.setLanguage(bookRequest.getLanguage());
     book.setPublishYear(bookRequest.getPublishYear());
-    var authorsList = bookRequest.getAuthorsList();
+    final var authorsList = bookRequest.getAuthorsList();
     if (authorsList != null) {
       authorsList.forEach((AuthorRequestDto authorRequestDto) -> {
-        var existingAuthor =
+        final var existingAuthor =
               authorRepository.findByFirstNameAndLastNameAndNationality(
                     authorRequestDto.getFirstName(),
                     authorRequestDto.getLastName(),
                     authorRequestDto.getNationality()
               );
         if (existingAuthor != null) {
-          var bookAuthors = book.getAuthors();
+          final var bookAuthors = book.getAuthors();
           bookAuthors.add(existingAuthor);
           book.setAuthors(bookAuthors);
 
         } else {
-          var authorEntity = new PersistentAuthorEntity();
+          final var authorEntity = new PersistentAuthorEntity();
           authorEntity.setFirstName(authorRequestDto.getFirstName());
           authorEntity.setLastName(authorRequestDto.getLastName());
           authorEntity.setNationality(authorRequestDto.getNationality());
-          var authorSaved = authorRepository.save(authorEntity);
-          var bookAuthors = book.getAuthors();
+          final var authorSaved = authorRepository.save(authorEntity);
+          final var bookAuthors = book.getAuthors();
           bookAuthors.add(authorSaved);
           book.setAuthors(bookAuthors);
         }
@@ -121,7 +121,7 @@ public class DefaultLibraryService implements LibraryService {
   @Override
   public BookEntity findByIsbn(final long val) throws LibraryServiceException {
     checkNotNull(val, "Received a null val as book identifier isbn.");
-    var optionalBook = libraryRepository.findById(val);
+    final var optionalBook = libraryRepository.findById(val);
     if (optionalBook.isPresent()) {
       return optionalBook.get();
     } else {
@@ -152,7 +152,7 @@ public class DefaultLibraryService implements LibraryService {
    */
   @Override
   public List<AuthorEntity> getAllAuthors() {
-    var persistentAuthors = authorRepository.findAll();
+    final var persistentAuthors = authorRepository.findAll();
     // Convertir cada PersistentAuthorEntity a AuthorEntity
     return persistentAuthors.stream().map(AuthorEntity.class::cast).toList();
   }

@@ -58,8 +58,8 @@ public class LibraryController {
   @GetMapping()
   @CrossOrigin
   public ResponseEntity<BookListResponse> getAllBooks() {
-    var bookList = libraryService.getAllBooks();
-    var bookListResponse = new BookListResponse(bookList);
+    final var bookList = libraryService.getAllBooks();
+    final var bookListResponse = new BookListResponse(bookList);
     return new ResponseEntity<>(bookListResponse, HttpStatus.OK);
   }
 
@@ -115,8 +115,8 @@ public class LibraryController {
   @GetMapping("/authors")
   @CrossOrigin
   public ResponseEntity<AuthorListResponse> getAllAuthors() {
-    var authorList = libraryService.getAllAuthors();
-    var authorListResponse = new AuthorListResponse(authorList);
+    final var authorList = libraryService.getAllAuthors();
+    final var authorListResponse = new AuthorListResponse(authorList);
     return new ResponseEntity<>(authorListResponse, HttpStatus.OK);
   }
 }

@@ -81,7 +81,7 @@ public class RoleController {
   public ResponseEntity<UserChangeRoleResponseForm> changeUserRoles(@RequestBody
   final UserChangeRoleRequestForm userChangeRoleRequestForm) {
 
-    var roles = userChangeRoleRequestForm.getUserRoles();
+    final var roles = userChangeRoleRequestForm.getUserRoles();
     try {
       userService.changeUserRoles(userChangeRoleRequestForm.getEmail(), roles);
     } catch (UserServiceException e) {

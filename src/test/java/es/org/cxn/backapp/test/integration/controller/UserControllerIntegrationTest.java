@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
@@ -19,8 +18,6 @@ import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.DefaultUserService;
-import es.org.cxn.backapp.service.JwtUtils;
-import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
 import jakarta.transaction.Transactional;
@@ -35,7 +32,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -48,36 +44,82 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @TestPropertySource("/application.properties")
 class UserControllerIntegrationTest {
 
+  /**
+   * Provides the ability to perform HTTP requests and receive responses for
+   * testing.
+   * Used for sending HTTP requests to the controllers and verifying the
+   * responses in integration tests.
+   */
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  UserDetailsService myUserDetailsService;
-  @Autowired
-  JwtUtils jwtUtils;
-
+  /**
+   * Gson instance used for converting Java objects to JSON and vice versa.
+   * This static instance is used for serializing and deserializing request and
+   *  response payloads in the tests.
+   */
   private static Gson gson;
-  private final static String GET_USER_DATA_URL = "/api/user";
-  private final static String GET_ALL_USERS_DATA_URL = "/api/user/getAll";
-  private final static String SIGN_IN_URL = "/api/auth/signinn";
-  private final static String CHANGE_MEMBER_EMAIL_URL = "/api/user/changeEmail";
-  private final static String CHANGE_MEMBER_PASSWORD_URL =
+
+  /**
+   * URL endpoint for retrieving user data.
+   * This static final string represents the URL used to fetch data of a
+   * specific user.
+   */
+  private static final String GET_USER_DATA_URL = "/api/user";
+
+  /**
+   * URL endpoint for retrieving data of all users.
+   * This static final string represents the URL used to fetch a list of
+   * all users.
+   */
+  private static final String GET_ALL_USERS_DATA_URL = "/api/user/getAll";
+
+  /**
+   * URL endpoint for user sign-in.
+   * This static final string represents the URL used for user authentication
+   * and generating JWT tokens.
+   */
+  private static final String SIGN_IN_URL = "/api/auth/signinn";
+
+  /**
+   * URL endpoint for changing a user's email address.
+   * This static final string represents the URL used to update a user's
+   *  email address.
+   */
+  private static final String CHANGE_MEMBER_EMAIL_URL = "/api/user/changeEmail";
+
+  /**
+   * URL endpoint for changing a user's password.
+   * This static final string represents the URL used to update a
+   * user's password.
+   */
+  private static final String CHANGE_MEMBER_PASSWORD_URL =
         "/api/user/changePassword";
-  private final static String SIGN_UP_URL = "/api/auth/signup";
-  private final static String CHANGE_KIND_MEMBER_URL =
+
+  /**
+   * URL endpoint for user registration (sign-up).
+   * This static final string represents the URL used to create a new
+   * user account.
+   */
+  private static final String SIGN_UP_URL = "/api/auth/signup";
+
+  /**
+   * URL endpoint for changing the type of a user.
+   * This static final string represents the URL used to update a
+   * user's role or membership type.
+   */
+  private static final String CHANGE_KIND_MEMBER_URL =
         "/api/user/changeKindOfMember";
 
   @BeforeAll
   static void setup() {
-    gson = new GsonBuilder()
-          .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-          .create();
+    gson = UsersControllerFactory.GSON;
   }
 
   /**
-   * Main class constructor
+   * Main class constructor.
    */
-  public UserControllerIntegrationTest() {
+  UserControllerIntegrationTest() {
     super();
   }
 
@@ -280,7 +322,7 @@ class UserControllerIntegrationTest {
   }
 
   /**
-   * Change member type from
+   * Change member type from.
    *
    * @throws Exception When fails.
    */
@@ -319,7 +361,8 @@ class UserControllerIntegrationTest {
   }
 
   /**
-   * Test  change kind of existing member from "socio numero" to "socio aspirante"  can be done only if age is under 18.
+   * Test  change kind of existing member from "socio numero" to
+   * "socio aspirante"  can be done only if age is under 18.
    * TO-DO -NOT FAIL WHEN AGE IS UNDER 18 (WRONG)
    * @throws Exception When fails.
    */
@@ -361,7 +404,7 @@ class UserControllerIntegrationTest {
   }
 
   /**
-   * TO-DO
+   * TO-DO.
    *
    * @throws Exception When fails.
    */
@@ -392,7 +435,7 @@ class UserControllerIntegrationTest {
   }
 
   /**
-   * TO-DO
+   * TO-DO.
    *
    * @throws Exception When fails.
    */

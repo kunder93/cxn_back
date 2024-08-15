@@ -37,7 +37,7 @@ public final class InvoiceListResponse implements Serializable {
    */
   public InvoiceListResponse(final List<InvoiceResponse> value) {
     super();
-    value.forEach((InvoiceResponse e) -> this.invoicesList.add(e));
+    value.forEach(this.invoicesList::add);
   }
 
   /**
@@ -65,17 +65,23 @@ public final class InvoiceListResponse implements Serializable {
 
   @Override
   public boolean equals(final Object obj) {
+    var isEqual = false;
+
+    // Check if the object is compared to itself
     if (this == obj) {
-      return true;
+      isEqual = true;
+    } else {
+      // Check if the object is null or not the same class
+      if (obj != null && getClass() == obj.getClass()) {
+        // Cast the object to the correct type
+        final var other = (InvoiceListResponse) obj;
+
+        // Compare the relevant fields
+        isEqual = Objects.equals(invoicesList, other.invoicesList);
+      }
     }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (InvoiceListResponse) obj;
-    return Objects.equals(invoicesList, other.invoicesList);
+
+    return isEqual;
   }
 
   @Override
