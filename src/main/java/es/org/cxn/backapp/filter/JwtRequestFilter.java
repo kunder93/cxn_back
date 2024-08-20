@@ -28,6 +28,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
   /**
+   * Token spaces length for bearer token.
+   */
+  private static final int TOKEN_SPACES = 7;
+
+  /**
    * The jwt utilities.
    */
   private DefaultJwtUtils jwtUtils;
@@ -40,15 +45,16 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   /**
    * Constructor for JwtRequestFilter.
    *
-   * @param jwtUtils the JWT utilities
-   * @param userDetailsService the user details service
+   * @param defaultJwtUtils the JWT utilities
+   * @param usrDetService the user details service
    */
   public JwtRequestFilter(
-        DefaultJwtUtils jwtUtils, UserDetailsService userDetailsService
+        final DefaultJwtUtils defaultJwtUtils,
+        final UserDetailsService usrDetService
   ) {
     super();
-    this.jwtUtils = jwtUtils;
-    this.userDetailsService = userDetailsService;
+    this.jwtUtils = defaultJwtUtils;
+    this.userDetailsService = usrDetService;
   }
 
   /**
@@ -59,7 +65,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final HttpServletRequest request, final HttpServletResponse response,
         final FilterChain filterChain
   ) throws ServletException, IOException {
-    final var TOKEN_SPACES = 7;
     final var authorizationHeader = request.getHeader("Authorization");
     String username = null;
     String jwt = null;

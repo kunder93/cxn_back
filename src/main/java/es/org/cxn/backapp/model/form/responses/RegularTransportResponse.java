@@ -3,64 +3,51 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as response for requesting one
- * invoice.
+ * Represents the form used by the controller as a response for requesting one
+ * regular transport.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This record is a Data Transfer Object (DTO) used for communication between
+ * the view and the controller, providing an immutable representation of the
+ * regular transport details.
+ * </p>
  * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * Includes a static factory method for creating instances from a
+ * {@link PersistentRegularTransportEntity}.
+ * </p>
+ *
+ * @param identifier The regular transport identifier.
+ * @param category The regular transport category.
+ * @param description The regular transport description.
+ * @param invoiceResponse The invoice response associated with the regular
+ * transport.
  *
  * @author Santiago Paz.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class RegularTransportResponse implements Serializable {
+public record RegularTransportResponse(
+      int identifier, String category, String description,
+      InvoiceResponse invoiceResponse
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3180089459011962505L;
-
-  /**
-   * The regular transport identifier.
-   */
-  private int identifier;
-
-  /**
-   * The response regular transport category.
-   */
-  private String category;
-  /**
-   * The response regular transport description.
-   */
-  private String description;
-  /**
-   * The response regular transport invoice response.
-   */
-  private InvoiceResponse invoiceResponse;
-
-  /**
-   * Constructor with regular transport entity.
+   * Creates a {@link RegularTransportResponse} from a
+   * {@link PersistentRegularTransportEntity}.
+   * <p>
+   * This static factory method initializes a new
+   * {@code RegularTransportResponse} using the data from the provided
+   * {@code PersistentRegularTransportEntity}.
+   * </p>
    *
-   * @param entity The Regular Transport entity.
+   * @param entity The {@code PersistentRegularTransportEntity} containing
+   * the data.
+   * @return A new {@code RegularTransportResponse} with values derived from
+   * the entity.
    */
-  public RegularTransportResponse(
-        final PersistentRegularTransportEntity entity
-  ) {
-    super();
-    this.identifier = entity.getId();
-    this.category = entity.getCategory();
-    this.description = entity.getDescription();
-    this.invoiceResponse = new InvoiceResponse(entity.getTransportInvoice());
+  public static RegularTransportResponse
+        fromEntity(final PersistentRegularTransportEntity entity) {
+    return new RegularTransportResponse(
+          entity.getId(), entity.getCategory(), entity.getDescription(),
+          InvoiceResponse.fromEntity(entity.getTransportInvoice())
+    );
   }
 }

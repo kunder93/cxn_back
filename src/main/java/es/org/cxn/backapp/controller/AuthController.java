@@ -35,8 +35,8 @@ import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;
-import es.org.cxn.backapp.service.dto.AddressRegistrationDetails;
-import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
+import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 
 import jakarta.validation.Valid;
 
@@ -113,46 +113,41 @@ public class AuthController {
 
   }
 
-  private static AddressRegistrationDetails
+  private static AddressRegistrationDetailsDto
         createAddressDetails(final SignUpRequestForm signUpRequestForm) {
-    return AddressRegistrationDetails.builder()
-          .apartmentNumber(signUpRequestForm.getApartmentNumber())
-          .building(signUpRequestForm.getBuilding())
-          .city(signUpRequestForm.getCity())
-          .postalCode(signUpRequestForm.getPostalCode())
-          .street(signUpRequestForm.getStreet())
-          .countryNumericCode(signUpRequestForm.getCountryNumericCode())
-          .countrySubdivisionName(signUpRequestForm.getCountrySubdivisionName())
-          .build();
+    return new AddressRegistrationDetailsDto(
+          signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
+          signUpRequestForm.city(), signUpRequestForm.postalCode(),
+          signUpRequestForm.street(), signUpRequestForm.countryNumericCode(),
+          signUpRequestForm.countrySubdivisionName()
+    );
+
   }
 
-  private static UserRegistrationDetails createUserDetails(
+  private static UserRegistrationDetailsDto createUserDetails(
         final SignUpRequestForm signUpRequestForm,
-        final AddressRegistrationDetails addressDetails
+        final AddressRegistrationDetailsDto addressDetails
   ) {
-    return UserRegistrationDetails.builder().dni(signUpRequestForm.getDni())
-          .name(signUpRequestForm.getName())
-          .firstSurname(signUpRequestForm.getFirstSurname())
-          .secondSurname(signUpRequestForm.getSecondSurname())
-          .birthDate(signUpRequestForm.getBirthDate())
-          .gender(signUpRequestForm.getGender())
-          .password(signUpRequestForm.getPassword())
-          .email(signUpRequestForm.getEmail())
-          .kindMember(signUpRequestForm.getKindMember())
-          .addressDetails(addressDetails).build();
+    return new UserRegistrationDetailsDto(
+          signUpRequestForm.dni(), signUpRequestForm.name(),
+          signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(),
+          signUpRequestForm.birthDate(), signUpRequestForm.gender(),
+          signUpRequestForm.password(), signUpRequestForm.email(),
+          addressDetails, signUpRequestForm.kindMember()
+    );
   }
 
   /**
-   * Creates an user with default user Role.
+   * Creates a user with default user Role.
    *
    * @param signUpRequestForm user data to create user profile.
-   * @return the created user data @link{SignUpResponseForm}.
+   * @return the created user data {@link SignUpResponseForm}.
    */
   @CrossOrigin
   @PostMapping("/signup")
-  public ResponseEntity<SignUpResponseForm>
-        registerUser(final @Valid @RequestBody
-  SignUpRequestForm signUpRequestForm) {
+  public ResponseEntity<SignUpResponseForm> registerUser(@Valid @RequestBody
+  final SignUpRequestForm signUpRequestForm) {
+
     final var defaultUserRole = UserRoleName.ROLE_CANDIDATO_SOCIO;
     final var initialUserRolesSet = new ArrayList<UserRoleName>();
     initialUserRolesSet.add(defaultUserRole);
@@ -164,8 +159,8 @@ public class AuthController {
     try {
       userService.add(userDetails);
       final var createdUser = userService
-            .changeUserRoles(signUpRequestForm.getEmail(), initialUserRolesSet);
-      final var signUpRspnsFrm = new SignUpResponseForm(createdUser);
+            .changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
+      final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
 
       return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
     } catch (UserServiceException e) {
@@ -187,8 +182,8 @@ public class AuthController {
   public ResponseEntity<AuthenticationResponse>
         authenticateUser(final @Valid @RequestBody
   AuthenticationRequest loginRequest) {
-    final var email = loginRequest.getEmail();
-    final var password = loginRequest.getPassword();
+    final var email = loginRequest.email();
+    final var password = loginRequest.password();
     try {
       authManager.authenticate(
             new UsernamePasswordAuthenticationToken(email, password)

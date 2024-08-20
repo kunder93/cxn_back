@@ -3,64 +3,37 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as response for requesting one country
- * data.
+ * Represents the response DTO used by the controller for requesting one
+ * country data.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This record serves as a Data Transfer Object (DTO) to facilitate
+ * communication between the view and the controller when requesting
+ * country data.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param shortName   The country short name.
+ * @param fullName    The country full name.
+ * @param numericCode The country numeric code.
+ * @param alpha2Code  The country alpha 2 code.
+ * @param alpha3Code  The country alpha 3 code.
+ * @author Santiago Paz
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class CountryResponse implements Serializable {
+public record CountryResponse(
+      String shortName, String fullName, Integer numericCode, String alpha2Code,
+      String alpha3Code
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3132389826561387705L;
-
-  /**
-   * The country short name.
-   */
-  private String shortName;
-  /**
-   * The country full name.
-   */
-  private String fullName;
-  /**
-   * The country numeric code.
-   */
-  private Integer numericCode;
-  /**
-   * The country alpha 2 code.
-   */
-  private String alpha2Code;
-  /**
-   * The country alpha 3 code.
-   */
-  private String alpha3Code;
-
-  /**
-   * Constructor with country entity.
+   * Constructs a {@link CountryResponse} from a
+   * {@link PersistentCountryEntity}.
    *
-   * @param value The country entity for get values.
+   * @param value The country entity to extract values from.
    */
   public CountryResponse(final PersistentCountryEntity value) {
-    super();
-    shortName = value.getShortName();
-    fullName = value.getFullName();
-    numericCode = value.getNumericCode();
-    alpha2Code = value.getAlpha2Code();
-    alpha3Code = value.getAlpha3Code();
-
+    this(
+          value.getShortName(), value.getFullName(), value.getNumericCode(),
+          value.getAlpha2Code(), value.getAlpha3Code()
+    );
   }
 }

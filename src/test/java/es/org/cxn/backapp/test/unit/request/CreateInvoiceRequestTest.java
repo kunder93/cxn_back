@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 
 import java.time.LocalDate;
 
@@ -63,28 +64,22 @@ class CreateInvoiceRequestTest {
    */
   @Test
   void testGettersAndSetters() {
-    var invoiceRequestForm = new CreateInvoiceRequestForm();
-
-    invoiceRequestForm.setNumber(INVOICE_NUMBER);
-    invoiceRequestForm.setSeries(INVOICE_SERIES);
-    invoiceRequestForm.setAdvancePaymentDate(ADVANCE_PAYMENT_DATE);
-    invoiceRequestForm.setExpeditionDate(EXPEDITION_DATE);
-    invoiceRequestForm.setTaxExempt(TAX_EXEMPT);
-    invoiceRequestForm.setSellerNif(SELLER_NIF);
-    invoiceRequestForm.setBuyerNif(BUYER_NIF);
-
-    assertEquals(INVOICE_NUMBER, invoiceRequestForm.getNumber(), "getter");
-    assertEquals(INVOICE_SERIES, invoiceRequestForm.getSeries(), "getter");
+    var invoiceRequestForm = new InvoiceResponse(
+          INVOICE_NUMBER, INVOICE_SERIES, ADVANCE_PAYMENT_DATE, EXPEDITION_DATE,
+          TAX_EXEMPT, SELLER_NIF, BUYER_NIF
+    );
+    assertEquals(INVOICE_NUMBER, invoiceRequestForm.number(), "getter");
+    assertEquals(INVOICE_SERIES, invoiceRequestForm.series(), "getter");
     assertEquals(
-          ADVANCE_PAYMENT_DATE, invoiceRequestForm.getAdvancePaymentDate(),
+          ADVANCE_PAYMENT_DATE, invoiceRequestForm.advancePaymentDate(),
           "getter"
     );
     assertEquals(
-          EXPEDITION_DATE, invoiceRequestForm.getExpeditionDate(), "getter"
+          EXPEDITION_DATE, invoiceRequestForm.expeditionDate(), "getter"
     );
-    assertTrue(invoiceRequestForm.getTaxExempt(), "getter");
-    assertEquals(SELLER_NIF, invoiceRequestForm.getSellerNif(), "getter");
-    assertEquals(BUYER_NIF, invoiceRequestForm.getBuyerNif(), "getter");
+    assertTrue(invoiceRequestForm.taxExempt(), "getter");
+    assertEquals(SELLER_NIF, invoiceRequestForm.sellerNif(), "getter");
+    assertEquals(BUYER_NIF, invoiceRequestForm.buyerNif(), "getter");
   }
 
   /**
@@ -95,17 +90,17 @@ class CreateInvoiceRequestTest {
    */
   @Test
   void testEqualsAndHashCode() {
-    var invoiceRequestForm1 =
-          CreateInvoiceRequestForm.builder().number(INVOICE_NUMBER)
-                .series(INVOICE_SERIES).advancePaymentDate(ADVANCE_PAYMENT_DATE)
-                .expeditionDate(EXPEDITION_DATE).taxExempt(TAX_EXEMPT)
-                .sellerNif(SELLER_NIF).buyerNif(BUYER_NIF).build();
+    var invoiceRequestForm1 = new CreateInvoiceRequestForm(
 
-    var invoiceRequestForm2 =
-          CreateInvoiceRequestForm.builder().number(INVOICE_NUMBER)
-                .series(INVOICE_SERIES).advancePaymentDate(ADVANCE_PAYMENT_DATE)
-                .expeditionDate(EXPEDITION_DATE).taxExempt(TAX_EXEMPT)
-                .sellerNif(SELLER_NIF).buyerNif(BUYER_NIF).build();
+          INVOICE_NUMBER, INVOICE_SERIES, ADVANCE_PAYMENT_DATE, EXPEDITION_DATE,
+          TAX_EXEMPT, SELLER_NIF, BUYER_NIF
+    );
+
+    var invoiceRequestForm2 = new CreateInvoiceRequestForm(
+
+          INVOICE_NUMBER, INVOICE_SERIES, ADVANCE_PAYMENT_DATE, EXPEDITION_DATE,
+          TAX_EXEMPT, SELLER_NIF, BUYER_NIF
+    );
 
     assertEquals(
           invoiceRequestForm1, invoiceRequestForm2,
@@ -136,34 +131,32 @@ class CreateInvoiceRequestTest {
    */
   @Test
   void testBuilder() {
-    var invoiceRequestForm =
-          CreateInvoiceRequestForm.builder().number(INVOICE_NUMBER)
-                .series(INVOICE_SERIES).advancePaymentDate(ADVANCE_PAYMENT_DATE)
-                .expeditionDate(EXPEDITION_DATE).taxExempt(TAX_EXEMPT)
-                .sellerNif(SELLER_NIF).buyerNif(BUYER_NIF).build();
+    var invoiceRequestForm = new CreateInvoiceRequestForm(
+
+          INVOICE_NUMBER, INVOICE_SERIES, ADVANCE_PAYMENT_DATE, EXPEDITION_DATE,
+          TAX_EXEMPT, SELLER_NIF, BUYER_NIF
+    );
 
     assertEquals(
-          INVOICE_NUMBER, invoiceRequestForm.getNumber(),
+          INVOICE_NUMBER, invoiceRequestForm.number(), "Values set by builder"
+    );
+    assertEquals(
+          INVOICE_SERIES, invoiceRequestForm.series(), "Values set by builder"
+    );
+    assertEquals(
+          ADVANCE_PAYMENT_DATE, invoiceRequestForm.advancePaymentDate(),
           "Values set by builder"
     );
     assertEquals(
-          INVOICE_SERIES, invoiceRequestForm.getSeries(),
+          EXPEDITION_DATE, invoiceRequestForm.expeditionDate(),
           "Values set by builder"
     );
+    assertTrue(invoiceRequestForm.taxExempt(), "Values set by builder");
     assertEquals(
-          ADVANCE_PAYMENT_DATE, invoiceRequestForm.getAdvancePaymentDate(),
-          "Values set by builder"
+          SELLER_NIF, invoiceRequestForm.sellerNif(), "Values set by builder"
     );
     assertEquals(
-          EXPEDITION_DATE, invoiceRequestForm.getExpeditionDate(),
-          "Values set by builder"
-    );
-    assertTrue(invoiceRequestForm.getTaxExempt(), "Values set by builder");
-    assertEquals(
-          SELLER_NIF, invoiceRequestForm.getSellerNif(), "Values set by builder"
-    );
-    assertEquals(
-          BUYER_NIF, invoiceRequestForm.getBuyerNif(), "Values set by builder"
+          BUYER_NIF, invoiceRequestForm.buyerNif(), "Values set by builder"
     );
   }
 }

@@ -3,91 +3,51 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.BookEntity;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as response for requesting one
+ * Represents the form used by the controller as a response for requesting one
  * book.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This is a Data Transfer Object (DTO), designed to facilitate communication
+ * between the view and the controller.
+ * </p>
+ *
+ * @param isbn The book's ISBN.
+ * @param title The book's title.
+ * @param gender The book's genre.
+ * @param language The book's language.
+ * @param publishYear The book's publish date.
+ * @param authors The set of book authors.
  *
  * @author Santiago Paz.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class BookResponse
-      implements Serializable, Comparable<BookResponse> {
+public record BookResponse(
+      long isbn, String title, String gender, String language,
+      LocalDate publishYear, Set<AuthorResponse> authors
+) implements Comparable<BookResponse> {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3133089826013337705L;
-
-  /**
-   * The book's isbn.
-   */
-  private long isbn;
-
-  /**
-   * The book's title.
-   */
-  private String title;
-
-  /**
-   * The book's gender.
-   */
-  private String gender;
-
-  /**
-   * The book's language.
-   */
-  private String language;
-
-  /**
-   * The book's publish date.
-   */
-  private LocalDate publishYear;
-
-  /**
-   * The book authors set.
-   */
-  private Set<AuthorResponse> authors;
-
-  /**
-   * Constructor with provided Company entity.
+   * Constructs a {@link BookResponse} from a {@link BookEntity}.
    *
-   * @param book The book entity for get data.
+   * @param book The book entity.
    */
   public BookResponse(final BookEntity book) {
-    super();
-    title = book.getTitle();
-    isbn = book.getIsbn();
-    gender = book.getGender();
-    publishYear = book.getPublishYear();
-    language = book.getLanguage();
-    authors = new HashSet<>();
-    book.getAuthors()
-          .forEach(author -> authors.add(new AuthorResponse(author)));
+    this(
+          book.getIsbn(), book.getTitle(), book.getGender(), book.getLanguage(),
+          book.getPublishYear(),
+          book.getAuthors().stream().map(AuthorResponse::new)
+                .collect(HashSet::new, HashSet::add, HashSet::addAll)
+    );
   }
 
   /**
-   * Compare books using title.
+   * Compare books using their title.
    */
   @Override
   public int compareTo(final BookResponse otherBook) {
-    return this.title.compareTo(otherBook.getTitle());
+    return this.title().compareTo(otherBook.title());
   }
-
 }

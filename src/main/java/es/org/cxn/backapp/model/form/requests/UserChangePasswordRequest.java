@@ -1,49 +1,26 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the user form used by controller as request to change user
+ * Represents the user form used by the controller as a request to change the
+ * user's password.
+ * <p>
+ * This is a DTO (Data Transfer Object) used for communication between the view
+ * and the controller. The record is immutable and provides built-in
+ * implementations for methods such as {@code equals()}, {@code hashCode()},
+ * and {@code toString()}.
+ * <p>
+ * The record includes fields for the user email, current password, and new
  * password.
- * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ *
+ * @param email          The user's email address.
+ * @param currentPassword The user's current password.
+ * @param newPassword     The user's new password.
  *
  * @author Santiago Paz.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public final class UserChangePasswordRequest implements Serializable {
-
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3129178499215975705L;
-
-  /**
-   * The user email.
-   */
-  private String email;
-
-  /**
-   * The user current password.
-   */
-  private String currentPassword;
-
-  /**
-   * The user new password.
-   */
-  private String newPassword;
+public record UserChangePasswordRequest(
+      String email, String currentPassword, String newPassword
+) {
 
 }

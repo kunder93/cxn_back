@@ -28,8 +28,8 @@ import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
-import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
-import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public interface UserService {
    * @return The user entity created.
    * @throws UserServiceException If fails.
    */
-  UserEntity add(UserRegistrationDetails userDetails)
+  UserEntity add(UserRegistrationDetailsDto userDetails)
         throws UserServiceException;
 
   /**
@@ -93,7 +93,7 @@ public interface UserService {
    * @return the persisted user entity.
    * @throws UserServiceException when user with provided email not found.
    */
-  UserEntity update(UserServiceUpdateForm userForm, String userEmail)
+  UserEntity update(UserServiceUpdateDto userForm, String userEmail)
         throws UserServiceException;
 
   /**

@@ -11,19 +11,13 @@ import org.junit.jupiter.api.Test;
 class AuthenticationRequestTest {
   @Test
   void testGettersAndSetters() {
+    final var email = "user@example.com";
+    final var password = "password123";
     // Crear una instancia de AuthenticationRequest
-    var request = new AuthenticationRequest();
+    var request = new AuthenticationRequest(email, password);
 
-    // Establecer valores usando setters
-    request.setEmail("user@example.com");
-    request.setPassword("password123");
-
-    assertEquals(
-          "user@example.com", request.getEmail(), "valores usando getters"
-    );
-    assertEquals(
-          "password123", request.getPassword(), "valores usando getters"
-    );
+    assertEquals("user@example.com", request.email(), "valores usando getters");
+    assertEquals("password123", request.password(), "valores usando getters");
   }
 
   @Test

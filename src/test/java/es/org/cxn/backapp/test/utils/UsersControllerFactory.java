@@ -121,16 +121,14 @@ public final class UsersControllerFactory {
    * @return SignUpRequestForm a request form with data from user A.
    */
   public static SignUpRequestForm getSignUpRequestFormUserA() {
-    return SignUpRequestForm.builder().dni(USER_A_DNI).name(USER_A_NAME)
-          .firstSurname(USER_A_FIRST_SURNAME)
-          .secondSurname(USER_A_SECOND_SURNAME).birthDate(USER_A_BIRTH_DATE)
-          .gender(USER_A_GENDER).password(USER_A_PASSWORD).email(USER_A_EMAIL)
-          .postalCode(USER_A_POSTAL_CODE)
-          .apartmentNumber(USER_A_APARTMENT_NUMBER).building(USER_A_BUILDING)
-          .street(USER_A_STREET).city(USER_A_CITY)
-          .countryNumericCode(USER_A_COUNTRY_NUMERIC_CODE)
-          .countrySubdivisionName(USER_A_COUNTRY_SUBDIVISION_NAME)
-          .kindMember(USER_A_KIND_MEMBER).build();
+    return new SignUpRequestForm(
+          USER_A_DNI, USER_A_NAME, USER_A_FIRST_SURNAME, USER_A_SECOND_SURNAME,
+          USER_A_BIRTH_DATE, USER_A_GENDER, USER_A_PASSWORD, USER_A_EMAIL,
+          USER_A_POSTAL_CODE, USER_A_APARTMENT_NUMBER, USER_A_BUILDING,
+          USER_A_STREET, USER_A_CITY, USER_A_KIND_MEMBER,
+          USER_A_COUNTRY_NUMERIC_CODE, USER_A_COUNTRY_SUBDIVISION_NAME
+    );
+
   }
 
   /**
@@ -197,7 +195,7 @@ public final class UsersControllerFactory {
    */
   public static final Integer USER_B_COUNTRY_NUMERIC_CODE = 724;
   /**
-   * User B address country subdivision name aka "provincia".
+   * User B address country subdivision name, "provincia".
    */
   public static final String USER_B_COUNTRY_SUBDIVISION_NAME = "Coruña";
   /**
@@ -209,16 +207,14 @@ public final class UsersControllerFactory {
    * @return SignUpRequestForm the form request object with User B data.
    */
   public static SignUpRequestForm getSignUpRequestFormUserB() {
-    return SignUpRequestForm.builder().dni(USER_B_DNI).name(USER_B_NAME)
-          .firstSurname(USER_B_FIRST_SURNAME)
-          .secondSurname(USER_B_SECOND_SURNAME).birthDate(USER_B_BIRTH_DATE)
-          .gender(USER_B_GENDER).password(USER_B_PASSWORD).email(USER_B_EMAIL)
-          .postalCode(USER_B_POSTAL_CODE)
-          .apartmentNumber(USER_B_APARTMENT_NUMBER).building(USER_B_BUILDING)
-          .street(USER_B_STREET).city(USER_B_CITY)
-          .countryNumericCode(USER_B_COUNTRY_NUMERIC_CODE)
-          .countrySubdivisionName(USER_B_COUNTRY_SUBDIVISION_NAME)
-          .kindMember(USER_B_KIND_MEMBER).build();
+    return new SignUpRequestForm(
+          USER_B_DNI, USER_B_NAME, USER_B_FIRST_SURNAME, USER_B_SECOND_SURNAME,
+          USER_B_BIRTH_DATE, USER_B_GENDER, USER_B_PASSWORD, USER_B_EMAIL,
+          USER_B_POSTAL_CODE, USER_B_APARTMENT_NUMBER, USER_B_BUILDING,
+          USER_B_STREET, USER_B_CITY, USER_B_KIND_MEMBER,
+          USER_B_COUNTRY_NUMERIC_CODE, USER_B_COUNTRY_SUBDIVISION_NAME
+    );
+
   }
 
   /**

@@ -110,13 +110,13 @@ public class LibraryController {
   /**
    * Returns all authors.
    *
-   * @return The authors list.
+   * @return The authors list wrapped in a ResponseEntity.
    */
   @GetMapping("/authors")
   @CrossOrigin
   public ResponseEntity<AuthorListResponse> getAllAuthors() {
     final var authorList = libraryService.getAllAuthors();
-    final var authorListResponse = new AuthorListResponse(authorList);
+    final var authorListResponse = AuthorListResponse.from(authorList);
     return new ResponseEntity<>(authorListResponse, HttpStatus.OK);
   }
 }

@@ -19,6 +19,7 @@ import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequestForm;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
+import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.service.ChessQuestionsService;
@@ -27,7 +28,9 @@ import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -90,11 +93,13 @@ class ChessQuestionsControllerTest {
   @Test
   void testCreateChessQuestionSuccess() throws Exception {
     // Arrange
-    var requestForm = new CreateChessQuestionRequestForm();
-    requestForm.setEmail("test@example.com");
-    requestForm.setCategory("category");
-    requestForm.setTopic("topic");
-    requestForm.setMessage("message");
+    final var email = "test@example.com";
+    final var category = "category";
+    final var topic = "topic";
+    final var message = "message";
+
+    var requestForm =
+          new CreateChessQuestionRequestForm(email, category, topic, message);
 
     ChessQuestionEntity result = new PersistentChessQuestionEntity();
     result.setIdentifier(1);
@@ -130,11 +135,12 @@ class ChessQuestionsControllerTest {
   @Test
   void testCreateChessQuestionServiceException() throws Exception {
     // Arrange
-    var requestForm = new CreateChessQuestionRequestForm();
-    requestForm.setEmail("test@example.com");
-    requestForm.setCategory("category");
-    requestForm.setTopic("topic");
-    requestForm.setMessage("message");
+    final var email = "test@example.com";
+    final var category = "category";
+    final var topic = "topic";
+    final var message = "message";
+    var requestForm =
+          new CreateChessQuestionRequestForm(email, category, topic, message);
 
     when(
           chessQuestionsService.add(
@@ -159,8 +165,8 @@ class ChessQuestionsControllerTest {
     var gson = new GsonBuilder()
           .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
           .create();
-    // Mockear el comportamiento del servicio para devolver una lista de
-    // preguntas de ajedrez
+
+    // Mock the service to return a list of chess questions
     when(chessQuestionsService.getAll()).thenReturn(
           Arrays.asList(
                 new PersistentChessQuestionEntity(
@@ -174,39 +180,50 @@ class ChessQuestionsControllerTest {
           )
     );
 
-    // Realizar solicitud GET y verificar la respuesta
+    // Perform GET request and check the response
     var responseJson = mockMvc
           .perform(
                 MockMvcRequestBuilders.get("/api/chessQuestion")
                       .contentType(MediaType.APPLICATION_JSON)
           ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
           .getResponse().getContentAsString();
+
     var response =
           gson.fromJson(responseJson, ChessQuestionsListResponse.class);
 
-    var chessQuestionsList = response.getChessQuestionList();
-    Assertions
-          .assertEquals(2, chessQuestionsList.size(), "list have 2 questions.");
+    // Convert the Collection to a List for indexing
+    List<ChessQuestionResponse> chessQuestionsList =
+          new ArrayList<>(response.chessQuestionList());
+
+    Assertions.assertEquals(
+          2, chessQuestionsList.size(), "list should have 2 questions."
+    );
+
     var firstElement = chessQuestionsList.get(0);
     var secondElement = chessQuestionsList.get(1);
 
-    Assertions.assertEquals("Topic1", firstElement.getTopic(), "first element");
-    Assertions.assertEquals(
-          "Category1", firstElement.getCategory(), "first element"
-    );
-    Assertions.assertEquals("email1", firstElement.getEmail(), "first element");
     Assertions
-          .assertEquals("Message1", firstElement.getMessage(), "first element");
+          .assertEquals("Topic1", firstElement.topic(), "first element topic");
+    Assertions.assertEquals(
+          "Category1", firstElement.category(), "first element category"
+    );
+    Assertions
+          .assertEquals("email1", firstElement.email(), "first element email");
+    Assertions.assertEquals(
+          "Message1", firstElement.message(), "first element message"
+    );
 
-    Assertions
-          .assertEquals("Topic2", secondElement.getTopic(), "second element");
     Assertions.assertEquals(
-          "Category2", secondElement.getCategory(), "second element"
+          "Topic2", secondElement.topic(), "second element topic"
     );
-    Assertions
-          .assertEquals("email2", secondElement.getEmail(), "second element");
     Assertions.assertEquals(
-          "Message2", secondElement.getMessage(), "second element"
+          "Category2", secondElement.category(), "second element category"
+    );
+    Assertions.assertEquals(
+          "email2", secondElement.email(), "second element email"
+    );
+    Assertions.assertEquals(
+          "Message2", secondElement.message(), "second element message"
     );
   }
 
@@ -232,8 +249,8 @@ class ChessQuestionsControllerTest {
   @Test
   void testChangeChessQuestionHasSeenSuccess() throws Exception {
     // Arrange
-    var requestForm = new ChangeChessQuestionHasSeenRequestForm();
-    requestForm.setId(1); // Set the necessary fields
+    final var id = 1;
+    var requestForm = new ChangeChessQuestionHasSeenRequestForm(id);
 
     ChessQuestionEntity result = new PersistentChessQuestionEntity();
     result.setIdentifier(1);
@@ -265,8 +282,8 @@ class ChessQuestionsControllerTest {
   @Test
   void testChangeChessQuestionHasSeenQuestionNotFound() throws Exception {
     // Arrange
-    var requestForm = new ChangeChessQuestionHasSeenRequestForm();
-    requestForm.setId(1); // Set the necessary fields
+    final var id = 1;
+    var requestForm = new ChangeChessQuestionHasSeenRequestForm(id);
 
     doThrow(new ChessQuestionServiceException("Question not found"))
           .when(chessQuestionsService)
@@ -283,8 +300,8 @@ class ChessQuestionsControllerTest {
   @Test
   void testChangeChessQuestionHasSeenServiceException() throws Exception {
     // Arrange
-    var requestForm = new ChangeChessQuestionHasSeenRequestForm();
-    requestForm.setId(1); // Set the necessary fields
+    final var id = 1;
+    var requestForm = new ChangeChessQuestionHasSeenRequestForm(id);
 
     doThrow(new ChessQuestionServiceException("Service error"))
           .when(chessQuestionsService)

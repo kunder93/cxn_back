@@ -44,7 +44,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 class InvoiceEntityRepositoryTest {
 
   /**
-   * Repository for performing CRUD operations on {@link PersistentInvoiceEntity}.
+   * Repository for performing CRUD operations on
+   * {@link PersistentInvoiceEntity}.
    * <p>
    * This repository is auto-wired by Spring, and it is used in the tests
    * to save, retrieve, and verify {@link PersistentInvoiceEntity} instances.
@@ -54,7 +55,8 @@ class InvoiceEntityRepositoryTest {
   private InvoiceEntityRepository invoiceRepository;
 
   /**
-   * Repository for performing CRUD operations on {@link PersistentCompanyEntity}.
+   * Repository for performing CRUD operations on
+   * {@link PersistentCompanyEntity}.
    * <p>
    * This repository is auto-wired by Spring, and it is used in the tests
    * to save {@link PersistentCompanyEntity} instances that are referenced
@@ -65,7 +67,8 @@ class InvoiceEntityRepositoryTest {
   private CompanyEntityRepository companyRepository;
 
   /**
-   * Tests the {@link InvoiceEntityRepository#findByNumberAndSeries(int, String)} method.
+   * Tests the
+   * {@link InvoiceEntityRepository#findByNumberAndSeries(int, String)} method.
    * <p>
    * This test verifies that an invoice can be successfully retrieved
    * from the database by its number and series after being saved.
@@ -75,9 +78,12 @@ class InvoiceEntityRepositoryTest {
    * </p>
    * <ul>
    *   <li>Saves a seller and a buyer {@link PersistentCompanyEntity}.</li>
-   *   <li>Saves a {@link PersistentInvoiceEntity} with a specific number and series.</li>
-   *   <li>Retrieves the saved invoice using the {@code findByNumberAndSeries} method.</li>
-   *   <li>Asserts that the retrieved invoice is present and matches the saved invoice.</li>
+   *   <li>Saves a {@link PersistentInvoiceEntity} with a specific number and
+   *   series.</li>
+   *   <li>Retrieves the saved invoice using the {@code findByNumberAndSeries}
+   *   method.</li>
+   *   <li>Asserts that the retrieved invoice is present and matches the saved
+   *   invoice.</li>
    * </ul>
    */
   @Test

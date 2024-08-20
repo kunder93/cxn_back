@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
+import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
@@ -114,43 +115,42 @@ class AuthControllerIntegrationTest {
           gson.fromJson(controllerResponse, SignUpResponseForm.class);
 
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_DNI, signUpResponse.getDni(),
-          "Dni field."
+          UsersControllerFactory.USER_A_DNI, signUpResponse.dni(), "Dni field."
     );
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_EMAIL, signUpResponse.getEmail(),
+          UsersControllerFactory.USER_A_EMAIL, signUpResponse.email(),
           "Email field."
     );
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_NAME, signUpResponse.getName(),
+          UsersControllerFactory.USER_A_NAME, signUpResponse.name(),
           "Dni field."
     );
     Assertions.assertEquals(
           UsersControllerFactory.USER_A_FIRST_SURNAME,
-          signUpResponse.getFirstSurname(), "First surname field."
+          signUpResponse.firstSurname(), "First surname field."
     );
     Assertions.assertEquals(
           UsersControllerFactory.USER_A_SECOND_SURNAME,
-          signUpResponse.getSecondSurname(), "Second surname field."
+          signUpResponse.secondSurname(), "Second surname field."
     );
 
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_GENDER, signUpResponse.getGender(),
+          UsersControllerFactory.USER_A_GENDER, signUpResponse.gender(),
           "Gender field."
     );
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_BIRTH_DATE,
-          signUpResponse.getBirthDate(), "Birth date field."
+          UsersControllerFactory.USER_A_BIRTH_DATE, signUpResponse.birthDate(),
+          "Birth date field."
     );
     Assertions.assertEquals(
           UsersControllerFactory.USER_A_KIND_MEMBER,
-          signUpResponse.getKindMember(), "kind of member field."
+          signUpResponse.kindMember(), "kind of member field."
     );
     Assertions.assertEquals(
-          numberOfRoles, signUpResponse.getUserRoles().size(), "Only one role."
+          numberOfRoles, signUpResponse.userRoles().size(), "Only one role."
     );
     Assertions.assertTrue(
-          signUpResponse.getUserRoles()
+          signUpResponse.userRoles()
                 .contains(UsersControllerFactory.DEFAULT_USER_ROLE),
           "Role is default user role."
     );
@@ -174,8 +174,23 @@ class AuthControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
     // Set user B with same email as user A.
-    var userBRequest = UsersControllerFactory.getSignUpRequestFormUserB();
-    userBRequest.setEmail(UsersControllerFactory.USER_A_EMAIL);
+    var userBRequest = new SignUpRequestForm(
+          UsersControllerFactory.USER_B_DNI, UsersControllerFactory.USER_B_NAME,
+          UsersControllerFactory.USER_B_FIRST_SURNAME,
+          UsersControllerFactory.USER_B_SECOND_SURNAME,
+          UsersControllerFactory.USER_B_BIRTH_DATE,
+          UsersControllerFactory.USER_B_GENDER,
+          UsersControllerFactory.USER_B_PASSWORD,
+          UsersControllerFactory.USER_A_EMAIL,
+          UsersControllerFactory.USER_B_POSTAL_CODE,
+          UsersControllerFactory.USER_B_APARTMENT_NUMBER,
+          UsersControllerFactory.USER_B_BUILDING,
+          UsersControllerFactory.USER_B_STREET,
+          UsersControllerFactory.USER_B_CITY,
+          UsersControllerFactory.USER_B_KIND_MEMBER,
+          UsersControllerFactory.USER_B_COUNTRY_NUMERIC_CODE,
+          UsersControllerFactory.USER_B_COUNTRY_SUBDIVISION_NAME
+    );
     var userBRequestJson = gson.toJson(userBRequest);
     // Second user with same email as userA bad request.
     mockMvc.perform(
@@ -201,8 +216,24 @@ class AuthControllerIntegrationTest {
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var userBRequest = UsersControllerFactory.getSignUpRequestFormUserB();
-    userBRequest.setDni(UsersControllerFactory.USER_A_DNI);
+    //User B with user A DNI
+    var userBRequest = new SignUpRequestForm(
+          UsersControllerFactory.USER_A_DNI, UsersControllerFactory.USER_B_NAME,
+          UsersControllerFactory.USER_B_FIRST_SURNAME,
+          UsersControllerFactory.USER_B_SECOND_SURNAME,
+          UsersControllerFactory.USER_B_BIRTH_DATE,
+          UsersControllerFactory.USER_B_GENDER,
+          UsersControllerFactory.USER_B_PASSWORD,
+          UsersControllerFactory.USER_B_EMAIL,
+          UsersControllerFactory.USER_B_POSTAL_CODE,
+          UsersControllerFactory.USER_B_APARTMENT_NUMBER,
+          UsersControllerFactory.USER_B_BUILDING,
+          UsersControllerFactory.USER_B_STREET,
+          UsersControllerFactory.USER_B_CITY,
+          UsersControllerFactory.USER_B_KIND_MEMBER,
+          UsersControllerFactory.USER_B_COUNTRY_NUMERIC_CODE,
+          UsersControllerFactory.USER_B_COUNTRY_SUBDIVISION_NAME
+    );
     var userBRequestJson = gson.toJson(userBRequest);
     // Second user with same dni as userA bad request.
     mockMvc.perform(
@@ -242,7 +273,7 @@ class AuthControllerIntegrationTest {
 
     var ar = gson
           .fromJson(authenticationResponseJson, AuthenticationResponse.class);
-    var jwtToken = ar.getJwt();
+    var jwtToken = ar.jwt();
     JwtUtils jwtUtil = new DefaultJwtUtils();
     var jwtUsername = jwtUtil.extractUsername(jwtToken);
     Assertions.assertEquals(

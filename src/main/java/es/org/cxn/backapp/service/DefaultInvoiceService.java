@@ -41,7 +41,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Default implementation of the {@link UserService}.
+ * Default implementation of the {@link InvoiceService}.
  *
  * @author Santiago Paz.
  *

@@ -3,57 +3,46 @@ package es.org.cxn.backapp.model.form.requests;
 
 import jakarta.validation.constraints.NotBlank;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as request of create chess question.
+ * Represents the form used by the controller as a request to create a
+ * chess question.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This is a Data Transfer Object (DTO) meant to facilitate communication
+ * between the view layer and the controller. It includes Java validation
+ * annotations to ensure that all required data is provided and adheres to the
+ * necessary constraints.
+ * </p>
  *
- * @author Santiago Paz.
+ * <p>
+ * This DTO is immutable and includes the following fields:
+ * </p>
+ *
+ * <ul>
+ *   <li>{@code email}: The email of the user submitting the question.
+ *   This field must not be blank.</li>
+ *   <li>{@code category}: The category of the chess question.
+ *   This field must not be blank.</li>
+ *   <li>{@code topic}: The topic related to the chess question.
+ *   This field must not be blank.</li>
+ *   <li>{@code message}: The content of the chess question.
+ *   This field must not be blank.</li>
+ * </ul>
+ *
+ * @param email   The email address of the user submitting the question.
+ * Must not be blank.
+ * @param category The category to which the chess question belongs.
+ * Must not be blank.
+ * @param topic    The topic of the chess question. Must not be blank.
+ * @param message  The content of the chess question. Must not be blank.
+ *
+ * @author Santiago Paz
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-@Builder
-public final class CreateChessQuestionRequestForm implements Serializable {
-
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3231311822214257705L;
-
-  /**
-   * The chess question user email.
-   */
-  @NotBlank
-  private String email;
-
-  /**
-   * The chess question category.
-   */
-  @NotBlank
-  private String category;
-
-  /**
-   * The chess question topic.
-   */
-  @NotBlank
-  private String topic;
-
-  /**
-   * The chess question message.
-   */
-  @NotBlank
-  private String message;
+public record CreateChessQuestionRequestForm(
+      @NotBlank(message = "Email must not be blank")
+      String email, @NotBlank(message = "Category must not be blank")
+      String category, @NotBlank(message = "Topic must not be blank")
+      String topic, @NotBlank(message = "Message must not be blank")
+      String message
+) {
 
 }

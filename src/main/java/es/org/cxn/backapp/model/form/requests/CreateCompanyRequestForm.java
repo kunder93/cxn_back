@@ -6,51 +6,35 @@ import es.org.cxn.backapp.model.form.Constants;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as request of create company.
+ * Represents the form used by the controller as a request to create a company.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This Data Transfer Object (DTO) facilitates communication between the view
+ * and the controller by encapsulating the necessary information for creating a
+ * company.
+ * It includes validation annotations to ensure that the required data is
+ * provided and conforms to the expected format.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param nif      The Tax Identification Number (NIF) of the company.
+ *                 This field is required to be non-blank and should not
+ *                 exceed the maximum
+ *                 length defined by {@link Constants#NAME_MAX_LENGTH}.
+ * @param name     The name of the company. This field may be blank.
+ * @param address  The address of the company. This field may be blank.
+ *
+ * @author Santiago Paz
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public final class CreateCompanyRequestForm implements Serializable {
+public record CreateCompanyRequestForm(
+      @Size(
+            max = Constants.NAME_MAX_LENGTH,
+            message = Constants.NAME_MAX_LENGTH_MESSAGE
+      ) @NotBlank(message = Constants.NAME_NOT_BLANK)
+      String nif,
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3133389822212147705L;
+      String name,
 
-  /**
-   * The company nif.
-   */
-  private String nif;
-
-  /**
-   * The company name.
-   */
-  @NotBlank(message = Constants.NAME_NOT_BLANK)
-  @Size(
-        max = Constants.NAME_MAX_LENGTH,
-        message = Constants.NAME_MAX_LENGTH_MESSAGE
-  )
-  private String name;
-
-  /**
-   * The company address.
-   */
-  private String address;
+      String address
+) {
 
 }

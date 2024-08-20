@@ -1,15 +1,9 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as request of add food or housing to
- * existing payment sheet.
+ * Represents the form used by the controller as a request to add food or
+ * housing to an existing payment sheet.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
  * controller.
@@ -17,30 +11,14 @@ import lombok.NoArgsConstructor;
  * Includes Java validation annotations, for applying binding validation. This
  * way the controller will make sure it receives all the required data.
  *
+ * @param amountDays The number of days that the event lasts.
+ * @param dayPrice   Price per day.
+ * @param overnight  True if sleep is included, false if not.
+ *
  * @author Santiago Paz.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class AddFoodHousingToPaymentSheetRequestForm
-      implements Serializable {
+public record AddFoodHousingToPaymentSheetRequestForm(
+      Integer amountDays, float dayPrice, Boolean overnight
+) {
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3100089900015947999L;
-
-  /**
-   * The amount of days that last the event.
-   */
-  private Integer amountDays;
-  /**
-   * Price for each day.
-   */
-  private float dayPrice;
-
-  /**
-   * True if sleep is included false if not.
-   */
-  private Boolean overnight;
 }

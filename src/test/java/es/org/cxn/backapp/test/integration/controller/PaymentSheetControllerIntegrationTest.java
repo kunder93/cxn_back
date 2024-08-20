@@ -11,6 +11,7 @@ import com.google.gson.GsonBuilder;
 import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequestForm;
 import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequestForm;
 import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
 import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
@@ -50,6 +51,11 @@ class PaymentSheetControllerIntegrationTest {
    * payment sheets.
    */
   private static final String PAYMENT_SHEET_URL = "/api/paymentSheet";
+
+  /**
+   * Payment sheet identifier that not exists.
+   */
+  private static final int PAYMENT_SHEET_NOT_EXISTING_ID = 88;
 
   /**
    * The URL endpoint for user creation.
@@ -118,6 +124,26 @@ class PaymentSheetControllerIntegrationTest {
    * The price per kilometer of the self vehicle used in testing.
    */
   private static final double SELF_VEHICLE_KM_PRICE = 0.19;
+
+  /**
+   * The amount of days of self vehicle travel duration.
+   */
+  private static final int SELF_VEHICLE_AMOUNT_DAYS = 5;
+
+  /**
+   * The price of food and housing per day.
+   */
+  private static final float FOOD_HOUSING_DAY_PRICE = 22.30f;
+
+  /**
+   * If food housing have housing, this is true else false.
+   */
+  private static final boolean FOOD_HOUSING_OVERNIGHT = Boolean.TRUE;
+
+  /**
+   * Food housing duration in days.
+   */
+  private static final int FOOD_HOUSING_AMOUNT_DAYS = 5;
 
   /**
    * Gson instance used for JSON serialization and deserialization.
@@ -204,7 +230,7 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetListResponse = gson
           .fromJson(paymentSheetGetResponse, PaymentSheetListResponse.class);
 
-    var paymentSheetList = paymentSheetListResponse.getPaymentSheetsList();
+    var paymentSheetList = paymentSheetListResponse.paymentSheetsList();
     Assertions.assertEquals(
           paymentSheetList.size(), numberOfPaymentSheets,
           "Only one payment sheet."
@@ -213,29 +239,29 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetReturned = paymentSheetList.iterator().next();
 
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_DNI, paymentSheetReturned.getUserDNI(),
+          UsersControllerFactory.USER_A_DNI, paymentSheetReturned.userDNI(),
           "user dni"
     );
     Assertions.assertEquals(
           UsersControllerFactory.USER_A_FIRST_SURNAME,
-          paymentSheetReturned.getUserFirstSurname(), "user first surname"
+          paymentSheetReturned.userFirstSurname(), "user first surname"
     );
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_START_DATE,
-          paymentSheetReturned.getStartDate(), "payment sheet start date."
+          paymentSheetReturned.startDate(), "payment sheet start date."
     );
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_END_DATE,
-          paymentSheetReturned.getEndDate(), "payment sheet end date."
+          paymentSheetReturned.endDate(), "payment sheet end date."
     );
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_PLACE,
-          paymentSheetReturned.getPlace(), "payment sheet place."
+          paymentSheetReturned.place(), "payment sheet place."
     );
 
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_REASON,
-          paymentSheetReturned.getReason(), "payment sheet reason."
+          paymentSheetReturned.reason(), "payment sheet reason."
     );
 
   }
@@ -284,7 +310,7 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetResponseObject =
           gson.fromJson(paymentSheetCreateResponse, PaymentSheetResponse.class);
     var paymentSheetIdentifier =
-          paymentSheetResponseObject.getPaymentSheetIdentifier();
+          paymentSheetResponseObject.paymentSheetIdentifier();
 
     // get payment sheet data using id.
     var paymentSheetIdResponse = mockMvc
@@ -302,30 +328,28 @@ class PaymentSheetControllerIntegrationTest {
     // Check payment sheet response data obtained through identifier.
     Assertions.assertEquals(
           UsersControllerFactory.USER_A_DNI,
-          paymentSheetIdObjectResponse.getUserDNI(), "user dni"
+          paymentSheetIdObjectResponse.userDNI(), "user dni"
     );
     Assertions.assertEquals(
           UsersControllerFactory.USER_A_FIRST_SURNAME,
-          paymentSheetIdObjectResponse.getUserFirstSurname(),
-          "user first surname"
+          paymentSheetIdObjectResponse.userFirstSurname(), "user first surname"
     );
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_START_DATE,
-          paymentSheetIdObjectResponse.getStartDate(),
-          "payment sheet start date."
+          paymentSheetIdObjectResponse.startDate(), "payment sheet start date."
     );
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_END_DATE,
-          paymentSheetIdObjectResponse.getEndDate(), "payment sheet end date."
+          paymentSheetIdObjectResponse.endDate(), "payment sheet end date."
     );
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_PLACE,
-          paymentSheetIdObjectResponse.getPlace(), "payment sheet place."
+          paymentSheetIdObjectResponse.place(), "payment sheet place."
     );
 
     Assertions.assertEquals(
           PaymentSheetControllerFactory.PAYMENT_SHEET_REASON,
-          paymentSheetIdObjectResponse.getReason(), "payment sheet reason."
+          paymentSheetIdObjectResponse.reason(), "payment sheet reason."
     );
 
   }
@@ -390,7 +414,7 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetResponseObject =
           gson.fromJson(paymentSheetCreateResponse, PaymentSheetResponse.class);
     var paymentSheetIdentifier =
-          paymentSheetResponseObject.getPaymentSheetIdentifier();
+          paymentSheetResponseObject.paymentSheetIdentifier();
 
     mockMvc
           .perform(
@@ -445,12 +469,13 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetResponseObject =
           gson.fromJson(paymentSheetCreateResponse, PaymentSheetResponse.class);
     var paymentSheetIdentifier =
-          paymentSheetResponseObject.getPaymentSheetIdentifier();
+          paymentSheetResponseObject.paymentSheetIdentifier();
 
     // add self vehicle
     // String places,  float distance,  double kmPrice
-    var svrequest =
-          new AddSelfVehicleRequestForm("place1 place2", (float) 145.24, 0.19);
+    var svrequest = new AddSelfVehicleRequestForm(
+          "place1 place2", SELF_VEHICLE_DISTANCE, SELF_VEHICLE_KM_PRICE
+    );
     var svrequestJson = gson.toJson(svrequest);
     mockMvc.perform(
           post(
@@ -506,12 +531,14 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetResponseObject =
           gson.fromJson(paymentSheetCreateResponse, PaymentSheetResponse.class);
     var paymentSheetIdentifier =
-          paymentSheetResponseObject.getPaymentSheetIdentifier();
+          paymentSheetResponseObject.paymentSheetIdentifier();
 
     // add food housing.
     // Integer amountDays,  float dayPrice, Boolean overnight
-    var svrequest =
-          new AddFoodHousingToPaymentSheetRequestForm(5, (float) 22.20, true);
+    var svrequest = new AddFoodHousingToPaymentSheetRequestForm(
+          SELF_VEHICLE_AMOUNT_DAYS, FOOD_HOUSING_DAY_PRICE,
+          FOOD_HOUSING_OVERNIGHT
+    );
     var svrequestJson = gson.toJson(svrequest);
     mockMvc.perform(
           post(
@@ -525,11 +552,13 @@ class PaymentSheetControllerIntegrationTest {
   @Test
   @Transactional
   void testNotExistingPaymentSheetAddFoodHousingBadRequest() throws Exception {
-    var paymentSheetIdentifier = 8;
+    final var paymentSheetIdentifier = 8;
     // add food housing.
     // Integer amountDays,  float dayPrice, Boolean overnight
-    var svrequest =
-          new AddFoodHousingToPaymentSheetRequestForm(5, (float) 22.20, true);
+    var svrequest = new AddFoodHousingToPaymentSheetRequestForm(
+          SELF_VEHICLE_AMOUNT_DAYS, FOOD_HOUSING_DAY_PRICE,
+          FOOD_HOUSING_OVERNIGHT
+    );
     var svrequestJson = gson.toJson(svrequest);
     mockMvc.perform(
           post(
@@ -560,7 +589,7 @@ class PaymentSheetControllerIntegrationTest {
           paymentSheetCreateResponse.getResponse().getContentAsString();
     var paymentSheetId =
           gson.fromJson(paymentSheetResponse, PaymentSheetResponse.class)
-                .getPaymentSheetIdentifier();
+                .paymentSheetIdentifier();
 
     // Delete payment sheet
     mockMvc.perform(delete(PAYMENT_SHEET_URL + "/" + paymentSheetId))
@@ -624,7 +653,7 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetResponseObject =
           gson.fromJson(paymentSheetCreateResponse, PaymentSheetResponse.class);
     var paymentSheetIdentifier =
-          paymentSheetResponseObject.getPaymentSheetIdentifier();
+          paymentSheetResponseObject.paymentSheetIdentifier();
 
     mockMvc
           .perform(
@@ -657,20 +686,18 @@ class PaymentSheetControllerIntegrationTest {
           gson.fromJson(paymentSheetResponseJson, PaymentSheetResponse.class);
 
     // Prepare self vehicle request.
-    var selfVehicleForm = new AddSelfVehicleRequestForm();
-    var selfVehicleDistance = 100;
-    var selfVehiclePrice = 0.19;
-    var selfVehiclePlaces = "Naron - Ferrol - Pontevedra : Ida y vuelta.";
-    selfVehicleForm.setDistance(selfVehicleDistance);
-    selfVehicleForm.setKmPrice(selfVehiclePrice);
-    selfVehicleForm.setPlaces(selfVehiclePlaces);
+    final var selfVehicleDistance = 100;
+    final var selfVehiclePlaces = "Naron - Ferrol - Pontevedra : Ida y vuelta.";
+    final var selfVehicleForm = new AddSelfVehicleRequestForm(
+          selfVehiclePlaces, selfVehicleDistance, SELF_VEHICLE_KM_PRICE
+    );
 
     var selfVehicleFormJson = gson.toJson(selfVehicleForm);
     // Add self vehicle to payment Sheet
     mockMvc.perform(
           post(
                 PAYMENT_SHEET_URL + "/"
-                      + paymentSheetResponse.getPaymentSheetIdentifier()
+                      + paymentSheetResponse.paymentSheetIdentifier()
                       + "/addSelfVehicle"
           ).contentType(MediaType.APPLICATION_JSON).content(selfVehicleFormJson)
     ).andExpect(MockMvcResultMatchers.status().isOk());
@@ -683,7 +710,7 @@ class PaymentSheetControllerIntegrationTest {
                       get(
                             PAYMENT_SHEET_URL + "/"
                                   + paymentSheetResponse
-                                        .getPaymentSheetIdentifier()
+                                        .paymentSheetIdentifier()
                       ).contentType(MediaType.APPLICATION_JSON)
 
                 ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
@@ -696,17 +723,17 @@ class PaymentSheetControllerIntegrationTest {
     //Checking payment sheet with self vehicle added.
     Assertions.assertEquals(
           selfVehicleDistance,
-          paymentSheetWithSelfVehicleResponse.getSelfVehicle().getDistance(),
+          paymentSheetWithSelfVehicleResponse.selfVehicle().distance(),
           "self vehicle have same distance as used when created."
     );
     Assertions.assertEquals(
-          selfVehiclePrice,
-          paymentSheetWithSelfVehicleResponse.getSelfVehicle().getKmPrice(),
+          SELF_VEHICLE_KM_PRICE,
+          paymentSheetWithSelfVehicleResponse.selfVehicle().kmPrice(),
           "self vehicle have same km price as used when created."
     );
     Assertions.assertEquals(
           selfVehiclePlaces,
-          paymentSheetWithSelfVehicleResponse.getSelfVehicle().getPlaces(),
+          paymentSheetWithSelfVehicleResponse.selfVehicle().places(),
           "self vehicle have same place as used when created."
     );
 
@@ -715,7 +742,7 @@ class PaymentSheetControllerIntegrationTest {
     mockMvc.perform(
           post(
                 PAYMENT_SHEET_URL + "/"
-                      + paymentSheetResponse.getPaymentSheetIdentifier()
+                      + paymentSheetResponse.paymentSheetIdentifier()
                       + "/removeSelfVehicle"
           )
     ).andExpect(MockMvcResultMatchers.status().isOk());
@@ -728,7 +755,7 @@ class PaymentSheetControllerIntegrationTest {
                       get(
                             PAYMENT_SHEET_URL + "/"
                                   + paymentSheetResponse
-                                        .getPaymentSheetIdentifier()
+                                        .paymentSheetIdentifier()
                       ).contentType(MediaType.APPLICATION_JSON)
 
                 ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
@@ -739,7 +766,7 @@ class PaymentSheetControllerIntegrationTest {
     );
 
     Assertions.assertNull(
-          paymentSheetWithOutSelfVehicleResponse.getSelfVehicle(),
+          paymentSheetWithOutSelfVehicleResponse.selfVehicle(),
           "Self vehicle has been removed from payment sheet."
     );
 
@@ -748,10 +775,9 @@ class PaymentSheetControllerIntegrationTest {
   @Test
   @Transactional
   void testRemoveSelfVehicleFromNotExistentPaymentSheet() throws Exception {
-    var notExistingPaymentSheetId = 88;
     mockMvc.perform(
           post(
-                PAYMENT_SHEET_URL + "/" + notExistingPaymentSheetId
+                PAYMENT_SHEET_URL + "/" + PAYMENT_SHEET_NOT_EXISTING_ID
                       + "/removeSelfVehicle"
           )
     ).andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -760,9 +786,9 @@ class PaymentSheetControllerIntegrationTest {
   @Test
   @Transactional
   void testRemoveNotExistentPaymentSheetBadRequest() throws Exception {
-    var notExistingPaymentSheetId = 88;
-    mockMvc.perform(delete(PAYMENT_SHEET_URL + "/" + notExistingPaymentSheetId))
-          .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    mockMvc.perform(
+          delete(PAYMENT_SHEET_URL + "/" + PAYMENT_SHEET_NOT_EXISTING_ID)
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
 
   }
 
@@ -770,10 +796,9 @@ class PaymentSheetControllerIntegrationTest {
   @Transactional
   void testRemoveFoodHousingFromNotExistentPaymentSheetBadRequest()
         throws Exception {
-    var notExistingPaymentSheetId = 88;
     mockMvc.perform(
           post(
-                PAYMENT_SHEET_URL + "/" + notExistingPaymentSheetId
+                PAYMENT_SHEET_URL + "/" + PAYMENT_SHEET_NOT_EXISTING_ID
                       + "/removeFoodHousing"
           )
     ).andExpect(MockMvcResultMatchers.status().isBadRequest());
@@ -798,20 +823,18 @@ class PaymentSheetControllerIntegrationTest {
           gson.fromJson(paymentSheetResponseJson, PaymentSheetResponse.class);
 
     // Prepare self food housing request.
-    var foodHousingForm = new AddFoodHousingToPaymentSheetRequestForm();
-    var foodHousingAmountDays = 20;
-    var foodHousingDayPrice = 12;
-    var foodHousingOvernight = Boolean.TRUE;
-    foodHousingForm.setAmountDays(foodHousingAmountDays);
-    foodHousingForm.setDayPrice(foodHousingDayPrice);
-    foodHousingForm.setOvernight(foodHousingOvernight);
+
+    var foodHousingForm = new AddFoodHousingToPaymentSheetRequestForm(
+          FOOD_HOUSING_AMOUNT_DAYS, FOOD_HOUSING_DAY_PRICE,
+          FOOD_HOUSING_OVERNIGHT
+    );
 
     var foodHousingFormJson = gson.toJson(foodHousingForm);
     // Add self vehicle to payment Sheet
     mockMvc.perform(
           post(
                 PAYMENT_SHEET_URL + "/"
-                      + paymentSheetResponse.getPaymentSheetIdentifier()
+                      + paymentSheetResponse.paymentSheetIdentifier()
                       + "/addFoodHousing"
           ).contentType(MediaType.APPLICATION_JSON).content(foodHousingFormJson)
     ).andExpect(MockMvcResultMatchers.status().isOk());
@@ -824,7 +847,7 @@ class PaymentSheetControllerIntegrationTest {
                       get(
                             PAYMENT_SHEET_URL + "/"
                                   + paymentSheetResponse
-                                        .getPaymentSheetIdentifier()
+                                        .paymentSheetIdentifier()
                       ).contentType(MediaType.APPLICATION_JSON)
 
                 ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
@@ -836,18 +859,18 @@ class PaymentSheetControllerIntegrationTest {
 
     //Checking payment sheet with self vehicle added.
     Assertions.assertEquals(
-          foodHousingAmountDays,
-          paymentSheetWithFoodHousingResponse.getFoodHousing().getAmountDays(),
+          FOOD_HOUSING_AMOUNT_DAYS,
+          paymentSheetWithFoodHousingResponse.foodHousing().amountDays(),
           "food housing have same amount of days as used when created."
     );
     Assertions.assertEquals(
-          foodHousingDayPrice,
-          paymentSheetWithFoodHousingResponse.getFoodHousing().getDayPrice(),
+          FOOD_HOUSING_DAY_PRICE,
+          paymentSheetWithFoodHousingResponse.foodHousing().dayPrice(),
           "food housing have same price per day as used when created."
     );
     Assertions.assertEquals(
-          foodHousingOvernight,
-          paymentSheetWithFoodHousingResponse.getFoodHousing().isOvernight(),
+          FOOD_HOUSING_OVERNIGHT,
+          paymentSheetWithFoodHousingResponse.foodHousing().overnight(),
           "food housing have same overnight value as used when created."
     );
 
@@ -856,7 +879,7 @@ class PaymentSheetControllerIntegrationTest {
     mockMvc.perform(
           post(
                 PAYMENT_SHEET_URL + "/"
-                      + paymentSheetResponse.getPaymentSheetIdentifier()
+                      + paymentSheetResponse.paymentSheetIdentifier()
                       + "/removeFoodHousing"
           )
     ).andExpect(MockMvcResultMatchers.status().isOk());
@@ -869,7 +892,7 @@ class PaymentSheetControllerIntegrationTest {
                       get(
                             PAYMENT_SHEET_URL + "/"
                                   + paymentSheetResponse
-                                        .getPaymentSheetIdentifier()
+                                        .paymentSheetIdentifier()
                       ).contentType(MediaType.APPLICATION_JSON)
 
                 ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
@@ -880,7 +903,7 @@ class PaymentSheetControllerIntegrationTest {
     );
 
     Assertions.assertNull(
-          paymentSheetWithOutSelfVehicleResponse.getFoodHousing(),
+          paymentSheetWithOutSelfVehicleResponse.foodHousing(),
           "Food housing has been removed from payment sheet."
     );
 
@@ -890,13 +913,12 @@ class PaymentSheetControllerIntegrationTest {
   @Transactional
   void testRemoveRegularTransportFromNotExistentPaymentSheet()
         throws Exception {
-    final var notExistentPaymentSheetId = 88;
     final var notExistentRegularTransportId = 13;
     mockMvc.perform(
           post(
                 PAYMENT_SHEET_URL + "/"
 
-                      + notExistentPaymentSheetId + "/"
+                      + PAYMENT_SHEET_NOT_EXISTING_ID + "/"
                       + notExistentRegularTransportId
           ).contentType(MediaType.APPLICATION_JSON)
 
@@ -927,9 +949,15 @@ class PaymentSheetControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
     // Create second invoice with same buyer and seller
-    var invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
-    invoiceRequestForm.setNumber(InvoicesControllerFactory.INVOICE_B_NUMBER);
-    invoiceRequestForm.setSeries(InvoicesControllerFactory.INVOICE_B_SERIES);
+    var invoiceRequestForm = new CreateInvoiceRequestForm(
+          InvoicesControllerFactory.INVOICE_B_NUMBER,
+          InvoicesControllerFactory.INVOICE_B_SERIES,
+          InvoicesControllerFactory.INVOICE_B_PAYMENT_DATE,
+          InvoicesControllerFactory.INVOICE_B_EXPEDITION_DATE,
+          InvoicesControllerFactory.INVOICE_B_TAX_EXEMPT,
+          InvoicesControllerFactory.INVOICE_A_SELLER,
+          InvoicesControllerFactory.INVOICE_A_BUYER
+    );
     var invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
     mockMvc.perform(
           post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
@@ -949,8 +977,7 @@ class PaymentSheetControllerIntegrationTest {
 
     var paymentSheetResponse =
           gson.fromJson(paymentSheetResponseJson, PaymentSheetResponse.class);
-    var paymentSheetIdentifier =
-          paymentSheetResponse.getPaymentSheetIdentifier();
+    var paymentSheetIdentifier = paymentSheetResponse.paymentSheetIdentifier();
     // Add first regular transport
 
     var addRegularTransportRequest = new AddRegularTransportRequestForm(
@@ -996,7 +1023,7 @@ class PaymentSheetControllerIntegrationTest {
     );
 
     var regularTransportListSize = paymentSheetWithRegularTransportResponse
-          .getRegularTransportList().getRegularTransportList().size();
+          .regularTransportList().regularTransportList().size();
 
     Assertions.assertEquals(
           2, regularTransportListSize, "payment sheet have 2 regular transports"
@@ -1004,10 +1031,10 @@ class PaymentSheetControllerIntegrationTest {
 
     // Remove first regular transport. Check payment sheet and related invoice.
     var regularTransportToRemoveIdentifier =
-          paymentSheetWithRegularTransportResponse.getRegularTransportList()
-                .getRegularTransportList().get(0).getIdentifier();
+          paymentSheetWithRegularTransportResponse.regularTransportList()
+                .regularTransportList().get(0).identifier();
     var paymentSheetToRemoveIdentifier =
-          paymentSheetWithRegularTransportResponse.getPaymentSheetIdentifier();
+          paymentSheetWithRegularTransportResponse.paymentSheetIdentifier();
     mockMvc.perform(
           post(
                 PAYMENT_SHEET_URL + "/" + paymentSheetToRemoveIdentifier + "/"
@@ -1028,23 +1055,23 @@ class PaymentSheetControllerIntegrationTest {
     );
 
     regularTransportListSize = paymentSheetWithRegularTransportResponse
-          .getRegularTransportList().getRegularTransportList().size();
+          .regularTransportList().regularTransportList().size();
 
     Assertions.assertEquals(
           1, regularTransportListSize, "payment sheet have 1 regular transports"
     );
     // Check that regular transport
     final var regularTransportsList = paymentSheetWithRegularTransportResponse
-          .getRegularTransportList().getRegularTransportList();
+          .regularTransportList().regularTransportList();
     final var regularTransport = regularTransportsList.get(0);
 
     // Check regular transport data
     Assertions.assertEquals(
-          REGULAR_TRANSPORT_CATEGORY, regularTransport.getCategory(),
+          REGULAR_TRANSPORT_CATEGORY, regularTransport.category(),
           "Los valores deberían ser iguales"
     );
     Assertions.assertEquals(
-          REGULAR_TRANSPORT_DESCRIPTION, regularTransport.getDescription(),
+          REGULAR_TRANSPORT_DESCRIPTION, regularTransport.description(),
           "Los valores deberían ser iguales"
     );
   }

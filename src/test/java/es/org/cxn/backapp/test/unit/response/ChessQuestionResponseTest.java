@@ -15,26 +15,25 @@ class ChessQuestionResponseTest {
   @Test
   void testGettersAndSetters() {
     // Given
+    var id = 1;
     var email = "test@example.com";
     var category = "Test Category";
     var topic = "Test Topic";
     var message = "Test Message";
     var date = LocalDateTime.now();
+    var seen = false;
 
     // When
-    var response = new ChessQuestionResponse();
-    response.setEmail(email);
-    response.setCategory(category);
-    response.setTopic(topic);
-    response.setMessage(message);
-    response.setDate(date);
+    var response = new ChessQuestionResponse(
+          id, email, category, topic, message, date, seen
+    );
 
     // Then
-    assertEquals(email, response.getEmail(), "getter");
-    assertEquals(category, response.getCategory(), "getter");
-    assertEquals(topic, response.getTopic(), "getter");
-    assertEquals(message, response.getMessage(), "getter");
-    assertEquals(date, response.getDate(), "getter");
+    assertEquals(email, response.email(), "getter");
+    assertEquals(category, response.category(), "getter");
+    assertEquals(topic, response.topic(), "getter");
+    assertEquals(message, response.message(), "getter");
+    assertEquals(date, response.date(), "getter");
   }
 
   @Test

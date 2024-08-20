@@ -3,12 +3,6 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
  * Represents the form used by controller as response for requesting one
  * company.
@@ -19,41 +13,20 @@ import lombok.NoArgsConstructor;
  * Includes Java validation annotations, for applying binding validation. This
  * way the controller will make sure it receives all the required data.
  *
+ * @param nif The company nif.
+ * @param name The company name.
+ * @param address The company address.
  * @author Santiago Paz.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class CompanyResponse implements Serializable {
+public record CompanyResponse(String nif, String name, String address) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3133089826013337705L;
-
-  /**
-   * The company nif.
-   */
-  private String nif;
-  /**
-   * The company name.
-   */
-  private String name;
-  /**
-   * The company address.
-   */
-  private String address;
-
-  /**
-   * Constructor with provided Company entity.
+   * Constructs a {@link CompanyResponse} from a
+   * {@link PersistentCompanyEntity}.
    *
-   * @param company the company entity for get values.
+   * @param company The company entity to get values from.
    */
   public CompanyResponse(final PersistentCompanyEntity company) {
-    super();
-    nif = company.getNif();
-    name = company.getName();
-    address = company.getAddress();
+    this(company.getNif(), company.getName(), company.getAddress());
   }
-
 }

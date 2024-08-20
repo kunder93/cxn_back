@@ -77,19 +77,18 @@ public class DefaultLibraryService implements LibraryService {
   public BookEntity addBook(final AddBookRequestDto bookRequest)
         throws LibraryServiceException {
     final var book = new PersistentBookEntity();
-    book.setTitle(bookRequest.getTitle());
-    book.setIsbn(bookRequest.getIsbn());
-    book.setGender(bookRequest.getGender());
-    book.setLanguage(bookRequest.getLanguage());
-    book.setPublishYear(bookRequest.getPublishYear());
-    final var authorsList = bookRequest.getAuthorsList();
+    book.setTitle(bookRequest.title());
+    book.setIsbn(bookRequest.isbn());
+    book.setGender(bookRequest.gender());
+    book.setLanguage(bookRequest.language());
+    book.setPublishYear(bookRequest.publishYear());
+    final var authorsList = bookRequest.authorsList();
     if (authorsList != null) {
       authorsList.forEach((AuthorRequestDto authorRequestDto) -> {
         final var existingAuthor =
               authorRepository.findByFirstNameAndLastNameAndNationality(
-                    authorRequestDto.getFirstName(),
-                    authorRequestDto.getLastName(),
-                    authorRequestDto.getNationality()
+                    authorRequestDto.firstName(), authorRequestDto.lastName(),
+                    authorRequestDto.nationality()
               );
         if (existingAuthor != null) {
           final var bookAuthors = book.getAuthors();
@@ -98,9 +97,9 @@ public class DefaultLibraryService implements LibraryService {
 
         } else {
           final var authorEntity = new PersistentAuthorEntity();
-          authorEntity.setFirstName(authorRequestDto.getFirstName());
-          authorEntity.setLastName(authorRequestDto.getLastName());
-          authorEntity.setNationality(authorRequestDto.getNationality());
+          authorEntity.setFirstName(authorRequestDto.firstName());
+          authorEntity.setLastName(authorRequestDto.lastName());
+          authorEntity.setNationality(authorRequestDto.nationality());
           final var authorSaved = authorRepository.save(authorEntity);
           final var bookAuthors = book.getAuthors();
           bookAuthors.add(authorSaved);

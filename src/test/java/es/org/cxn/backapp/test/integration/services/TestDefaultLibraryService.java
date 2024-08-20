@@ -34,15 +34,20 @@ import static org.mockito.Mockito.when;
 
 import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
+import es.org.cxn.backapp.model.form.requests.AuthorRequestDto;
+import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
 import es.org.cxn.backapp.service.DefaultLibraryService;
 import es.org.cxn.backapp.service.LibraryService;
 
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +73,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
           DefaultLibraryService.class }
 )
 final class TestDefaultLibraryService {
-
   /**
    * ISBN number for the first book used in test cases.
    * <p>
@@ -114,6 +118,69 @@ final class TestDefaultLibraryService {
    * </p>
    */
   private static final Long NON_EXISTING_BOOK_ISBN = 1234567890L;
+
+  /**
+   * Title for the book used in test cases.
+   * <p>
+   * This title is used to simulate a book with a specific title
+   * in various test scenarios.
+   * </p>
+   */
+  private static final String BOOK_TITLE = "book title";
+
+  /**
+   * Gender of the book used in test cases.
+   * <p>
+   * This gender is used to simulate a book belonging to a specific genre
+   * in various test scenarios.
+   * </p>
+   */
+  private static final String BOOK_GENDER = "Terror";
+
+  /**
+   * Publishing year of the book used in test cases.
+   * <p>
+   * This year is used to simulate the publication date of a book
+   * in various test scenarios.
+   * </p>
+   */
+  private static final LocalDate BOOK_PUBLISH_YEAR = LocalDate.now();
+
+  /**
+   * Language of the book used in test cases.
+   * <p>
+   * This language is used to simulate a book being published in a specific
+   * language in various test scenarios.
+   * </p>
+   */
+  private static final String BOOK_LANGUAGE = "Spanish";
+
+  /**
+   * First name of the author used in test cases.
+   * <p>
+   * This first name is used to simulate an author with a specific first name
+   * in various test scenarios.
+   * </p>
+   */
+  private static final String AUTHOR_FIRST_NAME = "Alfonso";
+
+  /**
+   * Last name of the author used in test cases.
+   * <p>
+   * This last name is used to simulate an author with a specific last name
+   * in various test scenarios.
+   * </p>
+   */
+  private static final String AUTHOR_LAST_NAME = "Rueda";
+
+  /**
+   * Nationality of the author used in test cases.
+   * <p>
+   * This nationality is used to simulate an author with a specific nationality
+   * in various test scenarios.
+   * </p>
+   */
+  private static final String AUTHOR_NATIONALITY = "Spain";
 
   /**
    * The {@link LibraryService} bean used in the tests.
@@ -204,11 +271,34 @@ final class TestDefaultLibraryService {
   @Test
   void testAddBookReturnsBookSaved() throws LibraryServiceException {
     // Arrange
-    var book1 = AddBookRequestDto.builder().isbn(ADD_BOOK_ISBN).title("Book 1")
-          .build();
-    var book1Entity = PersistentBookEntity.builder().isbn(ADD_BOOK_ISBN)
-          .title("Book 1").build();
+    var book1 = new AddBookRequestDto(
+          BOOK_ISBN_1, BOOK_TITLE, BOOK_GENDER, BOOK_PUBLISH_YEAR,
+          BOOK_LANGUAGE,
+          List.of(
+                new AuthorRequestDto(
+                      AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME, AUTHOR_NATIONALITY
+                )
+          ) // authorsList
+    );
+    var authorEntity = PersistentAuthorEntity.builder()
+          .firstName(AUTHOR_FIRST_NAME).lastName(AUTHOR_LAST_NAME)
+          .nationality(AUTHOR_NATIONALITY).build();
+    Set<PersistentAuthorEntity> authorsSet = new HashSet<>();
+    authorsSet.add(
 
+          authorEntity
+    );
+
+    var book1Entity = PersistentBookEntity.builder().isbn(BOOK_ISBN_1)
+          .title(BOOK_TITLE).gender(BOOK_GENDER).publishYear(BOOK_PUBLISH_YEAR)
+          .language(BOOK_LANGUAGE).authors(authorsSet).build();
+
+    // Mock author repository to return the author entity
+    when(
+          authorRepository.findByFirstNameAndLastNameAndNationality(
+                AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME, AUTHOR_NATIONALITY
+          )
+    ).thenReturn(authorEntity);
     // Mock the repository to return the expected book entity when save()
     // is called
     when(libraryRepository.save(book1Entity)).thenReturn(book1Entity);
@@ -217,10 +307,10 @@ final class TestDefaultLibraryService {
     // Verify that the save method was called once and check the saved book data
     verify(libraryRepository, times(1)).save(book1Entity);
     Assertions.assertEquals(
-          book1.getIsbn(), bookSaved.getIsbn(), "Book ISBN should match."
+          book1.isbn(), bookSaved.getIsbn(), "Book ISBN should match."
     );
     Assertions.assertEquals(
-          book1.getTitle(), bookSaved.getTitle(), "Book title should match."
+          book1.title(), bookSaved.getTitle(), "Book title should match."
     );
   }
 

@@ -18,14 +18,15 @@ import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.DefaultUserService;
-import es.org.cxn.backapp.service.dto.AddressRegistrationDetails;
-import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
-import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
+import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -60,7 +61,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  *
  * @author Santi
  */
-class DefaultUserServiceTest {
+class UserServiceTest {
 
   /**
    * Mock for {@link UserEntityRepository}.
@@ -227,21 +228,17 @@ class DefaultUserServiceTest {
     final var countryNumericCode = 1;
     final var countrySubdivisionName = "Subdivision";
 
-    // Create an AddressRegistrationDetails object
-    var addressDetails = new AddressRegistrationDetails();
-    addressDetails.setApartmentNumber(apartmentNumber);
-    addressDetails.setBuilding(building);
-    addressDetails.setCity(city);
-    addressDetails.setPostalCode(postalCode);
-    addressDetails.setStreet(street);
-    addressDetails.setCountryNumericCode(countryNumericCode);
-    addressDetails.setCountrySubdivisionName(countrySubdivisionName);
+    // Create an AddressRegistrationDetailsDto object
+    var addressDetails = new AddressRegistrationDetailsDto(
+          apartmentNumber, building, city, postalCode, street,
+          countryNumericCode, countrySubdivisionName
+    );
 
-    // Create a UserRegistrationDetails object
-    var userDetails = UserRegistrationDetails.builder().dni(dni).email(email)
-          .password(password).name(name).firstSurname(firstSurname)
-          .secondSurname(secondSurname).birthDate(birthDate).gender(gender)
-          .addressDetails(addressDetails).build();
+    // Create a UserRegistrationDetailsDto object
+    var userDetails = new UserRegistrationDetailsDto(
+          dni, name, firstSurname, secondSurname, birthDate, gender, password,
+          email, addressDetails, UserType.SOCIO_NUMERO
+    );
 
     // Prepare test environment
     var persistentCountryEntity = new PersistentCountryEntity();
@@ -269,13 +266,37 @@ class DefaultUserServiceTest {
 
   @Test
   void testAddUserDniExists() {
+    // Declare constants
+    final var existingDni = "123456789";
+    final var email = "test@example.com";
+    final var password = "password123";
+    final var name = "John";
+    final var firstSurname = "Doe";
+    final var secondSurname = "Smith";
+    final var birthDate = LocalDate.of(2000, 1, 1);
+    final var gender = "M";
+    final var apartmentNumber = "Apt 1";
+    final var building = "Building A";
+    final var city = "City";
+    final var postalCode = "12345";
+    final var street = "Street";
+    final var countryNumericCode = 1;
+    final var countrySubdivisionName = "Subdivision";
+
     // Arrange: Configurar los detalles del usuario y
     //el comportamiento simulado del repositorio
-    var userDetails = new UserRegistrationDetails();
-    userDetails.setDni("123456789");
+    // Create an AddressRegistrationDetailsDto object
+    var addressDetails = new AddressRegistrationDetailsDto(
+          apartmentNumber, building, city, postalCode, street,
+          countryNumericCode, countrySubdivisionName
+    );
+    var userDetails = new UserRegistrationDetailsDto(
+          existingDni, name, firstSurname, secondSurname, birthDate, gender,
+          password, email, addressDetails, UserType.SOCIO_NUMERO
+    );
 
     // Simular que el DNI ya existe en la base de datos
-    when(userRepository.findByDni("123456789"))
+    when(userRepository.findByDni(existingDni))
           .thenReturn(Optional.of(persistentUserEntity));
 
     // Act & Assert: Verificar que se lanza una excepción cuando
@@ -295,7 +316,7 @@ class DefaultUserServiceTest {
 
   /**
    * Tests the behavior of the
-   * {@link DefaultUserService#add(UserRegistrationDetails)} method when the
+   * {@link DefaultUserService#add(UserRegistrationDetailsDto)} method when the
    * country associated with the provided numeric code does not exist in
    * the repository.
    *
@@ -307,7 +328,7 @@ class DefaultUserServiceTest {
    *
    * <p>Specifically, the test:</p>
    * <ul>
-   *     <li>Sets up the {@link UserRegistrationDetails} with test data
+   *     <li>Sets up the {@link UserRegistrationDetailsDto} with test data
    *     including a non-existent country code.</li>
    *     <li>Configures the mock repository to simulate the absence of the
    *     country in the {@link CountryEntityRepository}.</li>
@@ -341,22 +362,15 @@ class DefaultUserServiceTest {
           "Country with code: " + testCountryNumericCode + " not found.";
 
     // Create user details
-    var userDetails = new UserRegistrationDetails();
-    userDetails.setDni(testDni);
-    userDetails.setEmail(testEmail);
-    userDetails.setPassword(testPassword);
-    userDetails.setName(testName);
-    userDetails.setFirstSurname(testFirstSurname);
-    userDetails.setSecondSurname(testSecondSurname);
-    userDetails.setGender(testGender);
-    userDetails.setBirthDate(testBirthDate);
-
-    // Create address details
-    var addressDetails = new AddressRegistrationDetails(
+    var addressDetails = new AddressRegistrationDetailsDto(
           testApartmentNumber, testBuilding, testCity, testPostalCode,
           testStreet, testCountryNumericCode, testCountrySubdivisionName
     );
-    userDetails.setAddressDetails(addressDetails);
+    var userDetails = new UserRegistrationDetailsDto(
+          testDni, testName, testFirstSurname, testSecondSurname, testBirthDate,
+          testGender, testPassword, testEmail, addressDetails,
+          UserType.SOCIO_NUMERO
+    );
 
     // Configure mock behavior for countryRepository
     when(countryRepository.findById(testCountryNumericCode))
@@ -379,7 +393,7 @@ class DefaultUserServiceTest {
 
   /**
    * Tests the behavior of the
-   * {@link DefaultUserService#add(UserRegistrationDetails)} method when the
+   * {@link DefaultUserService#add(UserRegistrationDetailsDto)} method when the
    * country subdivision associated with the provided name does not exist
    * in the repository.
    *
@@ -391,7 +405,7 @@ class DefaultUserServiceTest {
    *
    * <p>Specifically, the test:</p>
    * <ul>
-   *     <li>Sets up the {@link UserRegistrationDetails} with test data,
+   *     <li>Sets up the {@link UserRegistrationDetailsDto} with test data,
    *     including a non-existent country
    *     subdivision name.</li>
    *     <li>Configures the mock repository to simulate the existence of the
@@ -428,22 +442,15 @@ class DefaultUserServiceTest {
           + testCountrySubdivisionName + " not found.";
 
     // Create user details
-    var userDetails = new UserRegistrationDetails();
-    userDetails.setDni(testDni);
-    userDetails.setEmail(testEmail);
-    userDetails.setPassword(testPassword);
-    userDetails.setName(testName);
-    userDetails.setFirstSurname(testFirstSurname);
-    userDetails.setSecondSurname(testSecondSurname);
-    userDetails.setGender(testGender);
-    userDetails.setBirthDate(testBirthDate);
-
-    // Create address details
-    var addressDetails = new AddressRegistrationDetails(
+    var addressDetails = new AddressRegistrationDetailsDto(
           testApartmentNumber, testBuilding, testCity, testPostalCode,
           testStreet, testCountryNumericCode, testCountrySubdivisionName
     );
-    userDetails.setAddressDetails(addressDetails);
+    var userDetails = new UserRegistrationDetailsDto(
+          testDni, testName, testFirstSurname, testSecondSurname, testBirthDate,
+          testGender, testPassword, testEmail, addressDetails,
+          UserType.SOCIO_NUMERO
+    );
 
     // Configure mock behavior for countryRepository
     when(countryRepository.findById(anyInt()))
@@ -732,7 +739,7 @@ class DefaultUserServiceTest {
 
   /**
    * Tests the behavior of the
-   * {@link DefaultUserService#update(UserServiceUpdateForm, String)} method
+   * {@link DefaultUserService#update(UserServiceUpdateDto, String)} method
    * when successfully updating an existing user's information.
    *
    * <p>This test verifies that when a valid update request is made for
@@ -742,7 +749,7 @@ class DefaultUserServiceTest {
    *
    * <p>Specifically, the test:</p>
    * <ul>
-   *     <li>Sets up a {@link UserServiceUpdateForm} with new user details.</li>
+   *     <li>Sets up a {@link UserServiceUpdateDto} with new user details.</li>
    *     <li>Mocks the repository to return a {@link PersistentUserEntity}
    *     when searching by email.</li>
    *     <li>Mocks the repository to return the updated user entity after
@@ -769,12 +776,10 @@ class DefaultUserServiceTest {
     final var testEmail = "test@example.com";
 
     // Create update form with new user details
-    var userForm = new UserServiceUpdateForm();
-    userForm.setName(testName);
-    userForm.setFirstSurname(testFirstSurname);
-    userForm.setSecondSurname(testSecondSurname);
-    userForm.setBirthDate(testBirthDate);
-    userForm.setGender(testGender);
+    var userForm = new UserServiceUpdateDto(
+          testName, testFirstSurname, testSecondSurname, testBirthDate,
+          testGender
+    );
 
     // Mock repository to return the existing user when searching by email
     when(userRepository.findByEmail(testEmail))
@@ -821,7 +826,7 @@ class DefaultUserServiceTest {
 
   /**
    * Tests the behavior of the
-   * {@link DefaultUserService#update(UserServiceUpdateForm, String)}
+   * {@link DefaultUserService#update(UserServiceUpdateDto, String)}
    * method when the user specified by email is not found in the repository.
    *
    * <p>This test ensures that when an update request is made for a user who
@@ -834,7 +839,7 @@ class DefaultUserServiceTest {
    *     <li>Mocks the repository to simulate that no user is found when
    *     searching by email.</li>
    *     <li>Calls the
-   *     {@link DefaultUserService#update(UserServiceUpdateForm, String)}
+   *     {@link DefaultUserService#update(UserServiceUpdateDto, String)}
    *     method with a non-existent user email and a user update form.</li>
    *     <li>Verifies that a {@link UserServiceException} is thrown.</li>
    *     <li>Checks that the exception message accurately reflects that the
@@ -845,17 +850,23 @@ class DefaultUserServiceTest {
    */
   @Test
   void testUpdateUserNotFound() {
+    final var name = "Santiago";
+    final var firstSurname = "Paz";
+    final var secondSurname = "Pérez";
+    final var birthDate = LocalDate.of(1993, 5, 8);
+    final var gender = "male";
+    final var email = "santi@santi,es";
     // Set up the user update form
-    var userForm = new UserServiceUpdateForm();
+    var userForm = new UserServiceUpdateDto(
+          name, firstSurname, secondSurname, birthDate, gender
+    );
 
     // Mock the repository to simulate that the user is not found
-    when(userRepository.findByEmail("test@example.com"))
-          .thenReturn(Optional.empty());
+    when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
     // Verify that the expected exception is thrown with a clear message
     var exception = assertThrows(
-          UserServiceException.class,
-          () -> userService.update(userForm, "test@example.com"),
+          UserServiceException.class, () -> userService.update(userForm, email),
           "Expected update to throw UserServiceException when "
                 + "user is not found."
     );

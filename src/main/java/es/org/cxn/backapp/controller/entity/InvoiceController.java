@@ -101,8 +101,8 @@ public class InvoiceController {
   @PostMapping()
   public ResponseEntity<InvoiceResponse> createInvoice(@RequestBody @Valid
   final CreateInvoiceRequestForm invoiceCreateRequestForm) {
-    final var sellerNif = invoiceCreateRequestForm.getSellerNif();
-    final var buyerNif = invoiceCreateRequestForm.getBuyerNif();
+    final var sellerNif = invoiceCreateRequestForm.sellerNif();
+    final var buyerNif = invoiceCreateRequestForm.buyerNif();
     try {
       final var sellerCompany =
             (PersistentCompanyEntity) companyService.findById(sellerNif);
@@ -115,11 +115,11 @@ public class InvoiceController {
         );
       }
       final var result = invoiceService.add(
-            invoiceCreateRequestForm.getNumber(),
-            invoiceCreateRequestForm.getSeries(),
-            invoiceCreateRequestForm.getExpeditionDate(),
-            invoiceCreateRequestForm.getAdvancePaymentDate(),
-            invoiceCreateRequestForm.getTaxExempt(), sellerCompany, buyerCompany
+            invoiceCreateRequestForm.number(),
+            invoiceCreateRequestForm.series(),
+            invoiceCreateRequestForm.expeditionDate(),
+            invoiceCreateRequestForm.advancePaymentDate(),
+            invoiceCreateRequestForm.taxExempt(), sellerCompany, buyerCompany
       );
       final var response = new InvoiceResponse(
             result.getNumber(), result.getSeries(),
@@ -136,27 +136,26 @@ public class InvoiceController {
   }
 
   /**
-   * Get invoice providing a invoice series and number.
+   * Get an invoice by its series and number.
    *
    * @param series The invoice series.
    * @param number The invoice number.
-   * @return Response status 200 OK or some error.
+   * @return Response status 200 OK with invoice details or error status.
    */
   @CrossOrigin
   @GetMapping("/{series}/{number}")
   public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable
   final String series, @PathVariable
   final int number) {
-    final InvoiceEntity invoiceEntity;
     try {
-      invoiceEntity = invoiceService.findBySeriesAndNumber(series, number);
+      var invoiceEntity = invoiceService.findBySeriesAndNumber(series, number);
+      var response = InvoiceResponse.fromEntity(invoiceEntity);
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (InvoiceServiceException e) {
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
       );
     }
-    final var response = new InvoiceResponse(invoiceEntity);
-    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**

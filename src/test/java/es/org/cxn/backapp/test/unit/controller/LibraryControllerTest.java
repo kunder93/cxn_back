@@ -1,9 +1,12 @@
 
 package es.org.cxn.backapp.test.unit.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.google.gson.GsonBuilder;
 
@@ -11,6 +14,7 @@ import es.org.cxn.backapp.controller.entity.LibraryController;
 import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
+import es.org.cxn.backapp.model.form.requests.AuthorRequestDto;
 import es.org.cxn.backapp.model.form.responses.BookListResponse;
 import es.org.cxn.backapp.model.form.responses.BookResponse;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
@@ -115,9 +119,9 @@ class LibraryControllerTest {
   private static final long TEST_ISBN = 1234567890L;
 
   /**
-   * Title for test book add operation.
+   * Book publish year for test.
    */
-  private static final String TEST_TITLE = "The title";
+  private static final LocalDate PUBLISH_YEAR = LocalDate.of(2024, 1, 1);
 
   @BeforeEach
   public void setUp() {
@@ -165,12 +169,12 @@ class LibraryControllerTest {
 
     var response = gson.fromJson(responseJson, BookListResponse.class);
     Assertions.assertEquals(
-          books.size(), response.getBookList().size(), "Return list of books."
+          books.size(), response.bookList().size(), "Return list of books."
     );
 
     // Extract book titles from the response
-    Set<String> responseTitles = response.getBookList().stream()
-          .map(BookResponse::getTitle).collect(Collectors.toSet());
+    Set<String> responseTitles = response.bookList().stream()
+          .map(BookResponse::title).collect(Collectors.toSet());
 
     // Verify that the response titles match the expected titles
     Assertions.assertTrue(
@@ -200,24 +204,32 @@ class LibraryControllerTest {
   @Test
   void testAddBookSuccess() throws Exception {
     // Arrange
-    var bookRequest =
-          AddBookRequestDto.builder().title(TEST_TITLE).isbn(TEST_ISBN).build();
+    var bookRequest = new AddBookRequestDto(
+          TEST_ISBN, "Test Book", // title
+          "Fiction", // gender
+          PUBLISH_YEAR, "English", // language
+          List.of(new AuthorRequestDto("Test Author", "A", "Spain"))
+    );
+
     var addedBook = PersistentBookEntity.builder().isbn(TEST_ISBN)
-          .title(TEST_TITLE).build();
+          .title("Test Book").build();
 
     var gson = new GsonBuilder().setPrettyPrinting()
           .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
           .create();
 
     var bookRequestJson = gson.toJson(bookRequest);
-    when(libraryService.addBook(bookRequest)).thenReturn(addedBook);
+    when(libraryService.addBook(any(AddBookRequestDto.class)))
+          .thenReturn(addedBook);
 
     // Act and Assert
     mockMvc.perform(
-          MockMvcRequestBuilders.post(LIBRARY_URL)
+          MockMvcRequestBuilders.post("/api/library")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bookRequestJson).accept(MediaType.APPLICATION_JSON)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
+    ).andExpect(status().isCreated())
+          .andExpect(jsonPath("$.isbn").value(TEST_ISBN))
+          .andExpect(jsonPath("$.title").value("Test Book"));
   }
 
   /**
@@ -232,23 +244,31 @@ class LibraryControllerTest {
   @Test
   void testAddBookFailure() throws Exception {
     // Arrange
-    var bookRequest =
-          AddBookRequestDto.builder().title(TEST_TITLE).isbn(TEST_ISBN).build();
+    var bookRequest = new AddBookRequestDto(
+          TEST_ISBN, "Test Book", // title
+          "Fiction", // gender
+          PUBLISH_YEAR, "English", // language
+          List.of() // authorsList
+    );
+
     var serviceException = new LibraryServiceException("Failed to add book");
 
-    doThrow(serviceException).when(libraryService).addBook(bookRequest);
+    // Mock the libraryService to throw an exception when addBook is called
+    doThrow(serviceException).when(libraryService)
+          .addBook(any(AddBookRequestDto.class));
 
     var gson = new GsonBuilder().setPrettyPrinting()
           .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
           .create();
-    final var bookRequestJson = gson.toJson(bookRequest);
+
+    var bookRequestJson = gson.toJson(bookRequest);
 
     // Act and Assert
     mockMvc.perform(
-          MockMvcRequestBuilders.post(LIBRARY_URL)
+          MockMvcRequestBuilders.post("/api/library")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bookRequestJson).accept(MediaType.APPLICATION_JSON)
-    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+    ).andExpect(status().isBadRequest());
   }
 
   /**

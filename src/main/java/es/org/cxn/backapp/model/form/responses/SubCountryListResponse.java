@@ -2,55 +2,44 @@
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.CountryEntity;
-import es.org.cxn.backapp.model.CountrySubdivisionEntity;
-import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Data;
-
 /**
- * Represents the form used by controller as response for requesting one
- * company.
+ * Represents the response form used by the controller for requesting a list
+ * of subcountries.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This Data Transfer Object (DTO) facilitates communication between the view
+ * and the controller by mapping a list of country subdivisions.
+ * Each subdivision is represented by a {@link SubCountryResponse}.
  * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This record provides an immutable representation of the list of subcountries,
+ * ensuring that the data remains consistent.
+ *
+ * @param subCountryList a list of {@link SubCountryResponse} representing the
+ * subdivisions of the country.
  *
  * @author Santiago Paz.
  */
-@Data
-public final class SubCountryListResponse implements Serializable {
+public record SubCountryListResponse(List<SubCountryResponse> subCountryList) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3133052899993337705L;
-
-  /**
-   * List with subcountries.
-   */
-  private List<SubCountryResponse> subCountryList = new ArrayList<>();
-
-  /**
-   * Constructs subcountry list response.
+   * Creates a {@code SubCountryListResponse} from a {@code CountryEntity}.
+   * <p>
+   * This static factory method converts a {@code CountryEntity} into a
+   * {@code SubCountryListResponse}.
+   * It maps the subdivisions of the country entity into a list of
+   * {@code SubCountryResponse}.
    *
-   * @param country The country entity.
+   * @param country the {@code CountryEntity} containing subdivisions to be
+   * converted.
+   * @return a new {@code SubCountryListResponse} containing the list of
+   * subcountry responses.
    */
-  public SubCountryListResponse(final CountryEntity country) {
-    super();
-    if (!country.getSubdivisions().isEmpty()) {
-      country.getSubdivisions().forEach(
-            (CountrySubdivisionEntity cs) -> subCountryList.add(
-                  new SubCountryResponse(
-                        (PersistentCountrySubdivisionEntity) cs
-                  )
-            )
-      );
-    }
+  public static SubCountryListResponse fromEntity(final CountryEntity country) {
+    var subCountryResponses = country.getSubdivisions().stream()
+          .map(SubCountryResponse::fromEntity).toList();
+
+    return new SubCountryListResponse(subCountryResponses);
   }
 }

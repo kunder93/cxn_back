@@ -3,7 +3,6 @@ package es.org.cxn.backapp.test.unit.validation;
 
 import es.org.cxn.backapp.model.form.Constants;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.requests.SignUpRequestForm.SignUpRequestFormBuilder;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import jakarta.validation.ConstraintViolation;
@@ -162,12 +161,6 @@ final class TestSignUpRequestValidation {
   private static final LocalDate VALID_DATE_2 = LocalDate.of(1930, 3, 10);
 
   /**
-   *  A valid sign up request builder.
-   */
-  private static SignUpRequestFormBuilder validSignUpRequestBuilder =
-        SignUpRequestForm.builder();
-
-  /**
    * Default constructor.
    */
   TestSignUpRequestValidation() {
@@ -181,17 +174,6 @@ final class TestSignUpRequestValidation {
   public void setUpValidator() {
     final var factory = Validation.buildDefaultValidatorFactory();
     validator = factory.getValidator();
-
-    validSignUpRequestBuilder.dni(VALID_DNI).name(VALID_NAME)
-          .firstSurname(VALID_FIRST_SURNAME).secondSurname(VALID_SECOND_SURNAME)
-          .birthDate(VALID_BIRTH_DATE).gender(VALID_GENDER)
-          .password(VALID_PASSWORD).email(VALID_EMAIL)
-          .postalCode(VALID_POSTAL_CODE).apartmentNumber(VALID_APARTMENT_NUMBER)
-          .building(VALID_BUILDING).street(VALID_STREET).city(VALID_CITY)
-          .countryNumericCode(VALID_COUNTRY_NUMERIC_CODE)
-          .countrySubdivisionName(VALID_COUNTRY_SUBDIVISION_NAME)
-          .kindMember(VALID_KIND_MEMBER);
-
   }
 
   /**
@@ -207,7 +189,14 @@ final class TestSignUpRequestValidation {
             "12345678A" }
   )
   void testValidDni(final String dniValue) {
-    var signUpRequest = validSignUpRequestBuilder.dni(dniValue).build();
+    var signUpRequest = new SignUpRequestForm(
+          dniValue, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -228,7 +217,13 @@ final class TestSignUpRequestValidation {
             "12A34567A8", "12345678", "123456789", "AAAAAAAAA" }
   )
   void testNotValidDni(final String dniValue) {
-    var signUpRequest = validSignUpRequestBuilder.dni(dniValue).build();
+    var signUpRequest = new SignUpRequestForm(
+          dniValue, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -240,7 +235,7 @@ final class TestSignUpRequestValidation {
           "The message is about dni format."
     );
     Assertions.assertEquals(
-          signUpRequest.getDni(), constraintViolation.getInvalidValue(),
+          signUpRequest.dni(), constraintViolation.getInvalidValue(),
           "The message is about dni format."
     );
   }
@@ -252,7 +247,13 @@ final class TestSignUpRequestValidation {
   @Test
   void testNullDniNotValid() {
     final String dniValue = null;
-    var signUpRequest = validSignUpRequestBuilder.dni(dniValue).build();
+    var signUpRequest = new SignUpRequestForm(
+          dniValue, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -263,7 +264,7 @@ final class TestSignUpRequestValidation {
           "The message is about dni format."
     );
     Assertions.assertEquals(
-          signUpRequest.getDni(), constraintViolation.getInvalidValue(),
+          signUpRequest.dni(), constraintViolation.getInvalidValue(),
           "The message is about dni format."
     );
   }
@@ -277,7 +278,13 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @ValueSource(strings = { "", " ", "    " })
   void testNameBlankNotValid(final String name) {
-    var signUpRequest = validSignUpRequestBuilder.name(name).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, name, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -292,7 +299,7 @@ final class TestSignUpRequestValidation {
           "The constraint message is about name not blank."
     );
     Assertions.assertEquals(
-          signUpRequest.getName(), constraintViolation.getInvalidValue(),
+          signUpRequest.name(), constraintViolation.getInvalidValue(),
           "The constraint message is about name."
     );
   }
@@ -304,7 +311,13 @@ final class TestSignUpRequestValidation {
   @Test
   void testNullNameNotValid() {
     final String nameValue = null;
-    var signUpRequest = validSignUpRequestBuilder.name(nameValue).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, nameValue, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -315,7 +328,7 @@ final class TestSignUpRequestValidation {
           "The message is about dni format."
     );
     Assertions.assertEquals(
-          signUpRequest.getName(), constraintViolation.getInvalidValue(),
+          signUpRequest.name(), constraintViolation.getInvalidValue(),
           "The message is about dni format."
     );
   }
@@ -334,7 +347,13 @@ final class TestSignUpRequestValidation {
             /*26 with special characters */"dsadsadadwd€€14@|#|4€#€¬~@" }
   )
   void testNameLengthNotValid(final String name) {
-    var signUpRequest = validSignUpRequestBuilder.name(name).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, name, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -346,7 +365,7 @@ final class TestSignUpRequestValidation {
           "The constraint message is about name not blank."
     );
     Assertions.assertEquals(
-          signUpRequest.getName(), constraintViolation.getInvalidValue(),
+          signUpRequest.name(), constraintViolation.getInvalidValue(),
           "The constraint message is about name."
     );
   }
@@ -365,7 +384,13 @@ final class TestSignUpRequestValidation {
             /*25 with special characters */"dsdsadadwd€€14@|#|4€#€¬~@" }
   )
   void testNameValid(final String name) {
-    var signUpRequest = validSignUpRequestBuilder.name(name).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, name, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -380,8 +405,13 @@ final class TestSignUpRequestValidation {
   @Test
   void testNullFirstSurnameNotValid() {
     final String firstSurname = null;
-    var signUpRequest =
-          validSignUpRequestBuilder.firstSurname(firstSurname).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurname, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -392,8 +422,7 @@ final class TestSignUpRequestValidation {
           "The message is about first surname."
     );
     Assertions.assertEquals(
-          signUpRequest.getFirstSurname(),
-          constraintViolation.getInvalidValue(),
+          signUpRequest.firstSurname(), constraintViolation.getInvalidValue(),
           "The message is about first surname format."
     );
   }
@@ -407,8 +436,13 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @ValueSource(strings = { "", " ", "    " })
   void testFirstSurnameBlankNotValid(final String firstSurname) {
-    var signUpRequest =
-          validSignUpRequestBuilder.firstSurname(firstSurname).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurname, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -421,8 +455,7 @@ final class TestSignUpRequestValidation {
           "The constraint message is about first surname not blank."
     );
     Assertions.assertEquals(
-          signUpRequest.getFirstSurname(),
-          constraintViolation.getInvalidValue(),
+          signUpRequest.firstSurname(), constraintViolation.getInvalidValue(),
           "The constraint message is about first surname."
     );
   }
@@ -441,8 +474,13 @@ final class TestSignUpRequestValidation {
             /*26 with special characters */"dsadsadadwd€€14@|#|4€#€¬~@" }
   )
   void testFirstSurnameLengthNotValid(final String firstSurname) {
-    var signUpRequest =
-          validSignUpRequestBuilder.firstSurname(firstSurname).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurname, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -455,8 +493,7 @@ final class TestSignUpRequestValidation {
           "The constraint message is about first surname length."
     );
     Assertions.assertEquals(
-          signUpRequest.getFirstSurname(),
-          constraintViolation.getInvalidValue(),
+          signUpRequest.firstSurname(), constraintViolation.getInvalidValue(),
           "The constraint message is about first surname."
     );
   }
@@ -476,13 +513,19 @@ final class TestSignUpRequestValidation {
 
   /**
   * Verifies validation birth must be past.
-   * @param date The sign up request date.
+   * @param birthDate The sign up request date.
    */
   @DisplayName("Validate birthday date must be past.")
   @ParameterizedTest
   @MethodSource("datePastProvider")
-  void testOnlyPastBirthDateAreValid(final LocalDate date) {
-    var signUpRequest = validSignUpRequestBuilder.birthDate(date).build();
+  void testOnlyPastBirthDateAreValid(final LocalDate birthDate) {
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          birthDate, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions.assertEquals(
@@ -501,13 +544,19 @@ final class TestSignUpRequestValidation {
 
   /**
    * Verifies validation birth must be past.
-   * @param date The sign up request password.
+   * @param birthDate The sign up request password.
    */
   @DisplayName("Validate birthday date must be past.")
   @ParameterizedTest
   @MethodSource("dateFutureProvider")
-  void testFutureBirthDateNotValid(final LocalDate date) {
-    var signUpRequest = validSignUpRequestBuilder.birthDate(date).build();
+  void testFutureBirthDateNotValid(final LocalDate birthDate) {
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          birthDate, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -518,7 +567,7 @@ final class TestSignUpRequestValidation {
           "The constraint message is about birth date."
     );
     Assertions.assertEquals(
-          signUpRequest.getBirthDate(), constraintViolation.getInvalidValue(),
+          signUpRequest.birthDate(), constraintViolation.getInvalidValue(),
           "The constraint message is about birth date."
     );
 
@@ -532,7 +581,13 @@ final class TestSignUpRequestValidation {
   @ParameterizedTest
   @ValueSource(strings = { "", " ", "                 " })
   void testBlankPasswordNotValid(final String password) {
-    var signUpRequest = validSignUpRequestBuilder.password(password).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, password, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
 
@@ -548,7 +603,7 @@ final class TestSignUpRequestValidation {
             match, "Must be one of two constrant validation messages."
       );
       Assertions.assertEquals(
-            signUpRequest.getPassword(), constraintViolation.getInvalidValue(),
+            signUpRequest.password(), constraintViolation.getInvalidValue(),
             "The constraint message is about password."
       );
 
@@ -567,7 +622,13 @@ final class TestSignUpRequestValidation {
             /*22*/ "1234567890123456789012" }
   )
   void testPasswordLengthOutBoundsNotValid(final String password) {
-    var signUpRequest = validSignUpRequestBuilder.password(password).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, password, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -578,7 +639,7 @@ final class TestSignUpRequestValidation {
           "The constraint message is about password."
     );
     Assertions.assertEquals(
-          signUpRequest.getPassword(), constraintViolation.getInvalidValue(),
+          signUpRequest.password(), constraintViolation.getInvalidValue(),
           "The constraint message is about password."
     );
 
@@ -595,7 +656,13 @@ final class TestSignUpRequestValidation {
             /*52*/ "baaaaaaaaaaaaaverylongEmailExample@VeryLongEmail.com" }
   )
   void testEmailLengthOutBoundsNotValid(final String email) {
-    var signUpRequest = validSignUpRequestBuilder.email(email).build();
+    var signUpRequest = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, email,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     Set<ConstraintViolation<SignUpRequestForm>> violations =
           validator.validate(signUpRequest);
     Assertions
@@ -606,7 +673,7 @@ final class TestSignUpRequestValidation {
           "The constraint message is about email."
     );
     Assertions.assertEquals(
-          signUpRequest.getEmail(), constraintViolation.getInvalidValue(),
+          signUpRequest.email(), constraintViolation.getInvalidValue(),
           "The constraint message is about email."
     );
   }

@@ -3,45 +3,35 @@ package es.org.cxn.backapp.model.form.requests;
 
 import jakarta.validation.constraints.NotNull;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as request for unsubscribe an user.
+ * Represents the form used by the controller as a request to unsubscribe a
+ * user.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This Data Transfer Object (DTO) facilitates communication between the view
+ * and the controller, ensuring that the necessary information is provided for
+ * a user to be unsubscribed from the system.
+ * </p>
  *
- * @author Santiago Paz.
+ * <p>
+ * The {@code UserUnsubscribeRequest} includes fields for the user's email
+ * and password, which are required to authenticate the user before processing
+ * the unsubscribe request.
+ * </p>
+ *
+ * @param email    The email address of the user requesting to unsubscribe.
+ * This field is mandatory and cannot be null.
+ * @param password The password associated with the user's account.
+ * This field is mandatory and cannot be null.
+ *
+ * <p>
+ * The fields are validated using Java validation annotations to ensure that
+ * non-null values are provided.
+ * </p>
+ *
+ * @author Santiago Paz
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public final class UserUnsubscribeRequest implements Serializable {
-
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3112841234615975705L;
-
-  /**
-   * The user email.
-   */
-  @NotNull
-  private String email;
-
-  /**
-   * The user password.
-   */
-  @NotNull
-  private String password;
+public record UserUnsubscribeRequest(@NotNull
+String email, @NotNull
+String password) {
 
 }

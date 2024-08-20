@@ -48,20 +48,17 @@ class RegularTransportRequestTest {
    */
   @Test
   void testGettersAndSetters() {
-    var request = new AddRegularTransportRequestForm();
+    var request = new AddRegularTransportRequestForm(
+          CATEGORY, DESCRIPTION, INVOICE_NUMBER, INVOICE_SERIES
+    );
 
-    request.setCategory(CATEGORY);
-    request.setDescription(DESCRIPTION);
-    request.setInvoiceNumber(INVOICE_NUMBER);
-    request.setInvoiceSeries(INVOICE_SERIES);
-
-    assertEquals(CATEGORY, request.getCategory(), "values using getters");
-    assertEquals(DESCRIPTION, request.getDescription(), "values using getters");
+    assertEquals(CATEGORY, request.category(), "values using getters");
+    assertEquals(DESCRIPTION, request.description(), "values using getters");
     assertEquals(
-          INVOICE_NUMBER, request.getInvoiceNumber(), "values using getters"
+          INVOICE_NUMBER, request.invoiceNumber(), "values using getters"
     );
     assertEquals(
-          INVOICE_SERIES, request.getInvoiceSeries(), "values using getters"
+          INVOICE_SERIES, request.invoiceSeries(), "values using getters"
     );
   }
 

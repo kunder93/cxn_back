@@ -3,44 +3,44 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.AuthorEntity;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import lombok.Data;
+import java.util.stream.Collectors;
 
 /**
- * Represents the form used by controller as response for requesting all
+ * Represents the form used by the controller as a response for requesting all
  * authors.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- *
+ * This is a Data Transfer Object (DTO), designed to facilitate communication
+ * between the view and the controller.
+ * </p>
+ * @param authorList The author list with authors responses.
  * @author Santiago Paz.
  */
-@Data
-public final class AuthorListResponse implements Serializable {
+public record AuthorListResponse(Set<AuthorResponse> authorList) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -6123427531674372216L;
-
-  /**
-   * List with all stored authors.
-   */
-  private Set<AuthorResponse> authorList = new HashSet<>();
-
-  /**
-   * Constructor with provided parameters values.
+   * Private constructor to convert a list of {@link AuthorEntity} into a set
+   * of {@link AuthorResponse}.
    *
-   * @param value The authors entities list.
+   * @param value The list of author entities.
    */
-  public AuthorListResponse(final List<AuthorEntity> value) {
-    super();
-    value.forEach(
-          (AuthorEntity e) -> this.authorList.add(new AuthorResponse(e))
+  private AuthorListResponse(final List<AuthorEntity> value) {
+    this(
+          value.stream().map(AuthorResponse::new)
+                .collect(Collectors.toCollection(HashSet::new))
     );
+  }
+
+  /**
+   * Factory method that takes a list of {@link AuthorEntity} and converts it
+   * into a set of {@link AuthorResponse}.
+   *
+   * @param value The list of author entities.
+   * @return An instance of {@link AuthorListResponse}.
+   */
+  public static AuthorListResponse from(final List<AuthorEntity> value) {
+    return new AuthorListResponse(value);
   }
 }

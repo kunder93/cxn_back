@@ -3,7 +3,6 @@ package es.org.cxn.backapp.test.unit.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.never;
@@ -19,12 +18,11 @@ import es.org.cxn.backapp.service.DefaultChessQuestionService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -56,102 +54,122 @@ class ChessQuestionServiceTest {
    */
   @InjectMocks
   private DefaultChessQuestionService chessQuestionService;
+  /**
+   * First chess question identifier.
+   */
+  private static final Integer CHESS_QUESTION_ID = 1;
 
   /**
-   * Sets up the test environment before each test method.
-   * Initializes mock objects and the service instance.
+   * First chess question topic.
    */
-  @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
-    chessQuestionService = new DefaultChessQuestionService(mockRepository);
+  private static final String CHESS_QUESTION_TOPIC = "class test";
+
+  /**
+   * First chess question message content.
+   */
+  private static final String CHESS_QUESTION_MESSAGE =
+        "My son wanna get into class, where is located?";
+
+  /**
+   * First chess question category.
+   */
+  private static final String CHESS_QUESTION_CATEGORY = "Kids class";
+
+  /**
+   * First chess question email.
+   */
+  private static final String CHESS_QUESTION_EMAIL = "firstEmail@email.es";
+
+  /**
+   * Chess question date. When question was done.
+   */
+  private static final LocalDateTime CHESS_QUESTION_DATE = LocalDateTime.now();
+
+  /**
+   * State for check if question has been seen.
+   */
+  private static final boolean CHESS_QUESTION_SEEN = false;
+
+  private PersistentChessQuestionEntity createTestEntity() {
+    return PersistentChessQuestionEntity.builder().email(CHESS_QUESTION_EMAIL)
+          .category(CHESS_QUESTION_CATEGORY).topic(CHESS_QUESTION_TOPIC)
+          .date(CHESS_QUESTION_DATE).message(CHESS_QUESTION_MESSAGE)
+          .seen(CHESS_QUESTION_SEEN).build();
   }
-
-  /**
-   * Constant representing a sample email address used for testing.
-   */
-  private static final String TEST_EMAIL = "test@example.com";
-
-  /**
-   * Constant representing a sample category used for testing.
-   */
-  private static final String TEST_CATEGORY = "Test Category";
-
-  /**
-   * Constant representing a sample topic used for testing.
-   */
-  private static final String TEST_TOPIC = "Test Topic";
-
-  /**
-   * Constant representing a sample message used for testing.
-   */
-  private static final String TEST_MESSAGE = "Test Message";
-
-  /**
-   * Constant representing the current date and time used for testing.
-   */
-  private static final LocalDateTime DATE_NOW = LocalDateTime.now();
 
   @Test
   void testAdd() {
-    // Given
-    var expectedEntity = PersistentChessQuestionEntity.builder()
-          .email(TEST_EMAIL).category(TEST_CATEGORY).topic(TEST_TOPIC)
-          .date(DATE_NOW).message(TEST_MESSAGE).build();
+    var expectedEntity = createTestEntity();
 
     when(mockRepository.save(any(PersistentChessQuestionEntity.class)))
           .thenReturn(expectedEntity);
 
-    // When
-    var actualEntity = chessQuestionService
-          .add(TEST_EMAIL, TEST_CATEGORY, TEST_TOPIC, TEST_MESSAGE);
-
-    // Then
-    assertThat(actualEntity)
-          .as("The returned entity should match the expected entity")
-          .isEqualTo(expectedEntity);
-    verify(mockRepository, times(1)).save(
-          argThat(
-                entity -> entity.getEmail().equals(TEST_EMAIL)
-                      && entity.getCategory().equals(TEST_CATEGORY)
-                      && entity.getTopic().equals(TEST_TOPIC)
-                      && entity.getMessage().equals(TEST_MESSAGE)
-          )
+    var actualEntity = chessQuestionService.add(
+          CHESS_QUESTION_EMAIL, CHESS_QUESTION_CATEGORY, CHESS_QUESTION_TOPIC,
+          CHESS_QUESTION_MESSAGE
     );
+
+    assertThat(actualEntity).as(
+          "The returned entity should match the expected entity with "
+                + "email: %s, category: %s, topic: %s, and message: %s",
+          CHESS_QUESTION_EMAIL, CHESS_QUESTION_CATEGORY, CHESS_QUESTION_TOPIC,
+          CHESS_QUESTION_MESSAGE
+    ).isEqualTo(expectedEntity);
+    verify(mockRepository, times(1))
+          .save(
+                argThat(
+                      entity -> CHESS_QUESTION_EMAIL.equals(entity.getEmail())
+                            && CHESS_QUESTION_CATEGORY
+                                  .equals(entity.getCategory())
+                            && CHESS_QUESTION_TOPIC.equals(entity.getTopic())
+                            && CHESS_QUESTION_MESSAGE
+                                  .equals(entity.getMessage())
+                )
+          );
   }
 
   @Test
   void testChangeChessQuestionSeen() throws ChessQuestionServiceException {
     // Arrange
-    Integer id = 1;
     var mockEntity = new PersistentChessQuestionEntity();
-    mockEntity.setIdentifier(id);
-    mockEntity.setSeen(false); // Puedes establecer el valor inicial como desees
+    mockEntity.setIdentifier(CHESS_QUESTION_ID);
+    mockEntity.setSeen(CHESS_QUESTION_SEEN); // Set the initial value as needed
 
-    when(mockRepository.findById(id)).thenReturn(Optional.of(mockEntity));
+    when(mockRepository.findById(CHESS_QUESTION_ID))
+          .thenReturn(Optional.of(mockEntity));
     when(mockRepository.save(any(PersistentChessQuestionEntity.class)))
           .thenReturn(mockEntity);
 
     // Act
-    var updatedEntity = chessQuestionService.changeChessQuestionSeen(id);
+    var updatedEntity =
+          chessQuestionService.changeChessQuestionSeen(CHESS_QUESTION_ID);
 
     // Assert
-    assertTrue(updatedEntity.isSeen(), "seen is true");
-    verify(mockRepository, times(1)).findById(id);
+    Assertions.assertTrue(
+          updatedEntity.isSeen(),
+          "Expected the 'seen' property of the updated entity to be true"
+    );
+
+    verify(mockRepository, times(1)).findById(CHESS_QUESTION_ID);
     verify(mockRepository, times(1)).save(mockEntity);
   }
 
   @Test
   void testChangeChessQuestionSeenQuestionNotFound() {
     // Arrange
-    Integer id = 1;
-    when(mockRepository.findById(id)).thenReturn(Optional.empty());
+    var chessQuestionId = CHESS_QUESTION_ID;
+    when(mockRepository.findById(chessQuestionId)).thenReturn(Optional.empty());
 
     // Act & Assert
-    assertThrows(ChessQuestionServiceException.class, () -> {
-      chessQuestionService.changeChessQuestionSeen(id);
-    }, "ChessQuestionServiceException expected");
-    verify(mockRepository, times(1)).findById(id);
+    assertThrows(
+          ChessQuestionServiceException.class,
+          () -> chessQuestionService.changeChessQuestionSeen(chessQuestionId),
+          "Expected changeChessQuestionSeen to throw "
+                + "ChessQuestionServiceException when the chess"
+                + " question is not found"
+    );
+
+    verify(mockRepository, times(1)).findById(chessQuestionId);
     verify(mockRepository, never()).save(any());
   }
 }

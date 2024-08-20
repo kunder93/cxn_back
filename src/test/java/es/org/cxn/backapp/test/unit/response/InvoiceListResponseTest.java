@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
@@ -17,12 +17,128 @@ import org.junit.jupiter.api.Test;
 
 class InvoiceListResponseTest {
 
+  /**
+   * Invoice number for the first test invoice.
+   */
+  private static final int INVOICE_1_NUMBER = 1;
+
+  /**
+   * Invoice series for the first test invoice.
+   */
+  private static final String INVOICE_1_SERIES = "AA";
+
+  /**
+   * Advance payment date for the first test invoice.
+   */
+  private static final LocalDate INVOICE_1_ADVANCE_PAYMENT_DATE =
+        LocalDate.now();
+
+  /**
+   * Expedition date for the first test invoice.
+   */
+  private static final LocalDate INVOICE_1_EXPEDITION_DATE = LocalDate.now();
+
+  /**
+   * Tax exemption status for the first test invoice.
+   */
+  private static final Boolean INVOICE_1_TAX_EXEMPT = Boolean.TRUE;
+
+  /**
+   * Seller NIF (Tax ID) for the first test invoice.
+   */
+  private static final String INVOICE_1_SELLER_NIF = "41222332G";
+
+  /**
+   * Buyer NIF (Tax ID) for the first test invoice.
+   */
+  private static final String INVOICE_1_BUYER_NIF = "41241242G";
+
+  /**
+   * Invoice number for the second test invoice.
+   */
+  private static final int INVOICE_2_NUMBER = 1;
+
+  /**
+   * Invoice series for the second test invoice.
+   */
+  private static final String INVOICE_2_SERIES = "BB";
+
+  /**
+   * Advance payment date for the second test invoice.
+   */
+  private static final LocalDate INVOICE_2_ADVANCE_PAYMENT_DATE =
+        LocalDate.now();
+
+  /**
+   * Expedition date for the second test invoice.
+   */
+  private static final LocalDate INVOICE_2_EXPEDITION_DATE = LocalDate.now();
+
+  /**
+   * Tax exemption status for the second test invoice.
+   */
+  private static final Boolean INVOICE_2_TAX_EXEMPT = Boolean.TRUE;
+
+  /**
+   * Seller NIF (Tax ID) for the second test invoice.
+   */
+  private static final String INVOICE_2_SELLER_NIF = "41232332G";
+
+  /**
+   * Buyer NIF (Tax ID) for the second test invoice.
+   */
+  private static final String INVOICE_2_BUYER_NIF = "41241342G";
+
+  /**
+   * Invoice number for the third test invoice.
+   */
+  private static final int INVOICE_3_NUMBER = 3;
+
+  /**
+   * Invoice series for the third test invoice.
+   */
+  private static final String INVOICE_3_SERIES = "CC";
+
+  /**
+   * Advance payment date for the third test invoice.
+   */
+  private static final LocalDate INVOICE_3_ADVANCE_PAYMENT_DATE =
+        LocalDate.now().minusDays(2);
+
+  /**
+   * Expedition date for the third test invoice.
+   */
+  private static final LocalDate INVOICE_3_EXPEDITION_DATE =
+        LocalDate.now().minusDays(2);
+
+  /**
+   * Tax exemption status for the third test invoice.
+   */
+  private static final Boolean INVOICE_3_TAX_EXEMPT = Boolean.TRUE;
+
+  /**
+   * Seller NIF (Tax ID) for the third test invoice.
+   */
+  private static final String INVOICE_3_SELLER_NIF = "41233332G";
+
+  /**
+   * Buyer NIF (Tax ID) for the third test invoice.
+   */
+  private static final String INVOICE_3_BUYER_NIF = "41242342G";
+
   @Test
   void testConstructorAndGetters() {
     // Crear una lista de InvoiceResponse
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices =
           List.of(invoiceResponse1, invoiceResponse2);
@@ -32,64 +148,72 @@ class InvoiceListResponseTest {
 
     // Verificar lista de invoices en la respuesta coincide con lista original
     assertNotNull(
-          response.getInvoicesList(), "The invoices list should not be null"
+          response.invoicesList(), "The invoices list should not be null"
     );
     assertEquals(
-          2, response.getInvoicesList().size(),
+          2, response.invoicesList().size(),
           "The invoices list size should be 2"
     );
     assertTrue(
-          response.getInvoicesList().contains(invoiceResponse1),
+          response.invoicesList().contains(invoiceResponse1),
           "The invoices list should contain invoiceResponse1"
     );
     assertTrue(
-          response.getInvoicesList().contains(invoiceResponse2),
+          response.invoicesList().contains(invoiceResponse2),
           "The invoices list should contain invoiceResponse2"
     );
   }
 
   @Test
-  void testSetInvoicesList() {
+  void testInvoicesList() {
     // Crear una lista de InvoiceResponse
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     List<InvoiceResponse> invoices =
           List.of(invoiceResponse1, invoiceResponse2);
 
-    // Crear una instancia de InvoiceListResponse
-    var invoicesList = new ArrayList<InvoiceResponse>();
-    var response = new InvoiceListResponse(invoicesList);
+    // Crear una instancia de InvoiceListResponse usando el constructor
+    var response = new InvoiceListResponse(invoices);
 
-    // Establecer la lista de invoices
-    response.setInvoicesList(invoices);
-
-    // Verificar que la lista de invoices en la
-    // respuesta coincide con la lista establecida
+    // Verificar que la lista de invoices en la respuesta coincide con
+    // la lista proporcionada
     assertNotNull(
-          response.getInvoicesList(),
-          "The invoices list should not be null after setting it"
+          response.invoicesList(), "The invoices list should not be null"
     );
     assertEquals(
-          2, response.getInvoicesList().size(),
-          "The invoices list size should be 2 after setting it"
+          2, response.invoicesList().size(),
+          "The invoices list size should be 2"
     );
     assertTrue(
-          response.getInvoicesList().contains(invoiceResponse1),
-          "The invoices list should contain invoiceResponse1 after setting it"
+          response.invoicesList().contains(invoiceResponse1),
+          "The invoices list should contain invoiceResponse1"
     );
     assertTrue(
-          response.getInvoicesList().contains(invoiceResponse2),
-          "The invoices list should contain invoiceResponse2 after setting it"
+          response.invoicesList().contains(invoiceResponse2),
+          "The invoices list should contain invoiceResponse2"
     );
   }
 
   @Test
   void testEqualsAndHashCode() {
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices1 =
           List.of(invoiceResponse1, invoiceResponse2);
@@ -111,7 +235,11 @@ class InvoiceListResponseTest {
     );
 
     // Crear una instancia con una lista diferente
-    var differentInvoiceResponse = new InvoiceResponse();
+    var differentInvoiceResponse = new InvoiceResponse(
+          INVOICE_3_NUMBER, INVOICE_3_SERIES, INVOICE_3_ADVANCE_PAYMENT_DATE,
+          INVOICE_3_EXPEDITION_DATE, INVOICE_3_TAX_EXEMPT, INVOICE_3_SELLER_NIF,
+          INVOICE_3_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> differentInvoices = List.of(differentInvoiceResponse);
     var response3 = new InvoiceListResponse(differentInvoices);
@@ -125,16 +253,22 @@ class InvoiceListResponseTest {
 
   @Test
   void testToString() {
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices =
           List.of(invoiceResponse1, invoiceResponse2);
 
     var response = new InvoiceListResponse(invoices);
-    var expectedToString =
-          "InvoiceListResponse [invoicesList=" + invoices + "]";
+    var expectedToString = "InvoiceListResponse[invoicesList=" + invoices + "]";
 
     // Verificar que el método toString retorna el formato esperado
     assertEquals(
@@ -146,9 +280,16 @@ class InvoiceListResponseTest {
 
   @Test
   void testEqualsSameInstance() {
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices =
           List.of(invoiceResponse1, invoiceResponse2);
@@ -161,9 +302,16 @@ class InvoiceListResponseTest {
 
   @Test
   void testEqualsNullObject() {
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices =
           List.of(invoiceResponse1, invoiceResponse2);
@@ -177,9 +325,16 @@ class InvoiceListResponseTest {
 
   @Test
   void testEqualsDifferentClass() {
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices =
           List.of(invoiceResponse1, invoiceResponse2);
@@ -192,14 +347,25 @@ class InvoiceListResponseTest {
 
   @Test
   void testEqualsDifferentInvoicesList() {
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices1 =
           List.of(invoiceResponse1, invoiceResponse2);
 
-    var differentInvoiceResponse = new InvoiceResponse();
+    var differentInvoiceResponse = new InvoiceResponse(
+          INVOICE_3_NUMBER, INVOICE_3_SERIES, INVOICE_3_ADVANCE_PAYMENT_DATE,
+          INVOICE_3_EXPEDITION_DATE, INVOICE_3_TAX_EXEMPT, INVOICE_3_SELLER_NIF,
+          INVOICE_3_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices2 = List.of(differentInvoiceResponse);
 
@@ -212,9 +378,16 @@ class InvoiceListResponseTest {
 
   @Test
   void testEqualsSameInvoicesList() {
-    var invoiceResponse1 = new InvoiceResponse();
-    // Asegúrate de inicializar correctamente
-    var invoiceResponse2 = new InvoiceResponse();
+    var invoiceResponse1 = new InvoiceResponse(
+          INVOICE_1_NUMBER, INVOICE_1_SERIES, INVOICE_1_ADVANCE_PAYMENT_DATE,
+          INVOICE_1_EXPEDITION_DATE, INVOICE_1_TAX_EXEMPT, INVOICE_1_SELLER_NIF,
+          INVOICE_1_BUYER_NIF
+    );
+    var invoiceResponse2 = new InvoiceResponse(
+          INVOICE_2_NUMBER, INVOICE_2_SERIES, INVOICE_2_ADVANCE_PAYMENT_DATE,
+          INVOICE_2_EXPEDITION_DATE, INVOICE_2_TAX_EXEMPT, INVOICE_2_SELLER_NIF,
+          INVOICE_2_BUYER_NIF
+    );
     // Asegúrate de inicializar correctamente
     List<InvoiceResponse> invoices1 =
           List.of(invoiceResponse1, invoiceResponse2);

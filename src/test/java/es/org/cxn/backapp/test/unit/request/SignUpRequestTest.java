@@ -2,13 +2,10 @@
 package es.org.cxn.backapp.test.unit.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import es.org.cxn.backapp.model.form.Constants;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.requests.SignUpRequestForm.SignUpRequestFormBuilder;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 import jakarta.validation.ConstraintViolation;
@@ -120,163 +117,66 @@ class SignUpRequestTest {
   private static final String VALID_COUNTRY_SUBDIVISION_NAME = "Subdivision";
 
   /**
-   *  Instancia estática del constructor de SignUpRequestForm.
-   *  Utilizado para construir objetos de tipo SignUpRequestForm en las
-   *  pruebas unitarias.
+   * Sign up request with valid data.
    */
-  private static SignUpRequestFormBuilder signUpRequestFormBuilder;
+  private static final SignUpRequestForm SIGN_UP_REQUEST_FORM =
+        new SignUpRequestForm(
+              VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+              VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+              VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+              VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+              VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+        );
 
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
-    signUpRequestFormBuilder = SignUpRequestForm.builder().dni(VALID_DNI)
-          .name(VALID_NAME).firstSurname(VALID_FIRST_SURNAME)
-          .secondSurname(VALID_SECOND_SURNAME).birthDate(VALID_BIRTH_DATE)
-          .gender(VALID_GENDER).password(VALID_PASSWORD).email(VALID_EMAIL)
-          .postalCode(VALID_POSTAL_CODE).apartmentNumber(VALID_APARTMENT_NUMBER)
-          .building(VALID_BUILDING).street(VALID_STREET).city(VALID_CITY)
-          .kindMember(VALID_KIND_MEMBER)
-          .countryNumericCode(VALID_COUNTRY_NUMERIC_CODE)
-          .countrySubdivisionName(VALID_COUNTRY_SUBDIVISION_NAME);
 
   }
 
   @Test
   void testBuilderAndGetters() {
     // Crear una instancia utilizando el constructor generado por Lombok
-    var form = signUpRequestFormBuilder.build();
+    var form = SIGN_UP_REQUEST_FORM;
 
     // Verificar que los valores se hayan establecido correctamente
-    assertEquals(VALID_DNI, form.getDni(), "dni getter.");
-    assertEquals(VALID_NAME, form.getName(), "name getter.");
+    assertEquals(VALID_DNI, form.dni(), "dni getter.");
+    assertEquals(VALID_NAME, form.name(), "name getter.");
     assertEquals(
-          VALID_FIRST_SURNAME, form.getFirstSurname(), "first surname getter."
+          VALID_FIRST_SURNAME, form.firstSurname(), "first surname getter."
     );
     assertEquals(
-          VALID_SECOND_SURNAME, form.getSecondSurname(),
-          "second surname getter."
+          VALID_SECOND_SURNAME, form.secondSurname(), "second surname getter."
     );
-    assertEquals(VALID_BIRTH_DATE, form.getBirthDate(), "birth date getter.");
-    assertEquals(VALID_GENDER, form.getGender(), "gender getter.");
-    assertEquals(VALID_PASSWORD, form.getPassword(), "password getter.");
-    assertEquals(VALID_EMAIL, form.getEmail(), "email getter.");
-    assertEquals(VALID_POSTAL_CODE, form.getPostalCode(), "postal code getter");
+    assertEquals(VALID_BIRTH_DATE, form.birthDate(), "birth date getter.");
+    assertEquals(VALID_GENDER, form.gender(), "gender getter.");
+    assertEquals(VALID_PASSWORD, form.password(), "password getter.");
+    assertEquals(VALID_EMAIL, form.email(), "email getter.");
+    assertEquals(VALID_POSTAL_CODE, form.postalCode(), "postal code getter");
     assertEquals(
-          VALID_APARTMENT_NUMBER, form.getApartmentNumber(),
+          VALID_APARTMENT_NUMBER, form.apartmentNumber(),
           "Apartment number getter"
     );
-    assertEquals(VALID_BUILDING, form.getBuilding(), "building getter");
-    assertEquals(VALID_STREET, form.getStreet(), "street getter");
-    assertEquals(VALID_CITY, form.getCity(), "city getter");
+    assertEquals(VALID_BUILDING, form.building(), "building getter");
+    assertEquals(VALID_STREET, form.street(), "street getter");
+    assertEquals(VALID_CITY, form.city(), "city getter");
+    assertEquals(VALID_KIND_MEMBER, form.kindMember(), "kind of member getter");
     assertEquals(
-          VALID_KIND_MEMBER, form.getKindMember(), "kind of member getter"
-    );
-    assertEquals(
-          VALID_COUNTRY_NUMERIC_CODE, form.getCountryNumericCode(),
+          VALID_COUNTRY_NUMERIC_CODE, form.countryNumericCode(),
           "country numeric code getter"
     );
     assertEquals(
-          VALID_COUNTRY_SUBDIVISION_NAME, form.getCountrySubdivisionName(),
+          VALID_COUNTRY_SUBDIVISION_NAME, form.countrySubdivisionName(),
           "country subdivision name getter"
     );
   }
 
   @Test
-  void testBuilderAndSetters() {
-    // Crear una instancia utilizando el constructor generado por Lombok
-    var form = signUpRequestFormBuilder.build();
-
-    // Definir constantes para los valores de prueba en camelCase
-    final var expectedDni = "87654321B";
-    final var expectedName = "Jane";
-    final var expectedFirstSurname = "Smith";
-    final var expectedSecondSurname = "Johnson";
-    final var expectedBirthDate = LocalDate.of(1995, 5, 5);
-    final var expectedGender = "Female";
-    final var expectedPassword = "newpassword456";
-    final var expectedEmail = "jane.smith@example.com";
-    final var expectedPostalCode = "54321";
-    final var expectedApartmentNumber = "2B";
-    final var expectedBuilding = "Building 2";
-    final var expectedStreet = "Second Street";
-    final var expectedCity = "New City";
-    final var expectedKindMember = UserType.SOCIO_HONORARIO;
-    final var expectedCountryNumericCode = 2;
-    final var expectedCountrySubdivisionName = "New Subdivision";
-
-    // Establecer y verificar los valores de prueba
-    form.setDni(expectedDni);
-    assertEquals(expectedDni, form.getDni(), "verifica setter");
-
-    form.setName(expectedName);
-    assertEquals(expectedName, form.getName(), "verifica setter");
-
-    form.setFirstSurname(expectedFirstSurname);
-    assertEquals(
-          expectedFirstSurname, form.getFirstSurname(), "verifica setter"
-    );
-
-    form.setSecondSurname(expectedSecondSurname);
-    assertEquals(
-          expectedSecondSurname, form.getSecondSurname(), "verifica setter"
-    );
-
-    form.setBirthDate(expectedBirthDate);
-    assertEquals(expectedBirthDate, form.getBirthDate(), "verifica setter");
-
-    form.setGender(expectedGender);
-    assertEquals(expectedGender, form.getGender(), "verifica setter");
-
-    form.setPassword(expectedPassword);
-    assertEquals(expectedPassword, form.getPassword(), "verifica setter");
-
-    form.setEmail(expectedEmail);
-    assertEquals(expectedEmail, form.getEmail(), "verifica setter");
-
-    form.setPostalCode(expectedPostalCode);
-    assertEquals(expectedPostalCode, form.getPostalCode(), "verifica setter");
-
-    form.setApartmentNumber(expectedApartmentNumber);
-    assertEquals(
-          expectedApartmentNumber, form.getApartmentNumber(), "verifica setter"
-    );
-
-    form.setBuilding(expectedBuilding);
-    assertEquals(expectedBuilding, form.getBuilding(), "verifica setter");
-
-    form.setStreet(expectedStreet);
-    assertEquals(expectedStreet, form.getStreet(), "verifica setter");
-
-    form.setCity(expectedCity);
-    assertEquals(expectedCity, form.getCity(), "verifica setter");
-
-    form.setKindMember(expectedKindMember);
-    assertEquals(expectedKindMember, form.getKindMember(), "verifica setter");
-
-    form.setCountryNumericCode(expectedCountryNumericCode);
-    assertEquals(
-          expectedCountryNumericCode, form.getCountryNumericCode(),
-          "verifica setter"
-    );
-
-    form.setCountrySubdivisionName(expectedCountrySubdivisionName);
-    assertEquals(
-          expectedCountrySubdivisionName, form.getCountrySubdivisionName(),
-          "verifica setter"
-    );
-
-    // Verificar que la representación en cadena del objeto no sea nula
-    assertNotNull(form.toString(), "verifica no nulo");
-  }
-
-  @Test
   void testEqualsAndHashCode() {
     // Crear dos instancias con los mismos valores
-    var form1 = SignUpRequestForm.builder().dni("12345678A").name("John")
-          .firstSurname("Doe").build();
+    var form1 = SIGN_UP_REQUEST_FORM;
 
-    var form2 = SignUpRequestForm.builder().dni("12345678A").name("John")
-          .firstSurname("Doe").build();
+    var form2 = SIGN_UP_REQUEST_FORM;
 
     //
     assertEquals(
@@ -293,26 +193,12 @@ class SignUpRequestTest {
           "Verificar que los hashCode de las instancias sean iguales"
     );
 
-    form2.setName("Jane");
-    assertNotEquals(
-          form1, form2,
-          "Cambiar un valor en una instancia y verificar que los "
-                + "equals no sean iguales"
-    );
-
-    form2.setName("John");
-    form2.setDni("87654321B");
-    assertNotEquals(
-          form1.hashCode(), form2.hashCode(),
-          "Cambiar un valor en una instancia y verificar que los "
-                + "hashCode no sean iguales"
-    );
   }
 
   @Test
   void testDniValidation() {
     // Create valid signUpRequestForm
-    var signUpRequestForm = signUpRequestFormBuilder.build();
+    var signUpRequestForm = SIGN_UP_REQUEST_FORM;
     var factory = Validation.buildDefaultValidatorFactory();
     var validator = factory.getValidator();
 
@@ -321,8 +207,15 @@ class SignUpRequestTest {
           validator.validate(signUpRequestForm);
     assertTrue(violations.isEmpty(), "No constraint violations should occur");
 
+    final String nullDni = null;
     // Caso 1: Cadena nula
-    signUpRequestForm.setDni(null);
+    signUpRequestForm = new SignUpRequestForm(
+          nullDni, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     // Validar y verificar la excepción
     violations = validator.validate(signUpRequestForm);
     var violation = violations.iterator().next();
@@ -332,65 +225,91 @@ class SignUpRequestTest {
     );
 
     // Caso 3: DNI con longitud incorrecta (menor que 9)
-    signUpRequestForm.setDni("1234567Z");
-    violations = validator.validate(signUpRequestForm);
-    violation = violations.iterator().next();
-    assertEquals(
-          Constants.DNI_BAD_FORMAT, violation.getMessage(),
-          "DNI must contain 8 numeric and 1 letter. Length is 9."
+    final var shortDni = "1234567Z";
+    signUpRequestForm = new SignUpRequestForm(
+          shortDni, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
     );
-    // Regresamos a un estado valido
-    signUpRequestForm = signUpRequestFormBuilder.build();
 
-    // Caso 4: DNI con longitud incorrecta (mayor que 9)
-    signUpRequestForm.setDni("123456789Z0");
     violations = validator.validate(signUpRequestForm);
     violation = violations.iterator().next();
     assertEquals(
           Constants.DNI_BAD_FORMAT, violation.getMessage(),
           "DNI must contain 8 numeric and 1 letter. Length is 9."
     );
-    // Regresamos a un estado valido
-    signUpRequestForm = signUpRequestFormBuilder.build();
+    // Caso 4: DNI con longitud incorrecta (mayor que 9)
+    final var longDni = "123456789Z0";
+    signUpRequestForm = new SignUpRequestForm(
+          longDni, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
+    violations = validator.validate(signUpRequestForm);
+    violation = violations.iterator().next();
+    assertEquals(
+          Constants.DNI_BAD_FORMAT, violation.getMessage(),
+          "DNI must contain 8 numeric and 1 letter. Length is 9."
+    );
 
     // Caso 5: DNI con formato incorrecto (sin letra al final)
-    signUpRequestForm.setDni("123456789");
+
+    final var dniWithoutLetter = "123456789";
+    signUpRequestForm = new SignUpRequestForm(
+          dniWithoutLetter, VALID_NAME, VALID_FIRST_SURNAME,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
     violations = validator.validate(signUpRequestForm);
     violation = violations.iterator().next();
     assertEquals(
           Constants.DNI_BAD_FORMAT, violation.getMessage(),
           "DNI must contain 8 numeric and 1 letter. Length is 9."
     );
-    // Regresamos a un estado valido
-    signUpRequestForm = signUpRequestFormBuilder.build();
 
-    // Caso 6: DNI con formato incorrecto (letra incorrecta al final)
-    signUpRequestForm.setDni("12345678A");
-    assertEquals(
-          Constants.DNI_BAD_FORMAT, violation.getMessage(),
-          "DNI must contain 8 numeric and 1 letter. Length is 9."
+    // Caso 6: DNI con formato correcto (valor mínimo numérico)
+    final var minValidDni = "00000000Z";
+    signUpRequestForm = new SignUpRequestForm(
+          minValidDni, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
     );
-    // Regresamos a un estado valido
-    signUpRequestForm = signUpRequestFormBuilder.build();
-
-    // Caso 7: DNI con formato correcto (valor mínimo numérico)
-    signUpRequestForm.setDni("00000000Z");
     violations = validator.validate(signUpRequestForm);
     assertTrue(violations.isEmpty(), "No constraint violations should occur");
 
-    // Regresamos a un estado valido
-    signUpRequestForm = signUpRequestFormBuilder.build();
-
-    // Caso 8: DNI con formato correcto (valor máximo numérico)
-    signUpRequestForm.setDni("99999999Z");
+    // Caso 7: DNI con formato correcto (valor máximo numérico)
+    final var maxValidDni = "99999999Z";
+    signUpRequestForm = new SignUpRequestForm(
+          maxValidDni, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertTrue(violations.isEmpty(), "No constraint violations should occur");
 
-    // Regresamos a un estado valido
-    signUpRequestForm = signUpRequestFormBuilder.build();
-
-    // Caso 9: DNI con letra 'ñ' al final
-    signUpRequestForm.setDni("12345678Ñ");
+    // Caso 8: DNI con letra 'ñ' al final
+    final var dniWithSpecialSpanishLetter = "12345678Ñ";
+    signUpRequestForm = new SignUpRequestForm(
+          dniWithSpecialSpanishLetter, VALID_NAME, VALID_FIRST_SURNAME,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+    violations = validator.validate(signUpRequestForm);
+    violation = violations.iterator().next();
     assertEquals(
           Constants.DNI_BAD_FORMAT, violation.getMessage(),
           "DNI must contain 8 numeric and 1 letter. Length is 9."
@@ -402,7 +321,13 @@ class SignUpRequestTest {
     var factory = Validation.buildDefaultValidatorFactory();
     var validator = factory.getValidator();
     // Create valid signUpRequestForm
-    var signUpRequestForm = signUpRequestFormBuilder.build();
+    var signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
 
     // Caso 1: Los datos son válidos
     Set<ConstraintViolation<SignUpRequestForm>> violations =
@@ -413,7 +338,14 @@ class SignUpRequestTest {
     );
 
     // Caso 2: Cadena nula
-    signUpRequestForm.setName(null);
+    final String nullName = null;
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, nullName, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     var violation = violations.iterator().next();
     assertEquals(
@@ -421,9 +353,16 @@ class SignUpRequestTest {
           "Name should not be null."
     );
 
-    signUpRequestForm.setName("");
     // Caso 3: Nombre vacío
-    signUpRequestForm.setName("");
+    final var emptyName = "";
+
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, emptyName, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1 violation");
     violation = violations.iterator().next();
@@ -433,7 +372,14 @@ class SignUpRequestTest {
     );
 
     // Caso 4: Nombre con un solo espacio en blanco
-    signUpRequestForm.setName(" ");
+    final var nameOnlyWhiteSpace = " ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, nameOnlyWhiteSpace, VALID_FIRST_SURNAME,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1");
     violation = violations.iterator().next();
@@ -443,7 +389,14 @@ class SignUpRequestTest {
     );
 
     // Caso 5: Nombre con multiples espacios en blanco
-    signUpRequestForm.setName("       ");
+    final var nameWithSeveralBlanks = "       ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, nameWithSeveralBlanks, VALID_FIRST_SURNAME,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1");
     violation = violations.iterator().next();
@@ -453,7 +406,14 @@ class SignUpRequestTest {
     );
 
     // Caso 6: Nombre con caracteres en blanco al inicio y al final
-    signUpRequestForm.setName("  John  ");
+    final var nameWithBlankStartEnd = "  John  ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, nameWithBlankStartEnd, VALID_FIRST_SURNAME,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertTrue(
           violations.isEmpty(),
@@ -461,7 +421,14 @@ class SignUpRequestTest {
     );
 
     // Caso 7: Nombre con longitud igual a NAME_MAX_LENGTH
-    signUpRequestForm.setName("a".repeat(Constants.NAME_MAX_LENGTH));
+    final var nameMaxLength = "a".repeat(Constants.NAME_MAX_LENGTH);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, nameMaxLength, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertTrue(
           violations.isEmpty(),
@@ -469,7 +436,14 @@ class SignUpRequestTest {
     );
 
     // Caso 8: Nombre con longitud mayor que NAME_MAX_LENGTH
-    signUpRequestForm.setName("a".repeat(Constants.NAME_MAX_LENGTH + 1));
+    final var nameGreaterMaxLength = "a".repeat(Constants.NAME_MAX_LENGTH + 1);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, nameGreaterMaxLength, VALID_FIRST_SURNAME,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1");
     violation = violations.iterator().next();
@@ -484,7 +458,13 @@ class SignUpRequestTest {
     var factory = Validation.buildDefaultValidatorFactory();
     var validator = factory.getValidator();
     // Create valid signUpRequestForm
-    var signUpRequestForm = signUpRequestFormBuilder.build();
+    var signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
 
     // Caso 1: Los datos son válidos
     Set<ConstraintViolation<SignUpRequestForm>> violations =
@@ -495,7 +475,14 @@ class SignUpRequestTest {
     );
 
     // Caso 2: Cadena nula
-    signUpRequestForm.setFirstSurname(null);
+    final String firstNameNull = null;
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstNameNull, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1");
     var violation = violations.iterator().next();
@@ -504,7 +491,14 @@ class SignUpRequestTest {
           "First surname should not be null."
     );
     // Caso 3: Primer apellido vacío
-    signUpRequestForm.setFirstSurname("");
+    final var firstSurnameEmpty = "";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurnameEmpty, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -514,7 +508,15 @@ class SignUpRequestTest {
     );
 
     // Caso 4: Primer apellido con un solo espacio en blanco
-    signUpRequestForm.setFirstSurname(" ");
+    final var firstSurnameBlank = " ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurnameBlank, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -523,7 +525,14 @@ class SignUpRequestTest {
           "First surname should not be null."
     );
     // Caso 5: Primer apellido con múltiples espacios en blanco
-    signUpRequestForm.setFirstSurname("       ");
+    final var firstSurnameSeveralBlanks = "       ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurnameSeveralBlanks,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -533,7 +542,14 @@ class SignUpRequestTest {
     );
 
     // Caso 6: Primer apellido con caracteres en blanco al inicio y al final
-    signUpRequestForm.setFirstSurname("  Doe  ");
+    final var firstSurnameBlanksStartEnd = "  Doe  ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurnameBlanksStartEnd,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertTrue(
           violations.isEmpty(),
@@ -541,8 +557,15 @@ class SignUpRequestTest {
     );
 
     // Caso 7: Primer apellido con longitud igual a FIRST_SURNAME_MAX_LENGTH
-    signUpRequestForm
-          .setFirstSurname("a".repeat(Constants.FIRST_SURNAME_MAX_LENGTH));
+    final var firstSurnameMaxLength =
+          "a".repeat(Constants.FIRST_SURNAME_MAX_LENGTH);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurnameMaxLength, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertTrue(
           violations.isEmpty(),
@@ -550,8 +573,15 @@ class SignUpRequestTest {
     );
 
     // Caso 8: Primer apellido con longitud mayor que FIRST_SURNAME_MAX_LENGTH
-    signUpRequestForm
-          .setFirstSurname("a".repeat(Constants.FIRST_SURNAME_MAX_LENGTH + 1));
+    final var firstSurnameGreaterMaxLength =
+          "a".repeat(Constants.FIRST_SURNAME_MAX_LENGTH + 1);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, firstSurnameGreaterMaxLength,
+          VALID_SECOND_SURNAME, VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD,
+          VALID_EMAIL, VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER,
+          VALID_BUILDING, VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -567,7 +597,13 @@ class SignUpRequestTest {
     var factory = Validation.buildDefaultValidatorFactory();
     var validator = factory.getValidator();
     // Create valid signUpRequestForm
-    var signUpRequestForm = signUpRequestFormBuilder.build();
+    var signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
 
     // Caso 1: Los datos son válidos
     Set<ConstraintViolation<SignUpRequestForm>> violations =
@@ -578,7 +614,14 @@ class SignUpRequestTest {
     );
 
     // Caso 2: Cadena nula
-    signUpRequestForm.setSecondSurname(null);
+    final String secondSurnameNull = null;
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, secondSurnameNull,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1");
     var violation = violations.iterator().next();
@@ -587,7 +630,14 @@ class SignUpRequestTest {
           "Second surname should not be null."
     );
     // Caso 3: Segundo apellido vacío
-    signUpRequestForm.setSecondSurname("");
+    final var secondSurnameEmpty = "";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, secondSurnameEmpty,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -597,7 +647,15 @@ class SignUpRequestTest {
     );
 
     // Caso 4: Segundo apellido con un solo espacio en blanco
-    signUpRequestForm.setSecondSurname(" ");
+    final var secondSurnameWhiteSpace = " ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, secondSurnameWhiteSpace,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -606,7 +664,16 @@ class SignUpRequestTest {
           "Second surname should not be null."
     );
     // Caso 5: Segundo apellido con múltiples espacios en blanco
-    signUpRequestForm.setSecondSurname("       ");
+    final var secondSurnameSeveralWhiteSpaces = "       ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME,
+          secondSurnameSeveralWhiteSpaces, VALID_BIRTH_DATE, VALID_GENDER,
+          VALID_PASSWORD, VALID_EMAIL, VALID_POSTAL_CODE,
+          VALID_APARTMENT_NUMBER, VALID_BUILDING, VALID_STREET, VALID_CITY,
+          VALID_KIND_MEMBER, VALID_COUNTRY_NUMERIC_CODE,
+          VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -616,7 +683,15 @@ class SignUpRequestTest {
     );
 
     // Caso 6: Segundo apellido con caracteres en blanco al inicio y al final
-    signUpRequestForm.setSecondSurname("  Doe  ");
+    final var secondSurnameWhiteSpacesStartEnd = "  Doe  ";
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME,
+          secondSurnameWhiteSpacesStartEnd, VALID_BIRTH_DATE, VALID_GENDER,
+          VALID_PASSWORD, VALID_EMAIL, VALID_POSTAL_CODE,
+          VALID_APARTMENT_NUMBER, VALID_BUILDING, VALID_STREET, VALID_CITY,
+          VALID_KIND_MEMBER, VALID_COUNTRY_NUMERIC_CODE,
+          VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertTrue(
           violations.isEmpty(),
@@ -624,8 +699,16 @@ class SignUpRequestTest {
     );
 
     // Caso 7: Segundo apellido con longitud igual a FIRST_SURNAME_MAX_LENGTH
-    signUpRequestForm
-          .setSecondSurname("a".repeat(Constants.SECOND_SURNAME_MAX_LENGTH));
+    final var secondSurnameMaxLength =
+          "a".repeat(Constants.SECOND_SURNAME_MAX_LENGTH);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, secondSurnameMaxLength,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
     violations = validator.validate(signUpRequestForm);
     assertTrue(
           violations.isEmpty(),
@@ -633,9 +716,17 @@ class SignUpRequestTest {
     );
 
     // Caso 8: Segundo apellido con longitud mayor que FIRST_SURNAME_MAX_LENGTH
-    signUpRequestForm.setSecondSurname(
-          "a".repeat(Constants.SECOND_SURNAME_MAX_LENGTH + 1)
+    final var secondSurnameGreaterMaxLength =
+          "a".repeat(Constants.SECOND_SURNAME_MAX_LENGTH + 1);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME,
+          secondSurnameGreaterMaxLength, VALID_BIRTH_DATE, VALID_GENDER,
+          VALID_PASSWORD, VALID_EMAIL, VALID_POSTAL_CODE,
+          VALID_APARTMENT_NUMBER, VALID_BUILDING, VALID_STREET, VALID_CITY,
+          VALID_KIND_MEMBER, VALID_COUNTRY_NUMERIC_CODE,
+          VALID_COUNTRY_SUBDIVISION_NAME
     );
+
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "violates only 1");
     violation = violations.iterator().next();
@@ -651,7 +742,13 @@ class SignUpRequestTest {
     var factory = Validation.buildDefaultValidatorFactory();
     var validator = factory.getValidator();
     // Create valid signUpRequestForm
-    var signUpRequestForm = signUpRequestFormBuilder.build();
+    var signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          VALID_BIRTH_DATE, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
 
     // Caso 1: Los datos son válidos
     Set<ConstraintViolation<SignUpRequestForm>> violations =
@@ -662,7 +759,14 @@ class SignUpRequestTest {
     );
 
     // Caso 2: Fecha futura
-    signUpRequestForm.setBirthDate(LocalDate.now().plusDays(1));
+    final var futureDate = LocalDate.now().plusDays(1);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          futureDate, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1 violation");
     var violation = violations.iterator().next();
@@ -672,7 +776,14 @@ class SignUpRequestTest {
     );
 
     // Caso 3: Fecha presente
-    signUpRequestForm.setBirthDate(LocalDate.now());
+    final var todayDate = LocalDate.now();
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          todayDate, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
     violations = validator.validate(signUpRequestForm);
     assertEquals(1, violations.size(), "only 1 violation");
     violation = violations.iterator().next();
@@ -682,7 +793,15 @@ class SignUpRequestTest {
     );
 
     // Caso 4: Fecha pasada
-    signUpRequestForm.setBirthDate(LocalDate.now().minusYears(1));
+    final var pastDate = LocalDate.now().minusYears(1);
+    signUpRequestForm = new SignUpRequestForm(
+          VALID_DNI, VALID_NAME, VALID_FIRST_SURNAME, VALID_SECOND_SURNAME,
+          pastDate, VALID_GENDER, VALID_PASSWORD, VALID_EMAIL,
+          VALID_POSTAL_CODE, VALID_APARTMENT_NUMBER, VALID_BUILDING,
+          VALID_STREET, VALID_CITY, VALID_KIND_MEMBER,
+          VALID_COUNTRY_NUMERIC_CODE, VALID_COUNTRY_SUBDIVISION_NAME
+    );
+
     violations = validator.validate(signUpRequestForm);
     assertTrue(
           violations.isEmpty(),

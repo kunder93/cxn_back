@@ -3,83 +3,56 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.AddressEntity;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as response for requesting one
- * address.
- * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * A Data Transfer Object (DTO) used by controllers to provide a response
+ * containing address details. This record is intended for communication
+ * between the view layer and the controller, encapsulating all the necessary
+ * address-related data.
  *
- * @author Santiago Paz.
+ * <p>
+ * The {@code AddressResponse} is designed to be immutable, ensuring that the
+ * data it carries remains consistent throughout its lifecycle.
+ * It includes fields such as postal code, apartment number, building,
+ * street, city, country name, and sub-country name.
+ * </p>
+ *
+ * <p>
+ * This record can be constructed directly with the necessary data or by passing
+ * an {@link AddressEntity} object, from which it extracts and maps the required
+ * data.
+ * </p>
+ *
+ * @param postalCode      The postal code of the address.
+ * @param apartmentNumber The apartment number within the building.
+ * @param building        The name or number of the building.
+ * @param street          The street name where the address is located.
+ * @param city            The city where the address is located.
+ * @param countryName     The full name of the country.
+ * @param subCountryName  The name of the subdivision within the country
+ * (e.g., state or province).
+ *
+ * @author Santiago Paz
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public final class AddressResponse implements Serializable {
+public record AddressResponse(
+      String postalCode, String apartmentNumber, String building, String street,
+      String city, String countryName, String subCountryName
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3160012341222437705L;
-
-  /**
-   * The address postal code.
-   */
-  private String postalCode;
-
-  /**
-   * The address apartment number.
-   */
-  private String apartmentNumber;
-
-  /**
-   * The address building.
-   */
-  private String building;
-
-  /**
-   * The address street.
-   */
-  private String street;
-
-  /**
-   * The address city name.
-   */
-  private String city;
-
-  /**
-   * The address country name.
-   */
-  private String countryName;
-
-  /**
-   * The address subCountry name.
-   */
-  private String subCountryName;
-
-  /**
-   * Build response using address entity.
+   * Constructs an {@code AddressResponse} by extracting and mapping data from
+   * the provided {@link AddressEntity}.
    *
-   * @param address The address entity.
+   * @param address The address entity containing the data to be represented
+   *                in the response.
+   *
+   * @see AddressEntity
    */
   public AddressResponse(final AddressEntity address) {
-    postalCode = address.getPostalCode();
-    apartmentNumber = address.getApartmentNumber();
-    building = address.getBuilding();
-    street = address.getStreet();
-    city = address.getCity();
-    countryName = address.getCountry().getFullName();
-    subCountryName = address.getCountrySubdivision().getName();
+    this(
+          address.getPostalCode(), address.getApartmentNumber(),
+          address.getBuilding(), address.getStreet(), address.getCity(),
+          address.getCountry().getFullName(),
+          address.getCountrySubdivision().getName()
+    );
   }
 }

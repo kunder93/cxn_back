@@ -3,47 +3,47 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-
-import lombok.Data;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
- * Represents the form used by controller as response for requesting all
- * invoices.
+ * Represents the form used by the controller as a response for requesting all
+ * companies.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This record serves as a Data Transfer Object (DTO) to facilitate
+ * communication between the view and the controller.
+ * It contains a set of company responses, ensuring that each company is
+ * represented uniquely and sorted.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param companiesList A {@link Set} of {@link CompanyResponse} representing
+ * the companies.
+ *
+ * @author Santiago Paz
  */
-@Data
-public final class CompanyListResponse implements Serializable {
+public record CompanyListResponse(Set<CompanyResponse> companiesList) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -6152905276653572886L;
-
-  /**
-   * List with all stored companies.
-   */
-  private List<CompanyResponse> companiesList = new ArrayList<>();
-
-  /**
-   * Constructor with provided parameters values.
+   * Constructs a {@link CompanyListResponse} from a list of
+   * {@link PersistentCompanyEntity}.
+   * <p>
+   * This constructor maps each {@link PersistentCompanyEntity} to a
+   * {@link CompanyResponse} and collects them into a
+   * {@link TreeSet}, which ensures that the list is sorted and does not
+   * contain duplicate entries.
+   * </p>
    *
-   * @param value The companies list.
+   * @param companiesEntitiesList A {@link List} of
+   * {@link PersistentCompanyEntity} to be converted.
    */
-  public CompanyListResponse(final List<PersistentCompanyEntity> value) {
-    super();
-    value.forEach(
-          (PersistentCompanyEntity e) -> this.companiesList
-                .add(new CompanyResponse(e))
+  public CompanyListResponse(
+        final List<PersistentCompanyEntity> companiesEntitiesList
+  ) {
+    this(
+          companiesEntitiesList.stream().map(CompanyResponse::new)
+                .collect(Collectors.toCollection(TreeSet::new))
     );
   }
 }

@@ -146,11 +146,11 @@ public final class Constants {
   /**
    * Password max length.
    */
-  public static final int PASSWORD_MAX_LENGTH = 20;
+  public static final int MAX_PASSWORD_LENGTH = 20;
   /**
    * Password min length.
    */
-  public static final int PASSWORD_MIN_LENGTH = 6;
+  public static final int MIN_PASSWORD_LENGTH = 6;
   /**
    * Message validating NotEmpty email.
    */
@@ -222,8 +222,8 @@ public final class Constants {
    * Message validating MaxSize and MinSize Password.
    */
   public static final String PASSWORD_SIZE_MESSAGE =
-        "Password must be between length of: " + PASSWORD_MIN_LENGTH + "AND"
-              + PASSWORD_MAX_LENGTH + ".";
+        "Password must be between length of: " + MIN_PASSWORD_LENGTH + "AND"
+              + MAX_PASSWORD_LENGTH + ".";
 
   /**
    * Message validating MaxSize Gender.

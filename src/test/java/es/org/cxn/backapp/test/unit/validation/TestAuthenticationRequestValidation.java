@@ -82,7 +82,7 @@ final class TestAuthenticationRequestValidation {
             "The constraint message is about email."
       );
       Assertions.assertEquals(
-            authRequest.getEmail(), constraintViolation.getInvalidValue(),
+            authRequest.email(), constraintViolation.getInvalidValue(),
             "The constraint message is about email."
       );
     });
@@ -111,7 +111,7 @@ final class TestAuthenticationRequestValidation {
           "The constraint message is about email."
     );
     Assertions.assertEquals(
-          authRequest.getEmail(), constraintViolation.getInvalidValue(),
+          authRequest.email(), constraintViolation.getInvalidValue(),
           "The constraint message is about email."
     );
   }
@@ -167,7 +167,7 @@ final class TestAuthenticationRequestValidation {
           "The constraint message is about email."
     );
     Assertions.assertEquals(
-          authRequest.getPassword(), constraintViolation.getInvalidValue(),
+          authRequest.password(), constraintViolation.getInvalidValue(),
           "The constraint message is about email."
     );
   }
@@ -222,7 +222,7 @@ final class TestAuthenticationRequestValidation {
           "The constraint message is about password."
     );
     Assertions.assertEquals(
-          authRequest.getPassword(), constraintViolation.getInvalidValue(),
+          authRequest.password(), constraintViolation.getInvalidValue(),
           "The constraint message is about password."
     );
   }

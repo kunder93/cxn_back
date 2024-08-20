@@ -19,17 +19,14 @@ class CreateChessQuestionRequestTest {
     var message = "Test Message";
 
     // When
-    var form = new CreateChessQuestionRequestForm();
-    form.setEmail(email);
-    form.setCategory(category);
-    form.setTopic(topic);
-    form.setMessage(message);
+    var form =
+          new CreateChessQuestionRequestForm(email, category, topic, message);
 
     // Then
-    assertEquals(email, form.getEmail(), "getter");
-    assertEquals(category, form.getCategory(), "getter");
-    assertEquals(topic, form.getTopic(), "getter");
-    assertEquals(message, form.getMessage(), "getter");
+    assertEquals(email, form.email(), "getter");
+    assertEquals(category, form.category(), "getter");
+    assertEquals(topic, form.topic(), "getter");
+    assertEquals(message, form.message(), "getter");
   }
 
   @Test

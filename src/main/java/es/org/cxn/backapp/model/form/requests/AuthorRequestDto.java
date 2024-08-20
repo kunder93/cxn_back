@@ -3,61 +3,50 @@ package es.org.cxn.backapp.model.form.requests;
 
 import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the author part form used by controller as request to add book
- *  with author.
+ * Represents the form used by the controller to add a book with an author.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This Data Transfer Object (DTO) is designed to facilitate communication
+ * between the view and the controller, encapsulating the author's information
+ * such as first name, last name, and nationality.
+ * </p>
  *
- * @author Santiago Paz.
+ * <p>
+ * The {@code AuthorRequestDto} can be constructed directly with author
+ * details, or by using an existing {@link PersistentAuthorEntity}. This
+ * flexibility allows it to be easily integrated with both new author data
+ * inputs and existing author data retrievals.
+ * </p>
+ *
+ * @param firstName   The first name of the author. This is a required field
+ * representing the given name of the author.
+ * @param lastName    The last name of the author. This is a required field
+ * representing the family name or surname.
+ * @param nationality The nationality of the author. This field indicates the
+ * country of origin or citizenship of the author.
+ *
+ * <p>
+ * This DTO includes fields that should be validated to ensure that all
+ * necessary author information is provided correctly when adding a book.
+ * </p>
+ *
+ * @author Santiago Paz
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public final class AuthorRequestDto implements Serializable {
+public record AuthorRequestDto(
+      String firstName, String lastName, String nationality
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3111135649215975705L;
-
-  /**
-   * The author first name.
-   */
-  private String firstName;
-
-  /**
-   * The author last name.
-   */
-  private String lastName;
-
-  /**
-   * The author nationality.
-   */
-  private String nationality;
-
-  /**
-   * Construct dto with entity.
+   * Constructs an {@code AuthorRequestDto} using the data from an existing
+   * {@link PersistentAuthorEntity}.
    *
-   * @param authEntity The author entity.
+   * @param authEntity The {@link PersistentAuthorEntity} containing the
+   * author's information.
    */
   public AuthorRequestDto(final PersistentAuthorEntity authEntity) {
-    super();
-    this.firstName = authEntity.getFirstName();
-    this.lastName = authEntity.getLastName();
-    this.nationality = authEntity.getNationality();
+    this(
+          authEntity.getFirstName(), authEntity.getLastName(),
+          authEntity.getNationality()
+    );
   }
-
 }

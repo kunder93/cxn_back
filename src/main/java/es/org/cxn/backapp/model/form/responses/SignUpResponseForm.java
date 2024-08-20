@@ -3,115 +3,58 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as response for the creating user.
+ * Represents the response form used by the controller for user sign-up.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This record is a Data Transfer Object (DTO) that facilitates communication
+ * between
+ * the view and the controller, providing an immutable representation of the
+ * user data.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param dni            The user's DNI.
+ * @param name           The user's name.
+ * @param firstSurname   The user's first surname.
+ * @param secondSurname  The user's second surname.
+ * @param birthDate      The user's birth date.
+ * @param gender         The user's gender.
+ * @param email          The user's email.
+ * @param kindMember     The user's type of membership.
+ * @param userRoles      The set of user roles.
+ *
+ * @author Santiago Paz
  */
-@NoArgsConstructor
-@Data
-public final class SignUpResponseForm implements Serializable {
+public record SignUpResponseForm(
+      String dni, String name, String firstSurname, String secondSurname,
+      LocalDate birthDate, String gender, String email, UserType kindMember,
+      Set<UserRoleName> userRoles
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3214940499061435783L;
-
-  /**
-   * Dni field.
-   */
-  private String dni;
-
-  /**
-   * Name field.
-   */
-  private String name;
-
-  /**
-   * User first surname field.
-   */
-  private String firstSurname;
-
-  /**
-   * User second surname field.
-   */
-  private String secondSurname;
-
-  /**
-   * User birth date field.
-   */
-  private LocalDate birthDate;
-
-  /**
-   * User gender field.
-   */
-  private String gender;
-
-  /**
-   * User email field.
-   */
-  private String email;
-
-  /**
-   * User kind of member.
-   */
-  private UserType kindMember;
-
-  /**
-   * User roles set field.
-   */
-  private Set<UserRoleName> userRoles = EnumSet.noneOf(UserRoleName.class);
-
-  /**
-   * @param user User entity with data for construct DTO.
-   */
-  public SignUpResponseForm(final UserEntity user) {
-    dni = user.getDni();
-    name = user.getName();
-    firstSurname = user.getFirstSurname();
-    secondSurname = user.getSecondSurname();
-    birthDate = user.getBirthDate();
-    gender = user.getGender();
-    email = user.getEmail();
-    kindMember = user.getKindMember();
-    final var userEntityRoles = user.getRoles();
-    userEntityRoles.forEach(role -> this.userRoles.add(role.getName()));
-  }
-
-  /**
-   * Returns the value of the userRoles field.
+   * Creates a {@link SignUpResponseForm} from a {@link UserEntity}.
+   * <p>
+   * This static factory method initializes a new {@code SignUpResponseForm}
+   * using the data from the provided {@code UserEntity}.
+   * </p>
    *
-   * @return the value of the userRoles field.
+   * @param user The {@code UserEntity} containing user data.
+   * @return A new {@code SignUpResponseForm} with values derived from
+   * the entity.
    */
-  public Set<UserRoleName> getUserRoles() {
-    return new HashSet<>(userRoles);
-  }
+  public static SignUpResponseForm fromEntity(final UserEntity user) {
+    Set<UserRoleName> userRoles = EnumSet.noneOf(UserRoleName.class);
+    user.getRoles().forEach(role -> userRoles.add(role.getName()));
 
-  /**
-   * Sets the value of the userRoles field.
-   *
-   * @param value the new value for the userRoles field.
-   */
-  public void setUserRoles(final Iterable<PersistentRoleEntity> value) {
-    value.forEach(role -> this.userRoles.add(role.getName()));
+    return new SignUpResponseForm(
+          user.getDni(), user.getName(), user.getFirstSurname(),
+          user.getSecondSurname(), user.getBirthDate(), user.getGender(),
+          user.getEmail(), user.getKindMember(), userRoles
+    );
   }
-
 }

@@ -96,11 +96,10 @@ class RoleControllerIntegrationTest {
 
     var response = gson.fromJson(responseJson, SignUpResponseForm.class);
     Assertions.assertEquals(
-          response.getUserRoles().size(), Integer.valueOf(1),
-          "Only have one role."
+          response.userRoles().size(), Integer.valueOf(1), "Only have one role."
     );
     Assertions.assertTrue(
-          response.getUserRoles().contains(UserRoleName.ROLE_CANDIDATO_SOCIO),
+          response.userRoles().contains(UserRoleName.ROLE_CANDIDATO_SOCIO),
           "Default user role is CANDIDATO_SOCIO."
     );
   }
@@ -139,19 +138,19 @@ class RoleControllerIntegrationTest {
           gson.fromJson(addRoleResponseJson, UserChangeRoleResponseForm.class);
 
     Assertions.assertEquals(
-          addRoleResponse.getUserRoles().size(), Integer.valueOf(2),
+          addRoleResponse.userRoles().size(), Integer.valueOf(2),
           "User have 2 roles."
     );
     Assertions.assertTrue(
-          addRoleResponse.getUserRoles().contains(UserRoleName.ROLE_TESORERO),
+          addRoleResponse.userRoles().contains(UserRoleName.ROLE_TESORERO),
           "response have userRoles list and contains role_tesorero"
     );
     Assertions.assertTrue(
-          addRoleResponse.getUserRoles().contains(UserRoleName.ROLE_SOCIO),
+          addRoleResponse.userRoles().contains(UserRoleName.ROLE_SOCIO),
           "response have userRoles list and contains role_socio"
     );
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_EMAIL, addRoleResponse.getUserName(),
+          UsersControllerFactory.USER_A_EMAIL, addRoleResponse.userName(),
           "user name is expected created user email"
     );
   }
@@ -202,15 +201,14 @@ class RoleControllerIntegrationTest {
           .fromJson(rolesFinalResponseJson, UserChangeRoleResponseForm.class);
 
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_EMAIL, rolesFinalResponse.getUserName(),
+          UsersControllerFactory.USER_A_EMAIL, rolesFinalResponse.userName(),
           "userName with roles is user A email."
     );
     Assertions.assertEquals(
-          1, rolesFinalResponse.getUserRoles().size(),
-          "Only 1 role in roles list"
+          1, rolesFinalResponse.userRoles().size(), "Only 1 role in roles list"
     );
     Assertions.assertTrue(
-          rolesFinalResponse.getUserRoles().contains(UserRoleName.ROLE_SOCIO),
+          rolesFinalResponse.userRoles().contains(UserRoleName.ROLE_SOCIO),
           "the only one role is ROLE_SOCIO"
     );
   }

@@ -1,65 +1,35 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2020 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserRoleName;
 
-import java.io.Serializable;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used for response change role user.
+ * Represents the form used for responding to a user's role change.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This is a Data Transfer Object (DTO) designed to facilitate communication
+ * between the view and the controller. It includes the user's name and the list
+ * of roles assigned to the user after the role change operation.
+ * </p>
  * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * The class ensures that the required data is correctly passed from the server
+ * to the client and can be validated using Java's validation annotations.
+ * This helps maintain data integrity and consistency in the application.
+ * </p>
  *
- * @author Santiago Paz Perez.
+ * @param userName  the username of the user whose roles are being changed.
+ *                  This field represents the unique identifier of the user
+ *                  in the system.
+ * @param userRoles the list of {@link UserRoleName} objects representing the
+ *                  roles assigned to the user after the change. This list
+ *                  includes all the roles that the user currently holds,
+ *                  providing a clear picture of the user's permissions.
+ *
+ * @author Santiago Paz Perez
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class UserChangeRoleResponseForm implements Serializable {
-
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 343376664044429081L;
-  /**
-   * userName field with user email.
-   */
-  private String userName;
-  /**
-   * userRoles field.
-   */
-  private List<UserRoleName> userRoles;
+public record UserChangeRoleResponseForm(
+      String userName, List<UserRoleName> userRoles
+) {
 
 }

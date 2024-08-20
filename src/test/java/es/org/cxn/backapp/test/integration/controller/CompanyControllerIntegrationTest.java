@@ -50,7 +50,7 @@ class CompanyControllerIntegrationTest {
   /**
    * The NIF (Tax Identification Number) of the first company used in tests.
    */
-  private static final String COMPANY_NIF = "45235234G";
+  private static final String COMPANY_NIF = "452234G";
 
   /**
    * The name of the first company used in tests.
@@ -65,7 +65,7 @@ class CompanyControllerIntegrationTest {
   /**
    * The NIF (Tax Identification Number) of the second company used in tests.
    */
-  private static final String SECOND_COMPANY_NIFCIF = "99988834-G";
+  private static final String SECOND_COMPANY_NIFCIF = "99988G";
 
   /**
    * The name of the second company used in tests.

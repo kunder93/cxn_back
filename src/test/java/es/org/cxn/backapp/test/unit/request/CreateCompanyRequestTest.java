@@ -12,25 +12,25 @@ class CreateCompanyRequestTest {
 
   @Test
   void testGettersAndSetters() {
-    // Crear una instancia de CreateCompanyRequestForm
-    var companyRequestForm = new CreateCompanyRequestForm();
+    final var nif = "123456789A";
+    final var name = "Company ABC";
 
-    // Establecer valores usando setters
-    companyRequestForm.setNif("123456789A");
-    companyRequestForm.setName("Company ABC");
-    companyRequestForm.setAddress("123 Main St");
+    final var address = "123 Main St";
+
+    // Crear una instancia de CreateCompanyRequestForm
+    var companyRequestForm = new CreateCompanyRequestForm(nif, name, address);
 
     //
     assertEquals(
-          "123456789A", companyRequestForm.getNif(),
+          "123456789A", companyRequestForm.nif(),
           "Verifica los valores usando getters"
     );
     assertEquals(
-          "Company ABC", companyRequestForm.getName(),
+          "Company ABC", companyRequestForm.name(),
           "Verifica los valores usando getters"
     );
     assertEquals(
-          "123 Main St", companyRequestForm.getAddress(),
+          "123 Main St", companyRequestForm.address(),
           "Verifica los valores usando getters"
     );
   }

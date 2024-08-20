@@ -81,9 +81,9 @@ public class RoleController {
   public ResponseEntity<UserChangeRoleResponseForm> changeUserRoles(@RequestBody
   final UserChangeRoleRequestForm userChangeRoleRequestForm) {
 
-    final var roles = userChangeRoleRequestForm.getUserRoles();
+    final var roles = userChangeRoleRequestForm.userRoles();
     try {
-      userService.changeUserRoles(userChangeRoleRequestForm.getEmail(), roles);
+      userService.changeUserRoles(userChangeRoleRequestForm.email(), roles);
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
@@ -91,8 +91,8 @@ public class RoleController {
     }
     return new ResponseEntity<>(
           new UserChangeRoleResponseForm(
-                userChangeRoleRequestForm.getEmail(),
-                userChangeRoleRequestForm.getUserRoles()
+                userChangeRoleRequestForm.email(),
+                userChangeRoleRequestForm.userRoles()
           ), HttpStatus.OK
     );
   }

@@ -104,9 +104,8 @@ public class CompanyController {
   final CreateCompanyRequestForm createCompanyRequestForm) {
     try {
       final var result = companyService.add(
-            createCompanyRequestForm.getNif(),
-            createCompanyRequestForm.getName(),
-            createCompanyRequestForm.getAddress()
+            createCompanyRequestForm.nif(), createCompanyRequestForm.name(),
+            createCompanyRequestForm.address()
       );
       final var response = new CompanyResponse(result);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -153,7 +152,7 @@ public class CompanyController {
   final CompanyUpdateRequestForm requestForm) {
     try {
       final var companyUpdated = companyService.updateCompany(
-            nif, requestForm.getName(), requestForm.getAddress()
+            nif, requestForm.name(), requestForm.address()
 
       );
       final var response = new CompanyUpdateResponse(

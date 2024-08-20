@@ -37,8 +37,8 @@ import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
-import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -161,43 +161,43 @@ public final class DefaultUserService implements UserService {
   }
 
   @Override
-  public UserEntity add(final UserRegistrationDetails userDetails)
+  public UserEntity add(final UserRegistrationDetailsDto userDetails)
         throws UserServiceException {
-    final var dni = userDetails.getDni();
+    final var dni = userDetails.dni();
 
     if (userRepository.findByDni(dni).isPresent()) {
       throw new UserServiceException(USER_DNI_EXISTS_MESSAGE);
     }
-    final var email = userDetails.getEmail();
+    final var email = userDetails.email();
     if (userRepository.findByEmail(email).isPresent()) {
       throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
     } else {
       final PersistentUserEntity save;
       save = new PersistentUserEntity();
       save.setDni(dni);
-      final var name = userDetails.getName();
+      final var name = userDetails.name();
       save.setName(name);
-      final var firstSurname = userDetails.getFirstSurname();
+      final var firstSurname = userDetails.firstSurname();
       save.setFirstSurname(firstSurname);
-      final var secondSurname = userDetails.getSecondSurname();
+      final var secondSurname = userDetails.secondSurname();
       save.setSecondSurname(secondSurname);
-      final var gender = userDetails.getGender();
+      final var gender = userDetails.gender();
       save.setGender(gender);
-      final var birthDate = userDetails.getBirthDate();
+      final var birthDate = userDetails.birthDate();
       save.setBirthDate(birthDate);
-      final var password = userDetails.getPassword();
+      final var password = userDetails.password();
       save.setPassword(new BCryptPasswordEncoder().encode(password));
       save.setEmail(email);
       final var kindMember = PersistentUserEntity.UserType.SOCIO_NUMERO;
       save.setKindMember(kindMember);
 
-      final var addressDetails = userDetails.getAddressDetails();
-      final var apartmentNumber = addressDetails.getApartmentNumber();
-      final var building = addressDetails.getBuilding();
-      final var city = addressDetails.getCity();
-      final var postalCode = addressDetails.getPostalCode();
-      final var street = addressDetails.getStreet();
-      final var countryNumericCode = addressDetails.getCountryNumericCode();
+      final var addressDetails = userDetails.addressDetails();
+      final var apartmentNumber = addressDetails.apartmentNumber();
+      final var building = addressDetails.building();
+      final var city = addressDetails.city();
+      final var postalCode = addressDetails.postalCode();
+      final var street = addressDetails.street();
+      final var countryNumericCode = addressDetails.countryNumericCode();
 
       final var address = new PersistentAddressEntity();
       address.setApartmentNumber(apartmentNumber);
@@ -216,7 +216,7 @@ public final class DefaultUserService implements UserService {
       final var countryEntity = countryOptional.get();
       address.setCountry(countryEntity);
       final var countrySubdivisionName =
-            addressDetails.getCountrySubdivisionName();
+            addressDetails.countrySubdivisionName();
       final var countryDivisionOptional =
             countrySubdivisionRepo.findByName(countrySubdivisionName);
       if (countryDivisionOptional.isEmpty()) {
@@ -263,7 +263,7 @@ public final class DefaultUserService implements UserService {
         final String email, final String currentPassword,
         final String newPassword
   ) throws UserServiceException {
-    final var passwordEncoder = new BCryptPasswordEncoder();
+
     // Buscar al usuario por su correo electrónico en la base de datos
     final var userOptional = userRepository.findByEmail(email);
     if (userOptional.isEmpty()) {
@@ -272,6 +272,7 @@ public final class DefaultUserService implements UserService {
     // Obtener la entidad de usuario desde el Optional
     final var userEntity = userOptional.get();
     // Verificar la contraseña proporcionada coincide con la almacenada
+    final var passwordEncoder = new BCryptPasswordEncoder();
     final String storedPassword = userEntity.getPassword();
     if (!passwordEncoder.matches(currentPassword, storedPassword)) {
       throw new UserServiceException(USER_PASSWORD_NOT_MATCH);
@@ -339,7 +340,7 @@ public final class DefaultUserService implements UserService {
   @Transactional
   @Override
   public UserEntity
-        update(final UserServiceUpdateForm userForm, final String userEmail)
+        update(final UserServiceUpdateDto userForm, final String userEmail)
               throws UserServiceException {
     final Optional<PersistentUserEntity> userOptional;
 
@@ -349,15 +350,15 @@ public final class DefaultUserService implements UserService {
     }
     final PersistentUserEntity userEntity;
     userEntity = userOptional.get();
-    final var name = userForm.getName();
+    final var name = userForm.name();
     userEntity.setName(name);
-    final var firstSurname = userForm.getFirstSurname();
+    final var firstSurname = userForm.firstSurname();
     userEntity.setFirstSurname(firstSurname);
-    final var secondSurname = userForm.getSecondSurname();
+    final var secondSurname = userForm.secondSurname();
     userEntity.setSecondSurname(secondSurname);
-    final var birthDate = userForm.getBirthDate();
+    final var birthDate = userForm.birthDate();
     userEntity.setBirthDate(birthDate);
-    final var gender = userForm.getGender();
+    final var gender = userForm.gender();
     userEntity.setGender(gender);
 
     return userRepository.save(userEntity);

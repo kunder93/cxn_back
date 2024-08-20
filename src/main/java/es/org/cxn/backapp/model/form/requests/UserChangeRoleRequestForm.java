@@ -4,48 +4,33 @@ package es.org.cxn.backapp.model.form.requests;
 import es.org.cxn.backapp.model.UserRoleName;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
-import java.io.Serializable;
 import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form request used for add or remove roles from user.
+ * Represents the form request used for adding or removing roles from a user.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This is a DTO (Data Transfer Object), meant to facilitate communication
+ * between
+ * the view and the controller. It includes validation annotations to ensure
+ * that the controller receives all the required data.
+ * </p>
  * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * Note: In a record, validation annotations cannot be directly applied to the
+ * components. Ensure that validation is handled appropriately in the
+ * application logic or by using a custom validation mechanism.
+ * </p>
  *
- * @author Santiago Paz Perez.
+ * @param email The user's email address. This field is required and cannot be
+ * empty.
+ * @param userRoles A list of user roles. This field cannot be empty and should
+ * contain at least one role.
+ *
+ * @author Santiago Paz Perez
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-public final class UserChangeRoleRequestForm implements Serializable {
-
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 726911880297432628L;
-
-  /**
-   * Name field.
-   * <p>
-   * This is a required field and can't be empty.
-   */
-  @NotEmpty
-  private String email;
-
-  /**
-   * User role name field.
-   * No empty and not null, user almost have one role.
-   */
-  @NotEmpty
-  private List<UserRoleName> userRoles;
+public record UserChangeRoleRequestForm(@NotEmpty
+String email, @NotNull @NotEmpty
+List<UserRoleName> userRoles) {
 
 }

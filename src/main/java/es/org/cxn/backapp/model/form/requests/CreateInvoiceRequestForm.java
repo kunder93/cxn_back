@@ -1,63 +1,52 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as request of create invoice.
+ * Represents the form used by the controller as a request to create
+ * an invoice.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This Data Transfer Object (DTO) facilitates communication between
+ * the view and the controller. It encapsulates the necessary information
+ * required to generate an invoice and ensures that the data provided is
+ * sufficient for the invoice creation process.
+ * </p>
  *
- * @author Santiago Paz.
+ * <p>
+ * This DTO does not include validation annotations, but it is important to
+ * ensure that the data provided through this form is validated at the
+ * controller level or service layer.
+ * </p>
+ *
+ * @param number               The invoice number. This field represents a
+ *  unique identifier for the invoice.
+ * @param series               The invoice series. This is used to group
+ *  invoices under a specific series, which can be helpful for
+ *                            organizational purposes.
+ * @param advancePaymentDate   The date when an advance payment was made. This
+ * date can be null if no advance payment was involved.
+ * @param expeditionDate       The date when the invoice is issued or the goods
+ *                            are dispatched. This field can be null if not
+ *                            applicable.
+ * @param taxExempt            A boolean indicating whether the invoice is
+ * tax-exempt.
+ *                            This field can be null if tax exemption status
+ *                            is unknown.
+ * @param sellerNif            The NIF (Tax Identification Number) of the
+ * seller.
+ *                            This field should contain the seller's
+ *                            identification number.
+ * @param buyerNif             The NIF (Tax Identification Number) of the buyer.
+ *                            This field should contain the buyer's
+ *                            identification number.
+ *
+ * @author Santiago Paz
  */
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
-@Builder
-public final class CreateInvoiceRequestForm implements Serializable {
-
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3133089826012147705L;
-
-  /**
-   * Invoice number.
-   */
-  private int number;
-  /**
-   * Invoice series.
-   */
-  private String series;
-  /**
-   * The invoice payment date.
-   */
-  private LocalDate advancePaymentDate;
-  /**
-   * The invoice expedition date.
-   */
-  private LocalDate expeditionDate;
-  /**
-   * Invoice tax exempt for calculating taxes.
-   */
-  private Boolean taxExempt;
-  /**
-   * Seller nif.
-   */
-  private String sellerNif;
-  /**
-   * Buyer nif.
-   */
-  private String buyerNif;
+public record CreateInvoiceRequestForm(
+      int number, String series, LocalDate advancePaymentDate,
+      LocalDate expeditionDate, Boolean taxExempt, String sellerNif,
+      String buyerNif
+) {
 
 }
