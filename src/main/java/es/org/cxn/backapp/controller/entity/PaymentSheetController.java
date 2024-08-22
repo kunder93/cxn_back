@@ -89,12 +89,12 @@ public class PaymentSheetController {
   public ResponseEntity<PaymentSheetListResponse> getPaymentSheets() {
     try {
       // Fetch payment sheets entities from the service
-      Collection<PersistentPaymentSheetEntity> paymentSheetsEntityList =
+      final Collection<PersistentPaymentSheetEntity> paymentSheetsEntityList =
             paymentSheetService.getPaymentSheets();
 
       // Convert the collection of entities to a PaymentSheetListResponse using
       //the fromEntities method
-      var responseList =
+      final var responseList =
             PaymentSheetListResponse.fromEntities(paymentSheetsEntityList);
 
       return new ResponseEntity<>(responseList, HttpStatus.OK);

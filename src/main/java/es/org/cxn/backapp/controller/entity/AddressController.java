@@ -77,10 +77,10 @@ public class AddressController {
   @GetMapping(path = "/getCountries")
   public ResponseEntity<CountryListResponse> getAllCountries() {
     // Retrieve the list of PersistentCountryEntity objects
-    var countryEntities = addressService.getCountries();
+    final var countryEntities = addressService.getCountries();
 
     // Use the static factory method to create a CountryListResponse
-    var response = CountryListResponse.from(countryEntities);
+    final var response = CountryListResponse.from(countryEntities);
 
     // Return the response entity with the created CountryListResponse and
     // HTTP status OK
@@ -109,7 +109,7 @@ public class AddressController {
       final CountryEntity country = addressService.getCountry(countryCode);
 
       // Create the response using the static factory method
-      var response = SubCountryListResponse.fromEntity(country);
+      final var response = SubCountryListResponse.fromEntity(country);
 
       // Return the response with HTTP status OK
       return new ResponseEntity<>(response, HttpStatus.OK);

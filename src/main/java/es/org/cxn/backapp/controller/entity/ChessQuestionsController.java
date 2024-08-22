@@ -90,7 +90,7 @@ public class ChessQuestionsController {
 
     // Convert the collection into a ChessQuestionsListResponse using the
     // static factory method
-    var response = ChessQuestionsListResponse.from(chessQuestionsList);
+    final var response = ChessQuestionsListResponse.from(chessQuestionsList);
 
     // Return the response wrapped in a ResponseEntity with HttpStatus.OK
     return new ResponseEntity<>(response, HttpStatus.OK);

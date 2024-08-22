@@ -223,7 +223,7 @@ public class PersistentInvoiceEntity implements InvoiceEntity {
    */
   @Override
   public boolean equals(final Object object) {
-    boolean result;
+    final boolean result;
 
     if (this == object) {
       result = true;

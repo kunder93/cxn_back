@@ -77,8 +77,8 @@ public record UserDataResponse(
    * @return A set of {@code UserRoleName} representing the user's roles.
    */
   private static Set<UserRoleName> extractUserRoles(final UserEntity user) {
-    Set<UserRoleName> roles = EnumSet.noneOf(UserRoleName.class);
-    for (PersistentRoleEntity role : user.getRoles()) {
+    final Set<UserRoleName> roles = EnumSet.noneOf(UserRoleName.class);
+    for (final PersistentRoleEntity role : user.getRoles()) {
       roles.add(role.getName());
     }
     return roles;

@@ -29,7 +29,7 @@ public record ChessQuestionsListResponse(
    */
   public static ChessQuestionsListResponse
         from(final Collection<PersistentChessQuestionEntity> value) {
-    Collection<ChessQuestionResponse> responses = value.stream()
+    final Collection<ChessQuestionResponse> responses = value.stream()
           .map(
                 e -> new ChessQuestionResponse(
                       e.getIdentifier(), e.getEmail(), e.getCategory(),

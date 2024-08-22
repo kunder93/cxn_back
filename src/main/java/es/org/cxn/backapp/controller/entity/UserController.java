@@ -143,7 +143,7 @@ public class UserController {
   public ResponseEntity<UserListDataResponse> getAllUserData() {
     final var users = userService.getAll();
     // Use the fromUserEntities method to create the UserListDataResponse
-    var response = UserListDataResponse.fromUserEntities(users);
+    final var response = UserListDataResponse.fromUserEntities(users);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 

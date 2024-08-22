@@ -157,7 +157,7 @@ public class PersistentFoodHousingEntity implements FoodHousingEntity {
    */
   @Override
   public boolean equals(final Object object) {
-    boolean isEqual;
+    final boolean isEqual;
 
     // Check if the object is compared to itself
     if (this == object) {

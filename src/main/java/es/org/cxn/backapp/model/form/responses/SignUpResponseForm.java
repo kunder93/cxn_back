@@ -48,7 +48,7 @@ public record SignUpResponseForm(
    * the entity.
    */
   public static SignUpResponseForm fromEntity(final UserEntity user) {
-    Set<UserRoleName> userRoles = EnumSet.noneOf(UserRoleName.class);
+    final Set<UserRoleName> userRoles = EnumSet.noneOf(UserRoleName.class);
     user.getRoles().forEach(role -> userRoles.add(role.getName()));
 
     return new SignUpResponseForm(

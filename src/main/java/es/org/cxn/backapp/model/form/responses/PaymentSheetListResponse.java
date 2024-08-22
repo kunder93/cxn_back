@@ -38,7 +38,7 @@ public record PaymentSheetListResponse(
    */
   public static PaymentSheetListResponse
         fromEntities(final Collection<PersistentPaymentSheetEntity> entities) {
-    var responses =
+    final var responses =
           entities.stream().map(PaymentSheetResponse::fromEntity).toList();
     return new PaymentSheetListResponse(responses);
   }

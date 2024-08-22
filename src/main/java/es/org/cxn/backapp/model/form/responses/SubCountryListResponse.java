@@ -37,7 +37,7 @@ public record SubCountryListResponse(List<SubCountryResponse> subCountryList) {
    * subcountry responses.
    */
   public static SubCountryListResponse fromEntity(final CountryEntity country) {
-    var subCountryResponses = country.getSubdivisions().stream()
+    final var subCountryResponses = country.getSubdivisions().stream()
           .map(SubCountryResponse::fromEntity).toList();
 
     return new SubCountryListResponse(subCountryResponses);

@@ -90,7 +90,7 @@ public record PaymentSheetResponse(
           paymentSheetEntity, "PaymentSheetEntity must not be null"
     );
 
-    SelfVehicleDataResponse selfVehicle;
+    final SelfVehicleDataResponse selfVehicle;
     if (paymentSheetEntity.getSelfVehicle() != null) {
       selfVehicle = new SelfVehicleDataResponse(
             paymentSheetEntity.getSelfVehicle().getPlaces(),
@@ -101,7 +101,7 @@ public record PaymentSheetResponse(
       selfVehicle = null;
     }
 
-    FoodHousingDataResponse foodHousing;
+    final FoodHousingDataResponse foodHousing;
     if (paymentSheetEntity.getFoodHousing() != null) {
       foodHousing = new FoodHousingDataResponse(
             paymentSheetEntity.getFoodHousing().getAmountDays(),
@@ -112,7 +112,7 @@ public record PaymentSheetResponse(
       foodHousing = null;
     }
 
-    RegularTransportListResponse regularTransportList;
+    final RegularTransportListResponse regularTransportList;
     if (paymentSheetEntity.getRegularTransports() != null
           && !paymentSheetEntity.getRegularTransports().isEmpty()) {
       regularTransportList = RegularTransportListResponse
@@ -141,4 +141,5 @@ public record PaymentSheetResponse(
                 .getName()
     );
   }
+
 }

@@ -148,8 +148,9 @@ public class InvoiceController {
   final String series, @PathVariable
   final int number) {
     try {
-      var invoiceEntity = invoiceService.findBySeriesAndNumber(series, number);
-      var response = InvoiceResponse.fromEntity(invoiceEntity);
+      final var invoiceEntity =
+            invoiceService.findBySeriesAndNumber(series, number);
+      final var response = InvoiceResponse.fromEntity(invoiceEntity);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (InvoiceServiceException e) {
       throw new ResponseStatusException(

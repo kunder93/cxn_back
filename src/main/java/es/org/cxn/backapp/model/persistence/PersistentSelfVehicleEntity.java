@@ -110,38 +110,6 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    * to determine if they are equal. Two objects are considered equal if
    * they are of the same class and all relevant fields are equal.
    * <p>
-   * If this class is subclassed, ensure that the subclass overrides
-   * this method appropriately. The subclass should include all fields
-   * in the equality check that are relevant for the equality of instances.
-   * <p>
-   * The general contract for {@code equals} is:
-   * <ul>
-   *   <li>Reflexive: For any non-null reference value {@code x},
-   *       {@code x.equals(x)} should return {@code true}.</li>
-   *   <li>Symmetric: For any non-null reference values {@code x} and
-   *       {@code y}, {@code x.equals(y)} should return {@code true}
-   *       if and only if
-   *       {@code y.equals(x)} returns {@code true}.</li>
-   *   <li>Transitive: For any non-null reference values {@code x}, {@code y},
-   *       and {@code z}, if {@code x.equals(y)} returns {@code true} and
-   *       {@code y.equals(z)} returns {@code true}, then {@code x.equals(z)}
-   *       should return {@code true}.</li>
-   *   <li>Consistent: For any non-null reference values {@code x}
-   *   and {@code y},
-   *       multiple invocations of {@code x.equals(y)} consistently
-   *        return {@code true}
-   *       or {@code false}, provided no information used
-   *       in {@code equals} comparisons
-   *       on the objects is modified.</li>
-   *   <li>For any non-null reference value {@code x}, {@code x.equals(null)}
-   *       should return {@code false}.</li>
-   * </ul>
-   *
-   * <p>
-   * The method should be overridden in subclasses to ensure that
-   * all relevant fields
-   * are compared and that the {@link #hashCode()} method is also
-   * overridden consistently.
    *
    * @param obj the object to compare this instance with
    * @return {@code true} if this object is the same as the
@@ -150,17 +118,21 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    */
   @Override
   public boolean equals(final Object obj) {
+    final boolean isEqual;
+
     if (this == obj) {
-      return true;
+      isEqual = true;
+    } else if (obj == null || this.getClass() != obj.getClass()) {
+      isEqual = false;
+    } else {
+      final var that = (PersistentSelfVehicleEntity) obj;
+      isEqual = Float.compare(that.distance, distance) == 0
+            && Double.compare(that.kmPrice, kmPrice) == 0
+            && Objects.equals(identifier, that.identifier)
+            && Objects.equals(places, that.places);
     }
-    if (obj == null || this.getClass() != obj.getClass()) {
-      return false;
-    }
-    final var that = (PersistentSelfVehicleEntity) obj;
-    return Float.compare(that.distance, distance) == 0
-          && Double.compare(that.kmPrice, kmPrice) == 0
-          && Objects.equals(identifier, that.identifier)
-          && Objects.equals(places, that.places);
+
+    return isEqual;
   }
 
   /**

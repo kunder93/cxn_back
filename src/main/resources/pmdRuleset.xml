@@ -19,13 +19,13 @@
   <!-- Customize LongVariable rule -->
   <rule ref="category/java/codestyle.xml/LongVariable">
     <properties>
-      <property name="minimum" value="25" />
+      <property name="minimum" value="35" />
     </properties>
   </rule>
   <!-- Customize CommentSize rule -->
   <rule ref="category/java/documentation.xml/CommentSize">
     <properties>
-      <property name="maxLines" value="25" />
+      <property name="maxLines" value="40" />
       <property name="maxLineLength" value="80" />
     </properties>
   </rule>

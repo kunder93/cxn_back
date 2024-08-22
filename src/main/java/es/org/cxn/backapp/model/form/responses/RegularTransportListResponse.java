@@ -41,7 +41,7 @@ public record RegularTransportListResponse(
   public static RegularTransportListResponse fromEntities(
         final Collection<PersistentRegularTransportEntity> entities
   ) {
-    var responses =
+    final var responses =
           entities.stream().map(RegularTransportResponse::fromEntity).toList();
     return new RegularTransportListResponse(responses);
   }

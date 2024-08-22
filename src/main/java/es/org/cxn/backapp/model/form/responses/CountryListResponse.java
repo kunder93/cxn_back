@@ -39,7 +39,8 @@ public record CountryListResponse(List<CountryResponse> countryList) {
    */
   public static CountryListResponse
         from(final Collection<PersistentCountryEntity> value) {
-    var countryResponses = value.stream().map(CountryResponse::new).toList();
+    final var countryResponses =
+          value.stream().map(CountryResponse::new).toList();
     return new CountryListResponse(countryResponses);
   }
 }

@@ -238,14 +238,19 @@ public class PersistentUserEntity implements UserEntity {
    */
   @Override
   public boolean equals(final Object obj) {
+    final boolean isEqual;
+
     if (this == obj) {
-      return true;
+      isEqual = true;
+    } else if (obj == null || this.getClass() != obj.getClass()) {
+      isEqual = false;
+    } else {
+      final var other = (PersistentUserEntity) obj;
+      isEqual = Objects.equals(dni, other.dni)
+            && Objects.equals(email, other.email);
     }
-    if (obj == null || getClass() != obj.getClass()) {
-      return false;
-    }
-    final var other = (PersistentUserEntity) obj;
-    return Objects.equals(dni, other.dni) && Objects.equals(email, other.email);
+
+    return isEqual;
   }
 
   /**
