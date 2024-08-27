@@ -309,16 +309,16 @@ class LibraryControllerTest {
     doThrow(serviceException).when(libraryService).removeBookByIsbn(TEST_ISBN);
 
     // Act and Assert
-    mockMvc.perform(
+    final var mockedRequest = mockMvc.perform(
           MockMvcRequestBuilders.delete(LIBRARY_URL + "/{isbn}", TEST_ISBN)
                 .accept(MediaType.APPLICATION_JSON)
-    ).andExpect(MockMvcResultMatchers.status().isBadRequest())
-          .andExpect(result -> {
-            // Verify the response body contains the expected exception message
-            Assertions.assertTrue(
-                  result.getResolvedException() instanceof ResponseStatusException,
-                  "The exception is expected as Response Status"
-            );
-          });
+    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
+    mockedRequest.andExpect(result -> {
+      // Verify the response body contains the expected exception message
+      Assertions.assertTrue(
+            result.getResolvedException() instanceof ResponseStatusException,
+            "The exception is expected as Response Status"
+      );
+    });
   }
 }

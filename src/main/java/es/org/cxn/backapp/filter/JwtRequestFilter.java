@@ -33,11 +33,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   private static final int TOKEN_SPACES = 7;
 
   /**
-   * The jwt utilities.
-   */
-  private DefaultJwtUtils jwtUtils;
-
-  /**
    * The user details service.
    */
   private UserDetailsService userDetailsService;
@@ -53,7 +48,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final UserDetailsService usrDetService
   ) {
     super();
-    this.jwtUtils = defaultJwtUtils;
     this.userDetailsService = usrDetService;
   }
 
@@ -72,13 +66,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     if (authorizationHeader != null
           && authorizationHeader.startsWith("Bearer")) {
       jwt = authorizationHeader.substring(TOKEN_SPACES);
-      username = jwtUtils.extractUsername(jwt);
+      username = DefaultJwtUtils.extractUsername(jwt);
     }
     if (username != null
           && SecurityContextHolder.getContext().getAuthentication() == null) {
       var user = (MyPrincipalUser) this.userDetailsService
             .loadUserByUsername(username);
-      var jwtTokenValidation = jwtUtils.validateToken(jwt, user);
+      var jwtTokenValidation = DefaultJwtUtils.validateToken(jwt, user);
       if (Boolean.TRUE.equals(jwtTokenValidation)) {
         var usernamePasswordAuthenticationToken =
               new UsernamePasswordAuthenticationToken(

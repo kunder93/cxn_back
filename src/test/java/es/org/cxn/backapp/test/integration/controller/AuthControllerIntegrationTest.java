@@ -11,7 +11,6 @@ import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
@@ -274,8 +273,7 @@ class AuthControllerIntegrationTest {
     var ar = gson
           .fromJson(authenticationResponseJson, AuthenticationResponse.class);
     var jwtToken = ar.jwt();
-    JwtUtils jwtUtil = new DefaultJwtUtils();
-    var jwtUsername = jwtUtil.extractUsername(jwtToken);
+    var jwtUsername = DefaultJwtUtils.extractUsername(jwtToken);
     Assertions.assertEquals(
           UsersControllerFactory.USER_A_EMAIL, jwtUsername,
           "Jwt username is same as user signUp"

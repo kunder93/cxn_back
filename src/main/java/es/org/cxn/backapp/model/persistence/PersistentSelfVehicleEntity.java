@@ -109,7 +109,6 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    * This method compares the current object with the specified object
    * to determine if they are equal. Two objects are considered equal if
    * they are of the same class and all relevant fields are equal.
-   * <p>
    *
    * @param obj the object to compare this instance with
    * @return {@code true} if this object is the same as the

@@ -37,8 +37,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
@@ -140,7 +138,6 @@ public class PersistentUserEntity implements UserEntity {
    * <p>
    * This is to have additional data apart from the id, to be used on the tests.
    */
-  @Temporal(TemporalType.DATE)
   @Column(name = "birth_date", nullable = false, unique = false)
   @NonNull
   private LocalDate birthDate;
