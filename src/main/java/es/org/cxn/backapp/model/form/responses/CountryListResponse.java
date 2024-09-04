@@ -3,44 +3,44 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import lombok.Data;
-
 /**
- * Represents the form used by controller as response for requesting all
+ * Represents the response DTO used by the controller for requesting all
  * countries.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This record serves as a Data Transfer Object (DTO) to facilitate
+ * communication between the view and the controller when requesting a list of
+ * all countries. It contains a list of country responses.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param countryList The list of {@link CountryResponse} representing all
+ * countries.
+ *
+ * @author Santiago Paz
  */
-@Data
-public final class CountryListResponse implements Serializable {
+public record CountryListResponse(List<CountryResponse> countryList) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -6152907846653572886L;
-
-  /**
-   * List with all stored countries.
-   */
-  private List<CountryResponse> countryList = new ArrayList<>();
-
-  /**
-   * Constructor with provided parameters values.
+   * Creates a {@link CountryListResponse} from a collection of
+   * {@link PersistentCountryEntity}.
+   * <p>
+   * This static factory method converts a collection of persistent country
+   * entities into a {@link CountryListResponse}.
+   * Each entity is mapped to a {@link CountryResponse} object, which is then
+   * collected into a list.
+   * </p>
    *
-   * @param value The countries list.
+   * @param value The collection of {@link PersistentCountryEntity} to be
+   * converted.
+   * @return A new instance of {@link CountryListResponse} containing the list
+   * of country responses.
    */
-  public CountryListResponse(final List<PersistentCountryEntity> value) {
-    super();
-    value.forEach(
-          (PersistentCountryEntity e) -> this.countryList
-                .add(new CountryResponse(e))
-    );
+  public static CountryListResponse
+        from(final Collection<PersistentCountryEntity> value) {
+    final var countryResponses =
+          value.stream().map(CountryResponse::new).toList();
+    return new CountryListResponse(countryResponses);
   }
 }

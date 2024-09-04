@@ -18,254 +18,357 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Unit tests for the {@link PersistentPaymentSheetEntity} class.
+ * This class tests the getter and setter methods, equality, hash code,
+ *  and other functionality of the {@link PersistentPaymentSheetEntity} class.
+ */
 class PersistentPaymentSheetEntityTest {
+
+  /**
+   * Year value used for testing date-related fields.
+   * This constant represents the year 2024.
+   */
+  private static final int TEST_YEAR = 2024;
+
+  /**
+   * Month value used for testing date-related fields.
+   * This constant represents the month of May.
+   */
+  private static final int TEST_MONTH_MAY = 5;
+
+  /**
+   * Start day value used for testing date-related fields.
+   * This constant represents the 1st day of the month.
+   */
+  private static final int TEST_DAY_START = 1;
+
+  /**
+   * End day value used for testing date-related fields.
+   * This constant represents the 5th day of the month.
+   */
+  private static final int TEST_DAY_END = 5;
+
+  /**
+   * Alternative start day value used for testing date-related fields.
+   * This constant represents the 10th day of the month.
+   */
+  private static final int TEST_DAY_ALT_START = 10;
+
+  /**
+   * Alternative end day value used for testing date-related fields.
+   * This constant represents the 15th day of the month.
+   */
+  private static final int TEST_DAY_ALT_END = 15;
+
+  /**
+   * A sample reason used for testing purposes.
+   * This value represents the reason for the payment sheet event.
+   */
+  private static final String TEST_REASON = "Event reason";
+
+  /**
+   * A sample place used for testing purposes.
+   * This value represents the location associated with the payment sheet event.
+   */
+  private static final String TEST_PLACE = "Event place";
+
+  /**
+   * A sample start date used for testing purposes.
+   * This value represents the beginning date of the payment sheet event.
+   */
+  private static final LocalDate TEST_START_DATE =
+        LocalDate.of(TEST_YEAR, TEST_MONTH_MAY, TEST_DAY_START);
+
+  /**
+   * A sample end date used for testing purposes.
+   * This value represents the ending date of the payment sheet event.
+   */
+  private static final LocalDate TEST_END_DATE =
+        LocalDate.of(TEST_YEAR, TEST_MONTH_MAY, TEST_DAY_END);
+
+  /**
+   * A sample ID used for testing purposes.
+   * This value represents the identifier for the payment sheet.
+   */
+  private static final Integer TEST_ID = 1;
+
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getReason()} method.
+   * Verifies that the reason returned is the same as the one set.
+   */
   @Test
   void testGetReason() {
     var userOwner = mock(PersistentUserEntity.class);
-    // Crear una instancia de PersistentPaymentSheetEntity con valores de ejemplo
-    var paymentSheet =
-          PersistentPaymentSheetEntity.builder().reason("Event reason")
-                .place("Event place").startDate(LocalDate.of(2024, 5, 1))
-                .endDate(LocalDate.of(2024, 5, 5)).userOwner(userOwner).build();
+    var paymentSheet = PersistentPaymentSheetEntity.builder()
+          .reason(TEST_REASON).place(TEST_PLACE).startDate(TEST_START_DATE)
+          .endDate(TEST_END_DATE).userOwner(userOwner).build();
 
     assertEquals(
-          "Event reason", paymentSheet.getReason(),
-          "el motivo devuelto es el mismo que el establecido"
+          TEST_REASON, paymentSheet.getReason(),
+          "The reason returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getPlace()} method.
+   * Verifies that the place returned is the same as the one set.
+   */
   @Test
   void testGetPlace() {
-    // Crear una instancia de PersistentPaymentSheetEntity con valores de ejemplo
     var userOwner = mock(PersistentUserEntity.class);
-    var paymentSheet =
-          PersistentPaymentSheetEntity.builder().reason("Event reason")
-                .place("Event place").startDate(LocalDate.of(2024, 5, 1))
-                .endDate(LocalDate.of(2024, 5, 5)).userOwner(userOwner).build();
+    var paymentSheet = PersistentPaymentSheetEntity.builder()
+          .reason(TEST_REASON).place(TEST_PLACE).startDate(TEST_START_DATE)
+          .endDate(TEST_END_DATE).userOwner(userOwner).build();
 
     assertEquals(
-          "Event place", paymentSheet.getPlace(),
-          "el lugar devuelto es el mismo que el establecido"
+          TEST_PLACE, paymentSheet.getPlace(),
+          "The place returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getStartDate()} method.
+   * Verifies that the start date returned is the same as the one set.
+   */
   @Test
   void testGetStartDate() {
-    // Crear una instancia de PersistentPaymentSheetEntity con valores de ejemplo
     var userOwner = mock(PersistentUserEntity.class);
-    var paymentSheet =
-          PersistentPaymentSheetEntity.builder().reason("Event reason")
-                .place("Event place").startDate(LocalDate.of(2024, 5, 1))
-                .endDate(LocalDate.of(2024, 5, 5)).userOwner(userOwner).build();
+    var paymentSheet = PersistentPaymentSheetEntity.builder()
+          .reason(TEST_REASON).place(TEST_PLACE).startDate(TEST_START_DATE)
+          .endDate(TEST_END_DATE).userOwner(userOwner).build();
 
-    // Verificar que
     assertEquals(
-          LocalDate.of(2024, 5, 1), paymentSheet.getStartDate(),
-          "la fecha de inicio devuelta es la misma que la establecida"
+          TEST_START_DATE, paymentSheet.getStartDate(),
+          "The start date returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getEndDate()} method.
+   * Verifies that the end date returned is the same as the one set.
+   */
   @Test
   void testGetEndDate() {
     var userOwner = mock(PersistentUserEntity.class);
-    // Crear una instancia de PersistentPaymentSheetEntity con valores de ejemplo
-    var paymentSheet =
-          PersistentPaymentSheetEntity.builder().reason("Event reason")
-                .place("Event place").startDate(LocalDate.of(2024, 5, 1))
-                .endDate(LocalDate.of(2024, 5, 5)).userOwner(userOwner).build();
+    var paymentSheet = PersistentPaymentSheetEntity.builder()
+          .reason(TEST_REASON).place(TEST_PLACE).startDate(TEST_START_DATE)
+          .endDate(TEST_END_DATE).userOwner(userOwner).build();
 
     assertEquals(
-          LocalDate.of(2024, 5, 5), paymentSheet.getEndDate(),
-          "la fecha de finalización devuelta es la misma que la establecida"
+          TEST_END_DATE, paymentSheet.getEndDate(),
+          "The end date returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getUserOwner()} method.
+   * Verifies that the user owner returned is the same as the one set.
+   */
   @Test
   void testGetUserOwner() {
-    // Mockear la entidad externa PersistentUserEntity
     var userOwner = mock(PersistentUserEntity.class);
-
-    // Crear una instancia de PersistentPaymentSheetEntity con el objeto mockeado
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(userOwner).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
-          .build();
+          .userOwner(userOwner).reason(TEST_REASON).place(TEST_PLACE)
+          .startDate(TEST_START_DATE).endDate(TEST_END_DATE).build();
 
     assertEquals(
           userOwner, paymentSheet.getUserOwner(),
-          "el objeto devuelto es el mismo que el objeto mockeado"
+          "The user owner returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getRegularTransports()}
+   * method.
+   * Verifies that the set of regular transports contains the expected items.
+   */
   @Test
   void testGetRegularTransports() {
     var userOwner = mock(PersistentUserEntity.class);
-    // Mockear la entidad externa PersistentRegularTransportEntity
     var transport1 = mock(PersistentRegularTransportEntity.class);
     var transport2 = mock(PersistentRegularTransportEntity.class);
 
-    // Crear un conjunto de transportes simulado
     Set<PersistentRegularTransportEntity> regularTransports = new HashSet<>();
     regularTransports.add(transport1);
     regularTransports.add(transport2);
 
-    // Crear una instancia de PersistentPaymentSheetEntity con el conjunto simulado
-    var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .userOwner(userOwner)
-          .regularTransports(
-                (HashSet<PersistentRegularTransportEntity>) regularTransports
-          ).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
-          .build();
+    var paymentSheet =
+          PersistentPaymentSheetEntity.builder().userOwner(userOwner)
+                .regularTransports(new HashSet<>(regularTransports))
+                .reason(TEST_REASON).place(TEST_PLACE)
+                .startDate(TEST_START_DATE).endDate(TEST_END_DATE).build();
 
     assertTrue(
           paymentSheet.getRegularTransports().contains(transport1),
-          "el conjunto devuelto contiene los transportes simulados"
+          "The set should contain the expected regular transport"
     );
     assertTrue(
           paymentSheet.getRegularTransports().contains(transport2),
-          "el conjunto devuelto contiene los transportes simulados"
+          "The set should contain the expected regular transport"
     );
   }
 
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getSelfVehicle()} method.
+   * Verifies that the self vehicle returned is the same as the one set.
+   */
   @Test
   void testGetSelfVehicle() {
     var userOwner = mock(PersistentUserEntity.class);
-    // Mockear la entidad externa PersistentSelfVehicleEntity
     var selfVehicle = mock(PersistentSelfVehicleEntity.class);
 
-    // Crear una instancia de PersistentPaymentSheetEntity con el objeto mockeado
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .selfVehicle(selfVehicle).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
+          .selfVehicle(selfVehicle).reason(TEST_REASON).place(TEST_PLACE)
+          .startDate(TEST_START_DATE).endDate(TEST_END_DATE)
           .userOwner(userOwner).build();
 
     assertEquals(
           selfVehicle, paymentSheet.getSelfVehicle(),
-          "el objeto devuelto es el mismo que el objeto mockeado"
+          "The self vehicle returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the {@link PersistentPaymentSheetEntity#getFoodHousing()} method.
+   * Verifies that the food housing returned is the same as the one set.
+   */
   @Test
   void testGetFoodHousing() {
     var userOwner = mock(PersistentUserEntity.class);
-    // Mockear la entidad externa PersistentFoodHousingEntity
     var foodHousing = mock(PersistentFoodHousingEntity.class);
 
-    // Crear una instancia de PersistentPaymentSheetEntity con el objeto mockeado
     var paymentSheet = PersistentPaymentSheetEntity.builder()
-          .foodHousing(foodHousing).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
+          .foodHousing(foodHousing).reason(TEST_REASON).place(TEST_PLACE)
+          .startDate(TEST_START_DATE).endDate(TEST_END_DATE)
           .userOwner(userOwner).build();
 
     assertEquals(
           foodHousing, paymentSheet.getFoodHousing(),
-          " el objeto devuelto es el mismo que el objeto mockeado"
+          "The food housing returned should be the same as the one set"
     );
   }
 
+  /**
+   * Tests the hash code implementation of {@link PersistentPaymentSheetEntity}.
+   * Verifies that the hash codes differ when self vehicle instances are
+   *  different.
+   */
   @Test
   void testHashCode() {
     var userOwner = mock(PersistentUserEntity.class);
-    // Mockear la entidad externa PersistentSelfVehicleEntity
     var selfVehicle1 = mock(PersistentSelfVehicleEntity.class);
     var selfVehicle2 = mock(PersistentSelfVehicleEntity.class);
 
-    // Crear instancias de PersistentPaymentSheetEntity con los objetos mockeados
     var paymentSheet1 = PersistentPaymentSheetEntity.builder()
-          .selfVehicle(selfVehicle1).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
+          .selfVehicle(selfVehicle1).reason(TEST_REASON).place(TEST_PLACE)
+          .startDate(TEST_START_DATE).endDate(TEST_END_DATE)
           .userOwner(userOwner).build();
 
     var paymentSheet2 = PersistentPaymentSheetEntity.builder()
-          .selfVehicle(selfVehicle2).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
+          .selfVehicle(selfVehicle2).reason(TEST_REASON).place(TEST_PLACE)
+          .startDate(TEST_START_DATE).endDate(TEST_END_DATE)
           .userOwner(userOwner).build();
 
-    // Verificar que
     assertNotEquals(
           paymentSheet1.hashCode(), paymentSheet2.hashCode(),
-          "los hash codes son diferentes para objetos con selfVehicle distintos"
+          "Hash codes should be different for objects with different "
+                + "self vehicles"
     );
   }
 
+  /**
+   * Tests the equality of {@link PersistentPaymentSheetEntity}.
+   * Verifies that two instances with different self vehicles are not
+   * considered equal.
+   */
   @Test
   void testEquals() {
     var userOwner = mock(PersistentUserEntity.class);
-    // Mockear la entidad externa PersistentSelfVehicleEntity
     var selfVehicle1 = mock(PersistentSelfVehicleEntity.class);
     var selfVehicle2 = mock(PersistentSelfVehicleEntity.class);
 
-    // Crear instancias de PersistentPaymentSheetEntity con los objetos mockeados
     var paymentSheet1 = PersistentPaymentSheetEntity.builder()
-          .selfVehicle(selfVehicle1).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
+          .selfVehicle(selfVehicle1).reason(TEST_REASON).place(TEST_PLACE)
+          .startDate(TEST_START_DATE).endDate(TEST_END_DATE)
           .userOwner(userOwner).build();
 
     var paymentSheet2 = PersistentPaymentSheetEntity.builder()
-          .selfVehicle(selfVehicle2).reason("Event reason").place("Event place")
-          .startDate(LocalDate.of(2024, 5, 1)).endDate(LocalDate.of(2024, 5, 5))
+          .selfVehicle(selfVehicle2).reason(TEST_REASON).place(TEST_PLACE)
+          .startDate(TEST_START_DATE).endDate(TEST_END_DATE)
           .userOwner(userOwner).build();
 
     assertNotEquals(
           paymentSheet1, paymentSheet2,
-          "los objetos son considerados diferentes debido a selfVehicle distintos"
+          "Objects should be considered different due to different "
+                + "self vehicles"
     );
   }
 
+  /**
+   * Tests the getter and setter methods of
+   * {@link PersistentPaymentSheetEntity}.
+   * Verifies that values set using setters are correctly retrieved
+   * using getters.
+   */
   @Test
   void testGettersAndSetters() {
-    // Crear una instancia de PersistentPaymentSheetEntity
     var paymentSheet = new PersistentPaymentSheetEntity();
 
-    // Definir valores de prueba
-    Integer id = 1;
-    var reason = "Test reason";
-    var place = "Test place";
-    var startDate = LocalDate.of(2024, 5, 10);
-    var endDate = LocalDate.of(2024, 5, 15);
+    paymentSheet.setId(TEST_ID);
+    paymentSheet.setReason("Test reason");
+    paymentSheet.setPlace("Test place");
+    paymentSheet.setStartDate(
+          LocalDate.of(TEST_YEAR, TEST_MONTH_MAY, TEST_DAY_ALT_START)
+    );
+    paymentSheet.setEndDate(
+          LocalDate.of(TEST_YEAR, TEST_MONTH_MAY, TEST_DAY_ALT_END)
+    );
 
-    // Establecer los valores usando setters
-    paymentSheet.setId(id);
-    paymentSheet.setReason(reason);
-    paymentSheet.setPlace(place);
-    paymentSheet.setStartDate(startDate);
-    paymentSheet.setEndDate(endDate);
-
-    // Verificar que los getters devuelven los valores establecidos
-    assertEquals(id, paymentSheet.getId(), "getter");
-    assertEquals(reason, paymentSheet.getReason(), "getter");
-    assertEquals(place, paymentSheet.getPlace(), "getter");
-    assertEquals(startDate, paymentSheet.getStartDate(), "getter");
-    assertEquals(endDate, paymentSheet.getEndDate(), "getter");
+    assertEquals(TEST_ID, paymentSheet.getId(), "The ID getter/setter");
+    assertEquals(
+          "Test reason", paymentSheet.getReason(), "The reason getter/setter"
+    );
+    assertEquals(
+          "Test place", paymentSheet.getPlace(), "The place getter/setter"
+    );
+    assertEquals(
+          LocalDate.of(TEST_YEAR, TEST_MONTH_MAY, TEST_DAY_ALT_START),
+          paymentSheet.getStartDate(), "The start date getter/setter"
+    );
+    assertEquals(
+          LocalDate.of(TEST_YEAR, TEST_MONTH_MAY, TEST_DAY_ALT_END),
+          paymentSheet.getEndDate(), "The end date getter/setter"
+    );
   }
 
+  /**
+   * Tests the getter methods with mock objects.
+   * Verifies that mocks set using setters are correctly retrieved
+   * using getters.
+   */
   @Test
   void testGettersAndSettersWithMocks() {
-    // Mockear las entidades externas
     var regularTransport = mock(PersistentRegularTransportEntity.class);
     var selfVehicle = mock(PersistentSelfVehicleEntity.class);
     var foodHousing = mock(PersistentFoodHousingEntity.class);
 
-    // Crear una instancia de PersistentPaymentSheetEntity
     var paymentSheet = new PersistentPaymentSheetEntity();
-
-    // Establecer los mocks
     paymentSheet.getRegularTransports().add(regularTransport);
     paymentSheet.setSelfVehicle(selfVehicle);
     paymentSheet.setFoodHousing(foodHousing);
 
     assertTrue(
           paymentSheet.getRegularTransports().contains(regularTransport),
-          "los getters devuelvan los mocks establecidos"
+          "The regular transports set should contain the mock"
     );
     assertEquals(
           selfVehicle, paymentSheet.getSelfVehicle(),
-          "los getters devuelvan los mocks establecidos"
+          "The self vehicle getter/setter should return the mock"
     );
     assertEquals(
           foodHousing, paymentSheet.getFoodHousing(),
-          "los getters devuelvan los mocks establecidos"
+          "The food housing getter/setter should return the mock"
     );
   }
 }

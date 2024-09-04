@@ -24,14 +24,13 @@
 
 package es.org.cxn.backapp.repository;
 
-import es.org.cxn.backapp.model.AddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring-JPA repository for {@link AddressEntity}.
+ * Spring-JPA repository for {@link PersistentAddressEntity}.
  * <p>
  * This is a simple repository just to allow the endpoints querying the entities
  * they are asked for.

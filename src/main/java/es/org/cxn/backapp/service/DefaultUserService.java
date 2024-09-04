@@ -37,8 +37,8 @@ import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.dto.UserRegistrationDetails;
-import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -61,6 +61,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public final class DefaultUserService implements UserService {
 
+  /**
+   * Age limit for be SOCIO_ASPIRANTE.
+   */
+  public static final int AGE_LIMIT = 18;
   /**
    * User not found message for exception.
    */
@@ -103,7 +107,7 @@ public final class DefaultUserService implements UserService {
   /**
    * Repository for the country subdivision entities handled by the service.
    */
-  private final CountrySubdivisionEntityRepository countrySubdivisionRepository;
+  private final CountrySubdivisionEntityRepository countrySubdivisionRepo;
 
   /**
    * Constructs an entities service with the specified repository.
@@ -112,7 +116,7 @@ public final class DefaultUserService implements UserService {
    * @param roleRepo           The role repository{@link RoleEntityRepository}
    * @param countryRepo        The country
    *                           repository{@link CountryEntityRepository}
-   * @param countrySubsionRepo The country subdivisions
+   * @param countrySubdivRepo The country subdivisions
    *                           repository
    *                           {@link CountrySubdivisionEntityRepository}
    */
@@ -120,7 +124,7 @@ public final class DefaultUserService implements UserService {
         final UserEntityRepository userRepo,
         final RoleEntityRepository roleRepo,
         final CountryEntityRepository countryRepo,
-        final CountrySubdivisionEntityRepository countrySubsionRepo
+        final CountrySubdivisionEntityRepository countrySubdivRepo
   ) {
     super();
 
@@ -132,8 +136,8 @@ public final class DefaultUserService implements UserService {
           countryRepo, "Received a null pointer as country repository"
     );
 
-    this.countrySubdivisionRepository = checkNotNull(
-          countrySubsionRepo,
+    this.countrySubdivisionRepo = checkNotNull(
+          countrySubdivRepo,
           "Received a null pointer as country subdivision repository"
     );
 
@@ -152,48 +156,48 @@ public final class DefaultUserService implements UserService {
 
   @Override
   public List<UserEntity> getAll() {
-    var persistentUsers = userRepository.findAll();
+    final var persistentUsers = userRepository.findAll();
     return new ArrayList<>(persistentUsers);
   }
 
   @Override
-  public UserEntity add(final UserRegistrationDetails userDetails)
+  public UserEntity add(final UserRegistrationDetailsDto userDetails)
         throws UserServiceException {
-    final var dni = userDetails.getDni();
+    final var dni = userDetails.dni();
 
     if (userRepository.findByDni(dni).isPresent()) {
       throw new UserServiceException(USER_DNI_EXISTS_MESSAGE);
     }
-    final var email = userDetails.getEmail();
+    final var email = userDetails.email();
     if (userRepository.findByEmail(email).isPresent()) {
       throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
     } else {
       final PersistentUserEntity save;
       save = new PersistentUserEntity();
       save.setDni(dni);
-      final var name = userDetails.getName();
+      final var name = userDetails.name();
       save.setName(name);
-      final var firstSurname = userDetails.getFirstSurname();
+      final var firstSurname = userDetails.firstSurname();
       save.setFirstSurname(firstSurname);
-      final var secondSurname = userDetails.getSecondSurname();
+      final var secondSurname = userDetails.secondSurname();
       save.setSecondSurname(secondSurname);
-      final var gender = userDetails.getGender();
+      final var gender = userDetails.gender();
       save.setGender(gender);
-      final var birthDate = userDetails.getBirthDate();
+      final var birthDate = userDetails.birthDate();
       save.setBirthDate(birthDate);
-      final var password = userDetails.getPassword();
+      final var password = userDetails.password();
       save.setPassword(new BCryptPasswordEncoder().encode(password));
       save.setEmail(email);
       final var kindMember = PersistentUserEntity.UserType.SOCIO_NUMERO;
       save.setKindMember(kindMember);
 
-      final var addressDetails = userDetails.getAddressDetails();
-      final var apartmentNumber = addressDetails.getApartmentNumber();
-      final var building = addressDetails.getBuilding();
-      final var city = addressDetails.getCity();
-      final var postalCode = addressDetails.getPostalCode();
-      final var street = addressDetails.getStreet();
-      final var countryNumericCode = addressDetails.getCountryNumericCode();
+      final var addressDetails = userDetails.addressDetails();
+      final var apartmentNumber = addressDetails.apartmentNumber();
+      final var building = addressDetails.building();
+      final var city = addressDetails.city();
+      final var postalCode = addressDetails.postalCode();
+      final var street = addressDetails.street();
+      final var countryNumericCode = addressDetails.countryNumericCode();
 
       final var address = new PersistentAddressEntity();
       address.setApartmentNumber(apartmentNumber);
@@ -212,12 +216,12 @@ public final class DefaultUserService implements UserService {
       final var countryEntity = countryOptional.get();
       address.setCountry(countryEntity);
       final var countrySubdivisionName =
-            addressDetails.getCountrySubdivisionName();
+            addressDetails.countrySubdivisionName();
       final var countryDivisionOptional =
-            countrySubdivisionRepository.findByName(countrySubdivisionName);
+            countrySubdivisionRepo.findByName(countrySubdivisionName);
       if (countryDivisionOptional.isEmpty()) {
         throw new UserServiceException(
-              "Country subidivision with code: " + countrySubdivisionName
+              "Country subdivision with code: " + countrySubdivisionName
                     + " not found."
         );
       }
@@ -238,17 +242,15 @@ public final class DefaultUserService implements UserService {
     if (user.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    Set<PersistentRoleEntity> rolesSet = new HashSet<>();
-    for (UserRoleName roleName : roleNameList) {
-      try {
-        final var role = roleRepository.findByName(roleName);
-        if (role.isEmpty()) {
-          throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
-        }
-        rolesSet.add(role.get());
-      } catch (UserServiceException e) {
+    final Set<PersistentRoleEntity> rolesSet = new HashSet<>();
+    for (final UserRoleName roleName : roleNameList) {
+
+      final var role = roleRepository.findByName(roleName);
+      if (role.isEmpty()) {
         throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
       }
+      rolesSet.add(role.get());
+
     }
     final var userEntity = user.get();
     userEntity.setRoles(rolesSet);
@@ -261,21 +263,22 @@ public final class DefaultUserService implements UserService {
         final String email, final String currentPassword,
         final String newPassword
   ) throws UserServiceException {
-    var passwordEncoder = new BCryptPasswordEncoder();
+
     // Buscar al usuario por su correo electrónico en la base de datos
-    var userOptional = userRepository.findByEmail(email);
+    final var userOptional = userRepository.findByEmail(email);
     if (userOptional.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
     // Obtener la entidad de usuario desde el Optional
-    var userEntity = userOptional.get();
+    final var userEntity = userOptional.get();
     // Verificar la contraseña proporcionada coincide con la almacenada
-    String storedPassword = userEntity.getPassword();
+    final var passwordEncoder = new BCryptPasswordEncoder();
+    final String storedPassword = userEntity.getPassword();
     if (!passwordEncoder.matches(currentPassword, storedPassword)) {
       throw new UserServiceException(USER_PASSWORD_NOT_MATCH);
     }
     // Hash de la nueva contraseña antes de guardarla en la base de datos
-    var hashedNewPassword = passwordEncoder.encode(newPassword);
+    final var hashedNewPassword = passwordEncoder.encode(newPassword);
     // Actualizar la contraseña del usuario con la nueva contraseña hash
     userEntity.setPassword(hashedNewPassword);
     // Guardar la entidad de usuario actualizada en la base de datos
@@ -290,7 +293,7 @@ public final class DefaultUserService implements UserService {
     if (user.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    var userEntity = user.get();
+    final var userEntity = user.get();
     userEntity.setEmail(newEmail);
     return userRepository.save(userEntity);
   }
@@ -328,7 +331,7 @@ public final class DefaultUserService implements UserService {
     if (userOptional.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    var userEntity = userOptional.get();
+    final var userEntity = userOptional.get();
 
     userEntity.setEnabled(false);
     userRepository.save(userEntity);
@@ -337,35 +340,35 @@ public final class DefaultUserService implements UserService {
   @Transactional
   @Override
   public UserEntity
-        update(final UserServiceUpdateForm userForm, final String userEmail)
+        update(final UserServiceUpdateDto userForm, final String userEmail)
               throws UserServiceException {
-    Optional<PersistentUserEntity> userOptional;
+    final Optional<PersistentUserEntity> userOptional;
 
     userOptional = userRepository.findByEmail(userEmail);
     if (userOptional.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
-    PersistentUserEntity userEntity;
+    final PersistentUserEntity userEntity;
     userEntity = userOptional.get();
-    final var name = userForm.getName();
+    final var name = userForm.name();
     userEntity.setName(name);
-    final var firstSurname = userForm.getFirstSurname();
+    final var firstSurname = userForm.firstSurname();
     userEntity.setFirstSurname(firstSurname);
-    final var secondSurname = userForm.getSecondSurname();
+    final var secondSurname = userForm.secondSurname();
     userEntity.setSecondSurname(secondSurname);
-    final var birthDate = userForm.getBirthDate();
+    final var birthDate = userForm.birthDate();
     userEntity.setBirthDate(birthDate);
-    final var gender = userForm.getGender();
+    final var gender = userForm.gender();
     userEntity.setGender(gender);
 
     return userRepository.save(userEntity);
   }
 
   private static boolean checkAgeUnder18(final PersistentUserEntity user) {
-    final var AGE_LIMIT = 18;
+
     final var birthDate = user.getBirthDate();
     final var today = LocalDate.now();
-    var age = Period.between(birthDate, today).getYears();
+    final var age = Period.between(birthDate, today).getYears();
     //Return if under 18.
     return age < AGE_LIMIT;
   }

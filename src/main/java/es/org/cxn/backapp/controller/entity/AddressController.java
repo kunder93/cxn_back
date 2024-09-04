@@ -30,10 +30,7 @@ import es.org.cxn.backapp.exceptions.AddressServiceException;
 import es.org.cxn.backapp.model.CountryEntity;
 import es.org.cxn.backapp.model.form.responses.CountryListResponse;
 import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
-import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.service.AddressService;
-
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,20 +76,28 @@ public class AddressController {
   @CrossOrigin
   @GetMapping(path = "/getCountries")
   public ResponseEntity<CountryListResponse> getAllCountries() {
-    final var countryList =
-          addressService.getCountries();
-    return new ResponseEntity<>(
-          new CountryListResponse(countryList), HttpStatus.OK
-    );
+    // Retrieve the list of PersistentCountryEntity objects
+    final var countryEntities = addressService.getCountries();
+
+    // Use the static factory method to create a CountryListResponse
+    final var response = CountryListResponse.from(countryEntities);
+
+    // Return the response entity with the created CountryListResponse and
+    // HTTP status OK
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
-   * Return country data and sub-countries from one country.
+   * Returns country data and sub-countries for a given country.
+   * <p>
+   * This endpoint retrieves information about a country and its associated
+   * sub-countries based on the provided country code.
    *
-   * @param countryCode The country code a.k.a. country identifier for getting
-   *                    related sub-countries.
-   *
-   * @return country data and his sub-countries.
+   * @param countryCode The country code (identifier) for retrieving related
+   * sub-countries.
+   * @return a {@code ResponseEntity} containing a
+   * {@code SubCountryListResponse} with the country data and its sub-countries,
+   * or an error response if the country cannot be found.
    */
   @CrossOrigin
   @GetMapping(path = "/country/{countryCode}")
@@ -100,14 +105,18 @@ public class AddressController {
         getAllSubCountriesFromCountry(@PathVariable
   final Integer countryCode) {
     try {
+      // Fetch the country entity using the service
       final CountryEntity country = addressService.getCountry(countryCode);
-      return new ResponseEntity<>(
-            new SubCountryListResponse(country), HttpStatus.OK
-      );
+
+      // Create the response using the static factory method
+      final var response = SubCountryListResponse.fromEntity(country);
+
+      // Return the response with HTTP status OK
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (AddressServiceException e) {
+      // Handle the exception and return a BAD_REQUEST response
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
-
       );
     }
   }

@@ -37,6 +37,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import lombok.AllArgsConstructor;
@@ -87,14 +88,14 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    *
    */
   @Column(name = "distance", nullable = false, unique = false)
-  private float distance;
+  private BigDecimal distance;
 
   /**
    * Price per kilometer in euros.
    *
    */
   @Column(name = "km_price", nullable = false, unique = false)
-  private double kmPrice;
+  private BigDecimal kmPrice;
 
   /**
    * Payment sheet entity associated.
@@ -103,21 +104,75 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
   @JoinColumn(name = "payment_sheet_id", nullable = false)
   private PersistentPaymentSheetEntity paymentSheet;
 
+  /**
+   * Compares this object with the specified object for equality.
+   * <p>
+   * This method compares the current object with the specified object
+   * to determine if they are equal. Two objects are considered equal if
+   * they are of the same class and all relevant fields are equal.
+   * </p>
+   *
+   * @param obj the object to compare this instance with
+   * @return {@code true} if this object is the same as the
+   * {@code obj} argument; {@code false} otherwise
+   */
   @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
+  public boolean equals(final Object obj) {
+    final boolean isEqual;
+
+    if (this == obj) {
+      isEqual = true;
+    } else if (obj == null || this.getClass() != obj.getClass()) {
+      isEqual = false;
+    } else {
+      final var that = (PersistentSelfVehicleEntity) obj;
+      isEqual = Objects.equals(identifier, that.identifier)
+            && Objects.equals(places, that.places)
+            && distance.compareTo(that.distance) == 0
+            && kmPrice.compareTo(that.kmPrice) == 0;
     }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    var that = (PersistentSelfVehicleEntity) o;
-    return Float.compare(that.distance, distance) == 0
-          && Double.compare(that.kmPrice, kmPrice) == 0
-          && Objects.equals(identifier, that.identifier)
-          && Objects.equals(places, that.places);
+
+    return isEqual;
   }
 
+  /**
+   * Returns a hash code value for the object.
+   * <p>
+   * The {@code hashCode} method must be overridden to ensure consistency
+   *  with the {@link #equals(Object)}
+   * method. The hash code value should be computed based on the same fields
+   *  that are used in the {@code equals}
+   * method to ensure that equal objects have the same hash code.
+   * <p>
+   * The general contract of {@code hashCode} is:
+   * <ul>
+   *   <li>Whenever it is invoked on the same object more than once during
+   *   an execution of an application,
+   *       the {@code hashCode} method must consistently return the same
+   *       integer, provided no information used
+   *       in {@code equals} comparisons on the object is modified.</li>
+   *   <li>If two objects are equal according to the {@code equals(Object)}
+   *    method, then calling the {@code hashCode}
+   *       method on each of the two objects must produce the same
+   *       integer result.</li>
+   *   <li>It is not required that if two objects are unequal according
+   *   to the {@code equals(Object)} method,
+   *       then calling the {@code hashCode} method on each of the two
+   *        objects must produce distinct integer results.
+   *       However, the programmer should be aware that producing distinct
+   *        integer results for unequal objects
+   *       can improve the performance of hash-based collections.</li>
+   * </ul>
+   *
+   * <p>
+   * Subclasses should override this method to ensure that the hash code
+   * is consistent with the {@code equals} method.
+   * When overriding this method in a subclass, make sure to include all
+   * fields that are used in the {@code equals}
+   * method.
+   *
+   * @return a hash code value for this object
+   */
   @Override
   public int hashCode() {
     return Objects.hash(identifier, places, distance, kmPrice);

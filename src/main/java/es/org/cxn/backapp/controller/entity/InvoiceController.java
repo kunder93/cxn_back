@@ -29,7 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import es.org.cxn.backapp.exceptions.CompanyServiceException;
 import es.org.cxn.backapp.exceptions.InvoiceServiceException;
 import es.org.cxn.backapp.model.InvoiceEntity;
-import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
@@ -40,6 +40,7 @@ import es.org.cxn.backapp.service.InvoiceService;
 
 import jakarta.validation.Valid;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -94,15 +95,15 @@ public class InvoiceController {
    * Create a new invoice.
    *
    * @param invoiceCreateRequestForm form with data to create invoice.
-   *                                 {@link CreateInvoiceRequestForm}.
+   *                                 {@link CreateInvoiceRequest}.
    * @return response with the created invoice data.
    */
   @CrossOrigin
   @PostMapping()
   public ResponseEntity<InvoiceResponse> createInvoice(@RequestBody @Valid
-  final CreateInvoiceRequestForm invoiceCreateRequestForm) {
-    final var sellerNif = invoiceCreateRequestForm.getSellerNif();
-    final var buyerNif = invoiceCreateRequestForm.getBuyerNif();
+  final CreateInvoiceRequest invoiceCreateRequestForm) {
+    final var sellerNif = invoiceCreateRequestForm.sellerNif();
+    final var buyerNif = invoiceCreateRequestForm.buyerNif();
     try {
       final var sellerCompany =
             (PersistentCompanyEntity) companyService.findById(sellerNif);
@@ -115,14 +116,14 @@ public class InvoiceController {
         );
       }
       final var result = invoiceService.add(
-            invoiceCreateRequestForm.getNumber(),
-            invoiceCreateRequestForm.getSeries(),
-            invoiceCreateRequestForm.getExpeditionDate(),
-            invoiceCreateRequestForm.getAdvancePaymentDate(),
-            invoiceCreateRequestForm.getTaxExempt(), sellerCompany, buyerCompany
+            invoiceCreateRequestForm.number().intValue(),
+            invoiceCreateRequestForm.series(),
+            invoiceCreateRequestForm.expeditionDate(),
+            invoiceCreateRequestForm.advancePaymentDate(),
+            invoiceCreateRequestForm.taxExempt(), sellerCompany, buyerCompany
       );
       final var response = new InvoiceResponse(
-            result.getNumber(), result.getSeries(),
+            BigInteger.valueOf(result.getNumber()), result.getSeries(),
             result.getAdvancePaymentDate(), result.getExpeditionDate(),
             result.getTaxExempt(), result.getSeller().getNif(),
             result.getBuyer().getNif()
@@ -136,27 +137,27 @@ public class InvoiceController {
   }
 
   /**
-   * Get invoice providing a invoice series and number.
+   * Get an invoice by its series and number.
    *
    * @param series The invoice series.
    * @param number The invoice number.
-   * @return Response status 200 OK or some error.
+   * @return Response status 200 OK with invoice details or error status.
    */
   @CrossOrigin
   @GetMapping("/{series}/{number}")
   public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable
   final String series, @PathVariable
   final int number) {
-    InvoiceEntity invoiceEntity;
     try {
-      invoiceEntity = invoiceService.findBySeriesAndNumber(series, number);
+      final var invoiceEntity =
+            invoiceService.findBySeriesAndNumber(series, number);
+      final var response = InvoiceResponse.fromEntity(invoiceEntity);
+      return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (InvoiceServiceException e) {
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
       );
     }
-    var response = new InvoiceResponse(invoiceEntity);
-    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
@@ -173,8 +174,8 @@ public class InvoiceController {
     invoices.forEach(
           (InvoiceEntity invoice) -> invoiceResponseList.add(
                 new InvoiceResponse(
-                      invoice.getNumber(), invoice.getSeries(),
-                      invoice.getAdvancePaymentDate(),
+                      BigInteger.valueOf(invoice.getNumber()),
+                      invoice.getSeries(), invoice.getAdvancePaymentDate(),
                       invoice.getExpeditionDate(), invoice.getTaxExempt(),
                       ((PersistentInvoiceEntity) invoice).getSeller().getNif(),
                       ((PersistentInvoiceEntity) invoice).getBuyer().getNif()

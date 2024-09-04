@@ -37,7 +37,7 @@ import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
 import es.org.cxn.backapp.service.UserService;
-import es.org.cxn.backapp.service.dto.UserServiceUpdateForm;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -111,12 +111,12 @@ public class UserController {
     final var userName =
           SecurityContextHolder.getContext().getAuthentication().getName();
 
-    final var name = userUpdateRequestForm.getName();
-    final var firstSurname = userUpdateRequestForm.getFirstSurname();
-    final var secondSurname = userUpdateRequestForm.getSecondSurname();
-    final var birthDate = userUpdateRequestForm.getBirthDate();
-    final var gender = userUpdateRequestForm.getGender();
-    final var userServiceUpdateForm = new UserServiceUpdateForm(
+    final var name = userUpdateRequestForm.name();
+    final var firstSurname = userUpdateRequestForm.firstSurname();
+    final var secondSurname = userUpdateRequestForm.secondSurname();
+    final var birthDate = userUpdateRequestForm.birthDate();
+    final var gender = userUpdateRequestForm.gender();
+    final var userServiceUpdateForm = new UserServiceUpdateDto(
           name, firstSurname, secondSurname, birthDate, gender
     );
     try {
@@ -142,25 +142,27 @@ public class UserController {
   @GetMapping("/getAll")
   public ResponseEntity<UserListDataResponse> getAllUserData() {
     final var users = userService.getAll();
-    return new ResponseEntity<>(new UserListDataResponse(users), HttpStatus.OK);
+    // Use the fromUserEntities method to create the UserListDataResponse
+    final var response = UserListDataResponse.fromUserEntities(users);
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
    * Change user kind of member.
    *
-   * @param userChangeKindMemberRequest The email as user identifier and
+   * @param userChangeKindMemberReq The email as user identifier and
    * new kind of member.
    * @return user data with new kind of member.
    */
   @CrossOrigin(origins = "*")
   @PatchMapping("/changeKindOfMember")
   public ResponseEntity<UserDataResponse> changeUserKindOfMember(@RequestBody
-  final UserChangeKindMemberRequest userChangeKindMemberRequest) {
-    UserEntity result;
+  final UserChangeKindMemberRequest userChangeKindMemberReq) {
+    final UserEntity result;
     try {
       result = userService.changeKindMember(
-            userChangeKindMemberRequest.getEmail(),
-            userChangeKindMemberRequest.getKindMember()
+            userChangeKindMemberReq.email(),
+            userChangeKindMemberReq.kindMember()
       );
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
@@ -179,11 +181,10 @@ public class UserController {
   @PatchMapping("/changeEmail")
   public ResponseEntity<UserDataResponse> changeUserEmail(@RequestBody
   final UserChangeEmailRequest userChangeEmailRequest) {
-    UserEntity result;
+    final UserEntity result;
     try {
       result = userService.changeUserEmail(
-            userChangeEmailRequest.getEmail(),
-            userChangeEmailRequest.getNewEmail()
+            userChangeEmailRequest.email(), userChangeEmailRequest.newEmail()
       );
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
@@ -203,12 +204,12 @@ public class UserController {
   @PatchMapping("/changePassword")
   public ResponseEntity<UserDataResponse> changeUserPassword(@RequestBody
   final UserChangePasswordRequest userChangePasswordRequest) {
-    UserEntity result;
+    final UserEntity result;
     try {
       result = userService.changeUserPassword(
-            userChangePasswordRequest.getEmail(),
-            userChangePasswordRequest.getCurrentPassword(),
-            userChangePasswordRequest.getNewPassword()
+            userChangePasswordRequest.email(),
+            userChangePasswordRequest.currentPassword(),
+            userChangePasswordRequest.newPassword()
       );
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
@@ -230,8 +231,7 @@ public class UserController {
   final UserUnsubscribeRequest userUnsubscribeRequest) {
     try {
       userService.unsubscribe(
-            userUnsubscribeRequest.getEmail(),
-            userUnsubscribeRequest.getPassword()
+            userUnsubscribeRequest.email(), userUnsubscribeRequest.password()
       );
     } catch (UserServiceException e) {
       throw new ResponseStatusException(

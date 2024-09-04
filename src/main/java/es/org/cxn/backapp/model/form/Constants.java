@@ -17,7 +17,7 @@ public final class Constants {
   /**
    * DNI bad format message.
    */
-  public static final String DNI_BAD_FORMAT_MESSAGE =
+  public static final String DNI_BAD_FORMAT =
         "DNI bad format. DNI must have 8 numbers and 1 letter.";
 
   /**
@@ -49,7 +49,7 @@ public final class Constants {
   /**
    * City not blank message.
    */
-  public static final String CITY_NOT_BLANK_MESSAGE =
+  public static final String CITY_NOT_BLANK =
         "City must not be null or empty.";
 
   /**
@@ -67,7 +67,7 @@ public final class Constants {
   /**
    * Street not blank message.
    */
-  public static final String STREET_NOT_BLANK_MESSAGE =
+  public static final String STREET_NOT_BLANK =
         "Street must not be null or empty.";
 
   /**
@@ -85,7 +85,7 @@ public final class Constants {
   /**
    * Building not blank message.
    */
-  public static final String BUILDING_NOT_BLANK_MESSAGE =
+  public static final String BUILDING_NOT_BLANK =
         "Building must not be null or empty.";
 
   /**
@@ -146,15 +146,15 @@ public final class Constants {
   /**
    * Password max length.
    */
-  public static final int PASSWORD_MAX_LENGTH = 20;
+  public static final int MAX_PASSWORD_LENGTH = 20;
   /**
    * Password min length.
    */
-  public static final int PASSWORD_MIN_LENGTH = 6;
+  public static final int MIN_PASSWORD_LENGTH = 6;
   /**
    * Message validating NotEmpty email.
    */
-  public static final String EMAIL_NOT_VALID_MESSAGE =
+  public static final String EMAIL_NOT_VALID =
         "Email not valid format.";
 
   /**
@@ -176,13 +176,13 @@ public final class Constants {
   /**
    * Message validating Not Blank name.
    */
-  public static final String NAME_NOT_BLANK_MESSAGE =
+  public static final String NAME_NOT_BLANK =
         "Name must not be null or empty.";
 
   /**
    * Message validating Not Blank first surname.
    */
-  public static final String FIRST_SURNAME_NOT_BLANK_MESSAGE =
+  public static final String FIRST_SURNAME_NOT_BLANK =
         "First surname must not be null or empty.";
 
   /**
@@ -199,7 +199,7 @@ public final class Constants {
   /**
    * Message validating Not Blank Second surname.
    */
-  public static final String SECOND_SURNAME_NOT_BLANK_MESSAGE =
+  public static final String SECOND_SURNAME_NOT_BLANK =
         "Second surname must not be null or empty.";
   /**
    * Message validating MaxSize Second surname.
@@ -210,7 +210,7 @@ public final class Constants {
   /**
    * Message validating Birth date past.
    */
-  public static final String BIRTH_DATE_PAST_MESSAGE =
+  public static final String BIRTH_DATE_PAST =
         "Bith date must not be past.";
 
   /**
@@ -222,8 +222,8 @@ public final class Constants {
    * Message validating MaxSize and MinSize Password.
    */
   public static final String PASSWORD_SIZE_MESSAGE =
-        "Password must be between length of: " + PASSWORD_MIN_LENGTH + "AND"
-              + PASSWORD_MAX_LENGTH + ".";
+        "Password must be between length of: " + MIN_PASSWORD_LENGTH + "AND"
+              + MAX_PASSWORD_LENGTH + ".";
 
   /**
    * Message validating MaxSize Gender.
@@ -233,7 +233,7 @@ public final class Constants {
   /**
    * Message validating Not Blank Gender.
    */
-  public static final String GENDER_NOT_BLANK_MESSAGE =
+  public static final String GENDER_NOT_BLANK =
         "Gender must not be null or empty.";
 
   /**

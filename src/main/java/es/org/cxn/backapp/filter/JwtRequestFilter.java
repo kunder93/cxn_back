@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,22 +28,27 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
   /**
-   * The jwt utilities.
+   * Token spaces length for bearer token.
    */
-  @Autowired
-  private DefaultJwtUtils jwtUtils;
+  private static final int TOKEN_SPACES = 7;
 
   /**
    * The user details service.
    */
-  @Autowired
   private UserDetailsService userDetailsService;
 
   /**
-   * Default constructor.
+   * Constructor for JwtRequestFilter.
+   *
+   * @param defaultJwtUtils the JWT utilities
+   * @param usrDetService the user details service
    */
-  public JwtRequestFilter() {
+  public JwtRequestFilter(
+        final DefaultJwtUtils defaultJwtUtils,
+        final UserDetailsService usrDetService
+  ) {
     super();
+    this.userDetailsService = usrDetService;
   }
 
   /**
@@ -55,7 +59,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final HttpServletRequest request, final HttpServletResponse response,
         final FilterChain filterChain
   ) throws ServletException, IOException {
-    final var TOKEN_SPACES = 7;
     final var authorizationHeader = request.getHeader("Authorization");
     String username = null;
     String jwt = null;
@@ -63,13 +66,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     if (authorizationHeader != null
           && authorizationHeader.startsWith("Bearer")) {
       jwt = authorizationHeader.substring(TOKEN_SPACES);
-      username = jwtUtils.extractUsername(jwt);
+      username = DefaultJwtUtils.extractUsername(jwt);
     }
     if (username != null
           && SecurityContextHolder.getContext().getAuthentication() == null) {
       var user = (MyPrincipalUser) this.userDetailsService
             .loadUserByUsername(username);
-      var jwtTokenValidation = jwtUtils.validateToken(jwt, user);
+      var jwtTokenValidation = DefaultJwtUtils.validateToken(jwt, user);
       if (Boolean.TRUE.equals(jwtTokenValidation)) {
         var usernamePasswordAuthenticationToken =
               new UsernamePasswordAuthenticationToken(

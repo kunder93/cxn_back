@@ -27,16 +27,18 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
-import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequestForm;
-import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequestForm;
-import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
+import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequest;
+import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequest;
+import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequest;
+import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequest;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.service.PaymentSheetService;
 
 import jakarta.validation.Valid;
+
+import java.util.Collection;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -79,33 +81,61 @@ public class PaymentSheetController {
   /**
    * Get the Payment Sheets list with all payments.
    *
-   * @return List with all payment sheets.
+   * @return A {@link ResponseEntity} containing a
+   * {@link PaymentSheetListResponse} with all payment sheets.
    */
   @GetMapping
   @CrossOrigin
   public ResponseEntity<PaymentSheetListResponse> getPaymentSheets() {
-    final var paymentSheetsEntityList = paymentSheetService.getPaymentSheets();
-    final var responseList =
-          new PaymentSheetListResponse(paymentSheetsEntityList);
-    return new ResponseEntity<>(responseList, HttpStatus.OK);
+    try {
+      // Fetch payment sheets entities from the service
+      final Collection<PersistentPaymentSheetEntity> paymentSheetsEntityList =
+            paymentSheetService.getPaymentSheets();
 
+      // Convert the collection of entities to a PaymentSheetListResponse using
+      //the fromEntities method
+      final var responseList =
+            PaymentSheetListResponse.fromEntities(paymentSheetsEntityList);
+
+      return new ResponseEntity<>(responseList, HttpStatus.OK);
+    } catch (Exception e) {
+      throw new ResponseStatusException(
+            HttpStatus.INTERNAL_SERVER_ERROR, "Unable to fetch payment sheets",
+            e
+      );
+    }
   }
 
   /**
-   * Get the Payment Sheet data trough his identifier.
+   * Retrieves a payment sheet by its identifier.
+   * <p>
+   * This endpoint fetches a payment sheet based on its ID and returns it as a
+   * {@link PaymentSheetResponse}. If the payment sheet is not found, a
+   * {@link ResponseStatusException} with a {@code NOT_FOUND} status is thrown.
+   * </p>
    *
-   * @param paymentSheetId The payment sheet identifier.
-   * @return form with the created company data.
+   * @param paymentSheetId the identifier of the payment sheet to retrieve
+   * @return a {@link ResponseEntity} containing the
+   * {@link PaymentSheetResponse}
+   *         and HTTP status {@code OK} if found, or {@code NOT_FOUND} if not
+   *         found.
    */
-  @GetMapping("/{paymentSheetId}")
   @CrossOrigin
+  @GetMapping("/{paymentSheetId}")
   public ResponseEntity<PaymentSheetResponse> getPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
-      final var result = paymentSheetService.findById(paymentSheetId);
-      final var response = new PaymentSheetResponse(result);
-      return new ResponseEntity<>(response, HttpStatus.OK);
+      // Fetch the payment sheet entity from the service
+      final var paymentSheetEntity =
+            paymentSheetService.findById(paymentSheetId);
+
+      // Convert the entity to a PaymentSheetResponse using the static method
+      final var response = PaymentSheetResponse.fromEntity(paymentSheetEntity);
+
+      // Return the response with HTTP status OK
+      return ResponseEntity.ok(response);
     } catch (PaymentSheetServiceException e) {
+      // Handle the case where the payment sheet is not found
       throw new ResponseStatusException(
             HttpStatus.NOT_FOUND, e.getMessage(), e
       );
@@ -113,29 +143,43 @@ public class PaymentSheetController {
   }
 
   /**
-   * Create a new payment sheet.
+   * Creates a new payment sheet based on the provided form data.
+   * <p>
+   * This endpoint accepts a {@link CreatePaymentSheetRequest} and uses it
+   * to create a new payment sheet. The created payment sheet is returned in a
+   * {@link PaymentSheetResponse} with an HTTP status of {@code CREATED}.
+   * </p>
    *
-   * @param createPaymentSheetRequestForm form with data to create payment
-   *                                      sheet.
-   * @return form with the created payment sheet data.
+   * @param createPaymentSheetRequestForm the form with data to create the
+   * payment sheet.
+   * @return a {@link ResponseEntity} containing the
+   * {@link PaymentSheetResponse} with HTTP status {@code CREATED} if the
+   * creation is successful, or {@code BAD_REQUEST} if there are validation
+   * issues.
    */
-  @PostMapping()
+  @PostMapping
   @CrossOrigin
   public ResponseEntity<PaymentSheetResponse>
         createPaymentSheet(@RequestBody @Valid
-  final CreatePaymentSheetRequestForm createPaymentSheetRequestForm) {
+  final CreatePaymentSheetRequest createPaymentSheetRequestForm) {
     try {
-      final var result = paymentSheetService.add(
-            createPaymentSheetRequestForm.getReason(),
-            createPaymentSheetRequestForm.getPlace(),
-            createPaymentSheetRequestForm.getStartDate(),
-            createPaymentSheetRequestForm.getEndDate(),
-            createPaymentSheetRequestForm.getUserEmail()
+      // Create the payment sheet entity using the service
+      final var paymentSheetEntity = paymentSheetService.add(
+            createPaymentSheetRequestForm.reason(),
+            createPaymentSheetRequestForm.place(),
+            createPaymentSheetRequestForm.startDate(),
+            createPaymentSheetRequestForm.endDate(),
+            createPaymentSheetRequestForm.userEmail()
       );
-      final var response =
-            new PaymentSheetResponse((PersistentPaymentSheetEntity) result);
-      return new ResponseEntity<>(response, HttpStatus.CREATED);
+
+      // Convert the created entity to a PaymentSheetResponse
+      final var response = PaymentSheetResponse
+            .fromEntity((PersistentPaymentSheetEntity) paymentSheetEntity);
+
+      // Return the response with HTTP status CREATED
+      return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (PaymentSheetServiceException e) {
+      // Handle the case where creation fails
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
       );
@@ -153,12 +197,11 @@ public class PaymentSheetController {
   @CrossOrigin
   public ResponseEntity<String> addRegularTransportToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
-  final AddRegularTransportRequestForm requestForm) {
+  final AddRegularTransportRequest requestForm) {
     try {
       paymentSheetService.addRegularTransportToPaymentSheet(
-            paymentSheetId, requestForm.getCategory(),
-            requestForm.getDescription(), requestForm.getInvoiceNumber(),
-            requestForm.getInvoiceSeries()
+            paymentSheetId, requestForm.category(), requestForm.description(),
+            requestForm.invoiceNumber().intValue(), requestForm.invoiceSeries()
       );
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
@@ -205,11 +248,11 @@ public class PaymentSheetController {
   @CrossOrigin
   public ResponseEntity<String> addSelfVehicleToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
-  final AddSelfVehicleRequestForm requestForm) {
+  final AddSelfVehicleRequest requestForm) {
     try {
       paymentSheetService.addSelfVehicleToPaymentSheet(
-            paymentSheetId, requestForm.getPlaces(), requestForm.getDistance(),
-            requestForm.getKmPrice()
+            paymentSheetId, requestForm.places(), requestForm.distance(),
+            requestForm.kmPrice()
       );
 
       return new ResponseEntity<>(HttpStatus.OK);
@@ -253,11 +296,11 @@ public class PaymentSheetController {
   @CrossOrigin
   public ResponseEntity<String> addFoodHousingToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
-  final AddFoodHousingToPaymentSheetRequestForm requestForm) {
+  final AddFoodHousingToPaymentSheetRequest requestForm) {
     try {
       paymentSheetService.addFoodHousingToPaymentSheet(
-            paymentSheetId, requestForm.getAmountDays(),
-            requestForm.getDayPrice(), requestForm.getOvernight()
+            paymentSheetId, requestForm.amountDays(), requestForm.dayPrice(),
+            requestForm.overnight()
       );
 
       return new ResponseEntity<>("", HttpStatus.OK);

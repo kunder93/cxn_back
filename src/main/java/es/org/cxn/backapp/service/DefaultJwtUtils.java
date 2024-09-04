@@ -1,20 +1,23 @@
 
 package es.org.cxn.backapp.service;
 
-import java.security.Key;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import javax.crypto.SecretKey;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.NoArgsConstructor;
 
 /**
  * Class for operations associated to jwt token used in authentication.
@@ -23,9 +26,7 @@ import lombok.NoArgsConstructor;
  *
  */
 @Service
-@NoArgsConstructor
-public class DefaultJwtUtils implements JwtUtils {
-
+public final class DefaultJwtUtils {
   /**
    * Temporary for develop, must change.
    */
@@ -33,17 +34,33 @@ public class DefaultJwtUtils implements JwtUtils {
         "mysecretpasswordjwttyrtyrtgdfyryrytjhjgrtyrtyrmhgjfrtyrty";
 
   /**
-   * JWT Expiration time const.
+   * The duration for which the JWT token is valid.
+   * <p>
+   * This constant defines the expiration time of a JWT token. The token will
+   * be valid for a period of 10 hours from the time it is issued.
+   * This duration is represented using {@link java.time.Duration}.
+   * <p>
+   * Example usage:
+   * <pre>
+   *     Instant now = Instant.now();
+   *     Instant expiration = now.plus(EXPIRATION_TIME);
+   * </pre>
+   * The token will expire when the current time surpasses the
+   * {@code expiration} instant.
    */
-  private static final int EXPIRATION_TIME = 1000 * 60 * 60 * 10;
+  private static final Duration EXPIRATION_TIME = Duration.ofHours(10);
+
+  private DefaultJwtUtils() {
+    // private unnecessary constructor for utility class.
+  }
 
   /**
    * Temporary for develop, must change.
    *
    * @return the key.
    */
-  private static Key getSigningKey() {
-    final var keyBytes = Decoders.BASE64.decode(DefaultJwtUtils.SECRET);
+  private static SecretKey getSigningKey() {
+    final var keyBytes = Decoders.BASE64.decode(SECRET);
     return Keys.hmacShaKeyFor(keyBytes);
   }
 
@@ -53,8 +70,7 @@ public class DefaultJwtUtils implements JwtUtils {
    * @param token the jwt token.
    * @return the username.
    */
-  @Override
-  public String extractUsername(final String token) {
+  public static String extractUsername(final String token) {
     return extractClaim(token, Claims::getSubject);
   }
 
@@ -64,8 +80,7 @@ public class DefaultJwtUtils implements JwtUtils {
    * @param token the jwt token.
    * @return expiration date.
    */
-  @Override
-  public Date extractExpiration(final String token) {
+  public static Date extractExpiration(final String token) {
     return extractClaim(token, Claims::getExpiration);
   }
 
@@ -77,8 +92,7 @@ public class DefaultJwtUtils implements JwtUtils {
    * @param claimsResolver function for filter wanted claim.
    * @return the claim filtered from jwt token.
    */
-  @Override
-  public <T> T extractClaim(
+  public static <T> T extractClaim(
         final String token, final Function<Claims, T> claimsResolver
   ) {
     final var claims = extractAllClaims(token);
@@ -86,24 +100,34 @@ public class DefaultJwtUtils implements JwtUtils {
   }
 
   /**
-   * Get all claims from Jwt token.
+   * Get all claims from the JWT token.
    *
-   * @param token the jwt token.
+   * @param token the JWT token.
    * @return the Claims {@link Claims}.
+   * @throws JwtException if the token is invalid or parsing fails.
    */
-  private Claims extractAllClaims(final String token) {
-    return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
-          .parseClaimsJws(token).getBody();
+  public static Claims extractAllClaims(final String token)
+        throws JwtException {
+
+    final var signKey = getSigningKey();
+    // Create a JWT parser with the signing key
+    final var jwtParser = Jwts.parser().verifyWith(signKey).build();
+    // Parse the token and extract claims
+    final var jws = jwtParser.parseSignedClaims(token);
+    return jws.getPayload();
   }
 
   /**
-   * check if a token has expired.
+   * Check if a token has expired.
    *
-   * @param token the jwt token.
-   * @return true if yes, false if not @see Boolean.
+   * @param token the JWT token.
+   * @return true if the token has expired, false otherwise.
    */
-  private Boolean isTokenExpired(final String token) {
-    return extractExpiration(token).before(new Date());
+  public static Boolean isTokenExpired(final String token) {
+    final var expirationDate = extractExpiration(token);
+    final var expirationInstant = expirationDate.toInstant();
+    final var now = Instant.now();
+    return expirationInstant.isBefore(now);
   }
 
   /**
@@ -113,17 +137,18 @@ public class DefaultJwtUtils implements JwtUtils {
    *                    UserName(user email).
    * @return the jwt token.
    */
-  @Override
-  public String generateToken(final MyPrincipalUser userDetails) {
+  public static String generateToken(final UserDetails userDetails) {
     final Map<String, Object> claims = new ConcurrentHashMap<>();
     return createToken(claims, userDetails.getUsername());
   }
 
-  private String
+  private static String
         createToken(final Map<String, Object> claims, final String subject) {
-    return Jwts.builder().setClaims(claims).setSubject(subject)
-          .setIssuedAt(new Date(System.currentTimeMillis()))
-          .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+    final var now = Instant.now();
+    final var expiration = now.plus(EXPIRATION_TIME);
+
+    return Jwts.builder().claims(claims).subject(subject)
+          .issuedAt(Date.from(now)).expiration(Date.from(expiration))
           .signWith(getSigningKey()).compact();
   }
 
@@ -134,8 +159,7 @@ public class DefaultJwtUtils implements JwtUtils {
    * @param userDetails the user.
    * @return true if is valid false if not.
    */
-  @Override
-  public Boolean
+  public static Boolean
         validateToken(final String token, final UserDetails userDetails) {
     final var userName = extractUsername(token);
     return userName.equals(userDetails.getUsername()) && !isTokenExpired(token);

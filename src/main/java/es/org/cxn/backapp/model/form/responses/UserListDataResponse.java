@@ -26,45 +26,34 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.UserEntity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-
-import lombok.Data;
 
 /**
  * Represents the form used for response authenticating user.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
- * controller, and mapping all the values from the form. Each of field in the
+ * controller, and mapping all the values from the form. Each field in the
  * DTO matches a field in the form.
  * <p>
  * Includes Java validation annotations, for applying binding validation. This
  * way the controller will make sure it receives all the required data.
  *
+ * @param usersList The users list with UserDataResponse.
  * @author Santiago Paz Perez.
  */
-@Data
-public final class UserListDataResponse implements Serializable {
-
-  /**
-   * UID Serial version.
-   */
-  private static final long serialVersionUID = -6421122331689999079L;
-
-  /**
-   * List of users data response.
-   */
-  private List<UserDataResponse> usersList = new ArrayList<>();
+public record UserListDataResponse(List<UserDataResponse> usersList) {
 
   /**
    * Constructs a DTO for user data response with fields values.
    *
-   * @param users the list users entities with data.
+   * @param users the collection of user entities with data.
+   * @return UserListDataResponse object.
    */
-  public UserListDataResponse(final List<UserEntity> users) {
-    super();
-    users.forEach((UserEntity usr) -> usersList.add(new UserDataResponse(usr)));
+  public static UserListDataResponse
+        fromUserEntities(final Collection<UserEntity> users) {
+    return new UserListDataResponse(
+          users.stream().map(UserDataResponse::new).toList()
+    );
   }
-
 }

@@ -8,14 +8,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.service.DefaultCompanyService;
-import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.utils.CompanyControllerFactory;
 import es.org.cxn.backapp.test.utils.InvoicesControllerFactory;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -27,32 +28,71 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Santiago Paz. User controller integration tests.
+ * Integration tests for the
+ * {@link es.org.cxn.backapp.controller.InvoiceController}.
+ * This test class verifies the end-to-end functionality of the Invoice API,
+ * ensuring that various invoice-related operations behave as expected within
+ * the application's context.
+ *
+ * <p>These tests involve interactions with the mock MVC framework to simulate
+ * HTTP requests and responses without requiring a running server.</p>
+ *
+ * <p>The tests cover scenarios such as creating invoices, validating that buyer
+ * and seller exist, handling duplicate invoice numbers, and verifying data
+ * integrity after CRUD operations.</p>
+ *
+ * <p>Test configuration is sourced from the application.properties file,
+ * ensuring that the tests run in an isolated environment.</p>
+ *
+ * <p>Author: Santiago Paz.</p>
  */
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application.properties")
 class InvoiceControllerIntegrationTest {
 
-  private final static String INVOICE_URL = "/api/invoice";
-  private final static String COMPANY_URL = "/api/company";
+  /**
+   * URL endpoint for accessing invoice-related operations.
+   */
+  private static final String INVOICE_URL = "/api/invoice";
 
+  /**
+   * URL endpoint for accessing company-related operations.
+   */
+  private static final String COMPANY_URL = "/api/company";
+
+  /**
+   * Gson instance for serializing and deserializing JSON objects, customized
+   * with a {@link LocalDateAdapter} to handle {@link LocalDate} objects.
+   */
   private static Gson gson;
+
+  /**
+   * MockMvc instance used to perform HTTP requests in the integration tests.
+   */
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  UserDetailsService myUserDetailsService;
-  @Autowired
-  JwtUtils jwtUtils;
+  /**
+   * Nif of company that not exists, not found.
+   */
+  private static final String NO_EXISTING_COMPANY_NIFCIF = "4125112-U";
 
+  /**
+   * Initializes the Gson instance before any tests are executed.
+   *
+   * <p>This method registers a custom {@link LocalDateAdapter} to handle
+   * the serialization and deserialization of {@link LocalDate} objects.</p>
+   *
+   * <p>Annotated with {@link BeforeAll} to ensure that it runs once before
+   * any test methods in this class.</p>
+   */
   @BeforeAll
   static void setup() {
     gson = new GsonBuilder()
@@ -60,6 +100,18 @@ class InvoiceControllerIntegrationTest {
           .create();
   }
 
+  /**
+   * Sets up the test environment before each individual test case is executed.
+   *
+   * <p>This method creates two companies by performing POST requests to the
+   * company API endpoint. These companies are used as buyers and sellers
+   * in the invoice-related tests.</p>
+   *
+   * <p>Annotated with {@link BeforeEach} to ensure that it runs before every
+   * test method in this class.</p>
+   *
+   * @throws Exception if an error occurs while setting up the test data.
+   */
   @BeforeEach
   void testSetup() throws Exception {
     // Create company
@@ -76,9 +128,9 @@ class InvoiceControllerIntegrationTest {
   }
 
   /**
-   * Main class constructor
+   * Main class constructor.
    */
-  public InvoiceControllerIntegrationTest() {
+  InvoiceControllerIntegrationTest() {
     super();
   }
 
@@ -96,12 +148,17 @@ class InvoiceControllerIntegrationTest {
   @Test
   @Transactional
   void testCreateInvoiceNoExistingBuyerSeller() throws Exception {
-    final var NO_EXISTING_COMPANY_NIFCIF = "4125112-U";
 
     // invoice request with no existing seller and buyer
-    var invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
-    invoiceRequestForm.setBuyerNif(NO_EXISTING_COMPANY_NIFCIF);
-    invoiceRequestForm.setSellerNif(NO_EXISTING_COMPANY_NIFCIF);
+    var invoiceRequestForm = new CreateInvoiceRequest(
+          InvoicesControllerFactory.INVOICE_A_NUMBER,
+          InvoicesControllerFactory.INVOICE_A_SERIES,
+          InvoicesControllerFactory.INVOICE_A_PAYMENT_DATE,
+
+          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT,
+          NO_EXISTING_COMPANY_NIFCIF, NO_EXISTING_COMPANY_NIFCIF,
+          InvoicesControllerFactory.INVOICE_A_EXPEDITION_DATE
+    );
 
     var invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
 
@@ -114,14 +171,20 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
     // Explanation contains the problem
     Assertions.assertTrue(
-          responseContent
-                .contains(DefaultCompanyService.COMPANY_NOT_FOUND_MESSAGE),
+          responseContent.contains(DefaultCompanyService.COMPANY_NOT_FOUND),
           "Expect company not found service message"
     );
 
     // invoice request with no existing buyer
-    invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
-    invoiceRequestForm.setBuyerNif(NO_EXISTING_COMPANY_NIFCIF);
+    invoiceRequestForm = new CreateInvoiceRequest(
+          InvoicesControllerFactory.INVOICE_A_NUMBER,
+          InvoicesControllerFactory.INVOICE_A_SERIES,
+          InvoicesControllerFactory.INVOICE_A_PAYMENT_DATE,
+          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT,
+          InvoicesControllerFactory.INVOICE_A_SELLER,
+          NO_EXISTING_COMPANY_NIFCIF,
+          InvoicesControllerFactory.INVOICE_A_EXPEDITION_DATE
+    );
 
     invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
 
@@ -133,14 +196,19 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
     // Explanation contains the problem
     Assertions.assertTrue(
-          responseContent
-                .contains(DefaultCompanyService.COMPANY_NOT_FOUND_MESSAGE),
+          responseContent.contains(DefaultCompanyService.COMPANY_NOT_FOUND),
           "Expect company not found service message"
     );
 
     // invoice request with no existing seller
-    invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
-    invoiceRequestForm.setSellerNif(NO_EXISTING_COMPANY_NIFCIF);
+    invoiceRequestForm = new CreateInvoiceRequest(
+          InvoicesControllerFactory.INVOICE_A_NUMBER,
+          InvoicesControllerFactory.INVOICE_A_SERIES,
+          InvoicesControllerFactory.INVOICE_A_PAYMENT_DATE,
+          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT,
+          NO_EXISTING_COMPANY_NIFCIF, InvoicesControllerFactory.INVOICE_A_BUYER,
+          InvoicesControllerFactory.INVOICE_A_EXPEDITION_DATE
+    );
 
     invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
 
@@ -152,8 +220,7 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
     // Explanation contains the problem
     Assertions.assertTrue(
-          responseContent
-                .contains(DefaultCompanyService.COMPANY_NOT_FOUND_MESSAGE),
+          responseContent.contains(DefaultCompanyService.COMPANY_NOT_FOUND),
           "Expect company not found service message."
     );
   }
@@ -162,8 +229,6 @@ class InvoiceControllerIntegrationTest {
   @Transactional
   void testCreateTwoInvoicesWithSameBuyerSellerDeleteOneBuyerSellerNotRemoved()
         throws Exception {
-    var invoiceRequestFormJSon =
-          InvoicesControllerFactory.getInvoiceARequestJson();
 
     // Create invoice
     mockMvc.perform(
@@ -172,10 +237,17 @@ class InvoiceControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
     // Create second invoice with same buyer and seller
-    var invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
-    invoiceRequestForm
-          .setNumber(InvoicesControllerFactory.INVOICE_A_NUMBER + 1);
-    invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
+    var invoiceRequestForm = new CreateInvoiceRequest(
+          InvoicesControllerFactory.INVOICE_B_NUMBER,
+          InvoicesControllerFactory.INVOICE_B_SERIES,
+          InvoicesControllerFactory.INVOICE_A_PAYMENT_DATE,
+          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT,
+          InvoicesControllerFactory.INVOICE_A_SELLER,
+          InvoicesControllerFactory.INVOICE_A_BUYER,
+          InvoicesControllerFactory.INVOICE_A_EXPEDITION_DATE
+    );
+
+    var invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
     mockMvc.perform(
           post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(invoiceRequestFormJSon)
@@ -184,10 +256,10 @@ class InvoiceControllerIntegrationTest {
     //Remove first invoice
     // Delete second invoice which is not stored.
 
-    var secondInvoiceNumber = InvoicesControllerFactory.INVOICE_A_NUMBER + 1;
+    var secondInvoiceNumber = InvoicesControllerFactory.INVOICE_B_NUMBER;
     mockMvc.perform(
           delete(
-                INVOICE_URL + "/" + InvoicesControllerFactory.INVOICE_A_SERIES
+                INVOICE_URL + "/" + InvoicesControllerFactory.INVOICE_B_SERIES
                       + "/" + secondInvoiceNumber
           ).contentType(MediaType.APPLICATION_JSON)
     ).andExpect(MockMvcResultMatchers.status().isOk());
@@ -199,8 +271,15 @@ class InvoiceControllerIntegrationTest {
   void testCreateInvoiceSameBuyerSellerNoValid() throws Exception {
 
     // Prepare invoice request, same seller and buyer
-    var invoiceRequestForm = InvoicesControllerFactory.createInvoiceARequest();
-    invoiceRequestForm.setBuyerNif(invoiceRequestForm.getSellerNif());
+    var invoiceRequestForm = new CreateInvoiceRequest(
+          InvoicesControllerFactory.INVOICE_B_NUMBER,
+          InvoicesControllerFactory.INVOICE_B_SERIES,
+          InvoicesControllerFactory.INVOICE_A_PAYMENT_DATE,
+          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT,
+          InvoicesControllerFactory.INVOICE_A_SELLER,
+          InvoicesControllerFactory.INVOICE_A_SELLER,
+          InvoicesControllerFactory.INVOICE_A_EXPEDITION_DATE
+    );
     final var invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
 
     // Create invoice, expect bad request due same buyer and seller.
@@ -216,12 +295,10 @@ class InvoiceControllerIntegrationTest {
   void testCreateDeleteInvoices() throws Exception {
 
     // Retrieve invoices from controller.
-    var invoicesListResponse = mockMvc
-          .perform(
-                get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
+    mockMvc.perform(
+          get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
 
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
+    ).andExpect(MockMvcResultMatchers.status().isOk());
 
     // Create first invoice.
 
@@ -232,12 +309,10 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
 
     // Retrieve invoices from controller.
-    invoicesListResponse = mockMvc
-          .perform(
-                get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
+    mockMvc.perform(
+          get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
 
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
+    ).andExpect(MockMvcResultMatchers.status().isOk());
 
     // Create second invoice
 
@@ -248,7 +323,7 @@ class InvoiceControllerIntegrationTest {
           .getResponse().getContentAsString();
 
     // Retrieve invoices from controller.
-    invoicesListResponse = mockMvc
+    var invoicesListResponse = mockMvc
           .perform(
                 get(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
 
@@ -346,10 +421,15 @@ class InvoiceControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
     // Create second invoice
-    var secondInvoiceRequest =
-          InvoicesControllerFactory.createInvoiceBRequest();
-    secondInvoiceRequest.setNumber(InvoicesControllerFactory.INVOICE_A_NUMBER);
-    secondInvoiceRequest.setSeries(InvoicesControllerFactory.INVOICE_A_SERIES);
+    var secondInvoiceRequest = new InvoiceResponse(
+          InvoicesControllerFactory.INVOICE_A_NUMBER,
+          InvoicesControllerFactory.INVOICE_A_SERIES,
+          InvoicesControllerFactory.INVOICE_B_PAYMENT_DATE,
+          InvoicesControllerFactory.INVOICE_B_EXPEDITION_DATE,
+          InvoicesControllerFactory.INVOICE_B_TAX_EXEMPT,
+          InvoicesControllerFactory.INVOICE_B_SELLER,
+          InvoicesControllerFactory.INVOICE_B_BUYER
+    );
 
     var secondInvoiceRequestJSon = gson.toJson(secondInvoiceRequest);
     // Second invoice with same number and series returns bad request
@@ -359,7 +439,15 @@ class InvoiceControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isBadRequest());
 
     // If we change only the invoice series invoice will be create
-    secondInvoiceRequest.setSeries(InvoicesControllerFactory.INVOICE_B_SERIES);
+    secondInvoiceRequest = new InvoiceResponse(
+          InvoicesControllerFactory.INVOICE_A_NUMBER,
+          InvoicesControllerFactory.INVOICE_B_SERIES,
+          InvoicesControllerFactory.INVOICE_A_PAYMENT_DATE,
+          InvoicesControllerFactory.INVOICE_A_EXPEDITION_DATE,
+          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT,
+          InvoicesControllerFactory.INVOICE_A_SELLER,
+          InvoicesControllerFactory.INVOICE_A_BUYER
+    );
     secondInvoiceRequestJSon = gson.toJson(secondInvoiceRequest);
     mockMvc.perform(
           post(INVOICE_URL).contentType(MediaType.APPLICATION_JSON)
@@ -395,37 +483,36 @@ class InvoiceControllerIntegrationTest {
                 )
           ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
           .getResponse().getContentAsString();
-    ;
 
     var response = gson.fromJson(responseJson, InvoiceResponse.class);
 
     Assertions.assertEquals(
-          InvoicesControllerFactory.INVOICE_A_NUMBER, response.getNumber(),
+          InvoicesControllerFactory.INVOICE_A_NUMBER, response.number(),
           "Invoice number."
     );
     Assertions.assertEquals(
-          InvoicesControllerFactory.INVOICE_A_SERIES, response.getSeries(),
+          InvoicesControllerFactory.INVOICE_A_SERIES, response.series(),
           "Invoice series."
     );
     Assertions.assertEquals(
-          InvoicesControllerFactory.INVOICE_A_BUYER, response.getBuyerNif(),
+          InvoicesControllerFactory.INVOICE_A_BUYER, response.buyerNif(),
           "Buyer NIF."
     );
     Assertions.assertEquals(
-          InvoicesControllerFactory.INVOICE_A_SELLER, response.getSellerNif(),
+          InvoicesControllerFactory.INVOICE_A_SELLER, response.sellerNif(),
           "Seller NIF."
     );
     Assertions.assertEquals(
-          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT,
-          response.getTaxExempt(), "Tax exempt."
+          InvoicesControllerFactory.INVOICE_A_TAX_EXEMPT, response.taxExempt(),
+          "Tax exempt."
     );
     Assertions.assertEquals(
           InvoicesControllerFactory.INVOICE_A_EXPEDITION_DATE,
-          response.getExpeditionDate(), "Expedition date."
+          response.expeditionDate(), "Expedition date."
     );
     Assertions.assertEquals(
           InvoicesControllerFactory.INVOICE_A_PAYMENT_DATE,
-          response.getAdvancePaymentDate(), "Advance payment date."
+          response.advancePaymentDate(), "Advance payment date."
     );
   }
 
@@ -434,7 +521,8 @@ class InvoiceControllerIntegrationTest {
   void testCreateTwoInvoicesRetrieveDataFromNotExistingInvoiceNumber()
         throws Exception {
     final var notExistingInvoiceNumber =
-          InvoicesControllerFactory.INVOICE_A_NUMBER + 22;
+          InvoicesControllerFactory.INVOICE_A_NUMBER
+                .add(BigInteger.valueOf(22));
 
     // Create first invoice.
     mockMvc.perform(

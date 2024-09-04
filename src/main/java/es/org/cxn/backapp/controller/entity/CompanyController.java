@@ -27,8 +27,8 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.CompanyServiceException;
-import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequest;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequest;
 import es.org.cxn.backapp.model.form.responses.CompanyListResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyUpdateResponse;
@@ -95,18 +95,17 @@ public class CompanyController {
    * Create a new company.
    *
    * @param createCompanyRequestForm form with data to create company.
-   *                                 {@link CreateCompanyRequestForm}.
+   *                                 {@link CreateCompanyRequest}.
    * @return form with the created company data.
    */
   @PostMapping()
   @CrossOrigin
   public ResponseEntity<CompanyResponse> createCompany(@RequestBody @Valid
-  final CreateCompanyRequestForm createCompanyRequestForm) {
+  final CreateCompanyRequest createCompanyRequestForm) {
     try {
       final var result = companyService.add(
-            createCompanyRequestForm.getNif(),
-            createCompanyRequestForm.getName(),
-            createCompanyRequestForm.getAddress()
+            createCompanyRequestForm.nif(), createCompanyRequestForm.name(),
+            createCompanyRequestForm.address()
       );
       final var response = new CompanyResponse(result);
       return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -150,10 +149,10 @@ public class CompanyController {
   @CrossOrigin
   public ResponseEntity<CompanyUpdateResponse> updateCompany(@PathVariable
   final String nif, @RequestBody
-  final CompanyUpdateRequestForm requestForm) {
+  final CompanyUpdateRequest requestForm) {
     try {
       final var companyUpdated = companyService.updateCompany(
-            nif, requestForm.getName(), requestForm.getAddress()
+            nif, requestForm.name(), requestForm.address()
 
       );
       final var response = new CompanyUpdateResponse(

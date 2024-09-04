@@ -35,14 +35,17 @@ public final class MyUserDetailsService implements UserDetailsService {
           checkNotNull(repository, "Received a null pointer as repository");
   }
 
+  /**
+   * Load User by user name aka email.
+   */
   @Override
   public UserDetails loadUserByUsername(final String email) {
-    final var userEntityOptional = userRepository.findByEmail(email);
-    if (userEntityOptional.isEmpty()) {
+    final var usrEntityOpt = userRepository.findByEmail(email);
+    if (usrEntityOpt.isEmpty()) {
       throw new UsernameNotFoundException("email: " + email);
     }
-    final var user = userEntityOptional.get();
-    return new MyPrincipalUser(user);
+    final var userEntity = usrEntityOpt.get();
+    return new MyPrincipalUser(userEntity);
   }
 
 }

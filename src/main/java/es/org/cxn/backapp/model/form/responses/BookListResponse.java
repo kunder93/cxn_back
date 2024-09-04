@@ -3,42 +3,32 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.BookEntity;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-
-import lombok.Data;
+import java.util.stream.Collectors;
 
 /**
- * Represents the form used by controller as response for requesting all
+ * Represents the form used by the controller as a response for requesting all
  * books.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This is a Data Transfer Object (DTO), designed to facilitate communication
+ * between the view and the controller.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param bookList A set of book responses.
  */
-@Data
-public final class BookListResponse implements Serializable {
+public record BookListResponse(Set<BookResponse> bookList) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -6152227531653572216L;
-
-  /**
-   * List with all stored countries.
-   */
-  private Set<BookResponse> bookList = new TreeSet<>();
-
-  /**
-   * Constructor with provided parameters values.
+   * Constructs a {@link BookListResponse} from a list of {@link BookEntity}.
    *
-   * @param bookList2 The countries list.
+   * @param bookEntities The list of book entities.
    */
-  public BookListResponse(final List<BookEntity> bookList2) {
-    super();
-    bookList2.forEach((BookEntity e) -> this.bookList.add(new BookResponse(e)));
+  public BookListResponse(final List<BookEntity> bookEntities) {
+    this(
+          bookEntities.stream().map(BookResponse::new)
+                .collect(Collectors.toCollection(TreeSet::new))
+    );
   }
 }

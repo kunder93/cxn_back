@@ -27,13 +27,16 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
-import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
+import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
+import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
+import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.service.ChessQuestionsService;
 
 import jakarta.validation.Valid;
+
+import java.util.Collection;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -76,16 +79,21 @@ public class ChessQuestionsController {
   /**
    * Return all stored chess questions with their data.
    *
-   *
    * @return all stored chess questions.
    */
   @CrossOrigin
   @GetMapping
   public ResponseEntity<ChessQuestionsListResponse> getAllChessQuestions() {
-    final var chessQuestionsList = chessQuestionsService.getAll();
-    return new ResponseEntity<>(
-          new ChessQuestionsListResponse(chessQuestionsList), HttpStatus.OK
-    );
+    // Retrieve the collection of PersistentChessQuestionEntity from the service
+    final Collection<PersistentChessQuestionEntity> chessQuestionsList =
+          chessQuestionsService.getAll();
+
+    // Convert the collection into a ChessQuestionsListResponse using the
+    // static factory method
+    final var response = ChessQuestionsListResponse.from(chessQuestionsList);
+
+    // Return the response wrapped in a ResponseEntity with HttpStatus.OK
+    return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
@@ -93,29 +101,26 @@ public class ChessQuestionsController {
    *
    * @param createChessQuestionRequestForm form with data to create a
    * chess question.
-   *                                 {@link CreateChessQuestionRequestForm}.
+   *                                 {@link CreateChessQuestionRequest}.
    * @return form with the created chess question data.
    */
   @PostMapping()
   @CrossOrigin(origins = "*")
   public ResponseEntity<ChessQuestionResponse>
         createChessQuestion(@RequestBody @Valid
-  final CreateChessQuestionRequestForm createChessQuestionRequestForm) {
+  final CreateChessQuestionRequest createChessQuestionRequestForm) {
     try {
       final var result = chessQuestionsService.add(
-            createChessQuestionRequestForm.getEmail(),
-            createChessQuestionRequestForm.getCategory(),
-            createChessQuestionRequestForm.getTopic(),
-            createChessQuestionRequestForm.getMessage()
+            createChessQuestionRequestForm.email(),
+            createChessQuestionRequestForm.category(),
+            createChessQuestionRequestForm.topic(),
+            createChessQuestionRequestForm.message()
       );
-      final var response = new ChessQuestionResponse();
-      response.setId(result.getIdentifier());
-      response.setEmail(result.getEmail());
-      response.setCategory(result.getCategory());
-      response.setMessage(result.getMessage());
-      response.setTopic(result.getTopic());
-      response.setDate(result.getDate());
-      response.setSeen(result.isSeen());
+      final var response = new ChessQuestionResponse(
+            result.getIdentifier(), result.getEmail(), result.getCategory(),
+            result.getTopic(), result.getMessage(), result.getDate(),
+            result.isSeen()
+      );
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (Exception e) {
       throw new ResponseStatusException(
@@ -128,25 +133,22 @@ public class ChessQuestionsController {
    * Change chess question has been seen state.
    *
    * @param chessQuestionHasSeenRequestForm form with chess question identifier.
-   *                                 {@link ChangeChessQuestionHasSeenRequestForm}.
+   * {@link ChangeChessQuestionHasSeenRequest}.
    * @return form with the modified chess question.
    */
   @PostMapping("/changeChessQuestionHasSeen")
   @CrossOrigin(origins = "*")
   public ResponseEntity<ChessQuestionResponse>
         changeChessQuestionHasSeen(@RequestBody @Valid
-  final ChangeChessQuestionHasSeenRequestForm chessQuestionHasSeenRequestForm) {
+  final ChangeChessQuestionHasSeenRequest chessQuestionHasSeenRequestForm) {
     try {
       final var result = chessQuestionsService
-            .changeChessQuestionSeen(chessQuestionHasSeenRequestForm.getId());
-      final var response = new ChessQuestionResponse();
-      response.setId(result.getIdentifier());
-      response.setEmail(result.getEmail());
-      response.setCategory(result.getCategory());
-      response.setMessage(result.getMessage());
-      response.setTopic(result.getTopic());
-      response.setDate(result.getDate());
-      response.setSeen(result.isSeen());
+            .changeChessQuestionSeen(chessQuestionHasSeenRequestForm.id());
+      final var response = new ChessQuestionResponse(
+            result.getIdentifier(), result.getEmail(), result.getCategory(),
+            result.getTopic(), result.getMessage(), result.getDate(),
+            result.isSeen()
+      );
       return new ResponseEntity<>(response, HttpStatus.CREATED);
     } catch (ChessQuestionServiceException e) {
       throw new ResponseStatusException(
@@ -164,7 +166,7 @@ public class ChessQuestionsController {
   @DeleteMapping("/{id}")
   @CrossOrigin(origins = "*")
   public ResponseEntity<Void> deleteChessQuestion(@PathVariable("id")
-  Integer id) {
+  final Integer id) {
     try {
       chessQuestionsService.delete(id);
       return new ResponseEntity<>(HttpStatus.NO_CONTENT);

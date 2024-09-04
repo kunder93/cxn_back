@@ -1,36 +1,46 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 /**
- * Represents the form used by controller as request of create invoice.
+ * Represents the request to delete an invoice.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This Data Transfer Object (DTO) is used to facilitate communication between
+ * the view and the controller for deleting an invoice. It includes an
+ * identifier for the invoice to be deleted.
+ * </p>
  *
- * @author Santiago Paz.
+ * <p>
+ * The {@code DeleteInvoiceRequest} ensures that the invoice identifier is
+ * provided and adheres to the following constraints:
+ * </p>
+ * <ul>
+ *   <li>{@code invoiceId} cannot be {@code null}.</li>
+ *   <li>{@code invoiceId} must be a positive integer.</li>
+ *   <li>{@code invoiceId} must not exceed {@value ValidationConstants#MAX_ID}.</li>
+ * </ul>
+ *
+ * @param invoiceId The unique identifier of the invoice to be deleted.
+ *                  This field is required and must be a positive integer
+ *                  that does not exceed {@value ValidationConstants#MAX_ID}.
+ *                  <p>
+ *                  If the value is {@code null}, not positive, or exceeds
+ *                  {@value ValidationConstants#MAX_ID}, validation will fail.
+ *                  </p>
+ *
+ * @author Santiago Paz
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class DeleteInvoiceRequest implements Serializable {
-
-  /**
-   * The UID.
-   */
-  private static final long serialVersionUID = 7125614240029897056L;
-
-  /**
-   * The invoice identifier.
-   */
-  private int invoiceId;
+public record DeleteInvoiceRequest(
+      @NotNull(message = ValidationConstants.ID_NOT_NULL_MESSAGE)
+      @Positive(message = ValidationConstants.ID_POSITIVE_MESSAGE)
+      @Max(
+            value = ValidationConstants.MAX_ID,
+            message = ValidationConstants.ID_MAX_MESSAGE
+      )
+      int invoiceId
+) {
 
 }

@@ -8,10 +8,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
-import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -41,19 +39,25 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource("/application.properties")
 class RoleControllerIntegrationTest {
 
-  private final static String SIGN_UP_URL = "/api/auth/signup";
-  private final static String ROLES_URL = "/api/user/role";
+  /**
+   * URL endpoint for user signup.
+   */
+  private static final String SIGN_UP_URL = "/api/auth/signup";
 
-  public final static LocalDate userB_birthDate = LocalDate.of(1996, 2, 8); // aaaa,mm,dd
+  /**
+   * URL endpoint for role management.
+   */
+  private static final String ROLES_URL = "/api/user/role";
 
+  /**
+   * MockMvc instance used for performing HTTP requests in tests.
+   */
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  UserDetailsService myUserDetailsService;
-  @Autowired
-  JwtUtils jwtUtils;
-
+  /**
+   * Gson instance for JSON serialization and deserialization.
+   */
   private static Gson gson;
 
   @BeforeAll
@@ -64,9 +68,9 @@ class RoleControllerIntegrationTest {
   }
 
   /**
-   * Main class constructor
+   * Main class constructor.
    */
-  public RoleControllerIntegrationTest() {
+  RoleControllerIntegrationTest() {
     super();
   }
 
@@ -92,11 +96,10 @@ class RoleControllerIntegrationTest {
 
     var response = gson.fromJson(responseJson, SignUpResponseForm.class);
     Assertions.assertEquals(
-          response.getUserRoles().size(), Integer.valueOf(1),
-          "Only have one role."
+          response.userRoles().size(), Integer.valueOf(1), "Only have one role."
     );
     Assertions.assertTrue(
-          response.getUserRoles().contains(UserRoleName.ROLE_CANDIDATO_SOCIO),
+          response.userRoles().contains(UserRoleName.ROLE_CANDIDATO_SOCIO),
           "Default user role is CANDIDATO_SOCIO."
     );
   }
@@ -121,7 +124,7 @@ class RoleControllerIntegrationTest {
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var userChangeRoleRequest = new UserChangeRoleRequestForm(
+    var userChangeRoleRequest = new UserChangeRoleRequest(
           UsersControllerFactory.USER_A_EMAIL, userRoleListToSet
     );
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
@@ -135,19 +138,19 @@ class RoleControllerIntegrationTest {
           gson.fromJson(addRoleResponseJson, UserChangeRoleResponseForm.class);
 
     Assertions.assertEquals(
-          addRoleResponse.getUserRoles().size(), Integer.valueOf(2),
+          addRoleResponse.userRoles().size(), Integer.valueOf(2),
           "User have 2 roles."
     );
     Assertions.assertTrue(
-          addRoleResponse.getUserRoles().contains(UserRoleName.ROLE_TESORERO),
+          addRoleResponse.userRoles().contains(UserRoleName.ROLE_TESORERO),
           "response have userRoles list and contains role_tesorero"
     );
     Assertions.assertTrue(
-          addRoleResponse.getUserRoles().contains(UserRoleName.ROLE_SOCIO),
+          addRoleResponse.userRoles().contains(UserRoleName.ROLE_SOCIO),
           "response have userRoles list and contains role_socio"
     );
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_EMAIL, addRoleResponse.getUserName(),
+          UsersControllerFactory.USER_A_EMAIL, addRoleResponse.userName(),
           "user name is expected created user email"
     );
   }
@@ -172,7 +175,7 @@ class RoleControllerIntegrationTest {
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var userChangeRoleRequestForm = new UserChangeRoleRequestForm(
+    var userChangeRoleRequestForm = new UserChangeRoleRequest(
           UsersControllerFactory.USER_A_EMAIL, userRolesList
     );
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequestForm);
@@ -183,7 +186,7 @@ class RoleControllerIntegrationTest {
     userRolesList = new ArrayList<UserRoleName>();
     userRolesList.add(UserRoleName.ROLE_SOCIO);
 
-    userChangeRoleRequestForm = new UserChangeRoleRequestForm(
+    userChangeRoleRequestForm = new UserChangeRoleRequest(
           UsersControllerFactory.USER_A_EMAIL, userRolesList
     );
     userChangeRoleRequestJson = gson.toJson(userChangeRoleRequestForm);
@@ -198,15 +201,14 @@ class RoleControllerIntegrationTest {
           .fromJson(rolesFinalResponseJson, UserChangeRoleResponseForm.class);
 
     Assertions.assertEquals(
-          UsersControllerFactory.USER_A_EMAIL, rolesFinalResponse.getUserName(),
+          UsersControllerFactory.USER_A_EMAIL, rolesFinalResponse.userName(),
           "userName with roles is user A email."
     );
     Assertions.assertEquals(
-          1, rolesFinalResponse.getUserRoles().size(),
-          "Only 1 role in roles list"
+          1, rolesFinalResponse.userRoles().size(), "Only 1 role in roles list"
     );
     Assertions.assertTrue(
-          rolesFinalResponse.getUserRoles().contains(UserRoleName.ROLE_SOCIO),
+          rolesFinalResponse.userRoles().contains(UserRoleName.ROLE_SOCIO),
           "the only one role is ROLE_SOCIO"
     );
   }
@@ -223,9 +225,9 @@ class RoleControllerIntegrationTest {
     var userRolesList = new ArrayList<UserRoleName>();
     userRolesList.add(UserRoleName.ROLE_TESORERO);
 
-    var NotExisitngUserEmail = "NotExistingEmail@Email.com";
+    var notExisitngUserEmail = "NotExistingEmail@Email.com";
     var userChangeRoleRequest =
-          new UserChangeRoleRequestForm(NotExisitngUserEmail, userRolesList);
+          new UserChangeRoleRequest(notExisitngUserEmail, userRolesList);
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
     mockMvc.perform(
           patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON)

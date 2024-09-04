@@ -24,14 +24,13 @@
 
 package es.org.cxn.backapp.repository;
 
-import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * Spring-JPA repository for {@link PersistentAuthorEntity}.
+ * Spring-JPA repository for {@link PersistentChessQuestionEntity}.
  * <p>
  * This is a simple repository just to allow the endpoints querying the entities
  * they are asked for.

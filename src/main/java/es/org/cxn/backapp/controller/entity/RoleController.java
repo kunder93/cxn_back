@@ -27,7 +27,7 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
 import es.org.cxn.backapp.service.UserService;
 
@@ -79,11 +79,11 @@ public class RoleController {
   @CrossOrigin(origins = "*")
   @PatchMapping()
   public ResponseEntity<UserChangeRoleResponseForm> changeUserRoles(@RequestBody
-  final UserChangeRoleRequestForm userChangeRoleRequestForm) {
+  final UserChangeRoleRequest userChangeRoleRequestForm) {
 
-    var roles = userChangeRoleRequestForm.getUserRoles();
+    final var roles = userChangeRoleRequestForm.userRoles();
     try {
-      userService.changeUserRoles(userChangeRoleRequestForm.getEmail(), roles);
+      userService.changeUserRoles(userChangeRoleRequestForm.email(), roles);
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
@@ -91,8 +91,8 @@ public class RoleController {
     }
     return new ResponseEntity<>(
           new UserChangeRoleResponseForm(
-                userChangeRoleRequestForm.getEmail(),
-                userChangeRoleRequestForm.getUserRoles()
+                userChangeRoleRequestForm.email(),
+                userChangeRoleRequestForm.userRoles()
           ), HttpStatus.OK
     );
   }

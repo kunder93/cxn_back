@@ -24,10 +24,12 @@
 
 package es.org.cxn.backapp.model;
 
-import java.io.Serializable;
-import java.util.Set;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * A food housing entity interface.
@@ -51,7 +53,7 @@ public interface FoodHousingEntity extends Serializable {
   /**
    * @return The price per day.
    */
-  double getDayPrice();
+  BigDecimal getDayPrice();
 
   /**
    * @return The overnight value.
@@ -71,7 +73,7 @@ public interface FoodHousingEntity extends Serializable {
   /**
    * @param dayPrice The price per day.
    */
-  void setDayPrice(double dayPrice);
+  void setDayPrice(BigDecimal dayPrice);
 
   /**
    * @param overnight The overnight value.

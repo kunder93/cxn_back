@@ -2,69 +2,85 @@
 package es.org.cxn.backapp.test.unit.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
 
-import org.junit.jupiter.api.Test;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
-class UserUnsubscribeRequestTest {
+import java.util.Set;
 
-  @Test
-  void testGettersAndSetters() {
-    // Crear una instancia de UserUnsubscribeRequest
-    var request = new UserUnsubscribeRequest();
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-    // Establecer valores usando setters
-    request.setEmail("user@example.com");
-    request.setPassword("password123");
+/**
+ * Unit test for {@link UserUnsubscribeRequest}.
+ * <p>
+ * This test class verifies the validation of the
+ * {@link UserUnsubscribeRequest} record using parameterized tests with
+ * various valid and invalid values for email and password.
+ * </p>
+ */
+public class UserUnsubscribeRequestTest {
 
-    assertEquals(
-          "user@example.com", request.getEmail(), "valores usando getters"
-    );
-    assertEquals(
-          "password123", request.getPassword(), "valores usando getters"
-    );
+  /**
+   * The validator.
+   */
+  private static Validator validator;
+
+  /**
+   * Sets up the validator factory and initializes the {@link Validator}
+   * instance to be used for validating {@link UserUnsubscribeRequest} objects
+   *  in the tests.
+   * <p>
+   * This method is annotated with {@link BeforeAll}, which means it will be
+   * executed once before any of the test methods in this class are run.
+   * It initializes the {@code validator} field using the default validator
+   * factory provided by Jakarta Bean Validation (formerly known as JSR 380).
+   * </p>
+   * <p>
+   * The validator is used to ensure that the objects being tested adhere to the
+   * validation constraints defined in the {@link UserUnsubscribeRequest} class.
+   * </p>
+   */
+  @BeforeAll
+  public static void setup() {
+    var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
   }
 
-  @Test
-  void testEquals() {
-    // Crear dos instancias de UserUnsubscribeRequest con los mismos valores
-    var request1 =
-          new UserUnsubscribeRequest("user@example.com", "password123");
-    var request2 =
-          new UserUnsubscribeRequest("user@example.com", "password123");
+  /**
+   * Tests the validation of {@link UserUnsubscribeRequest} with various
+   * email addresses and password values.
+   *
+   * @param email       The email address to be tested.
+   * @param password    The password to be tested.
+   * @param expectedViolations The expected number of validation violations.
+   */
+  @ParameterizedTest(name = "email={0}, password={1}, expectedViolations={2}")
+  @CsvSource(
+    { "'valid.email@example.com', 'validPass1', 0", // Valid case
+        "'invalid-email', 'validPass1', 1", // Invalid email
+        "'valid.email@example.com', , 1", // Password is blank
+        "'valid.email@example.com', 'short', 1", // Password too short
+        "'valid.email@example.com', thisIsALongPasswordww, 1",
+        // Password too long
+        "   , 'validPass1', 1" // Email is blank.
+    }
+  )
+  void testUserUnsubscribeRequestValidation(
+        final String email, final String password, final int expectedViolations
+  ) {
+    var request = new UserUnsubscribeRequest(email, password);
+
+    Set<ConstraintViolation<UserUnsubscribeRequest>> violations =
+          validator.validate(request);
 
     assertEquals(
-          request1, request2, "las instancias son iguales usando equals"
+          expectedViolations, violations.size(),
+          "The number of violations should match the expected number."
     );
   }
-
-  @Test
-  void testNotEquals() {
-    // Crear dos instancias de UserUnsubscribeRequest con diferentes valores
-    var request1 =
-          new UserUnsubscribeRequest("user1@example.com", "password123");
-    var request2 =
-          new UserUnsubscribeRequest("user2@example.com", "password456");
-
-    // Verificar que
-    assertNotEquals(
-          request1, request2, "las instancias no son iguales usando equals"
-    );
-  }
-
-  @Test
-  void testHashCode() {
-    // Crear dos instancias de UserUnsubscribeRequest con los mismos valores
-    var request1 =
-          new UserUnsubscribeRequest("user@example.com", "password123");
-    var request2 =
-          new UserUnsubscribeRequest("user@example.com", "password123");
-
-    assertEquals(
-          request1.hashCode(), request2.hashCode(), "los hashCodes son iguales"
-    );
-  }
-
 }

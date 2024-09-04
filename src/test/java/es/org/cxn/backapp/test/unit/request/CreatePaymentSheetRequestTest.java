@@ -1,107 +1,180 @@
 
 package es.org.cxn.backapp.test.unit.request;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequest;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
+/**
+ * Unit tests for the CreatePaymentSheetRequest class.
+ *
+ * This test class covers validation scenarios for date ranges,
+ * user email, reason, and place fields in the CreatePaymentSheetRequest.
+ */
 class CreatePaymentSheetRequestTest {
 
-  @Test
-  void testGettersAndSetters() {
-    // Crear una instancia de CreatePaymentSheetRequestForm
-    var paymentSheetRequestForm = new CreatePaymentSheetRequestForm();
+  /**
+   * ValidatorFactory instance to create Validator instances.
+   * This factory provides a way to access the default validation framework.
+   */
+  private final ValidatorFactory factory =
+        Validation.buildDefaultValidatorFactory();
 
-    // Establecer valores usando setters
-    paymentSheetRequestForm.setUserEmail("user@example.com");
-    paymentSheetRequestForm.setReason("Event reason");
-    paymentSheetRequestForm.setPlace("Event place");
-    paymentSheetRequestForm.setStartDate(LocalDate.now());
-    paymentSheetRequestForm.setEndDate(LocalDate.now().plusDays(7));
+  /**
+   * Validator instance used for validating the CreatePaymentSheetRequest
+   * objects.
+   * This validator is initialized using the ValidatorFactory.
+   */
+  private final Validator validator = factory.getValidator();
 
-    assertEquals(
-          "user@example.com", paymentSheetRequestForm.getUserEmail(),
-          "Verifica los valores usando getters"
-    );
-    assertEquals(
-          "Event reason", paymentSheetRequestForm.getReason(),
-          "Verifica los valores usando getters"
-    );
-    assertEquals(
-          "Event place", paymentSheetRequestForm.getPlace(),
-          "Verifica los valores usando getters"
-    );
-    assertEquals(
-          LocalDate.now(), paymentSheetRequestForm.getStartDate(),
-          "Verifica los valores usando getters"
-    );
-    assertEquals(
-          LocalDate.now().plusDays(7), paymentSheetRequestForm.getEndDate(),
-          "Verifica los valores usando getters"
+  /**
+   * DateTimeFormatter used for parsing date strings in the format "yyyy-MM-dd".
+   * This formatter ensures that the dates provided in the test cases are
+   * correctly parsed into LocalDate objects.
+   */
+  private final DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+  /**
+   * Test cases for valid date ranges.
+   *
+   * @param startDateStr the start date as a string
+   * @param endDateStr   the end date as a string
+   */
+  @ParameterizedTest(name = "{index} => startDate={0}, endDate={1}")
+  @CsvSource(
+    { "2024-09-01,2024-09-01", // Start and End date are the same
+        "2024-09-01,2024-09-02", // End date is after Start date
+        "2024-01-01,2024-12-31" // Large date range
+    }
+  )
+  @DisplayName("Test valid date ranges")
+  void testValidDates(final String startDateStr, final String endDateStr) {
+    final var startDate = LocalDate.parse(startDateStr, formatter);
+    final var endDate = LocalDate.parse(endDateStr, formatter);
+
+    assertDoesNotThrow(
+          () -> new CreatePaymentSheetRequest(
+                "user@example.com", "Conference", "New York", startDate, endDate
+          ), "Expected valid date range to not throw an exception."
     );
   }
 
-  @Test
-  void testEquals() {
-    // Crear dos instancias de CreatePaymentSheetRequestForm con los mismos valores
-    var paymentSheetRequestForm1 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
-    );
-    var paymentSheetRequestForm2 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
+  /**
+   * Test cases for invalid date ranges.
+   *
+   * @param startDateStr the start date as a string
+   * @param endDateStr   the end date as a string
+   */
+  @ParameterizedTest(name = "{index} => startDate={0}, endDate={1}")
+  @CsvSource(
+    { "2024-09-02,2024-09-01", // End date before Start date
+        "2024-09-01,2023-09-01", // End date in a previous year
+        "2024-12-31,2024-01-01" // End date in an earlier month
+    }
+  )
+  @DisplayName("Test invalid date ranges")
+  void testInvalidDates(final String startDateStr, final String endDateStr) {
+    final var startDate = LocalDate.parse(startDateStr, formatter);
+    final var endDate = LocalDate.parse(endDateStr, formatter);
+
+    Exception exception = assertThrows(
+          IllegalArgumentException.class,
+          () -> new CreatePaymentSheetRequest(
+                "user@example.com", "Conference", "New York", startDate, endDate
+          ), "Expected invalid date range to throw an IllegalArgumentException."
     );
 
-    assertEquals(
-          paymentSheetRequestForm1, paymentSheetRequestForm2,
-          "las instancias son iguales usando equals"
+    final var expectedMessage = "End date must be on or after start date";
+    final var actualMessage = exception.getMessage();
+
+    assertTrue(
+          actualMessage.contains(expectedMessage),
+          "Expected exception message to contain: " + expectedMessage
     );
   }
 
-  @Test
-  void testNotEquals() {
-    // Crear dos instancias de CreatePaymentSheetRequestForm con diferentes valores
-    var paymentSheetRequestForm1 = new CreatePaymentSheetRequestForm(
-          "user1@example.com", "Event reason 1", "Event place 1",
-          LocalDate.now(), LocalDate.now().plusDays(7)
-    );
-    var paymentSheetRequestForm2 = new CreatePaymentSheetRequestForm(
-          "user2@example.com", "Event reason 2", "Event place 2",
-          LocalDate.now(), LocalDate.now().plusDays(7)
+  @ParameterizedTest(name = "{index} => userEmail={0}, reason={1}, place={2}")
+  @CsvSource(
+    {
+        // Failing examples
+        "'not-an-email', 'Valid Reason', 'Valid Place'", // Invalid email format
+        "    , 'Valid Reason', 'Valid Place'", // Blank email
+        "fiftyone.chars.email.chars.email.fiftyone@chars.com, 'Valid Reason',"
+              + " 'Valid Place'", // 51 chars email
+        "'a@b.com',    , 'Valid Place'", // Blank reason
+        "'a@b.com', ValidReasonSixtyOneCharsxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              + "xxxxx, 'Valid Place'", // 61 chars reason
+        "'a@b.com', 'Valid Reason',    ", // Blank place
+        "'a@b.com', 'Valid Reason', ValidPlaceFiftyOneCharsxxxxxxxxxxxxxxxxxxx"
+              + "xxxxxxxxx" // 51 chars place
+    }
+  )
+  @DisplayName("Test cases where validation should fail")
+  void testFailingValidationExamples(
+        final String userEmail, final String reason, final String place
+  ) {
+    final var form = new CreatePaymentSheetRequest(
+          userEmail, reason, place, LocalDate.now(), LocalDate.now().plusDays(1)
     );
 
-    assertNotEquals(
-          paymentSheetRequestForm1, paymentSheetRequestForm2,
-          "las instancias no son iguales usando equals"
-    );
-    assertNotEquals(
-          paymentSheetRequestForm2, paymentSheetRequestForm1,
-          "las instancias no son iguales usando equals"
+    final Set<ConstraintViolation<CreatePaymentSheetRequest>> violations =
+          validator.validate(form);
+
+    assertTrue(
+          !violations.isEmpty(), "Expected validation to fail, but it passed."
     );
   }
 
-  @Test
-  void testHashCode() {
-    // Crear dos instancias de CreatePaymentSheetRequestForm con los mismos valores
-    var paymentSheetRequestForm1 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
-    );
-    var paymentSheetRequestForm2 = new CreatePaymentSheetRequestForm(
-          "user@example.com", "Event reason", "Event place", LocalDate.now(),
-          LocalDate.now().plusDays(7)
+  @ParameterizedTest(name = "{index} => userEmail={0}, reason={1}, place={2}")
+  @CsvSource(
+    {
+        // Non-failing examples
+        "'valid.email@example.com', 'Valid Reason', 'Valid Place'",
+        // Valid example
+        "'a@b.com', 'Valid Reason', 'Valid Place'", // Minimal valid input
+        "'fifty.chars.email.fifty.chars.email.fift@chars.com', 'Valid Reason',"
+              + " 'Valid Place'", // 50 chars email
+        "'a@b.com', 'ValidReasonSixtyCharsxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+              + "xxxxx', 'Valid Place'", // 60 chars reason
+        "'a@b.com', 'Valid Reason', 'ValidPlaceFiftyCharsxxxxxxxxxxxxxxxxxxxx"
+              + "xxxxxxxxxx'" // 50 chars place
+    }
+  )
+  @DisplayName("Test cases where validation should not fail")
+  void testNonFailingValidationExamples(
+        final String userEmail, final String reason, final String place
+  ) {
+    final var form = new CreatePaymentSheetRequest(
+          userEmail, reason, place, LocalDate.now(), LocalDate.now().plusDays(1)
     );
 
-    assertEquals(
-          paymentSheetRequestForm1.hashCode(),
-          paymentSheetRequestForm2.hashCode(), "los hashCodes son iguales"
+    final Set<ConstraintViolation<CreatePaymentSheetRequest>> violations =
+          validator.validate(form);
+
+    assertTrue(
+          violations.isEmpty(), "Expected validation to pass, but it failed."
+    );
+    assertDoesNotThrow(
+          () -> new CreatePaymentSheetRequest(
+                userEmail, reason, place, LocalDate.now(),
+                LocalDate.now().plusDays(1)
+          ), "Expected valid input to not throw any exception."
     );
   }
-
 }

@@ -103,7 +103,8 @@ class PersistentCompanyEntityTest {
 
     assertNotEquals(
           company1.hashCode(), company2.hashCode(),
-          "Verificar que los hash codes de company1 y company2 son diferentes después de modificar company2"
+          "Verificar que los hash codes de company1 y company2 son diferentes"
+                + " después de modificar company2"
     );
     PersistentCompanyEntity nullCompany = null;
     assertNotEquals(company1, nullCompany, "Verificar no es equals con null");

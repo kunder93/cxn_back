@@ -26,57 +26,61 @@ package es.org.cxn.backapp.service;
 
 import java.util.Date;
 import java.util.function.Function;
+
 import org.springframework.security.core.userdetails.UserDetails;
+
 import io.jsonwebtoken.Claims;
 
 /**
- * Service for jwt token.
+ * Service interface for JWT token operations.
+ * Provides methods for extracting information from tokens, generating tokens,
+ * and validating tokens.
  *
- * @author Santiago Paz.
+ * @author Santiago Paz
  */
 public interface JwtUtils {
 
   /**
-   * Extract userName from jwt token.
+   * Extracts the username from the JWT token.
    *
-   * @param token the jwt token.
-   * @return extracted userName.
+   * @param token the JWT token.
+   * @return the extracted username.
    */
   String extractUsername(String token);
 
   /**
-   * Returns date when jwt token expires.
+   * Extracts the expiration date from the JWT token.
    *
-   * @param token the jwt token.
-   * @return the Date when jwt token expires.
+   * @param token the JWT token.
+   * @return the expiration date of the JWT token.
    */
   Date extractExpiration(String token);
 
   /**
-   * Returns claims that pass funcion from jwt token.
+   * Extracts a specific claim from the JWT token based on the provided
+   * function.
    *
-   * @param <T>            claims type.
-   * @param token          the jwt token.
-   * @param claimsResolver function to extract claims.
-   * @return the claims extracted.
+   * @param <T>            the type of the claim to be extracted.
+   * @param token          the JWT token.
+   * @param claimsResolver function to extract the desired claim.
+   * @return the extracted claim.
    */
   <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
 
   /**
-   * Generate jwt token from user data.
+   * Generates a JWT token based on user details.
    *
-   * @param userDetails the user data.
-   * @return jwt token.
+   * @param userDetails the user details used to generate the token.
+   * @return the generated JWT token.
    */
   String generateToken(MyPrincipalUser userDetails);
 
   /**
-   * Validate a jwt token through user data.
+   * Validates the JWT token by comparing it with the user details.
    *
-   * @param token       the jwt token.
-   * @param userDetails the user data.
-   * @return true if validated false if not.
+   * @param token       the JWT token.
+   * @param userDetails the user details to validate against.
+   * @return true if the token is valid, false otherwise.
    */
   Boolean validateToken(String token, UserDetails userDetails);
-
 }

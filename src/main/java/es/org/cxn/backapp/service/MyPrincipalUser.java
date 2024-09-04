@@ -7,6 +7,7 @@ import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -71,12 +72,12 @@ public final class MyPrincipalUser implements UserDetails {
   /**
    * User role Names.
    */
-  private Set<UserRoleName> rolesNames;
+  private final Set<UserRoleName> rolesNames;
 
   /**
    * Indicador de estado de activacion/desactivacion de la cuenta.
    */
-  private boolean accountEnabled;
+  private final boolean accountEnabled;
 
   /**
    * Constructor with provided UserEntity.
@@ -93,7 +94,7 @@ public final class MyPrincipalUser implements UserDetails {
     birthDate = userEntity.getBirthDate();
     gender = userEntity.getGender();
     accountEnabled = userEntity.isEnabled();
-    rolesNames = new HashSet<>();
+    rolesNames = EnumSet.noneOf(UserRoleName.class);
     userEntity.getRoles().forEach(
           (PersistentRoleEntity role) -> rolesNames.add(role.getName())
     );
@@ -180,7 +181,7 @@ public final class MyPrincipalUser implements UserDetails {
    * @return the user roles hashSet.
    */
   public Set<UserRoleName> getRoles() {
-    return new HashSet<>(rolesNames);
+    return EnumSet.copyOf(rolesNames);
   }
 
   @Override

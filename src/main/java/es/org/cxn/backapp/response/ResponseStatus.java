@@ -53,7 +53,7 @@ public enum ResponseStatus {
    * @return the value.
    */
   @JsonValue
-  public final String getValue() {
+  public String getValue() {
     return toString().toLowerCase();
   }
 

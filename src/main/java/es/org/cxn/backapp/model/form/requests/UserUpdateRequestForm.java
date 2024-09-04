@@ -5,62 +5,52 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the request form used by controller for update user data.
+ * Represents the request form used by the controller to update user data.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This is a Data Transfer Object (DTO) meant to facilitate communication
+ * between the view layer and the controller. It includes Java validation
+ * annotations to ensure that the controller receives all required data and
+ * that the data adheres to the expected constraints.
+ * </p>
  *
- * @author Santiago Paz Perez.
+ * <p>
+ * This DTO is immutable and contains the following fields:
+ * </p>
+ *
+ * <ul>
+ *   <li>{@code name}: The user's name. Must not be empty.</li>
+ *   <li>{@code firstSurname}: The user's first surname. Must not be
+ *   empty.</li>
+ *   <li>{@code secondSurname}: The user's second surname. Must not be
+ *   empty.</li>
+ *   <li>{@code birthDate}: The user's birth date. Must be a past date and not
+ *   null.</li>
+ *   <li>{@code gender}: The user's gender. Must not be empty.</li>
+ * </ul>
+ *
+ * @param name         The name of the user. This field must not be empty.
+ * @param firstSurname The first surname of the user. This field must not be
+ * empty.
+ * @param secondSurname The second surname of the user. This field must not be
+ * empty.
+ * @param birthDate    The birth date of the user. This field must be a past
+ * date and not null.
+ * @param gender       The gender of the user. This field must not be empty.
+ *
+ * @author Santiago Paz Perez
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class UserUpdateRequestForm implements Serializable {
+public record UserUpdateRequestForm(
+      @NotEmpty(message = "Name must not be empty")
+      String name, @NotEmpty(message = "First surname must not be empty")
+      String firstSurname,
+      @NotEmpty(message = "Second surname must not be empty")
+      String secondSurname, @NotNull(message = "Birth date must not be null")
+      @Past(message = "Birth date must be a past date")
+      LocalDate birthDate, @NotEmpty(message = "Gender must not be empty")
+      String gender
+) {
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 5587292614430493384L;
-
-  /**
-   * User name field.
-   */
-  @NotEmpty
-  private String name;
-
-  /**
-   * User first surname field.
-   */
-  @NotEmpty
-  private String firstSurname;
-
-  /**
-   * User second surname field.
-   */
-  @NotEmpty
-  private String secondSurname;
-
-  /**
-   * User birth date field.
-   */
-  @NotNull
-  @Past
-  private LocalDate birthDate;
-
-  /**
-   * User gender field.
-   */
-  @NotEmpty
-  private String gender;
 }

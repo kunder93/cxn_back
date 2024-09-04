@@ -25,7 +25,8 @@ class PersistentAuthorEntityTest {
     author.setLastName("Doe");
     author.setNationality("American");
 
-    // Verificar que los valores se establecieron correctamente utilizando los métodos getter
+    // Verificar que los valores se establecieron correctamente utilizando
+    // los métodos getter
     assertEquals(1L, author.getId(), "getter");
     assertEquals("John", author.getFirstName(), "getter");
     assertEquals("Doe", author.getLastName(), "getter");
@@ -67,7 +68,8 @@ class PersistentAuthorEntityTest {
 
     assertNotEquals(
           author1.hashCode(), author2.hashCode(),
-          "hash codes de author1 y author2 son diferentes después de modificar author2"
+          "hash codes de author1 y author2 son diferentes después de "
+                + "modificar author2"
     );
 
     PersistentAuthorEntity authorNull = null;

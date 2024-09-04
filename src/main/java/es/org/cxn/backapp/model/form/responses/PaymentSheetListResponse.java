@@ -3,50 +3,43 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import lombok.Data;
-
 /**
- * Represents the form used by controller as response for requesting all payment
- * sheets.
+ * Represents the response DTO used by the controller for requesting all
+ * payment sheets.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This record serves as a Data Transfer Object (DTO) to facilitate
+ * communication between the view and the controller.
+ * It contains an immutable list of payment sheet responses.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param paymentSheetsList An immutable list of {@link PaymentSheetResponse}
+ * representing all stored payment sheets.
+ *
+ * @author Santiago Paz
  */
-@Data
-public final class PaymentSheetListResponse implements Serializable {
+public record PaymentSheetListResponse(
+      List<PaymentSheetResponse> paymentSheetsList
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -2152905244656672886L;
-
-  /**
-   * List with all stored payment sheets.
-   */
-  private List<PaymentSheetResponse> paymentSheetsList;
-
-  /**
-   * Constructor with provided parameters values.
+   * Creates a {@link PaymentSheetListResponse} from a list of
+   * {@link PersistentPaymentSheetEntity}.
+   * <p>
+   * This static factory method converts a list of persistent payment sheet
+   * entities into a {@link PaymentSheetListResponse}.
+   * </p>
    *
-   * @param value The payment sheets list.
+   * @param entities The list of {@link PersistentPaymentSheetEntity} to
+   * be converted.
+   * @return A new instance of {@link PaymentSheetListResponse}.
    */
-  public PaymentSheetListResponse(
-        final List<PersistentPaymentSheetEntity> value
-  ) {
-    super();
-    paymentSheetsList = new ArrayList<>();
-    value.forEach(
-          (PersistentPaymentSheetEntity entity) -> this.paymentSheetsList
-                .add(new PaymentSheetResponse(entity))
-    );
+  public static PaymentSheetListResponse
+        fromEntities(final Collection<PersistentPaymentSheetEntity> entities) {
+    final var responses =
+          entities.stream().map(PaymentSheetResponse::fromEntity).toList();
+    return new PaymentSheetListResponse(responses);
   }
 }

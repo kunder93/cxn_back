@@ -37,8 +37,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import java.time.LocalDate;
@@ -140,7 +138,6 @@ public class PersistentUserEntity implements UserEntity {
    * <p>
    * This is to have additional data apart from the id, to be used on the tests.
    */
-  @Temporal(TemporalType.DATE)
   @Column(name = "birth_date", nullable = false, unique = false)
   @NonNull
   private LocalDate birthDate;
@@ -238,17 +235,19 @@ public class PersistentUserEntity implements UserEntity {
    */
   @Override
   public boolean equals(final Object obj) {
+    final boolean isEqual;
+
     if (this == obj) {
-      return true;
+      isEqual = true;
+    } else if (obj == null || this.getClass() != obj.getClass()) {
+      isEqual = false;
+    } else {
+      final var other = (PersistentUserEntity) obj;
+      isEqual = Objects.equals(dni, other.dni)
+            && Objects.equals(email, other.email);
     }
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    var other = (PersistentUserEntity) obj;
-    return Objects.equals(dni, other.dni) && Objects.equals(email, other.email);
+
+    return isEqual;
   }
 
   /**

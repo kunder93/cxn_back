@@ -3,80 +3,51 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.InvoiceEntity;
 
-import java.io.Serializable;
+import java.math.BigInteger;
 import java.time.LocalDate;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as response for requesting one
+ * Represents the response DTO used by the controller for requesting one
  * invoice.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This record serves as a Data Transfer Object (DTO) to facilitate
+ * communication between the view and the controller when requesting invoice
+ * details. It includes relevant invoice information such as number, series,
+ * dates, and tax information.
+ * </p>
  *
- * @author Santiago Paz.
+ * @param number              The invoice number.
+ * @param series              The invoice series.
+ * @param advancePaymentDate  The invoice advance payment date.
+ * @param expeditionDate      The invoice expedition date.
+ * @param taxExempt           The invoice tax exempt value.
+ * @param sellerNif           The invoice seller NIF.
+ * @param buyerNif            The invoice buyer NIF.
+ *
+ * @author Santiago Paz
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public final class InvoiceResponse implements Serializable {
+public record InvoiceResponse(
+      BigInteger number, String series, LocalDate advancePaymentDate,
+      LocalDate expeditionDate, Boolean taxExempt, String sellerNif,
+      String buyerNif
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3133089826012147705L;
-
-  /**
-   * The invoice number.
-   */
-  private int number;
-  /**
-   * The invoice series.
-   */
-  private String series;
-  /**
-   * The invoice payment date.
-   */
-  private LocalDate advancePaymentDate;
-
-  /**
-   * The invoice expedition date.
-   */
-  private LocalDate expeditionDate;
-  /**
-   * The invoice tax exempt value.
-   */
-  private Boolean taxExempt;
-
-  /**
-   * The invoice seller nif.
-   */
-  private String sellerNif;
-
-  /**
-   * The invoice buyer nif.
-   */
-  private String buyerNif;
-
-  /**
-   * Constructor with invoice entity.
+   * Creates an {@link InvoiceResponse} from an {@link InvoiceEntity}.
+   * <p>
+   * This static factory method initializes a new {@code InvoiceResponse}
+   * using the data from the provided {@code InvoiceEntity}.
+   * </p>
    *
-   * @param entity The invoice entity.
+   * @param entity The {@code InvoiceEntity} containing the data.
+   * @return A new {@code InvoiceResponse} with values derived from the entity.
    */
-  public InvoiceResponse(final InvoiceEntity entity) {
-    super();
-    this.number = entity.getNumber();
-    this.series = entity.getSeries();
-    this.advancePaymentDate = entity.getAdvancePaymentDate();
-    this.expeditionDate = entity.getExpeditionDate();
-    this.taxExempt = entity.getTaxExempt();
-    this.sellerNif = entity.getSeller().getNif();
-    this.buyerNif = entity.getBuyer().getNif();
+  public static InvoiceResponse fromEntity(final InvoiceEntity entity) {
+    return new InvoiceResponse(
+          BigInteger.valueOf(entity.getNumber()), entity.getSeries(),
+          entity.getAdvancePaymentDate(), entity.getExpeditionDate(),
+          entity.getTaxExempt(), entity.getSeller().getNif(),
+          entity.getBuyer().getNif()
+    );
   }
 }

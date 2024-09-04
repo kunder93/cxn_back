@@ -70,7 +70,7 @@ public final class DefaultAddressService implements AddressService {
   @Override
   public PersistentCountryEntity getCountry(final Integer countryNumericCode)
         throws AddressServiceException {
-    var countryOptional = countryRepository.findById(countryNumericCode);
+    final var countryOptional = countryRepository.findById(countryNumericCode);
     if (countryOptional.isPresent()) {
       return countryOptional.get();
     } else {

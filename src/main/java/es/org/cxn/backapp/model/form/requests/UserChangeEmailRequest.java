@@ -4,47 +4,24 @@ package es.org.cxn.backapp.model.form.requests;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
-import java.io.Serializable;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as request to change user email.
+ * Represents the form used by the controller to request a change of user email.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This is a DTO (Data Transfer Object), meant to facilitate communication
+ * between the view and the controller. The record is immutable and provides
+ * built-in implementations for methods such as {@code equals()},
+ * {@code hashCode()}, and {@code toString()}.
  * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * Includes Java validation annotations to ensure that the email addresses
+ * provided are not blank and are valid email addresses.
+ *
+ * @param email    The user's current email address.
+ * @param newEmail The user's new email address.
  *
  * @author Santiago Paz.
  */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public final class UserChangeEmailRequest implements Serializable {
-
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -3156145688215915714L;
-
-  /**
-   * The user current email.
-   */
-  @NotBlank
-  @Email
-  private String email;
-
-  /**
-   * The user new email.
-   */
-  @NotBlank
-  @Email
-  private String newEmail;
+public record UserChangeEmailRequest(@NotBlank @Email
+String email, @NotBlank @Email
+String newEmail) {
 
 }

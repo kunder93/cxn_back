@@ -1,0 +1,32 @@
+<ruleset name="cnx back-app ruleset"
+  xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
+  <description>cnx backapp ruleset config for java.</description>
+  <!-- Include the default PMD rules for Java -->
+  <rule ref="category/java/bestpractices.xml" />
+  <rule ref="category/java/codestyle.xml">
+    <exclude name="UseExplicitTypes" />
+  </rule>
+  <rule ref="category/java/design.xml">
+    <exclude name="LoosePackageCoupling" />
+  </rule>
+  <rule ref="category/java/documentation.xml" />
+  <rule ref="category/java/errorprone.xml" />
+  <rule ref="category/java/multithreading.xml" />
+  <rule ref="category/java/performance.xml" />
+  <rule ref="category/java/security.xml" />
+  <!-- Customize LongVariable rule -->
+  <rule ref="category/java/codestyle.xml/LongVariable">
+    <properties>
+      <property name="minimum" value="35" />
+    </properties>
+  </rule>
+  <!-- Customize CommentSize rule -->
+  <rule ref="category/java/documentation.xml/CommentSize">
+    <properties>
+      <property name="maxLines" value="40" />
+      <property name="maxLineLength" value="80" />
+    </properties>
+  </rule>
+</ruleset>

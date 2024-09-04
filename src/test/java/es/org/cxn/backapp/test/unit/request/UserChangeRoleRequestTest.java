@@ -2,73 +2,97 @@
 package es.org.cxn.backapp.test.unit.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 
-import java.util.Arrays;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+
 import java.util.List;
+import java.util.Set;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-class UserChangeRoleRequestTest {
-  @Test
-  void testGettersAndSetters() {
-    // Crear una instancia de UserChangeRoleRequestForm
-    var request = new UserChangeRoleRequestForm();
+/**
+ * Unit test for {@link UserChangeRoleRequest}.
+ * <p>
+ * This test class verifies the validation of the
+ * {@link UserChangeRoleRequest} record using parameterized tests with
+ * various valid and invalid values for email and userRoles.
+ * </p>
+ */
+public class UserChangeRoleRequestTest {
 
-    // Establecer valores usando setters
-    request.setEmail("user@example.com");
-    List<UserRoleName> userRoles =
-          Arrays.asList(UserRoleName.ROLE_SECRETARIO, UserRoleName.ROLE_SOCIO);
-    request.setUserRoles(userRoles);
+  /**
+   * The validator.
+   */
+  private static Validator validator;
 
-    assertEquals(
-          "user@example.com", request.getEmail(), "valores usando getters"
-    );
-    assertEquals(userRoles, request.getUserRoles(), "valores usando getters");
+  /**
+   * Sets up the validator factory and initializes the {@link Validator}
+   * instance to be used for validating {@link UserChangeRoleRequest} objects
+   *  in the tests.
+   * <p>
+   * This method is annotated with {@link BeforeAll}, which means it will be
+   * executed once before any of the test methods in this class are run.
+   * It initializes the {@code validator} field using the default validator
+   * factory provided by Jakarta Bean Validation (formerly known as JSR 380).
+   * </p>
+   * <p>
+   * The validator is used to ensure that the objects being tested adhere to the
+   * validation constraints defined in the {@link UserChangeRoleRequest} class.
+   * </p>
+   */
+  @BeforeAll
+  public static void setup() {
+    var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
   }
 
-  @Test
-  void testEquals() {
-    // Crear dos instancias de UserChangeRoleRequestForm con los mismos valores
-    List<UserRoleName> userRoles =
-          Arrays.asList(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_PRESIDENTE);
-    var request1 = new UserChangeRoleRequestForm("user@example.com", userRoles);
-    var request2 = new UserChangeRoleRequestForm("user@example.com", userRoles);
+  /**
+   * Tests the validation of {@link UserChangeRoleRequest} with various
+   * email addresses and userRoles lists.
+   *
+   * @param email The email address to be tested.
+   * @param userRoles The user roles to be tested, provided as a comma-separated
+   * list of roles.
+   * @param expectedViolations The expected number of validation violations.
+   */
+  @ParameterizedTest(name = "email={0}, userRoles={1}, expectedViolations={2}")
+  @CsvSource(
+    {
+        // Valid case
+        "'valid.email@example.com', 'ROLE_ADMIN,ROLE_SOCIO', 0",
+
+        // Invalid cases
+        "'invalid-email', 'ROLE_ADMIN,ROLE_SOCIO', 1", // Invalid email format
+        "'valid.email@example.com','' , 1", // Empty userRoles list
+        "'valid.email@example.com','' , 1", // Empty userRoles list
+        " , 'ROLE_ADMIN,ROLE_SOCIO', 1" // Empty email
+    }
+  )
+  void testUserChangeRoleRequestFormValidation(
+        final String email, final String userRoles, final int expectedViolations
+  ) {
+    // Convert comma-separated userRoles to List<UserRoleName>
+    var rolesList =
+          userRoles.isEmpty() || userRoles.trim().isEmpty() ? List.of()
+                : List.of(userRoles.split(",")).stream()
+                      .map(UserRoleName::valueOf).toList();
+
+    var request =
+          new UserChangeRoleRequest(email, (List<UserRoleName>) rolesList);
+
+    Set<ConstraintViolation<UserChangeRoleRequest>> violations =
+          validator.validate(request);
 
     assertEquals(
-          request1, request2, "las instancias son iguales usando equals"
-    );
-  }
-
-  @Test
-  void testNotEquals() {
-    // Crear dos instancias de UserChangeRoleRequestForm con diferentes valores
-    List<UserRoleName> userRoles1 =
-          Arrays.asList(UserRoleName.ROLE_TESORERO, UserRoleName.ROLE_SOCIO);
-    List<UserRoleName> userRoles2 = Arrays.asList(UserRoleName.ROLE_SOCIO);
-    var request1 =
-          new UserChangeRoleRequestForm("user1@example.com", userRoles1);
-    var request2 =
-          new UserChangeRoleRequestForm("user2@example.com", userRoles2);
-
-    assertNotEquals(
-          request1, request2, "las instancias no son iguales usando equals"
-    );
-  }
-
-  @Test
-  void testHashCode() {
-    // Crear dos instancias de UserChangeRoleRequestForm con los mismos valores
-    List<UserRoleName> userRoles =
-          Arrays.asList(UserRoleName.ROLE_SOCIO, UserRoleName.ROLE_PRESIDENTE);
-    var request1 = new UserChangeRoleRequestForm("user@example.com", userRoles);
-    var request2 = new UserChangeRoleRequestForm("user@example.com", userRoles);
-
-    assertEquals(
-          request1.hashCode(), request2.hashCode(), "los hashCodes son iguales"
+          expectedViolations, violations.size(),
+          "The number of violations should match the expected number."
     );
   }
 }

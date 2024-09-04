@@ -3,50 +3,46 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import lombok.Data;
-
 /**
- * Represents the form used by controller as response for requesting all
- * invoices.
+ * Represents the form used by the controller as a response for requesting all
+ * regular transports.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
- * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * This is a DTO meant to facilitate communication between the view and the
+ * controller by providing an immutable representation of a list of regular
+ * transports.
+ * </p>
+ *
+ * @param regularTransportList A list of {@link RegularTransportResponse}
+ * objects representing the regular transports.
  *
  * @author Santiago Paz.
  */
-@Data
-public final class RegularTransportListResponse implements Serializable {
+public record RegularTransportListResponse(
+      List<RegularTransportResponse> regularTransportList
+) {
 
   /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -6122005225553512886L;
-
-  /**
-   * List with all individual invoices responses.
-   */
-  private List<RegularTransportResponse> regularTransportList =
-        new ArrayList<>();
-
-  /**
-   * Response constructor with parameters provided.
+   * Creates a {@link RegularTransportListResponse} from a collection of
+   * {@link PersistentRegularTransportEntity}.
+   * <p>
+   * This static factory method initializes a new
+   * {@code RegularTransportListResponse} using the data from the provided
+   * collection of entities.
+   * </p>
    *
-   * @param value the invoices entity list.
+   * @param entities A collection of {@code PersistentRegularTransportEntity}
+   * objects.
+   * @return A new {@code RegularTransportListResponse} containing the list of
+   * regular transport responses.
    */
-  public RegularTransportListResponse(
-        final List<PersistentRegularTransportEntity> value
+  public static RegularTransportListResponse fromEntities(
+        final Collection<PersistentRegularTransportEntity> entities
   ) {
-    super();
-    value.forEach(
-          (PersistentRegularTransportEntity e) -> this.regularTransportList
-                .add(new RegularTransportResponse(e))
-    );
+    final var responses =
+          entities.stream().map(RegularTransportResponse::fromEntity).toList();
+    return new RegularTransportListResponse(responses);
   }
 }

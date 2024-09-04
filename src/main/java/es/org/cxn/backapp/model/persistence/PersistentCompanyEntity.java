@@ -106,7 +106,7 @@ public class PersistentCompanyEntity implements CompanyEntity {
    */
   @Override
   public List<Integer> getInvoicesAsBuyer() {
-    var lista = new ArrayList<Integer>();
+    final var lista = new ArrayList<Integer>();
     invoicesAsBuyer.forEach(
           (PersistentInvoiceEntity invoice) -> lista.add(invoice.getId())
     );
@@ -153,7 +153,7 @@ public class PersistentCompanyEntity implements CompanyEntity {
    */
   @Override
   public List<Integer> getInvoicesAsSeller() {
-    var lista = new ArrayList<Integer>();
+    final var lista = new ArrayList<Integer>();
     invoicesAsSeller.forEach(
           (PersistentInvoiceEntity invoice) -> lista.add(invoice.getId())
     );

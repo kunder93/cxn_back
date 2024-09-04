@@ -23,7 +23,8 @@ class PersistentCountrySubdivisionEntityTest {
     assertEquals(
           "Example Kind Subdivision",
           countrySubdivision.getKindSubdivisionName(),
-          "Verificar que los valores se establecieron correctamente utilizando los métodos getter"
+          "Verificar que los valores se establecieron correctamente "
+                + "utilizando los métodos getter"
     );
     assertEquals("Example Name", countrySubdivision.getName(), "getter");
     assertEquals("ABC", countrySubdivision.getCode(), "getter");
@@ -31,7 +32,8 @@ class PersistentCountrySubdivisionEntityTest {
 
   @Test
   void testEqualsAndHashCode() {
-    // Crear dos instancias de PersistentCountrySubdivisionEntity con los mismos atributos
+    // Crear dos instancias de PersistentCountrySubdivisionEntity con
+    // los mismos atributos
     var countrySubdivision1 = new PersistentCountrySubdivisionEntity();
     countrySubdivision1.setKindSubdivisionName("Example Kind Subdivision");
     countrySubdivision1.setName("Example Name");
@@ -49,16 +51,19 @@ class PersistentCountrySubdivisionEntityTest {
 
     assertEquals(
           countrySubdivision1, countrySubdivision2,
-          "Verificar que countrySubdivision1 y countrySubdivision2 son iguales según equals()"
+          "Verificar que countrySubdivision1 y countrySubdivision2 son "
+                + "iguales según equals()"
     );
     assertEquals(
           countrySubdivision2, countrySubdivision1,
-          "Verificar que countrySubdivision1 y countrySubdivision2 son iguales según equals()"
+          "Verificar que countrySubdivision1 y countrySubdivision2 son "
+                + "iguales según equals()"
     );
 
     assertEquals(
           countrySubdivision1.hashCode(), countrySubdivision2.hashCode(),
-          "Verificar que los hash codes de countrySubdivision1 y countrySubdivision2 son iguales"
+          "Verificar que los hash codes de countrySubdivision1 y "
+                + "countrySubdivision2 son iguales"
     );
 
     // Modificar un atributo en countrySubdivision2
@@ -66,16 +71,20 @@ class PersistentCountrySubdivisionEntityTest {
 
     assertNotEquals(
           countrySubdivision1, countrySubdivision2,
-          "Verificar que countrySubdivision1 y countrySubdivision2 ya no son iguales"
+          "Verificar que countrySubdivision1 y countrySubdivision2 "
+                + "ya no son iguales"
     );
     assertNotEquals(
           countrySubdivision2, countrySubdivision1,
-          "Verificar que countrySubdivision1 y countrySubdivision2 ya no son iguales"
+          "Verificar que countrySubdivision1 y countrySubdivision2 "
+                + "ya no son iguales"
     );
 
     assertNotEquals(
           countrySubdivision1.hashCode(), countrySubdivision2.hashCode(),
-          "Verificar que los hash codes de countrySubdivision1 y countrySubdivision2 son diferentes después de modificar countrySubdivision2"
+          "Verificar que los hash codes de countrySubdivision1 y "
+                + "countrySubdivision2 son diferentes después de modificar "
+                + "countrySubdivision2"
     );
     PersistentCountrySubdivisionEntity nullCountrySubdivision = null;
     assertNotEquals(

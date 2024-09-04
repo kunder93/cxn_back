@@ -11,201 +11,132 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
- * Represents the form used by controller as input for the creating users. This
+ * Represents the form used by the controller as input for creating users. This
  * contains user data and user address.
  * <p>
- * This is a DTO, meant to allow communication between the view and the
- * controller.
+ * This is a DTO (Data Transfer Object), meant to facilitate communication
+ * between the view and the controller. The record is immutable and provides
+ * built-in implementations for methods such as {@code equals()},
+ * {@code hashCode()}, and {@code toString()}.
  * <p>
- * Includes Java validation annotations, for applying binding validation. This
- * way the controller will make sure it receives all the required data.
+ * Includes Java validation annotations to ensure that all required fields are
+ * provided and valid.
+ *
+ * @param dni                 User DNI, must be 8 digits followed by a letter.
+ * @param name                User name, must not be blank and within the max
+ * length.
+ * @param firstSurname        User first surname, must not be blank and within
+ * the max length.
+ * @param secondSurname       User second surname, must not be blank and within
+ * the max length.
+ * @param birthDate           User birth date, must be in the past.
+ * @param gender              User gender, must not be blank and within the max
+ * length.
+ * @param password            User password, must not be blank and within the
+ * min and max length.
+ * @param email               User email, must not be blank, well formatted,
+ * and within the max length.
+ * @param postalCode          User postal code, must not be blank and within
+ * the max length.
+ * @param apartmentNumber     User apartment number, must not be blank and
+ * within the max length.
+ * @param building            User building, must not be blank and within the
+ * max length.
+ * @param street              User street, must not be blank and within the
+ * max length.
+ * @param city                User city, must not be blank and within the max
+ * length.
+ * @param kindMember          User type, can be null.
+ * @param countryNumericCode  Country numeric code, can be null.
+ * @param countrySubdivisionName Country subdivision name, can be null.
  *
  * @author Santiago Paz
  */
-@NoArgsConstructor
-@Builder
-@AllArgsConstructor
-@Data
-public final class SignUpRequestForm implements Serializable {
+public record SignUpRequestForm(
+      @Pattern(
+            regexp = "^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$",
+            message = Constants.DNI_BAD_FORMAT
+      ) @NotNull(message = Constants.DNI_BAD_FORMAT)
+      String dni,
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 9133529311075698110L;
+      @NotBlank(message = Constants.NAME_NOT_BLANK) @Size(
+            max = Constants.NAME_MAX_LENGTH,
+            message = Constants.NAME_MAX_LENGTH_MESSAGE
+      )
+      String name,
 
-  /**
-   * User DNI field.
-   * <p>
-   * DNI must not be null and must contain 8 numeric and 1 letter. Length is 9.
-   */
-  @Pattern(
-        regexp = "^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]$",
-        message = Constants.DNI_BAD_FORMAT_MESSAGE
-  )
-  @NotNull(message = Constants.DNI_BAD_FORMAT_MESSAGE)
-  private String dni;
+      @NotBlank(message = Constants.FIRST_SURNAME_NOT_BLANK) @Size(
+            max = Constants.FIRST_SURNAME_MAX_LENGTH,
+            message = Constants.FIRST_SURNAME_MAX_LENGTH_MESSAGE
+      )
+      String firstSurname,
 
-  /**
-   * User name field.
-   * <p>
-   * Name must not be null and must contain at least one non-whitespace
-   * character. Max name length is NAME_MAX_LENGHT.
-   */
-  @NotBlank(message = Constants.NAME_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.NAME_MAX_LENGTH,
-        message = Constants.NAME_MAX_LENGTH_MESSAGE
-  )
-  private String name;
+      @NotBlank(message = Constants.SECOND_SURNAME_NOT_BLANK) @Size(
+            max = Constants.SECOND_SURNAME_MAX_LENGTH,
+            message = Constants.SECOND_SURNAME_MAX_LENGTH_MESSAGE
+      )
+      String secondSurname,
 
-  /**
-   * User first surname field.
-   * <p>
-   * First surname must not be null and must contain at least one non-whitespace
-   * character. Max first surname length is FIRST_SURNAME_MAX_LENGHT.
-   */
-  @NotBlank(message = Constants.FIRST_SURNAME_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.FIRST_SURNAME_MAX_LENGTH,
-        message = Constants.FIRST_SURNAME_MAX_LENGTH_MESSAGE
-  )
-  private String firstSurname;
+      @Past(message = Constants.BIRTH_DATE_PAST)
+      LocalDate birthDate,
 
-  /**
-   * User second surname field.
-   * <p>
-   * Second surname must not be null and must contain at least one
-   * non-whitespace character. Max second surname length is
-   * SECOND_SURNAME_MAX_LENGHT.
-   */
-  @NotBlank(message = Constants.SECOND_SURNAME_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.SECOND_SURNAME_MAX_LENGTH,
-        message = Constants.SECOND_SURNAME_MAX_LENGTH_MESSAGE
-  )
-  private String secondSurname;
+      @NotBlank(message = Constants.GENDER_NOT_BLANK) @Size(
+            max = Constants.GENDER_MAX_LENGTH,
+            message = Constants.GENDER_MAX_LENGTH_MESSAGE
+      )
+      String gender,
 
-  /**
-   * User birth date field.
-   * <p>
-   * Birth date must be an instant, date or time in the past.
-   */
-  @Past(message = Constants.BIRTH_DATE_PAST_MESSAGE)
-  private LocalDate birthDate;
+      @NotBlank(message = Constants.PASSWORD_NOT_BLANK_MESSAGE) @Size(
+            min = Constants.MIN_PASSWORD_LENGTH,
+            max = Constants.MAX_PASSWORD_LENGTH,
+            message = Constants.PASSWORD_SIZE_MESSAGE
+      )
+      String password,
 
-  /**
-   * User gender field.
-   * <p>
-   * Gender must not be null and must contain at least one non-whitespace
-   * character. Max gender length is SECOND_SURNAME_MAX_LENGHT.
-   */
-  @NotBlank(message = Constants.GENDER_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.GENDER_MAX_LENGTH,
-        message = Constants.GENDER_MAX_LENGTH_MESSAGE
-  )
-  private String gender;
+      @NotBlank(message = Constants.EMAIL_NOT_VALID) @Size(
+            max = Constants.EMAIL_MAX_SIZE,
+            message = Constants.MAX_SIZE_EMAIL_MESSAGE
+      ) @Email(message = Constants.EMAIL_NOT_VALID)
+      String email,
 
-  /**
-   * User password field.
-   * <p>
-   * Password must not be null and must contain at least PASSWORD_MIN_LENGTH
-   * non-whitespace character. Max password length is PASSWORD_MAX_LENGTH.
-   */
-  @NotBlank(message = Constants.PASSWORD_NOT_BLANK_MESSAGE)
-  @Size(
-        min = Constants.PASSWORD_MIN_LENGTH,
-        max = Constants.PASSWORD_MAX_LENGTH,
-        message = Constants.PASSWORD_SIZE_MESSAGE
-  )
-  private String password;
+      @NotBlank(message = Constants.POSTAL_CODE_NOT_BLANK_MESSAGE) @Size(
+            max = Constants.POSTAL_CODE_MAX_LENGHT,
+            message = Constants.POSTAL_CODE_MAX_LENGHT_MESSAGE
+      )
+      String postalCode,
 
-  /**
-   * User email field.
-   * <p>
-   * Email must not be null and must contain at least PASSWORD_MIN_LENGTH
-   * non-whitespace character. String well formated email.
-   */
-  @NotBlank(message = Constants.EMAIL_NOT_VALID_MESSAGE)
-  @Size(
-        max = Constants.EMAIL_MAX_SIZE,
-        message = Constants.MAX_SIZE_EMAIL_MESSAGE
-  )
-  @Email(message = Constants.EMAIL_NOT_VALID_MESSAGE)
-  private String email;
+      @NotBlank(message = Constants.APARTMENT_NUMBER_NOT_BLANK_MESSAGE) @Size(
+            max = Constants.APARTMENT_NUMBER_MAX_LENGHT,
+            message = Constants.APARTMENT_NUMBER_MAX_LENGHT_MESSAGE
+      )
+      String apartmentNumber,
 
-  /**
-   * User postal code address.
-   */
-  @NotBlank(message = Constants.POSTAL_CODE_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.POSTAL_CODE_MAX_LENGHT,
-        message = Constants.POSTAL_CODE_MAX_LENGHT_MESSAGE
-  )
-  private String postalCode;
+      @NotBlank(message = Constants.BUILDING_NOT_BLANK) @Size(
+            max = Constants.BUILDING_MAX_LENGHT,
+            message = Constants.BUILDING_MAX_LENGHT_MESSAGE
+      )
+      String building,
 
-  /**
-   * User apartment number address.
-   */
-  @NotBlank(message = Constants.APARTMENT_NUMBER_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.APARTMENT_NUMBER_MAX_LENGHT,
-        message = Constants.APARTMENT_NUMBER_MAX_LENGHT_MESSAGE
-  )
-  private String apartmentNumber;
+      @NotBlank(message = Constants.STREET_NOT_BLANK) @Size(
+            max = Constants.STREET_MAX_LENGHT,
+            message = Constants.STREET_MAX_LENGHT_MESSAGE
+      )
+      String street,
 
-  /**
-   * User building address.
-   */
-  @NotBlank(message = Constants.BUILDING_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.BUILDING_MAX_LENGHT,
-        message = Constants.BUILDING_MAX_LENGHT_MESSAGE
-  )
-  private String building;
+      @NotBlank(message = Constants.CITY_NOT_BLANK) @Size(
+            max = Constants.CITY_MAX_LENGHT,
+            message = Constants.CITY_MAX_LENGHT_MESSAGE
+      )
+      String city,
 
-  /**
-   * User street address.
-   */
-  @NotBlank(message = Constants.STREET_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.STREET_MAX_LENGHT,
-        message = Constants.STREET_MAX_LENGHT_MESSAGE
-  )
-  private String street;
+      UserType kindMember,
 
-  /**
-   * User city address.
-   */
-  @NotBlank(message = Constants.CITY_NOT_BLANK_MESSAGE)
-  @Size(
-        max = Constants.CITY_MAX_LENGHT,
-        message = Constants.CITY_MAX_LENGHT_MESSAGE
-  )
-  private String city;
+      Integer countryNumericCode,
 
-  /**
-   * User kind of member.
-   */
-  private UserType kindMember;
-
-  /**
-   * Country numeric code (address).
-   */
-  private Integer countryNumericCode;
-
-  /**
-   * Country subdivision name (address).
-   */
-  private String countrySubdivisionName;
+      String countrySubdivisionName
+) {
 
 }

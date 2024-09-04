@@ -2,108 +2,101 @@
 package es.org.cxn.backapp.test.unit.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
 
-import org.junit.jupiter.api.Test;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
-class UserChangePasswordRequestTest {
-  @Test
-  void testGettersAndSetters() {
-    // Crear una instancia de UserChangePasswordRequest
-    var request = new UserChangePasswordRequest();
+import java.util.Set;
 
-    // Establecer valores usando setters
-    request.setEmail("user@example.com");
-    request.setCurrentPassword("oldPassword");
-    request.setNewPassword("newPassword");
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-    assertEquals(
-          "user@example.com", request.getEmail(),
-          " Verifica los valores usando getters"
-    );
-    assertEquals(
-          "oldPassword", request.getCurrentPassword(),
-          "Verifica los valores usando getters"
-    );
-    assertEquals(
-          "newPassword", request.getNewPassword(),
-          "Verifica los valores usando getters"
-    );
+/**
+ * Unit test for {@link UserChangePasswordRequest}.
+ * <p>
+ * This test class verifies the validation of the
+ * {@link UserChangePasswordRequest} record using parameterized tests with
+ * various valid and invalid values for email, currentPassword, and newPassword.
+ * </p>
+ */
+public class UserChangePasswordRequestTest {
+
+  /**
+   * The validator.
+   */
+  private static Validator validator;
+
+  /**
+   * Sets up the validator factory and initializes the {@link Validator}
+   * instance to be used for validating {@link UserChangePasswordRequest}
+   * objects in the tests.
+   * <p>
+   * This method is annotated with {@link BeforeAll}, which means it will be
+   * executed once before any of the test methods in this class are run.
+   * It initializes the {@code validator} field using the default validator
+   * factory provided by Jakarta Bean Validation (formerly known as JSR 380).
+   * </p>
+   * <p>
+   * The validator is used to ensure that the objects being tested adhere to the
+   * validation constraints defined in the {@link UserChangePasswordRequest}
+   * class.
+   * </p>
+   */
+  @BeforeAll
+  public static void setup() {
+    var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
   }
 
-  @Test
-  void testEquals() {
-    // Crear dos instancias de UserChangePasswordRequest con los mismos valores
-    var request1 = new UserChangePasswordRequest(
-          "user@example.com", "oldPassword", "newPassword"
-    );
-    var request2 = new UserChangePasswordRequest(
-          "user@example.com", "oldPassword", "newPassword"
-    );
+  /**
+   * Tests the validation of {@link UserChangePasswordRequest} with various
+   * email addresses, current passwords, and new passwords.
+   *
+   * @param email The email address to be tested.
+   * @param currentPassword The current password to be tested.
+   * @param newPassword The new password to be tested.
+   * @param expectedViolations The expected number of validation violations.
+   */
+  @ParameterizedTest(
+        name = "email={0}, currentPassword={1}, newPassword={2}, "
+              + "expectedViolations={3}"
+  )
+  @CsvSource(
+    {
+        // Valid cases
+        "'valid.email@example.com', 'valid1Pass', 'valid2Pass', 0",
+        // Invalid cases
+        "invalid-email, 'valid1Pass', 'valid2Pass', 1",
+        // Invalid email
+        "'valid.email@example.com', , 'valid2Pass', 1",
+        // Current password blank
+        "'valid.email@example.com', 'short', 'valid2Pass', 1",
+        // Current password too short
+        "'valid.email@example.com', 'valid1Pass', , 1",
+        // New password blank
+        "'valid.email@example.com', 'valid1Pass', 'short', 1",
+        // New password too short
+        "'valid.email@example.com', 'valid1Pass', 'wayTooLongPassword12345', 1",
+    // New password too long
+    }
+  )
+  void testUserChangePasswordRequestValidation(
+        final String email, final String currentPassword,
+        final String newPassword, final int expectedViolations
+  ) {
+    final var request =
+          new UserChangePasswordRequest(email, currentPassword, newPassword);
+
+    final Set<ConstraintViolation<UserChangePasswordRequest>> violations =
+          validator.validate(request);
 
     assertEquals(
-          request1, request2, "las instancias son iguales usando equals"
-    );
-    assertEquals(
-          request2, request1, "las instancias son iguales usando equals"
+          expectedViolations, violations.size(),
+          "The number of violations should match the expected number."
     );
   }
-
-  @Test
-  void testNotEquals() {
-    // Crear dos instancias de UserChangePasswordRequest con diferentes valores
-    var request1 = new UserChangePasswordRequest(
-          "user1@example.com", "oldPassword1", "newPassword1"
-    );
-    var request2 = new UserChangePasswordRequest(
-          "user2@example.com", "oldPassword2", "newPassword2"
-    );
-
-    assertNotEquals(
-          request1, request2,
-          "Verifica que las instancias no son iguales usando equals"
-    );
-    assertNotEquals(
-          request2, request1,
-          "Verifica que las instancias no son iguales usando equals"
-    );
-  }
-
-  @Test
-  void testHashCode() {
-    // Crear dos instancias de UserChangePasswordRequest con los mismos valores
-    var request1 = new UserChangePasswordRequest(
-          "user@example.com", "oldPassword", "newPassword"
-    );
-    var request2 = new UserChangePasswordRequest(
-          "user@example.com", "oldPassword", "newPassword"
-    );
-
-    assertEquals(
-          request1.hashCode(), request2.hashCode(), "los hashCodes son iguales"
-    );
-  }
-
-  @Test
-  void testBuilder() {
-    // Crear una instancia de UserChangePasswordRequest usando el builder
-    var request = UserChangePasswordRequest.builder().email("user@example.com")
-          .currentPassword("oldPassword").newPassword("newPassword").build();
-
-    assertEquals(
-          "user@example.com", request.getEmail(),
-          "los valores establecidos por el builder son correctos"
-    );
-    assertEquals(
-          "oldPassword", request.getCurrentPassword(),
-          "los valores establecidos por el builder son correctos"
-    );
-    assertEquals(
-          "newPassword", request.getNewPassword(),
-          "los valores establecidos por el builder son correctos"
-    );
-  }
-
 }

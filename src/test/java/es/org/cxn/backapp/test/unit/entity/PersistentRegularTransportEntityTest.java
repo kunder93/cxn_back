@@ -27,7 +27,8 @@ class PersistentRegularTransportEntityTest {
     regularTransport.setTransportInvoice(invoice);
     regularTransport.setPaymentSheet(paymentSheet);
 
-    // Verificar que los valores se establecieron correctamente utilizando los métodos getter
+    // Verificar que los valores se establecieron correctamente utilizando
+    // los métodos getter
     assertEquals("Example Category", regularTransport.getCategory(), "getter");
     assertEquals(
           "Example Description", regularTransport.getDescription(), "getter"
@@ -38,7 +39,8 @@ class PersistentRegularTransportEntityTest {
 
   @Test
   void testEqualsAndHashCode() {
-    // Crear dos instancias de PersistentRegularTransportEntity con los mismos atributos
+    // Crear dos instancias de PersistentRegularTransportEntity con
+    // los mismos atributos
     var regularTransport1 = new PersistentRegularTransportEntity();
     regularTransport1.setCategory("Example Category");
     regularTransport1.setDescription("Example Description");
@@ -86,7 +88,8 @@ class PersistentRegularTransportEntityTest {
 
     assertNotEquals(
           regularTransport1.hashCode(), regularTransport2.hashCode(),
-          "hash codes de regularTransport1 y regularTransport2 son diferentes después de modificar regularTransport2"
+          "hash codes de regularTransport1 y regularTransport2 son diferentes "
+                + "después de modificar regularTransport2"
     );
 
     PersistentRegularTransportEntity nullEntity = null;

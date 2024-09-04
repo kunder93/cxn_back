@@ -1,4 +1,6 @@
+
 package es.org.cxn.backapp.test.utils;
+
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -11,24 +13,45 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class LocalDateTimeAdapter implements JsonSerializer<LocalDateTime>,
-      JsonDeserializer<LocalDateTime> {
+/**
+ * A custom adapter for serializing and deserializing
+ * {@link LocalDateTime} instances to and from JSON using the Gson library.
+ * <p>
+ * This adapter converts {@link LocalDateTime} objects to a string format
+ * ("yyyy-MM-dd'T'HH:mm:ss") suitable for JSON representation and parses them
+ * back into {@link LocalDateTime} objects. This format follows the ISO 8601
+ * standard but excludes milliseconds.
+ * </p>
+ */
+public final class LocalDateTimeAdapter implements
+      JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
 
-  private static final DateTimeFormatter formatter =
+  /**
+   * The DateTimeFormatter used to serialize and deserialize
+   * {@link LocalDateTime} instances
+   * to and from JSON.
+   * <p>
+   * The pattern used is "yyyy-MM-dd'T'HH:mm:ss", which represents the date
+   * and time in ISO 8601 format without milliseconds.
+   * </p>
+   */
+  private static final DateTimeFormatter FORMATTING_PATTERN =
         DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
   @Override
   public JsonElement serialize(
-        LocalDateTime src, Type typeOfSrc, JsonSerializationContext context
+        final LocalDateTime src, final Type typeOfSrc,
+        final JsonSerializationContext context
   ) {
-    return new JsonPrimitive(formatter.format(src));
+    return new JsonPrimitive(FORMATTING_PATTERN.format(src));
   }
 
   @Override
   public LocalDateTime deserialize(
-        JsonElement json, Type typeOfT, JsonDeserializationContext context
+        final JsonElement json, final Type typeOfT,
+        final JsonDeserializationContext context
   ) throws JsonParseException {
     var dateString = json.getAsString();
-    return LocalDateTime.parse(dateString, formatter);
+    return LocalDateTime.parse(dateString, FORMATTING_PATTERN);
   }
 }

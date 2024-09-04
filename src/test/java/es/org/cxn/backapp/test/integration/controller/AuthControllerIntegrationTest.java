@@ -6,15 +6,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.JwtUtils;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
+import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
 import java.time.LocalDate;
 
@@ -25,81 +23,72 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * @author Santiago Paz. Authentication controller integration tests.
+ * Integration tests for the Authentication Controller.
+ *
+ * <p>This class tests the various endpoints related to user authentication,
+ * including user registration (sign-up) and authentication (sign-in).
+ * The tests cover scenarios such as successful user registration,
+ * handling duplicate user information, and generating valid JWT tokens upon
+ * successful authentication.</p>
+ *
+ * <p>The tests are conducted in a transactional context to ensure data
+ * consistency and to isolate each test case.</p>
+ *
+ * <p><strong>Note:</strong> This class requires a running Spring context
+ * and uses {@link MockMvc} to perform HTTP requests and validate responses.</p>
+ *
+ * <p>Author: Santiago Paz</p>
  */
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("/application.properties")
 class AuthControllerIntegrationTest {
 
-  private final static UserRoleName DEFAULT_USER_ROLE =
-        UserRoleName.ROLE_CANDIDATO_SOCIO;
-  private final static String SIGN_UP_URL = "/api/auth/signup";
-  private final static String SIGN_IN_URL = "/api/auth/signinn";
+  /**
+   * URL endpoint for user sign-up.
+   */
+  private static final String SIGN_UP_URL = "/api/auth/signup";
 
-  private final static String userA_dni = "32721859N";
-  private final static String userA_name = "Santiago";
-  private final static String userA_firstSurname = "Paz";
-  private final static String userA_secondSurname = "Perez";
-  private final static LocalDate userA_birthDate = LocalDate.of(1993, 5, 8); // aaaa,mm,dd
-  private final static String userA_gender = "Male";
-  private final static String userA_password = "fakeValidPassword";
-  private final static String userA_email = "santi@santi.es";
-  private final static String userA_postalCode = "15570";
-  private final static String userA_apartmentNumber = "1D";
-  private final static String userA_building = "7";
-  private final static String userA_street = "Marina Espanola";
-  private final static String userA_city = "Naron";
-  private final static Integer userA_countryNumericCode = 724;
-  private final static String userA_countrySubdivisionName = "Lugo";
+  /**
+   * URL endpoint for user sign-in.
+   */
+  private static final String SIGN_IN_URL = "/api/auth/signinn";
 
-  private final static String userB_dni = "32721860J";
-  private final static String userB_email = "adri@adri.es";
-  private final static String userB_name = "Adrian";
-  private final static String userB_firstSurname = "Paz";
-  private final static String userB_secondSurname = "Perez";
-  public final static LocalDate userB_birthDate = LocalDate.of(1996, 2, 8); // aaaa,mm,dd
-  private final static String userB_gender = "Male";
-  private final static String userB_password = "fakeValidPassword";
-  private final static String userB_postalCode = "15570";
-  private final static String userB_apartmentNumber = "1D";
-  private final static String userB_building = "7";
-  private final static String userB_street = "Marina Espanola";
-  private final static String userB_city = "Naron";
-  private final static Integer userB_countryNumericCode = 724;
-  private final static String userB_countrySubdivisionName = "Lugo";
-
-  private final static UserType kindMember = UserType.SOCIO_NUMERO;
-
+  /**
+   * MockMvc is used to simulate HTTP requests in the tests.
+   */
   @Autowired
   private MockMvc mockMvc;
 
-  @Autowired
-  UserDetailsService myUserDetailsService;
-  @Autowired
-  JwtUtils jwtUtils;
-
+  /**
+   * Gson instance for serializing/deserializing JSON objects during the tests.
+   */
   private static Gson gson;
 
+  /**
+   * Sets up the test environment by initializing the Gson instance
+   * with a custom adapter for handling {@link LocalDate} objects.
+   *
+   * <p>This method is annotated with {@link BeforeAll}, which means it will
+   * be executed once before any test methods in this class are run.</p>
+   */
   @BeforeAll
   static void createUsersData() {
     gson = new GsonBuilder()
           .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
           .create();
-
   }
 
   /**
-   * Main class constructor
+   * Main class constructor.
    */
-  public AuthControllerIntegrationTest() {
+  AuthControllerIntegrationTest() {
     super();
   }
 
@@ -112,16 +101,7 @@ class AuthControllerIntegrationTest {
   @Transactional
   void testSignUpReturnUserDataWithDefautlRole() throws Exception {
     var numberOfRoles = 1;
-    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
-          .name(userA_name).firstSurname(userA_firstSurname)
-          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
-          .gender(userA_gender).password(userA_password).email(userA_email)
-          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
-          .building(userA_building).street(userA_street).city(userA_city)
-          .countryNumericCode(userA_countryNumericCode)
-          .countrySubdivisionName(userA_countrySubdivisionName)
-          .kindMember(kindMember).build();
-    var userARequestJson = gson.toJson(userARequest);
+    var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     var controllerResponse = mockMvc
           .perform(
@@ -134,76 +114,82 @@ class AuthControllerIntegrationTest {
           gson.fromJson(controllerResponse, SignUpResponseForm.class);
 
     Assertions.assertEquals(
-          signUpResponse.getDni(), userARequest.getDni(), "Dni field."
+          UsersControllerFactory.USER_A_DNI, signUpResponse.dni(), "Dni field."
     );
     Assertions.assertEquals(
-          signUpResponse.getEmail(), userARequest.getEmail(), "Email field."
+          UsersControllerFactory.USER_A_EMAIL, signUpResponse.email(),
+          "Email field."
     );
     Assertions.assertEquals(
-          signUpResponse.getName(), userARequest.getName(), "Dni field."
+          UsersControllerFactory.USER_A_NAME, signUpResponse.name(),
+          "Dni field."
     );
     Assertions.assertEquals(
-          signUpResponse.getFirstSurname(), userARequest.getFirstSurname(),
-          "First surname field."
+          UsersControllerFactory.USER_A_FIRST_SURNAME,
+          signUpResponse.firstSurname(), "First surname field."
     );
     Assertions.assertEquals(
-          signUpResponse.getSecondSurname(), userARequest.getSecondSurname(),
-          "Second surname field."
+          UsersControllerFactory.USER_A_SECOND_SURNAME,
+          signUpResponse.secondSurname(), "Second surname field."
     );
 
     Assertions.assertEquals(
-          signUpResponse.getGender(), userARequest.getGender(), "Gender field."
+          UsersControllerFactory.USER_A_GENDER, signUpResponse.gender(),
+          "Gender field."
     );
     Assertions.assertEquals(
-          signUpResponse.getBirthDate(), userARequest.getBirthDate(),
+          UsersControllerFactory.USER_A_BIRTH_DATE, signUpResponse.birthDate(),
           "Birth date field."
     );
     Assertions.assertEquals(
-          signUpResponse.getKindMember(), userARequest.getKindMember(),
-          "kind of member field."
+          UsersControllerFactory.USER_A_KIND_MEMBER,
+          signUpResponse.kindMember(), "kind of member field."
     );
     Assertions.assertEquals(
-          signUpResponse.getUserRoles().size(), numberOfRoles, "Only one role."
+          numberOfRoles, signUpResponse.userRoles().size(), "Only one role."
     );
     Assertions.assertTrue(
-          signUpResponse.getUserRoles().contains(DEFAULT_USER_ROLE),
+          signUpResponse.userRoles()
+                .contains(UsersControllerFactory.DEFAULT_USER_ROLE),
           "Role is default user role."
     );
   }
 
   /**
-   * SingUp second user with same email as userA bad request cause email is in using.
+   * SingUp second user with same email as userA bad request cause email
+   * is in using.
    *
    * @throws Exception When fails.
    */
   @Test
   @Transactional
   void testSignUpSecondUserWithSameEmailBadRequest() throws Exception {
-    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
-          .name(userA_name).firstSurname(userA_firstSurname)
-          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
-          .gender(userA_gender).password(userA_password).email(userA_email)
-          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
-          .building(userA_building).street(userA_street).city(userA_city)
-          .countryNumericCode(userA_countryNumericCode)
-          .countrySubdivisionName(userA_countrySubdivisionName)
-          .kindMember(kindMember).build();
-    var userARequestJson = gson.toJson(userARequest);
+
+    var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(
           post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var userBRequest = SignUpRequestForm.builder().dni(userB_dni)
-          .name(userB_name).firstSurname(userB_firstSurname)
-          .secondSurname(userB_secondSurname).birthDate(userB_birthDate)
-          .gender(userB_gender).password(userB_password).email(userA_email)
-          .postalCode(userB_postalCode).apartmentNumber(userB_apartmentNumber)
-          .building(userB_building).street(userB_street).city(userB_city)
-          .countryNumericCode(userB_countryNumericCode)
-          .countrySubdivisionName(userB_countrySubdivisionName)
-          .kindMember(kindMember).build();
+    // Set user B with same email as user A.
+    var userBRequest = new SignUpRequestForm(
+          UsersControllerFactory.USER_B_DNI, UsersControllerFactory.USER_B_NAME,
+          UsersControllerFactory.USER_B_FIRST_SURNAME,
+          UsersControllerFactory.USER_B_SECOND_SURNAME,
+          UsersControllerFactory.USER_B_BIRTH_DATE,
+          UsersControllerFactory.USER_B_GENDER,
+          UsersControllerFactory.USER_B_PASSWORD,
+          UsersControllerFactory.USER_A_EMAIL,
+          UsersControllerFactory.USER_B_POSTAL_CODE,
+          UsersControllerFactory.USER_B_APARTMENT_NUMBER,
+          UsersControllerFactory.USER_B_BUILDING,
+          UsersControllerFactory.USER_B_STREET,
+          UsersControllerFactory.USER_B_CITY,
+          UsersControllerFactory.USER_B_KIND_MEMBER,
+          UsersControllerFactory.USER_B_COUNTRY_NUMERIC_CODE,
+          UsersControllerFactory.USER_B_COUNTRY_SUBDIVISION_NAME
+    );
     var userBRequestJson = gson.toJson(userBRequest);
     // Second user with same email as userA bad request.
     mockMvc.perform(
@@ -213,40 +199,42 @@ class AuthControllerIntegrationTest {
   }
 
   /**
-   * SingUp second user with same dni as userA bad request cause dni is in using.
+   * SingUp second user with same dni as userA bad request cause dni is
+   * in using.
    *
    * @throws Exception When fails.
    */
   @Test
   @Transactional
   void testSignUpSecondUserWithSameDniBadRequest() throws Exception {
-    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
-          .name(userA_name).firstSurname(userA_firstSurname)
-          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
-          .gender(userA_gender).password(userA_password).email(userA_email)
-          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
-          .building(userA_building).street(userA_street).city(userA_city)
-          .countryNumericCode(userA_countryNumericCode)
-          .countrySubdivisionName(userA_countrySubdivisionName)
-          .kindMember(kindMember).build();
-    var userARequestJson = gson.toJson(userARequest);
+
+    var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(
           post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var userBRequest = SignUpRequestForm.builder().dni(userA_dni)
-          .name(userB_name).firstSurname(userB_firstSurname)
-          .secondSurname(userB_secondSurname).birthDate(userB_birthDate)
-          .gender(userB_gender).password(userB_password).email(userB_email)
-          .postalCode(userB_postalCode).apartmentNumber(userB_apartmentNumber)
-          .building(userB_building).street(userB_street).city(userB_city)
-          .countryNumericCode(userB_countryNumericCode)
-          .countrySubdivisionName(userB_countrySubdivisionName)
-          .kindMember(kindMember).build();
+    //User B with user A DNI
+    var userBRequest = new SignUpRequestForm(
+          UsersControllerFactory.USER_A_DNI, UsersControllerFactory.USER_B_NAME,
+          UsersControllerFactory.USER_B_FIRST_SURNAME,
+          UsersControllerFactory.USER_B_SECOND_SURNAME,
+          UsersControllerFactory.USER_B_BIRTH_DATE,
+          UsersControllerFactory.USER_B_GENDER,
+          UsersControllerFactory.USER_B_PASSWORD,
+          UsersControllerFactory.USER_B_EMAIL,
+          UsersControllerFactory.USER_B_POSTAL_CODE,
+          UsersControllerFactory.USER_B_APARTMENT_NUMBER,
+          UsersControllerFactory.USER_B_BUILDING,
+          UsersControllerFactory.USER_B_STREET,
+          UsersControllerFactory.USER_B_CITY,
+          UsersControllerFactory.USER_B_KIND_MEMBER,
+          UsersControllerFactory.USER_B_COUNTRY_NUMERIC_CODE,
+          UsersControllerFactory.USER_B_COUNTRY_SUBDIVISION_NAME
+    );
     var userBRequestJson = gson.toJson(userBRequest);
-    // Second user with same email as userA bad request.
+    // Second user with same dni as userA bad request.
     mockMvc.perform(
           post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(userBRequestJson)
@@ -261,24 +249,17 @@ class AuthControllerIntegrationTest {
   @Test
   @Transactional
   void testAuthenticateUserReturnJwt() throws Exception {
-    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
-          .name(userA_name).firstSurname(userA_firstSurname)
-          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
-          .gender(userA_gender).password(userA_password).email(userA_email)
-          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
-          .building(userA_building).street(userA_street).city(userA_city)
-          .countryNumericCode(userA_countryNumericCode)
-          .countrySubdivisionName(userA_countrySubdivisionName)
-          .kindMember(kindMember).build();
-    var userARequestJson = gson.toJson(userARequest);
+    var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(
           post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var authenticationRequest =
-          new AuthenticationRequest(userA_email, userA_password);
+    var authenticationRequest = new AuthenticationRequest(
+          UsersControllerFactory.USER_A_EMAIL,
+          UsersControllerFactory.USER_A_PASSWORD
+    );
     var authenticationRequestJson = gson.toJson(authenticationRequest);
 
     // Second user with same email as userA bad request.
@@ -291,11 +272,11 @@ class AuthControllerIntegrationTest {
 
     var ar = gson
           .fromJson(authenticationResponseJson, AuthenticationResponse.class);
-    var jwtToken = ar.getJwt();
-    JwtUtils jwtUtil = new DefaultJwtUtils();
-    var jwtUsername = jwtUtil.extractUsername(jwtToken);
+    var jwtToken = ar.jwt();
+    var jwtUsername = DefaultJwtUtils.extractUsername(jwtToken);
     Assertions.assertEquals(
-          userA_email, jwtUsername, "Jwt username is same as user signUp"
+          UsersControllerFactory.USER_A_EMAIL, jwtUsername,
+          "Jwt username is same as user signUp"
     );
   }
 
@@ -308,8 +289,10 @@ class AuthControllerIntegrationTest {
   @Transactional
   void testAuthenticateUserNotExistingUserUnauthorized() throws Exception {
     // Authenticate not existing user (no signUp)
-    var authenticationRequest =
-          new AuthenticationRequest(userA_email, userA_password);
+    var authenticationRequest = new AuthenticationRequest(
+          UsersControllerFactory.USER_A_EMAIL,
+          UsersControllerFactory.USER_A_PASSWORD
+    );
     var authenticationRequestJson = gson.toJson(authenticationRequest);
 
     // Second user with same email as userA bad request.
@@ -327,16 +310,8 @@ class AuthControllerIntegrationTest {
   @Test
   @Transactional
   void testAuthenticateUserBadPasswordUnauthorized() throws Exception {
-    var userARequest = SignUpRequestForm.builder().dni(userA_dni)
-          .name(userA_name).firstSurname(userA_firstSurname)
-          .secondSurname(userA_secondSurname).birthDate(userA_birthDate)
-          .gender(userA_gender).password(userA_password).email(userA_email)
-          .postalCode(userA_postalCode).apartmentNumber(userA_apartmentNumber)
-          .building(userA_building).street(userA_street).city(userA_city)
-          .countryNumericCode(userA_countryNumericCode)
-          .countrySubdivisionName(userA_countrySubdivisionName)
-          .kindMember(kindMember).build();
-    var userARequestJson = gson.toJson(userARequest);
+
+    var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(
           post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
@@ -344,8 +319,9 @@ class AuthControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
     var notValidPassword = "NotValidPassword";
-    var authenticationRequest =
-          new AuthenticationRequest(userA_email, notValidPassword);
+    var authenticationRequest = new AuthenticationRequest(
+          UsersControllerFactory.USER_A_EMAIL, notValidPassword
+    );
     var authenticationRequestJson = gson.toJson(authenticationRequest);
 
     // Second user with same email as userA bad request.
