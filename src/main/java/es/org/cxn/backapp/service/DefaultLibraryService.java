@@ -7,7 +7,7 @@ import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.AuthorEntity;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
-import es.org.cxn.backapp.model.form.requests.AuthorRequestDto;
+import es.org.cxn.backapp.model.form.requests.AuthorRequest;
 import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
@@ -84,7 +84,7 @@ public class DefaultLibraryService implements LibraryService {
     book.setPublishYear(bookRequest.publishYear());
     final var authorsList = bookRequest.authorsList();
     if (authorsList != null) {
-      authorsList.forEach((AuthorRequestDto authorRequestDto) -> {
+      authorsList.forEach((AuthorRequest authorRequestDto) -> {
         final var existingAuthor =
               authorRepository.findByFirstNameAndLastNameAndNationality(
                     authorRequestDto.firstName(), authorRequestDto.lastName(),

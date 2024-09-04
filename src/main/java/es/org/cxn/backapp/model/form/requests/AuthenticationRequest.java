@@ -8,8 +8,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-import org.hibernate.validator.constraints.Length;
-
 /**
  * Represents the form used to authenticate a user.
  * <p>
@@ -50,7 +48,7 @@ public record AuthenticationRequest(
       ) @Email(message = Constants.EMAIL_NOT_VALID)
       String email,
 
-      @NotNull(message = Constants.NOT_NULL_PASSWORD) @Length(
+      @NotNull(message = Constants.NOT_NULL_PASSWORD) @Size(
             min = Constants.MIN_PASSWORD_LENGTH,
             max = Constants.MAX_PASSWORD_LENGTH,
             message = Constants.LENGTH_PASSWORD_MESSAGE

@@ -38,6 +38,7 @@ import es.org.cxn.backapp.repository.RegularTransportRepository;
 import es.org.cxn.backapp.repository.SelfVehicleRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -274,8 +275,8 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
 
   @Override
   public PersistentPaymentSheetEntity addSelfVehicleToPaymentSheet(
-        final Integer paymentSheetId, final String places, final float distance,
-        final double kmPrice
+        final Integer paymentSheetId, final String places,
+        final BigDecimal distance, final BigDecimal kmPrice
   ) throws PaymentSheetServiceException {
 
     final var paymentSheetOptional =
@@ -295,7 +296,7 @@ public final class DefaultPaymentSheetService implements PaymentSheetService {
   @Override
   public PersistentPaymentSheetEntity addFoodHousingToPaymentSheet(
         final Integer paymentSheetId, final Integer amountDays,
-        final float dayPrice, final boolean overnight
+        final BigDecimal dayPrice, final boolean overnight
   ) throws PaymentSheetServiceException {
 
     final var paymentSheetOptional =

@@ -34,7 +34,7 @@ import static org.mockito.Mockito.when;
 
 import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
-import es.org.cxn.backapp.model.form.requests.AuthorRequestDto;
+import es.org.cxn.backapp.model.form.requests.AuthorRequest;
 import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
@@ -275,7 +275,7 @@ final class TestDefaultLibraryService {
           BOOK_ISBN_1, BOOK_TITLE, BOOK_GENDER, BOOK_PUBLISH_YEAR,
           BOOK_LANGUAGE,
           List.of(
-                new AuthorRequestDto(
+                new AuthorRequest(
                       AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME, AUTHOR_NATIONALITY
                 )
           ) // authorsList

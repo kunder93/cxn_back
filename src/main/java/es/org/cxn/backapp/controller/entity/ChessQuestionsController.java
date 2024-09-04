@@ -27,8 +27,8 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
-import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
+import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
+import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
@@ -101,14 +101,14 @@ public class ChessQuestionsController {
    *
    * @param createChessQuestionRequestForm form with data to create a
    * chess question.
-   *                                 {@link CreateChessQuestionRequestForm}.
+   *                                 {@link CreateChessQuestionRequest}.
    * @return form with the created chess question data.
    */
   @PostMapping()
   @CrossOrigin(origins = "*")
   public ResponseEntity<ChessQuestionResponse>
         createChessQuestion(@RequestBody @Valid
-  final CreateChessQuestionRequestForm createChessQuestionRequestForm) {
+  final CreateChessQuestionRequest createChessQuestionRequestForm) {
     try {
       final var result = chessQuestionsService.add(
             createChessQuestionRequestForm.email(),
@@ -133,14 +133,14 @@ public class ChessQuestionsController {
    * Change chess question has been seen state.
    *
    * @param chessQuestionHasSeenRequestForm form with chess question identifier.
-   * {@link ChangeChessQuestionHasSeenRequestForm}.
+   * {@link ChangeChessQuestionHasSeenRequest}.
    * @return form with the modified chess question.
    */
   @PostMapping("/changeChessQuestionHasSeen")
   @CrossOrigin(origins = "*")
   public ResponseEntity<ChessQuestionResponse>
         changeChessQuestionHasSeen(@RequestBody @Valid
-  final ChangeChessQuestionHasSeenRequestForm chessQuestionHasSeenRequestForm) {
+  final ChangeChessQuestionHasSeenRequest chessQuestionHasSeenRequestForm) {
     try {
       final var result = chessQuestionsService
             .changeChessQuestionSeen(chessQuestionHasSeenRequestForm.id());

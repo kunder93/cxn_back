@@ -2,103 +2,97 @@
 package es.org.cxn.backapp.test.unit.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 
-import java.util.Arrays;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+
 import java.util.List;
+import java.util.Set;
 
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
- * Unit tests for the {@link UserChangeRoleRequestForm} class.
+ * Unit test for {@link UserChangeRoleRequest}.
  * <p>
- * This class tests the behavior of the {@link UserChangeRoleRequestForm} class,
- * including its getters, equality, and hash code methods.
- * <p>
- * Tests include:
- * <ul>
- *   <li>Verification of getter methods</li>
- *   <li>Checking equality of instances with the same values</li>
- *   <li>Ensuring instances with different values are not considered equal</li>
- *   <li>Consistency of hash codes for equal instances</li>
- * </ul>
- * <p>
- * The test data includes various user emails and role names to ensure thorough
- * coverage.
- *
- * @author Santiago Paz
+ * This test class verifies the validation of the
+ * {@link UserChangeRoleRequest} record using parameterized tests with
+ * various valid and invalid values for email and userRoles.
+ * </p>
  */
-class UserChangeRoleRequestTest {
+public class UserChangeRoleRequestTest {
 
   /**
-   * User email field for use in tests.
+   * The validator.
    */
-  private static final String USER_EMAIL = "user@example.es";
+  private static Validator validator;
 
   /**
-   * A different email field for use in equality and hash code tests.
+   * Sets up the validator factory and initializes the {@link Validator}
+   * instance to be used for validating {@link UserChangeRoleRequest} objects
+   *  in the tests.
+   * <p>
+   * This method is annotated with {@link BeforeAll}, which means it will be
+   * executed once before any of the test methods in this class are run.
+   * It initializes the {@code validator} field using the default validator
+   * factory provided by Jakarta Bean Validation (formerly known as JSR 380).
+   * </p>
+   * <p>
+   * The validator is used to ensure that the objects being tested adhere to the
+   * validation constraints defined in the {@link UserChangeRoleRequest} class.
+   * </p>
    */
-  private static final String SECOND_USER_EMAIL = "other@other.es";
-
-  /**
-   * User roles for use in equality and hash code tests.
-   */
-  private static final List<UserRoleName> USER_ROLES =
-        Arrays.asList(UserRoleName.ROLE_SECRETARIO, UserRoleName.ROLE_SOCIO);
-
-  /**
-   * Different user roles for use in equality and hash code tests.
-   */
-  private static final List<UserRoleName> SECOND_USER_ROLES =
-        Arrays.asList(UserRoleName.ROLE_PRESIDENTE, UserRoleName.ROLE_SOCIO);
-
-  @Test
-  void testGetters() {
-    // Create an instance of UserChangeRoleRequestForm
-    var request = new UserChangeRoleRequestForm(USER_EMAIL, USER_ROLES);
-
-    assertEquals(
-          USER_EMAIL, request.email(), "Values should match using" + " getters"
-    );
-    assertEquals(
-          USER_ROLES, request.userRoles(),
-          "Values should match using" + " getters"
-    );
+  @BeforeAll
+  public static void setup() {
+    var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
   }
 
-  @Test
-  void testEquals() {
-    // Create two instances of UserChangeRoleRequestForm with the same values
-    var request1 = new UserChangeRoleRequestForm(USER_EMAIL, USER_ROLES);
-    var request2 = new UserChangeRoleRequestForm(USER_EMAIL, USER_ROLES);
+  /**
+   * Tests the validation of {@link UserChangeRoleRequest} with various
+   * email addresses and userRoles lists.
+   *
+   * @param email The email address to be tested.
+   * @param userRoles The user roles to be tested, provided as a comma-separated
+   * list of roles.
+   * @param expectedViolations The expected number of validation violations.
+   */
+  @ParameterizedTest(name = "email={0}, userRoles={1}, expectedViolations={2}")
+  @CsvSource(
+    {
+        // Valid case
+        "'valid.email@example.com', 'ROLE_ADMIN,ROLE_SOCIO', 0",
 
-    assertEquals(request1, request2, "Instances should be equal using equals");
-  }
+        // Invalid cases
+        "'invalid-email', 'ROLE_ADMIN,ROLE_SOCIO', 1", // Invalid email format
+        "'valid.email@example.com','' , 1", // Empty userRoles list
+        "'valid.email@example.com','' , 1", // Empty userRoles list
+        " , 'ROLE_ADMIN,ROLE_SOCIO', 1" // Empty email
+    }
+  )
+  void testUserChangeRoleRequestFormValidation(
+        final String email, final String userRoles, final int expectedViolations
+  ) {
+    // Convert comma-separated userRoles to List<UserRoleName>
+    var rolesList =
+          userRoles.isEmpty() || userRoles.trim().isEmpty() ? List.of()
+                : List.of(userRoles.split(",")).stream()
+                      .map(UserRoleName::valueOf).toList();
 
-  @Test
-  void testNotEquals() {
-    // Create two instances of UserChangeRoleRequestForm with different values
-    var request1 = new UserChangeRoleRequestForm(USER_EMAIL, USER_ROLES);
-    var request2 =
-          new UserChangeRoleRequestForm(SECOND_USER_EMAIL, SECOND_USER_ROLES);
+    var request =
+          new UserChangeRoleRequest(email, (List<UserRoleName>) rolesList);
 
-    assertNotEquals(
-          request1, request2, "Instances should not be equal using equals"
-    );
-  }
-
-  @Test
-  void testHashCode() {
-    // Create two instances of UserChangeRoleRequestForm with the same values
-    var request1 = new UserChangeRoleRequestForm(USER_EMAIL, USER_ROLES);
-    var request2 = new UserChangeRoleRequestForm(USER_EMAIL, USER_ROLES);
+    Set<ConstraintViolation<UserChangeRoleRequest>> violations =
+          validator.validate(request);
 
     assertEquals(
-          request1.hashCode(), request2.hashCode(),
-          "Hash codes should be equal for equal instances"
+          expectedViolations, violations.size(),
+          "The number of violations should match the expected number."
     );
   }
 }

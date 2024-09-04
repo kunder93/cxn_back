@@ -1,51 +1,100 @@
 
 package es.org.cxn.backapp.test.unit.request;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequest;
 
-import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequestForm;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
-import org.junit.jupiter.api.Test;
+import java.util.Set;
 
-class CompanyUpdateRequestTest {
-  @Test
-  void testGettersAndSetters() {
-    // Crear una instancia de CompanyUpdateRequestForm
-    final var name = "ACME Inc.";
-    final var address = "123 Main St.";
-    var request = new CompanyUpdateRequestForm(name, address);
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-    assertEquals(name, request.name(), "valores usando getters");
-    assertEquals(address, request.address(), "valores usando getters");
+/**
+ * Unit tests for the {@link CompanyUpdateRequestForm} class.
+ * These tests validate boundary values for the name and address fields using
+ * CSV-based parameterization.
+ */
+public class CompanyUpdateRequestTest {
+
+  /**
+   * The validator.
+   */
+  private static Validator validator;
+
+  /**
+   * Sets up the validator before running the tests.
+   */
+  @BeforeAll
+  public static void setup() {
+    var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
   }
 
-  @Test
-  void testEqualsAndHashCode() {
-    // Crear dos instancias de CompanyUpdateRequestForm con los mismos valores
-    var request1 = new CompanyUpdateRequestForm("ACME Inc.", "123 Main St.");
-    var request2 = new CompanyUpdateRequestForm("ACME Inc.", "123 Main St.");
+  /**
+   * Tests the validation of the name field with boundary values using
+   * CSV parameters.
+   *
+   * @param name the name to validate.
+   * @param expectedViolations the expected number of violations.
+   */
+  @ParameterizedTest
+  @CsvSource(
+    { "'', 1", // Invalid: blank
+        "'a', 0", // Valid: 1 character
+        "'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 0",
+        // Valid: 40 characters
+        "'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1"
+    // Invalid: 41 characters
+    }
+  )
+  @DisplayName("Validate company name length")
+  void testNameValidation(final String name, final int expectedViolations) {
+    var form = new CompanyUpdateRequest(name, "Valid Address");
 
-    assertEquals(
-          request1, request2, "las instancias son iguales usando equals"
-    );
+    Set<ConstraintViolation<CompanyUpdateRequest>> violations =
+          validator.validate(form);
 
-    assertEquals(
-          request1.hashCode(), request2.hashCode(), "hashCodes son iguales"
-    );
-
-    // Crea otra instancia
-    final var request3 =
-          new CompanyUpdateRequestForm("ACME Inc.", "456 IIII St.");
-
-    assertNotEquals(
-          request1, request3, "las instancias ya no son iguales usando equals"
-    );
-
-    assertNotEquals(
-          request1.hashCode(), request3.hashCode(),
-          "hashCodes ya no son iguales"
+    Assertions.assertEquals(
+          expectedViolations, violations.size(),
+          "Unexpected number of violations for name."
     );
   }
 
+  /**
+   * Tests the validation of the address field with boundary values using
+   * CSV parameters.
+   *
+   * @param address the address to validate.
+   * @param expectedViolations the expected number of violations.
+   */
+  @ParameterizedTest
+  @CsvSource(
+    { "'', 1", // Invalid: blank
+        "'a', 0", // Valid: 1 character
+        "'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 0",
+        // Valid: 60 characters
+        "'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1"
+    // Invalid: 61 characters
+    }
+  )
+  @DisplayName("Validate company address length")
+  void testAddressValidation(
+        final String address, final int expectedViolations
+  ) {
+    var form = new CompanyUpdateRequest("Valid Name", address);
+
+    Set<ConstraintViolation<CompanyUpdateRequest>> violations =
+          validator.validate(form);
+
+    Assertions.assertEquals(
+          expectedViolations, violations.size(),
+          "Unexpected number of violations for address."
+    );
+  }
 }

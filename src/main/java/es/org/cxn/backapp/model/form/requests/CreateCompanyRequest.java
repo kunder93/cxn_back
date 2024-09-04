@@ -1,8 +1,6 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
-import es.org.cxn.backapp.model.form.Constants;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -19,21 +17,32 @@ import jakarta.validation.constraints.Size;
  * @param nif      The Tax Identification Number (NIF) of the company.
  *                 This field is required to be non-blank and should not
  *                 exceed the maximum
- *                 length defined by {@link Constants#NAME_MAX_LENGTH}.
+ *                 length defined by {@link ValidationConstants}.
  * @param name     The name of the company. This field may be blank.
  * @param address  The address of the company. This field may be blank.
  *
  * @author Santiago Paz
  */
-public record CreateCompanyRequestForm(
+public record CreateCompanyRequest(
+      @NotBlank(message = ValidationConstants.COMPANY_NIF_NOT_BLANK_MESSAGE)
       @Size(
-            max = Constants.NAME_MAX_LENGTH,
-            message = Constants.NAME_MAX_LENGTH_MESSAGE
-      ) @NotBlank(message = Constants.NAME_NOT_BLANK)
+            max = ValidationConstants.COMPANY_NIF_MAX_LENGTH,
+            message = ValidationConstants.COMPANY_NIF_SIZE_MESSAGE
+      )
       String nif,
 
+      @NotBlank(message = ValidationConstants.COMPANY_NAME_NOT_BLANK_MESSAGE)
+      @Size(
+            max = ValidationConstants.COMPANY_NAME_MAX_LENGTH,
+            message = ValidationConstants.COMPANY_NAME_SIZE_MESSAGE
+      )
       String name,
 
+      @NotBlank(message = ValidationConstants.COMPANY_ADDRESS_NOT_BLANK_MESSAGE)
+      @Size(
+            max = ValidationConstants.COMPANY_ADDRESS_MAX_LENGTH,
+            message = ValidationConstants.COMPANY_ADDRESS_SIZE_MESSAGE
+      )
       String address
 ) {
 

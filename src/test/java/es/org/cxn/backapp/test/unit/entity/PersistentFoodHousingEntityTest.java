@@ -10,6 +10,7 @@ import es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -35,7 +36,7 @@ class PersistentFoodHousingEntityTest {
    * This value is used to validate the getter and setter methods for the
    * daily price in food and housing.
    */
-  private static final double TEST_DAY_PRICE = 50.0;
+  private static final BigDecimal TEST_DAY_PRICE = BigDecimal.valueOf(50.0);
 
   /**
    * Indicates whether the overnight option is enabled, used for testing the

@@ -14,7 +14,7 @@ import es.org.cxn.backapp.controller.entity.LibraryController;
 import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
-import es.org.cxn.backapp.model.form.requests.AuthorRequestDto;
+import es.org.cxn.backapp.model.form.requests.AuthorRequest;
 import es.org.cxn.backapp.model.form.responses.BookListResponse;
 import es.org.cxn.backapp.model.form.responses.BookResponse;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
@@ -208,7 +208,7 @@ class LibraryControllerTest {
           TEST_ISBN, "Test Book", // title
           "Fiction", // gender
           PUBLISH_YEAR, "English", // language
-          List.of(new AuthorRequestDto("Test Author", "A", "Spain"))
+          List.of(new AuthorRequest("Test Author", "A", "Spain"))
     );
 
     var addedBook = PersistentBookEntity.builder().isbn(TEST_ISBN)

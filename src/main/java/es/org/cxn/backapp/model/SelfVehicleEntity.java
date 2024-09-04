@@ -25,6 +25,7 @@
 package es.org.cxn.backapp.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * A Invoice entity interface.
@@ -46,12 +47,12 @@ public interface SelfVehicleEntity extends Serializable {
   /**
    * @return The distance.
    */
-  float getDistance();
+  BigDecimal getDistance();
 
   /**
    * @return Price per kilometer.
    */
-  double getKmPrice();
+  BigDecimal getKmPrice();
 
   /**
    * @param id The identifier.
@@ -66,11 +67,11 @@ public interface SelfVehicleEntity extends Serializable {
   /**
    * @param distance The distance.
    */
-  void setDistance(float distance);
+  void setDistance(BigDecimal distance);
 
   /**
    * @param kmPrice The price per kilometer.
    */
-  void setKmPrice(double kmPrice);
+  void setKmPrice(BigDecimal kmPrice);
 
 }

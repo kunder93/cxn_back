@@ -3,6 +3,7 @@ package es.org.cxn.backapp.model.form.requests;
 
 import es.org.cxn.backapp.model.UserRoleName;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
@@ -29,7 +30,7 @@ import java.util.List;
  *
  * @author Santiago Paz Perez
  */
-public record UserChangeRoleRequestForm(@NotEmpty
+public record UserChangeRoleRequest(@NotNull @Email
 String email, @NotNull @NotEmpty
 List<UserRoleName> userRoles) {
 

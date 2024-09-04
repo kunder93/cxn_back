@@ -1,6 +1,10 @@
 
 package es.org.cxn.backapp.model.form.requests;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 /**
  * Represents the user form used by the controller as a request to change the
  * user's password.
@@ -20,7 +24,22 @@ package es.org.cxn.backapp.model.form.requests;
  * @author Santiago Paz.
  */
 public record UserChangePasswordRequest(
-      String email, String currentPassword, String newPassword
-) {
+      @NotBlank(message = ValidationConstants.EMAIL_NOT_BLANK_MESSAGE)
+      @Email(message = ValidationConstants.EMAIL_INVALID_MESSAGE)
+      String email,
 
+      @NotBlank(message = ValidationConstants.PASSWORD_NOT_BLANK_MESSAGE) @Size(
+            min = ValidationConstants.PASSWORD_MIN_LENGTH,
+            max = ValidationConstants.PASSWORD_MAX_LENGTH,
+            message = ValidationConstants.PASSWORD_SIZE_MESSAGE
+      )
+      String currentPassword,
+
+      @NotBlank(message = ValidationConstants.PASSWORD_NOT_BLANK_MESSAGE) @Size(
+            min = ValidationConstants.PASSWORD_MIN_LENGTH,
+            max = ValidationConstants.PASSWORD_MAX_LENGTH,
+            message = ValidationConstants.PASSWORD_SIZE_MESSAGE
+      )
+      String newPassword
+) {
 }

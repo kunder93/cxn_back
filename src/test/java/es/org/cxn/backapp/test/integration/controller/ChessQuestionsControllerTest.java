@@ -6,8 +6,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
+import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
+import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
@@ -70,7 +70,7 @@ class ChessQuestionsControllerTest {
     var questionMessage = "Test Message";
 
     // Prepare request data
-    var requestForm = new CreateChessQuestionRequestForm(
+    var requestForm = new CreateChessQuestionRequest(
           questionEmail, questionCategory, questionTopic, questionMessage
     );
 
@@ -123,7 +123,7 @@ class ChessQuestionsControllerTest {
     final var secondEmail = "other@other.es";
     final var secondMessage = "other message";
     var firstRequestForm =
-          new CreateChessQuestionRequestForm(email, category, topic, message);
+          new CreateChessQuestionRequest(email, category, topic, message);
 
     var firstRequestJson = gson.toJson(firstRequestForm);
 
@@ -133,7 +133,7 @@ class ChessQuestionsControllerTest {
                 .content(firstRequestJson)
     );
 
-    var secondRequestForm = new CreateChessQuestionRequestForm(
+    var secondRequestForm = new CreateChessQuestionRequest(
           secondEmail, category, topic, secondMessage
     );
     var secondRequestJson = gson.toJson(secondRequestForm);
@@ -166,7 +166,7 @@ class ChessQuestionsControllerTest {
     var firstQuestionTopic = "firstTest Topic";
     var firstQuestionMessage = "firstTest Message";
 
-    var firstRequest = new CreateChessQuestionRequestForm(
+    var firstRequest = new CreateChessQuestionRequest(
           firstQuestionEmail, firstQuestionCategory, firstQuestionTopic,
           firstQuestionMessage
     );
@@ -184,7 +184,7 @@ class ChessQuestionsControllerTest {
     var secondQuestionTopic = "secondTest Topic";
     var secondQuestionMessage = "secondTest Message";
 
-    var secondRequest = new CreateChessQuestionRequestForm(
+    var secondRequest = new CreateChessQuestionRequest(
           secondQuestionEmail, secondQuestionCategory, secondQuestionTopic,
           secondQuestionMessage
     );
@@ -261,7 +261,7 @@ class ChessQuestionsControllerTest {
     var questionMessage = "Test Message";
 
     // Prepare request data
-    var requestForm = new CreateChessQuestionRequestForm(
+    var requestForm = new CreateChessQuestionRequest(
           questionEmail, questionCategory, questionTopic, questionMessage
     );
 
@@ -283,7 +283,7 @@ class ChessQuestionsControllerTest {
     );
 
     var changeChessQuestionHasSeenRequestForm =
-          new ChangeChessQuestionHasSeenRequestForm(response.id());
+          new ChangeChessQuestionHasSeenRequest(response.id());
 
     var changeChessQuestionHasSeenRequestFormJson =
           gson.toJson(changeChessQuestionHasSeenRequestForm);

@@ -8,7 +8,7 @@ COPY . /usr/src/app
 WORKDIR /usr/src/app
 
 # Compila la aplicación
-RUN mvn clean install
+RUN mvn clean install -Pprod
 
 # Utiliza una imagen base de Java para ejecutar la aplicación
 FROM eclipse-temurin:21
@@ -32,7 +32,7 @@ RUN if [ "$COPY_CERTIFICATES" = "true" ]; then \
     fi
 
 # Comando de inicio para ejecutar la aplicación Spring Boot
-CMD ["java", "-jar", "/app/app.jar"]
+CMD ["java", "-Dspring.profiles.active=prod", "-jar", "/app/app.jar"]
 
 
 

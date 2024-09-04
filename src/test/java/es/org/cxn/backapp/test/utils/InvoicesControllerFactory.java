@@ -4,10 +4,11 @@ package es.org.cxn.backapp.test.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -68,7 +69,7 @@ public final class InvoicesControllerFactory {
   /**
    * Invoice A number.
    */
-  public static final int INVOICE_A_NUMBER = 1;
+  public static final BigInteger INVOICE_A_NUMBER = BigInteger.valueOf(1);
   /**
    * Invoice A series.
    */
@@ -101,7 +102,7 @@ public final class InvoicesControllerFactory {
   /**
    * Invoice B number.
    */
-  public static final int INVOICE_B_NUMBER = 2;
+  public static final BigInteger INVOICE_B_NUMBER = BigInteger.valueOf(2);
   /**
    * Invoice B series.
    */
@@ -134,22 +135,22 @@ public final class InvoicesControllerFactory {
   /**
    * @return Invoice A request object.
    */
-  public static CreateInvoiceRequestForm createInvoiceARequest() {
-    return new CreateInvoiceRequestForm(
+  public static CreateInvoiceRequest createInvoiceARequest() {
+    return new CreateInvoiceRequest(
           INVOICE_A_NUMBER, INVOICE_A_SERIES, INVOICE_A_PAYMENT_DATE,
-          INVOICE_A_EXPEDITION_DATE, INVOICE_A_TAX_EXEMPT, INVOICE_A_SELLER,
-          INVOICE_A_BUYER
+          INVOICE_A_TAX_EXEMPT, INVOICE_A_SELLER, INVOICE_A_BUYER,
+          INVOICE_A_EXPEDITION_DATE
     );
   }
 
   /**
    * @return Invoice B request object.-
    */
-  public static CreateInvoiceRequestForm createInvoiceBRequest() {
-    return new CreateInvoiceRequestForm(
+  public static CreateInvoiceRequest createInvoiceBRequest() {
+    return new CreateInvoiceRequest(
           INVOICE_B_NUMBER, INVOICE_B_SERIES, INVOICE_B_PAYMENT_DATE,
-          INVOICE_B_EXPEDITION_DATE, INVOICE_B_TAX_EXEMPT, INVOICE_B_SELLER,
-          INVOICE_B_BUYER
+          INVOICE_B_TAX_EXEMPT, INVOICE_B_SELLER, INVOICE_B_BUYER,
+          INVOICE_B_EXPEDITION_DATE
     );
   }
 

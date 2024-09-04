@@ -8,7 +8,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequestForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
@@ -124,7 +124,7 @@ class RoleControllerIntegrationTest {
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var userChangeRoleRequest = new UserChangeRoleRequestForm(
+    var userChangeRoleRequest = new UserChangeRoleRequest(
           UsersControllerFactory.USER_A_EMAIL, userRoleListToSet
     );
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
@@ -175,7 +175,7 @@ class RoleControllerIntegrationTest {
                 .content(userARequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var userChangeRoleRequestForm = new UserChangeRoleRequestForm(
+    var userChangeRoleRequestForm = new UserChangeRoleRequest(
           UsersControllerFactory.USER_A_EMAIL, userRolesList
     );
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequestForm);
@@ -186,7 +186,7 @@ class RoleControllerIntegrationTest {
     userRolesList = new ArrayList<UserRoleName>();
     userRolesList.add(UserRoleName.ROLE_SOCIO);
 
-    userChangeRoleRequestForm = new UserChangeRoleRequestForm(
+    userChangeRoleRequestForm = new UserChangeRoleRequest(
           UsersControllerFactory.USER_A_EMAIL, userRolesList
     );
     userChangeRoleRequestJson = gson.toJson(userChangeRoleRequestForm);
@@ -227,7 +227,7 @@ class RoleControllerIntegrationTest {
 
     var notExisitngUserEmail = "NotExistingEmail@Email.com";
     var userChangeRoleRequest =
-          new UserChangeRoleRequestForm(notExisitngUserEmail, userRolesList);
+          new UserChangeRoleRequest(notExisitngUserEmail, userRolesList);
     var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
     mockMvc.perform(
           patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON)

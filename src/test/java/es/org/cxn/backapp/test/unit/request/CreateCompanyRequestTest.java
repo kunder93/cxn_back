@@ -1,95 +1,145 @@
 
 package es.org.cxn.backapp.test.unit.request;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequest;
 
-import org.junit.jupiter.api.Test;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 
-class CreateCompanyRequestTest {
+import java.util.Set;
 
-  @Test
-  void testGettersAndSetters() {
-    final var nif = "123456789A";
-    final var name = "Company ABC";
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-    final var address = "123 Main St";
+/**
+ * Unit tests for the {@link CreateCompanyRequest} class.
+ * <p>
+ * These tests verify that the validation constraints defined in the
+ * {@link CreateCompanyRequest} class are properly enforced for
+ * both valid and invalid inputs. The tests cover a range of cases including
+ * frontier values and invalid inputs to ensure that the validation
+ * annotations work as expected.
+ * </p>
+ */
+public class CreateCompanyRequestTest {
 
-    // Crear una instancia de CreateCompanyRequestForm
-    var companyRequestForm = new CreateCompanyRequestForm(nif, name, address);
+  /**
+   * Validator instance for performing constraint validation.
+   */
+  private static Validator validator;
 
-    //
-    assertEquals(
-          "123456789A", companyRequestForm.nif(),
-          "Verifica los valores usando getters"
-    );
-    assertEquals(
-          "Company ABC", companyRequestForm.name(),
-          "Verifica los valores usando getters"
-    );
-    assertEquals(
-          "123 Main St", companyRequestForm.address(),
-          "Verifica los valores usando getters"
-    );
+  /**
+   * Sets up the validator instance before any of the tests are run.
+   * This method initializes the validation factory and creates a
+   * {@link Validator} instance used for validating the form objects.
+   */
+  @BeforeAll
+  public static void setup() {
+    var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
   }
 
-  @Test
-  void testHashCode() {
-    // Crear dos instancias de CreateCompanyRequestForm con los mismos valores
-    var companyRequestForm1 = new CreateCompanyRequestForm(
-          "123456789A", "Company ABC", "123 Main St"
-    );
-    var companyRequestForm2 = new CreateCompanyRequestForm(
-          "123456789A", "Company ABC", "123 Main St"
-    );
+  /**
+   * Tests the {@link CreateCompanyRequest} class with valid inputs,
+   * including frontier values that are at the edge of allowed lengths.
+   * <p>
+   * The test cases include:
+   * <ul>
+   *   <li>A NIF with the maximum length of 10 characters.</li>
+   *   <li>A name with the maximum length of 40 characters.</li>
+   *   <li>An address with the maximum length of 60 characters.</li>
+   * </ul>
+   * </p>
+   *
+   * @param nif The Tax Identification Number (NIF) of the company.
+   * @param name The name of the company.
+   * @param address The address of the company.
+   */
+  @ParameterizedTest(name = "Valid case: nif={0}, name={1}, address={2}")
+  @CsvSource(
+    {
+        // Valid cases with frontier values
+        "1234567890, ValidName, ValidAddress",
+        // Valid input with max length for NIF
+        "1234567890, MaxLengthCompanyNameIs40Charactersssssss, ValidAddress",
+        // Valid input with max length for Name
+        "1234567890, ShortName, MaxLengthCompanyAddressIs60Characterssssssssss"
+              + "ssssssssssssss", // Valid input with max length for Address
+    }
+  )
+  @DisplayName("Valid cases with frontier values for CreateCompanyRequest")
+  void testValidCases(
+        final String nif, final String name, final String address
+  ) {
+    // Given: A valid CreateCompanyRequest with the provided parameters
+    final var form = new CreateCompanyRequest(nif, name, address);
 
-    assertEquals(
-          companyRequestForm1.hashCode(), companyRequestForm2.hashCode(),
-          "los hashCodes son iguales"
-    );
+    // When: The form is validated
+    final Set<ConstraintViolation<CreateCompanyRequest>> violations =
+          validator.validate(form);
+
+    // Then: No violations should be found
+    assertTrue(violations.isEmpty(), "No violations expected for valid input.");
   }
 
-  @Test
-  void testEquals() {
-    // Crear dos instancias de CreateCompanyRequestForm con los mismos valores
-    var companyRequestForm1 = new CreateCompanyRequestForm(
-          "123456789A", "Company ABC", "123 Main St"
-    );
-    var companyRequestForm2 = new CreateCompanyRequestForm(
-          "123456789A", "Company ABC", "123 Main St"
-    );
+  /**
+   * Tests the {@link CreateCompanyRequest} class with invalid inputs,
+   * including cases with values that are too short, too long, or contain
+   * only whitespace.
+   * <p>
+   * The test cases include:
+   * <ul>
+   *   <li>A blank NIF.</li>
+   *   <li>A NIF that exceeds the maximum length of 10 characters.</li>
+   *   <li>A blank name.</li>
+   *   <li>A name that exceeds the maximum length of 40 characters.</li>
+   *   <li>A blank address.</li>
+   *   <li>An address that exceeds the maximum length of 60 characters.</li>
+   *   <li>A NIF with only whitespace.</li>
+   *   <li>A name with only whitespace.</li>
+   *   <li>An address with only whitespace.</li>
+   * </ul>
+   * </p>
+   *
+   * @param nif The Tax Identification Number (NIF) of the company.
+   * @param name The name of the company.
+   * @param address The address of the company.
+   */
+  @ParameterizedTest(name = "Invalid case: nif={0}, name={1}, address={2}")
+  @CsvSource(
+    {
+        // Invalid cases with frontier values
+        ", ValidName, ValidAddress", // Blank NIF
+        "12345678901, ValidName, ValidAddress", // NIF exceeding max length
+        "1234567890, , ValidAddress", // Blank Name
+        "1234567890, NameExceedingMaxLength_41_Characters56579, ValidAddress",
+        // Name exceeding max length
+        "1234567890, ValidName, ", // Blank Address
+        "1234567890, ValidName, AddressExceedingMaxLength_61_Characters12312312"
+              + "31231231231231", // Address exceeding max length
+        "      , ValidName, ValidAddress", // NIF with white spaces
+        "1234567890,        , ValidAddress", // Name with white spaces
+        "1234567890, ValidName,           " // Address white spaces
+    }
+  )
+  @DisplayName("Invalid cases for CreateCompanyRequest")
+  void testInvalidCases(
+        final String nif, final String name, final String address
+  ) {
+    // Given: An invalid CreateCompanyRequest with the provided parameters
+    final var form = new CreateCompanyRequest(nif, name, address);
 
-    // Verificar que
-    assertEquals(
-          companyRequestForm1, companyRequestForm2,
-          " las instancias son iguales usando equals"
-    );
-    assertEquals(
-          companyRequestForm2, companyRequestForm1,
-          " las instancias son iguales usando equals"
-    );
+    // When: The form is validated
+    final Set<ConstraintViolation<CreateCompanyRequest>> violations =
+          validator.validate(form);
+
+    // Then: Violations should be found
+    assertFalse(violations.isEmpty(), "Violations expected for invalid input.");
   }
-
-  @Test
-  void testNotEquals() {
-    // Crear dos instancias de CreateCompanyRequestForm con diferentes valores
-    var companyRequestForm1 = new CreateCompanyRequestForm(
-          "123456789A", "Company ABC", "123 Main St"
-    );
-    var companyRequestForm2 = new CreateCompanyRequestForm(
-          "987654321B", "Company XYZ", "456 Elm St"
-    );
-
-    assertNotEquals(
-          companyRequestForm1, companyRequestForm2,
-          "las instancias no son iguales usando equals"
-    );
-    assertNotEquals(
-          companyRequestForm2, companyRequestForm1,
-          "las instancias no son iguales usando equals"
-    );
-  }
-
 }

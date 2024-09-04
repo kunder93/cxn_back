@@ -17,8 +17,8 @@ import com.google.gson.GsonBuilder;
 import es.org.cxn.backapp.controller.entity.ChessQuestionsController;
 import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
-import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequestForm;
+import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
+import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
@@ -99,7 +99,7 @@ class ChessQuestionsControllerTest {
     final var message = "message";
 
     var requestForm =
-          new CreateChessQuestionRequestForm(email, category, topic, message);
+          new CreateChessQuestionRequest(email, category, topic, message);
 
     ChessQuestionEntity result = new PersistentChessQuestionEntity();
     result.setIdentifier(1);
@@ -140,7 +140,7 @@ class ChessQuestionsControllerTest {
     final var topic = "topic";
     final var message = "message";
     var requestForm =
-          new CreateChessQuestionRequestForm(email, category, topic, message);
+          new CreateChessQuestionRequest(email, category, topic, message);
 
     when(
           chessQuestionsService.add(
@@ -250,7 +250,7 @@ class ChessQuestionsControllerTest {
   void testChangeChessQuestionHasSeenSuccess() throws Exception {
     // Arrange
     final var id = 1;
-    var requestForm = new ChangeChessQuestionHasSeenRequestForm(id);
+    var requestForm = new ChangeChessQuestionHasSeenRequest(id);
 
     ChessQuestionEntity result = new PersistentChessQuestionEntity();
     result.setIdentifier(1);
@@ -283,7 +283,7 @@ class ChessQuestionsControllerTest {
   void testChangeChessQuestionHasSeenQuestionNotFound() throws Exception {
     // Arrange
     final var id = 1;
-    var requestForm = new ChangeChessQuestionHasSeenRequestForm(id);
+    var requestForm = new ChangeChessQuestionHasSeenRequest(id);
 
     doThrow(new ChessQuestionServiceException("Question not found"))
           .when(chessQuestionsService)
@@ -301,7 +301,7 @@ class ChessQuestionsControllerTest {
   void testChangeChessQuestionHasSeenServiceException() throws Exception {
     // Arrange
     final var id = 1;
-    var requestForm = new ChangeChessQuestionHasSeenRequestForm(id);
+    var requestForm = new ChangeChessQuestionHasSeenRequest(id);
 
     doThrow(new ChessQuestionServiceException("Service error"))
           .when(chessQuestionsService)

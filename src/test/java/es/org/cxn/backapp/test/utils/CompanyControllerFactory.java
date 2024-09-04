@@ -4,7 +4,7 @@ package es.org.cxn.backapp.test.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequest;
 
 import java.time.LocalDate;
 
@@ -70,16 +70,16 @@ public final class CompanyControllerFactory {
   /**
    * Company A request.
    */
-  private static final CreateCompanyRequestForm COMPANY_A_REQUEST =
-        new CreateCompanyRequestForm(
+  private static final CreateCompanyRequest COMPANY_A_REQUEST =
+        new CreateCompanyRequest(
               COMPANY_A_NIFCIF, COMPANY_A_NAME, COMPANY_A_ADDRESS
         );
 
   /**
    * Company B request.
    */
-  private static final CreateCompanyRequestForm COMPANY_B_REQUEST =
-        new CreateCompanyRequestForm(
+  private static final CreateCompanyRequest COMPANY_B_REQUEST =
+        new CreateCompanyRequest(
               COMPANY_B_NIFCIF, COMPANY_B_NAME, COMPANY_B_ADDRESS
         );
 

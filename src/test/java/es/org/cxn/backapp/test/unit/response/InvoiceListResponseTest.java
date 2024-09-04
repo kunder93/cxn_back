@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -20,7 +21,7 @@ class InvoiceListResponseTest {
   /**
    * Invoice number for the first test invoice.
    */
-  private static final int INVOICE_1_NUMBER = 1;
+  private static final BigInteger INVOICE_1_NUMBER = BigInteger.valueOf(1);
 
   /**
    * Invoice series for the first test invoice.
@@ -56,7 +57,7 @@ class InvoiceListResponseTest {
   /**
    * Invoice number for the second test invoice.
    */
-  private static final int INVOICE_2_NUMBER = 1;
+  private static final BigInteger INVOICE_2_NUMBER = BigInteger.valueOf(1);
 
   /**
    * Invoice series for the second test invoice.
@@ -92,7 +93,7 @@ class InvoiceListResponseTest {
   /**
    * Invoice number for the third test invoice.
    */
-  private static final int INVOICE_3_NUMBER = 3;
+  private static final BigInteger INVOICE_3_NUMBER = BigInteger.valueOf(3);
 
   /**
    * Invoice series for the third test invoice.

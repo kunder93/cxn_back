@@ -8,6 +8,8 @@ import static org.mockito.Mockito.mock;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity;
 
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.Test;
 
 /**
@@ -30,21 +32,21 @@ class PersistentSelfVehicleEntityTest {
    * Used to verify that the getter and setter methods work correctly for the
    * distance attribute.
    */
-  private static final float TEST_DISTANCE = 100.0f;
+  private static final BigDecimal TEST_DISTANCE = BigDecimal.valueOf(100.0);
 
   /**
    * A test value for the kmPrice property.
    * Used to verify that the getter and setter methods work correctly for the
    * kmPrice attribute.
    */
-  private static final double TEST_KM_PRICE = 1.5;
+  private static final BigDecimal TEST_KM_PRICE = BigDecimal.valueOf(0.19);
 
   /**
    * An updated test value for the kmPrice property.
    * Used to verify that changes in the kmPrice attribute are correctly
    * reflected and that the equals and hashCode methods handle updates properly.
    */
-  private static final double UPDATED_KM_PRICE = 2.0;
+  private static final BigDecimal UPDATED_KM_PRICE = BigDecimal.valueOf(0.18);
 
   /**
    * A test value for the identifier property.

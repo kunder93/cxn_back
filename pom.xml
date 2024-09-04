@@ -94,6 +94,21 @@
       <url>https://repo.maven.apache.org/maven2</url>
     </repository>
   </repositories>
+ <profiles>
+    <profile>
+        <id>dev</id>
+        <properties>
+            <spring.profiles.active>dev</spring.profiles.active>
+        </properties>
+    </profile>
+    <profile>
+        <id>prod</id>
+        <properties>
+            <spring.profiles.active>prod</spring.profiles.active>
+        </properties>
+    </profile>
+</profiles>
+
   <dependencies>
     <dependency>
       <groupId>com.github.therapi</groupId>
@@ -210,7 +225,8 @@
     </dependency>
     <dependency>
       <groupId>io.jsonwebtoken</groupId>
-      <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+      <artifactId>jjwt-jackson</artifactId> 
+      <!-- or jjwt-gson if Gson is preferred -->
       <version>${jjwt.version}</version>
       <scope>runtime</scope>
     </dependency>
@@ -288,13 +304,13 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
-      <version>${junit.jupiter.version}</version> <!-- Or the latest version compatible with your setup -->
+      <version>${junit.jupiter.version}</version> 
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>${junit.jupiter.version}</version> <!-- Or the latest version compatible with your setup -->
+      <version>${junit.jupiter.version}</version> 
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -363,7 +379,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>${logback.version}</version> <!-- Use the latest stable version -->
+      <version>${logback.version}</version> 
     </dependency>
     <dependency>
       <groupId>jakarta.el</groupId>
@@ -401,7 +417,7 @@
     <dependency>
       <groupId>org.hibernate.validator</groupId>
       <artifactId>hibernate-validator</artifactId>
-      <version>${hibernate.validator.version}</version> <!-- Use the latest version -->
+      <version>${hibernate.validator.version}</version> 
     </dependency>
     <!-- ============================================== -->
     <!-- ================ LIQUIBASE =================== -->
@@ -505,7 +521,7 @@
           <source>${java.version}</source>
           <target>${java.version}</target>
           <compilerArgs>
-          <arg>-parameters</arg>
+            <arg>-parameters</arg>
             <arg>-encoding</arg>
             <arg>UTF-8</arg>
           </compilerArgs>

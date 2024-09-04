@@ -3,6 +3,7 @@ package es.org.cxn.backapp.model.form.responses;
 
 import es.org.cxn.backapp.model.InvoiceEntity;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 
 /**
@@ -26,7 +27,7 @@ import java.time.LocalDate;
  * @author Santiago Paz
  */
 public record InvoiceResponse(
-      int number, String series, LocalDate advancePaymentDate,
+      BigInteger number, String series, LocalDate advancePaymentDate,
       LocalDate expeditionDate, Boolean taxExempt, String sellerNif,
       String buyerNif
 ) {
@@ -43,7 +44,7 @@ public record InvoiceResponse(
    */
   public static InvoiceResponse fromEntity(final InvoiceEntity entity) {
     return new InvoiceResponse(
-          entity.getNumber(), entity.getSeries(),
+          BigInteger.valueOf(entity.getNumber()), entity.getSeries(),
           entity.getAdvancePaymentDate(), entity.getExpeditionDate(),
           entity.getTaxExempt(), entity.getSeller().getNif(),
           entity.getBuyer().getNif()

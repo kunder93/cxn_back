@@ -83,11 +83,6 @@ public class AuthController {
   private final UserDetailsService usrDtlsSrv;
 
   /**
-   * The jwt utilities.
-   */
-  private final DefaultJwtUtils jwtUtils;
-
-  /**
    * Constructs a controller with the specified dependencies.
    *
    * @param serviceUser     the user service.
@@ -108,8 +103,7 @@ public class AuthController {
     this.usrDtlsSrv = Preconditions.checkNotNull(
           userDetailsServ, "Received a null pointer as authenticationManager"
     );
-    this.jwtUtils = Preconditions
-          .checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
+    Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
 
   }
 
@@ -203,7 +197,7 @@ public class AuthController {
             HttpStatus.UNAUTHORIZED, e.getMessage(), e
       );
     }
-    final var jwt = jwtUtils.generateToken(userDetails);
+    final var jwt = DefaultJwtUtils.generateToken(userDetails);
     return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
   }
 

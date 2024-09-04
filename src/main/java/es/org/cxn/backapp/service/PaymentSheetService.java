@@ -28,6 +28,7 @@ import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
 import es.org.cxn.backapp.model.PaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -124,7 +125,8 @@ public interface PaymentSheetService {
    * @throws PaymentSheetServiceException If fails.
    */
   PersistentPaymentSheetEntity addSelfVehicleToPaymentSheet(
-        Integer paymentSheetId, String places, float distance, double kmPrice
+        Integer paymentSheetId, String places, BigDecimal distance,
+        BigDecimal kmPrice
   ) throws PaymentSheetServiceException;
 
   /**
@@ -138,7 +140,7 @@ public interface PaymentSheetService {
    * @throws PaymentSheetServiceException If fails.
    */
   PersistentPaymentSheetEntity addFoodHousingToPaymentSheet(
-        Integer paymentSheetId, Integer amountDays, float dayPrice,
+        Integer paymentSheetId, Integer amountDays, BigDecimal dayPrice,
         boolean overnight
   ) throws PaymentSheetServiceException;
 

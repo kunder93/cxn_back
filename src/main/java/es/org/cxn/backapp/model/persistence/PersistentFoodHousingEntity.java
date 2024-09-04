@@ -38,6 +38,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -89,7 +90,7 @@ public class PersistentFoodHousingEntity implements FoodHousingEntity {
    * The food housing day price.
    */
   @Column(name = "dayprice", nullable = false, unique = false)
-  private double dayPrice;
+  private BigDecimal dayPrice;
 
   /**
    * The food housing overnight.
@@ -167,7 +168,7 @@ public class PersistentFoodHousingEntity implements FoodHousingEntity {
       final var that = (PersistentFoodHousingEntity) object;
 
       // Compare the relevant fields
-      isEqual = Double.compare(that.dayPrice, dayPrice) == 0
+      isEqual = dayPrice.compareTo(that.dayPrice) == 0
             && Objects.equals(id, that.id)
             && Objects.equals(amountDays, that.amountDays)
             && Objects.equals(overnight, that.overnight);

@@ -54,7 +54,8 @@ public class SecurityConfiguration {
           .authenticated().and().sessionManagement()
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
           .cors(Customizer.withDefaults());
-
+    // For h2 web connection, make H2 web console working.
+    http.headers().frameOptions().sameOrigin();
     http.addFilterBefore(
           jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
     );

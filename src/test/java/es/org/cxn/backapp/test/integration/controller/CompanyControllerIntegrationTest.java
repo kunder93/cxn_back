@@ -9,9 +9,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateCompanyRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
+import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequest;
+import es.org.cxn.backapp.model.form.requests.CreateCompanyRequest;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.responses.CompanyListResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyUpdateResponse;
@@ -20,6 +20,7 @@ import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 import jakarta.transaction.Transactional;
 
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -131,14 +132,14 @@ class CompanyControllerIntegrationTest {
    *
    * Specifically, it prepares:
    * <ul>
-   *   <li>{@link CreateCompanyRequestForm} for a new company creation
+   *   <li>{@link CreateCompanyRequest} for a new company creation
    *   request.</li>
-   *   <li>{@link CreateCompanyRequestForm} for a request to create a
+   *   <li>{@link CreateCompanyRequest} for a request to create a
    *   company with a
    *   duplicate NIF/CIF.</li>
-   *   <li>{@link CreateCompanyRequestForm} for a request to create a
+   *   <li>{@link CreateCompanyRequest} for a request to create a
    *   second company.</li>
-   *   <li>{@link CompanyUpdateRequestForm} for updating company details.</li>
+   *   <li>{@link CompanyUpdateRequest} for updating company details.</li>
    *   <li>{@link CompanyUpdateResponse} for verifying the update response.</li>
    * </ul>
    *
@@ -149,25 +150,25 @@ class CompanyControllerIntegrationTest {
    * executed once before any of the test methods in the class are run,
    *  providing a consistent test setup.
    *
-   * @see CreateCompanyRequestForm
-   * @see CompanyUpdateRequestForm
+   * @see CreateCompanyRequest
+   * @see CompanyUpdateRequest
    * @see CompanyUpdateResponse
    * @see Gson
    */
   @BeforeAll
   public static void setup() {
-    var companyRequest = new CreateCompanyRequestForm(
+    var companyRequest = new CreateCompanyRequest(
           COMPANY_NIF, COMPANY_NAME, COMPANY_ADDRESS
     );
-    var sameNifCifCompanyRequest = new CreateCompanyRequestForm(
+    var sameNifCifCompanyRequest = new CreateCompanyRequest(
           COMPANY_NIF, SECOND_COMPANY_NAME, SECOND_COMPANY_ADDRESS
     );
 
-    var secondCompanyRequest = new CreateCompanyRequestForm(
+    var secondCompanyRequest = new CreateCompanyRequest(
           SECOND_COMPANY_NIFCIF, SECOND_COMPANY_NAME, SECOND_COMPANY_ADDRESS
     );
 
-    var updateCompanyRequest = new CompanyUpdateRequestForm(
+    var updateCompanyRequest = new CompanyUpdateRequest(
           UPDATED_COMPANY_NAME, UPDATED_COMPANY_ADDRESS
     );
 
@@ -331,7 +332,7 @@ class CompanyControllerIntegrationTest {
   @Test
   @Transactional
   void testDeleteCompanyWithInvoicesNotValid() throws Exception {
-    final var invoiceANumber = 0001;
+    final var invoiceANumber = BigInteger.valueOf(0001);
     final var invoiceASeries = "IAS";
     final var invoiceAExpeditionDate = LocalDate.of(2020, 1, 8);
     final var invoiceATaxExempt = Boolean.TRUE;
@@ -353,10 +354,10 @@ class CompanyControllerIntegrationTest {
 
     // Create invoice using first company as Seller and second as Buyer.
     // Create first invoice.
-    var invoiceRequest = new CreateInvoiceRequestForm(
+    var invoiceRequest = new CreateInvoiceRequest(
           invoiceANumber, invoiceASeries, invoiceAPaymentDate,
-          invoiceAExpeditionDate, invoiceATaxExempt, invoiceASeller,
-          invoiceABuyer
+          invoiceATaxExempt, invoiceASeller, invoiceABuyer,
+          invoiceAExpeditionDate
     );
     var gson = new GsonBuilder()
           .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())

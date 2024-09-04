@@ -2,122 +2,88 @@
 package es.org.cxn.backapp.test.unit.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 
-import org.junit.jupiter.api.Test;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+
+import java.util.Set;
+
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
- * Unit test class for {@link UserChangeEmailRequest}.
+ * Unit test for {@link UserChangeEmailRequest}.
  * <p>
- * This class contains tests for verifying the functionality of the
- * {@link UserChangeEmailRequest} class, including its getters, setters,
- * and overridden methods like {@code hashCode()} and {@code equals()}.
+ * This test class verifies the validation of the
+ * {@link UserChangeEmailRequest} record using parameterized tests with
+ * various valid and invalid email addresses.
  * </p>
  */
-class UserChangeEmailRequestTest {
+public class UserChangeEmailRequestTest {
 
   /**
-   * The current user email used in the test cases.
+   * The validator.
    */
-  private static final String USER_EMAIL = "user@email.com";
+  private static Validator validator;
 
   /**
-   * The new email address to be set.
-   */
-  private static final String USER_NEW_EMAIL = "user@other.com";
-
-  /**
-   * A different new email address for testing inequality.
-   */
-  private static final String SECOND_USER_NEW_EMAIL = "otherema@mail.in";
-
-  /**
-   * Tests the getters of the {@link UserChangeEmailRequest} class.
+   * Sets up the validator factory and initializes the {@link Validator}
+   * instance to be used for validating {@link UserChangeEmailRequest} objects
+   *  in the tests.
    * <p>
-   * This test verifies that the getters return the correct values for
-   * the {@code email} and {@code newEmail} fields.
+   * This method is annotated with {@link BeforeAll}, which means it will be
+   * executed once before any of the test methods in this class are run.
+   * It initializes the {@code validator} field using the default validator
+   * factory provided by Jakarta Bean Validation (formerly known as JSR 380).
+   * </p>
+   * <p>
+   * The validator is used to ensure that the objects being tested adhere to the
+   * validation constraints defined in the {@link UserChangeEmailRequest} class.
    * </p>
    */
-  @Test
-  void testGetters() {
-    // Create an instance of UserChangeEmailRequest
-    var request = new UserChangeEmailRequest(USER_EMAIL, USER_NEW_EMAIL);
-
-    // Verify that the email getter returns the expected value
-    assertEquals(
-          USER_EMAIL, request.email(), "Expected email value from getter"
-    );
-
-    // Verify that the newEmail getter returns the expected value
-    assertEquals(
-          USER_NEW_EMAIL, request.newEmail(),
-          "Expected newEmail value from getter"
-    );
+  @BeforeAll
+  public static void setup() {
+    var factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
   }
 
   /**
-   * Tests the {@code equals()} method of the
-   * {@link UserChangeEmailRequest} class.
-   * <p>
-   * This test checks that two instances of {@link UserChangeEmailRequest}
-   * with the same values are considered equal.
-   * </p>
+   * Tests the validation of {@link UserChangeEmailRequest} with various
+   * email addresses.
+   *
+   * @param email    The current email address to be tested.
+   * @param newEmail The new email address to be tested.
+   * @param expectedViolations The expected number of validation violations.
    */
-  @Test
-  void testEquals() {
-    // Create two instances of UserChangeEmailRequest with the same values
-    var request1 = new UserChangeEmailRequest(USER_EMAIL, USER_NEW_EMAIL);
-    var request2 = new UserChangeEmailRequest(USER_EMAIL, USER_NEW_EMAIL);
+  @ParameterizedTest(name = "email={0}, newEmail={1}, expectedViolations={2}")
+  @CsvSource(
+    { "'', '', 2", // Invalid: Both fields are blank
+        "'invalid-email', 'valid.email@example.com', 1",
+        // Invalid: Current email is invalid
+        "'valid.email@example.com', 'invalid-email', 1",
+        // Invalid: New email is invalid
+        "'valid.email@example.com', 'valid.email@example.com', 0",
+        // Valid: Both emails are valid
+        "'valid.email@example.com', '', 1",
+        // Invalid: New email is blank
+        "'', 'valid.email@example.com', 1" // Invalid: Current email is blank
+    }
+  )
+  void testEmailValidation(
+        final String email, final String newEmail, final int expectedViolations
+  ) {
+    var request = new UserChangeEmailRequest(email, newEmail);
 
-    // Verify that instances with the same values are equal
+    Set<ConstraintViolation<UserChangeEmailRequest>> violations =
+          validator.validate(request);
+
     assertEquals(
-          request1, request2, "Instances with the same values should be equal"
-    );
-  }
-
-  /**
-   * Tests the inequality of the {@code equals()} method of the
-   * {@link UserChangeEmailRequest} class.
-   * <p>
-   * This test checks that two instances of {@link UserChangeEmailRequest}
-   * with different values are not considered equal.
-   * </p>
-   */
-  @Test
-  void testNotEquals() {
-    // Create two instances of UserChangeEmailRequest with different values
-    var request1 = new UserChangeEmailRequest(USER_EMAIL, USER_NEW_EMAIL);
-    var request2 =
-          new UserChangeEmailRequest(USER_EMAIL, SECOND_USER_NEW_EMAIL);
-
-    // Verify that instances with different values are not equal
-    assertNotEquals(
-          request1, request2,
-          "Instances with different values should not be equal"
-    );
-  }
-
-  /**
-   * Tests the {@code hashCode()} method of the
-   * {@link UserChangeEmailRequest} class.
-   * <p>
-   * This test ensures that two instances of
-   * {@link UserChangeEmailRequest} with the same values produce identical
-   * hash codes.
-   * </p>
-   */
-  @Test
-  void testHashCode() {
-    // Create two instances of UserChangeEmailRequest with the same values
-    var request1 = new UserChangeEmailRequest(USER_EMAIL, USER_NEW_EMAIL);
-    var request2 = new UserChangeEmailRequest(USER_EMAIL, USER_NEW_EMAIL);
-
-    // Verify that hash codes are equal for identical instances
-    assertEquals(
-          request1.hashCode(), request2.hashCode(),
-          "Hash codes should be equal for identical instances"
+          expectedViolations, violations.size(),
+          "The number of violations should match the expected number."
     );
   }
 }

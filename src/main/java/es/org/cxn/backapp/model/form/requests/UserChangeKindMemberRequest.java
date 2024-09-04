@@ -3,7 +3,9 @@ package es.org.cxn.backapp.model.form.requests;
 
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Represents the form request used to add or remove roles from a user.
@@ -20,8 +22,8 @@ import jakarta.validation.constraints.NotEmpty;
  *
  * @author Santiago Paz Perez.
  */
-public record UserChangeKindMemberRequest(@NotEmpty
-String email, @NotEmpty
+public record UserChangeKindMemberRequest(@NotEmpty @Email
+String email, @NotNull
 UserType kindMember) {
 
 }

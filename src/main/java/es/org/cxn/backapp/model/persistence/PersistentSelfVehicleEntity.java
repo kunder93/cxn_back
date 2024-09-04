@@ -37,6 +37,7 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 
 import lombok.AllArgsConstructor;
@@ -87,14 +88,14 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    *
    */
   @Column(name = "distance", nullable = false, unique = false)
-  private float distance;
+  private BigDecimal distance;
 
   /**
    * Price per kilometer in euros.
    *
    */
   @Column(name = "km_price", nullable = false, unique = false)
-  private double kmPrice;
+  private BigDecimal kmPrice;
 
   /**
    * Payment sheet entity associated.
@@ -109,11 +110,11 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
    * This method compares the current object with the specified object
    * to determine if they are equal. Two objects are considered equal if
    * they are of the same class and all relevant fields are equal.
+   * </p>
    *
    * @param obj the object to compare this instance with
    * @return {@code true} if this object is the same as the
-   * {@code obj} argument;
-   * {@code false} otherwise
+   * {@code obj} argument; {@code false} otherwise
    */
   @Override
   public boolean equals(final Object obj) {
@@ -125,10 +126,10 @@ public class PersistentSelfVehicleEntity implements SelfVehicleEntity {
       isEqual = false;
     } else {
       final var that = (PersistentSelfVehicleEntity) obj;
-      isEqual = Float.compare(that.distance, distance) == 0
-            && Double.compare(that.kmPrice, kmPrice) == 0
-            && Objects.equals(identifier, that.identifier)
-            && Objects.equals(places, that.places);
+      isEqual = Objects.equals(identifier, that.identifier)
+            && Objects.equals(places, that.places)
+            && distance.compareTo(that.distance) == 0
+            && kmPrice.compareTo(that.kmPrice) == 0;
     }
 
     return isEqual;

@@ -27,11 +27,6 @@ import io.jsonwebtoken.security.Keys;
  */
 @Service
 public final class DefaultJwtUtils {
-
-  private DefaultJwtUtils() {
-    // private unnecessary constructor for utility class.
-  }
-
   /**
    * Temporary for develop, must change.
    */
@@ -54,6 +49,10 @@ public final class DefaultJwtUtils {
    * {@code expiration} instant.
    */
   private static final Duration EXPIRATION_TIME = Duration.ofHours(10);
+
+  private DefaultJwtUtils() {
+    // private unnecessary constructor for utility class.
+  }
 
   /**
    * Temporary for develop, must change.

@@ -4,7 +4,7 @@ package es.org.cxn.backapp.test.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
+import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequest;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -68,8 +68,8 @@ public final class PaymentSheetControllerFactory {
   /**
    * @return Payment sheet request form object.
    */
-  public static CreatePaymentSheetRequestForm getPaymentSheetRequestForm() {
-    return new CreatePaymentSheetRequestForm(
+  public static CreatePaymentSheetRequest getPaymentSheetRequestForm() {
+    return new CreatePaymentSheetRequest(
           UsersControllerFactory.USER_A_EMAIL, PAYMENT_SHEET_REASON,
           PAYMENT_SHEET_PLACE, PAYMENT_SHEET_START_DATE, PAYMENT_SHEET_END_DATE
     );

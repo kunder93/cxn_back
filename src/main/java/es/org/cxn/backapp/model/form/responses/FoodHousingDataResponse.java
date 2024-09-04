@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
+import java.math.BigDecimal;
+
 /**
  * Represents the response DTO used by the controller for food housing data.
  * <p>
@@ -14,7 +16,7 @@ package es.org.cxn.backapp.model.form.responses;
  * @author Santiago Paz
  */
 public record FoodHousingDataResponse(
-      Integer amountDays, double dayPrice, boolean overnight
+      Integer amountDays, BigDecimal dayPrice, boolean overnight
 ) {
 
 }

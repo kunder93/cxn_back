@@ -28,6 +28,7 @@ import es.org.cxn.backapp.repository.SelfVehicleRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.DefaultPaymentSheetService;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Optional;
@@ -155,12 +156,12 @@ class PaymentSheetServiceTest {
   /**
    * A sample value for the distance in self-vehicle entity.
    */
-  private static final float VEHICLE_DISTANCE = 100.0f;
+  private static final BigDecimal VEHICLE_DISTANCE = BigDecimal.valueOf(100.0);
 
   /**
    * A sample value for the kilometer price in self-vehicle entity.
    */
-  private static final double VEHICLE_KM_PRICE = 0.50;
+  private static final BigDecimal VEHICLE_KM_PRICE = BigDecimal.valueOf(0.11);
 
   /**
    * A sample reason for the payment sheet entity.
@@ -185,7 +186,8 @@ class PaymentSheetServiceTest {
   /**
    * The amount for food housing used in the test.
    */
-  private static final float FOOD_HOUSING_AMOUNT = 100.0f;
+  private static final BigDecimal FOOD_HOUSING_AMOUNT =
+        BigDecimal.valueOf(100.0);
 
   /**
    * A flag indicating whether the food housing is provided or not.

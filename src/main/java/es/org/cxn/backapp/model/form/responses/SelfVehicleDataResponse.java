@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
+import java.math.BigDecimal;
+
 /**
  * Represents the form used by controller as a response for self-vehicle data.
  * <p>
@@ -17,7 +19,7 @@ package es.org.cxn.backapp.model.form.responses;
  * @author Santiago Paz
  */
 public record SelfVehicleDataResponse(
-      String places, float distance, double kmPrice
+      String places, BigDecimal distance, BigDecimal kmPrice
 ) {
 
 }

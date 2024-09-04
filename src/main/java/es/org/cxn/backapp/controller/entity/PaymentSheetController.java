@@ -27,10 +27,10 @@ package es.org.cxn.backapp.controller.entity;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
-import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequestForm;
-import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequestForm;
-import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
+import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequest;
+import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequest;
+import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequest;
+import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequest;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
@@ -145,7 +145,7 @@ public class PaymentSheetController {
   /**
    * Creates a new payment sheet based on the provided form data.
    * <p>
-   * This endpoint accepts a {@link CreatePaymentSheetRequestForm} and uses it
+   * This endpoint accepts a {@link CreatePaymentSheetRequest} and uses it
    * to create a new payment sheet. The created payment sheet is returned in a
    * {@link PaymentSheetResponse} with an HTTP status of {@code CREATED}.
    * </p>
@@ -161,15 +161,15 @@ public class PaymentSheetController {
   @CrossOrigin
   public ResponseEntity<PaymentSheetResponse>
         createPaymentSheet(@RequestBody @Valid
-  final CreatePaymentSheetRequestForm createPaymentSheetRequestForm) {
+  final CreatePaymentSheetRequest createPaymentSheetRequestForm) {
     try {
       // Create the payment sheet entity using the service
       final var paymentSheetEntity = paymentSheetService.add(
-            createPaymentSheetRequestForm.getReason(),
-            createPaymentSheetRequestForm.getPlace(),
-            createPaymentSheetRequestForm.getStartDate(),
-            createPaymentSheetRequestForm.getEndDate(),
-            createPaymentSheetRequestForm.getUserEmail()
+            createPaymentSheetRequestForm.reason(),
+            createPaymentSheetRequestForm.place(),
+            createPaymentSheetRequestForm.startDate(),
+            createPaymentSheetRequestForm.endDate(),
+            createPaymentSheetRequestForm.userEmail()
       );
 
       // Convert the created entity to a PaymentSheetResponse
@@ -197,11 +197,11 @@ public class PaymentSheetController {
   @CrossOrigin
   public ResponseEntity<String> addRegularTransportToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
-  final AddRegularTransportRequestForm requestForm) {
+  final AddRegularTransportRequest requestForm) {
     try {
       paymentSheetService.addRegularTransportToPaymentSheet(
             paymentSheetId, requestForm.category(), requestForm.description(),
-            requestForm.invoiceNumber(), requestForm.invoiceSeries()
+            requestForm.invoiceNumber().intValue(), requestForm.invoiceSeries()
       );
       return new ResponseEntity<>("", HttpStatus.OK);
     } catch (PaymentSheetServiceException e) {
@@ -248,7 +248,7 @@ public class PaymentSheetController {
   @CrossOrigin
   public ResponseEntity<String> addSelfVehicleToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
-  final AddSelfVehicleRequestForm requestForm) {
+  final AddSelfVehicleRequest requestForm) {
     try {
       paymentSheetService.addSelfVehicleToPaymentSheet(
             paymentSheetId, requestForm.places(), requestForm.distance(),
@@ -296,7 +296,7 @@ public class PaymentSheetController {
   @CrossOrigin
   public ResponseEntity<String> addFoodHousingToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
-  final AddFoodHousingToPaymentSheetRequestForm requestForm) {
+  final AddFoodHousingToPaymentSheetRequest requestForm) {
     try {
       paymentSheetService.addFoodHousingToPaymentSheet(
             paymentSheetId, requestForm.amountDays(), requestForm.dayPrice(),

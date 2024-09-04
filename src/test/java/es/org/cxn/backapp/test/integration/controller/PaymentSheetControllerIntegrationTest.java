@@ -8,11 +8,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequestForm;
-import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequestForm;
-import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequestForm;
-import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequestForm;
+import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequest;
+import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequest;
+import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequest;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
+import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequest;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
 import es.org.cxn.backapp.test.utils.CompanyControllerFactory;
@@ -23,6 +23,7 @@ import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
 import jakarta.transaction.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -118,12 +119,14 @@ class PaymentSheetControllerIntegrationTest {
   /**
    * The distance of the self vehicle in kilometers used in testing.
    */
-  private static final float SELF_VEHICLE_DISTANCE = 145.24f;
+  private static final BigDecimal SELF_VEHICLE_DISTANCE =
+        BigDecimal.valueOf(145.24);
 
   /**
    * The price per kilometer of the self vehicle used in testing.
    */
-  private static final double SELF_VEHICLE_KM_PRICE = 0.19;
+  private static final BigDecimal SELF_VEHICLE_KM_PRICE =
+        BigDecimal.valueOf(0.19);
 
   /**
    * The amount of days of self vehicle travel duration.
@@ -133,7 +136,8 @@ class PaymentSheetControllerIntegrationTest {
   /**
    * The price of food and housing per day.
    */
-  private static final float FOOD_HOUSING_DAY_PRICE = 22.30f;
+  private static final BigDecimal FOOD_HOUSING_DAY_PRICE =
+        new BigDecimal("22.30");
 
   /**
    * If food housing have housing, this is true else false.
@@ -274,7 +278,7 @@ class PaymentSheetControllerIntegrationTest {
   @Test
   @Transactional
   void testCreatePaymentSheetNotExistingUserBadRequest() throws Exception {
-    var paymentSheetRequestForm = new CreatePaymentSheetRequestForm(
+    var paymentSheetRequestForm = new CreatePaymentSheetRequest(
           "NotExisting@Email.es",
           PaymentSheetControllerFactory.PAYMENT_SHEET_REASON,
           PaymentSheetControllerFactory.PAYMENT_SHEET_PLACE,
@@ -403,7 +407,7 @@ class PaymentSheetControllerIntegrationTest {
                 .content(InvoicesControllerFactory.getInvoiceARequestJson())
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var addRegularTransportRequest = new AddRegularTransportRequestForm(
+    var addRegularTransportRequest = new AddRegularTransportRequest(
           REGULAR_TRANSPORT_CATEGORY, REGULAR_TRANSPORT_DESCRIPTION,
           InvoicesControllerFactory.INVOICE_A_NUMBER,
           InvoicesControllerFactory.INVOICE_A_SERIES
@@ -432,7 +436,7 @@ class PaymentSheetControllerIntegrationTest {
   void testNotExistingPaymentSheetAddRegularTransportBadRequest()
         throws Exception {
 
-    var addRegularTransportRequest = new AddRegularTransportRequestForm(
+    var addRegularTransportRequest = new AddRegularTransportRequest(
           REGULAR_TRANSPORT_CATEGORY, REGULAR_TRANSPORT_DESCRIPTION,
           InvoicesControllerFactory.INVOICE_A_NUMBER,
           InvoicesControllerFactory.INVOICE_A_SERIES
@@ -473,7 +477,7 @@ class PaymentSheetControllerIntegrationTest {
 
     // add self vehicle
     // String places,  float distance,  double kmPrice
-    var svrequest = new AddSelfVehicleRequestForm(
+    var svrequest = new AddSelfVehicleRequest(
           "place1 place2", SELF_VEHICLE_DISTANCE, SELF_VEHICLE_KM_PRICE
     );
     var svrequestJson = gson.toJson(svrequest);
@@ -497,7 +501,7 @@ class PaymentSheetControllerIntegrationTest {
   @Transactional
   void testNotExistingPaymentSheetAddSelfVehicleBadRequest() throws Exception {
     // Prepare the request to add a self vehicle
-    var svrequest = new AddSelfVehicleRequestForm(
+    var svrequest = new AddSelfVehicleRequest(
           SELF_VEHICLE_PLACES, SELF_VEHICLE_DISTANCE, SELF_VEHICLE_KM_PRICE
     );
     var svrequestJson = gson.toJson(svrequest);
@@ -535,7 +539,7 @@ class PaymentSheetControllerIntegrationTest {
 
     // add food housing.
     // Integer amountDays,  float dayPrice, Boolean overnight
-    var svrequest = new AddFoodHousingToPaymentSheetRequestForm(
+    var svrequest = new AddFoodHousingToPaymentSheetRequest(
           SELF_VEHICLE_AMOUNT_DAYS, FOOD_HOUSING_DAY_PRICE,
           FOOD_HOUSING_OVERNIGHT
     );
@@ -555,7 +559,7 @@ class PaymentSheetControllerIntegrationTest {
     final var paymentSheetIdentifier = 8;
     // add food housing.
     // Integer amountDays,  float dayPrice, Boolean overnight
-    var svrequest = new AddFoodHousingToPaymentSheetRequestForm(
+    var svrequest = new AddFoodHousingToPaymentSheetRequest(
           SELF_VEHICLE_AMOUNT_DAYS, FOOD_HOUSING_DAY_PRICE,
           FOOD_HOUSING_OVERNIGHT
     );
@@ -642,7 +646,7 @@ class PaymentSheetControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
     //Prepare regular transport
-    var addRegularTransportRequest = new AddRegularTransportRequestForm(
+    var addRegularTransportRequest = new AddRegularTransportRequest(
           REGULAR_TRANSPORT_CATEGORY, REGULAR_TRANSPORT_DESCRIPTION,
           InvoicesControllerFactory.INVOICE_A_NUMBER,
           InvoicesControllerFactory.INVOICE_A_SERIES
@@ -686,9 +690,9 @@ class PaymentSheetControllerIntegrationTest {
           gson.fromJson(paymentSheetResponseJson, PaymentSheetResponse.class);
 
     // Prepare self vehicle request.
-    final var selfVehicleDistance = 100;
+    final var selfVehicleDistance = BigDecimal.valueOf(100);
     final var selfVehiclePlaces = "Naron - Ferrol - Pontevedra : Ida y vuelta.";
-    final var selfVehicleForm = new AddSelfVehicleRequestForm(
+    final var selfVehicleForm = new AddSelfVehicleRequest(
           selfVehiclePlaces, selfVehicleDistance, SELF_VEHICLE_KM_PRICE
     );
 
@@ -824,7 +828,7 @@ class PaymentSheetControllerIntegrationTest {
 
     // Prepare self food housing request.
 
-    var foodHousingForm = new AddFoodHousingToPaymentSheetRequestForm(
+    var foodHousingForm = new AddFoodHousingToPaymentSheetRequest(
           FOOD_HOUSING_AMOUNT_DAYS, FOOD_HOUSING_DAY_PRICE,
           FOOD_HOUSING_OVERNIGHT
     );
@@ -949,14 +953,14 @@ class PaymentSheetControllerIntegrationTest {
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
     // Create second invoice with same buyer and seller
-    var invoiceRequestForm = new CreateInvoiceRequestForm(
+    var invoiceRequestForm = new CreateInvoiceRequest(
           InvoicesControllerFactory.INVOICE_B_NUMBER,
           InvoicesControllerFactory.INVOICE_B_SERIES,
           InvoicesControllerFactory.INVOICE_B_PAYMENT_DATE,
-          InvoicesControllerFactory.INVOICE_B_EXPEDITION_DATE,
           InvoicesControllerFactory.INVOICE_B_TAX_EXEMPT,
           InvoicesControllerFactory.INVOICE_A_SELLER,
-          InvoicesControllerFactory.INVOICE_A_BUYER
+          InvoicesControllerFactory.INVOICE_A_BUYER,
+          InvoicesControllerFactory.INVOICE_B_EXPEDITION_DATE
     );
     var invoiceRequestFormJSon = gson.toJson(invoiceRequestForm);
     mockMvc.perform(
@@ -980,7 +984,7 @@ class PaymentSheetControllerIntegrationTest {
     var paymentSheetIdentifier = paymentSheetResponse.paymentSheetIdentifier();
     // Add first regular transport
 
-    var addRegularTransportRequest = new AddRegularTransportRequestForm(
+    var addRegularTransportRequest = new AddRegularTransportRequest(
           REGULAR_TRANSPORT_CATEGORY, REGULAR_TRANSPORT_DESCRIPTION,
           InvoicesControllerFactory.INVOICE_A_NUMBER,
           InvoicesControllerFactory.INVOICE_A_SERIES
@@ -996,7 +1000,7 @@ class PaymentSheetControllerIntegrationTest {
                 .content(addRegularTransportRequestJson)
     ).andExpect(MockMvcResultMatchers.status().isOk());
     // Second regular transport need second invoice.
-    addRegularTransportRequest = new AddRegularTransportRequestForm(
+    addRegularTransportRequest = new AddRegularTransportRequest(
           REGULAR_TRANSPORT_CATEGORY, REGULAR_TRANSPORT_DESCRIPTION,
           InvoicesControllerFactory.INVOICE_B_NUMBER,
           InvoicesControllerFactory.INVOICE_B_SERIES
