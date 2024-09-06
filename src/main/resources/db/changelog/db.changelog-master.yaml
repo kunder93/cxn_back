@@ -20,6 +20,9 @@ databaseChangeLog:
   - include:
       file: structure/chess_questions_answers_tables.yaml
       relativeToChangelogFile: true
+  - include:
+      file: structure/tournament_form_table.yaml
+      relativeToChangelogFile: true      
   - changeSet:
       id: initial_data
       author: Santiago
