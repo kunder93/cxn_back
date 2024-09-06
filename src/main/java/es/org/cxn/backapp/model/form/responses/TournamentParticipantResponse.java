@@ -11,7 +11,7 @@ import java.time.LocalDate;
  * <p>
  * This class is used to transfer data from the service layer to the
  * presentation layer, encapsulating the details of a tournament participant.
- * It includes the FIDE ID, name, club, birth date, and tournament category of
+ * It includes the FIDE ID, name, club, birth date,byes, and tournament category of
  * the participant.
  * </p>
  *
@@ -25,6 +25,7 @@ import java.time.LocalDate;
  * @param club The club the participant is associated with.
  * @param birthDate The birth date of the participant.
  * @param category The tournament category the participant belongs to.
+ * @param byes The byes requested by participant.
  */
 public record TournamentParticipantResponse(
 
@@ -36,8 +37,9 @@ public record TournamentParticipantResponse(
 
       LocalDate birthDate,
 
-      TournamentCategory category
+      TournamentCategory category,
 
+      String byes
 ) {
 
 }

@@ -75,7 +75,7 @@ class AddTournamentParticipantRequestTest {
 
     // Create the request object
     var request = new AddTournamentParticipantRequest(
-          fideId, name, club, parsedBirthDate, category
+          fideId, name, club, parsedBirthDate, category, "1"
     );
 
     // Validate the request
@@ -153,7 +153,7 @@ class AddTournamentParticipantRequestTest {
 
     // Create the request object
     var request = new AddTournamentParticipantRequest(
-          fideId, name, club, parsedBirthDate, category
+          fideId, name, club, parsedBirthDate, category, "1"
     );
 
     // Validate the request

@@ -38,6 +38,8 @@ public interface TournamentParticipantService {
    *                     and must be a valid date
    * @param category     the tournament category of the participant; must be
    *                     one of the predefined categories
+   * @param byes         The byes requested by participant.
+   *
    * @return             the {@link PersistentTournamentParticipantEntity}
    *                     representing the added participant, which includes
    *                     the participant's details and any changes made during
@@ -45,7 +47,7 @@ public interface TournamentParticipantService {
    */
   PersistentTournamentParticipantEntity addParticipant(
         BigInteger fideId, String name, String club, LocalDate birthDate,
-        TournamentCategory category
+        TournamentCategory category, String byes
   );
 
   /**

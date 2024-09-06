@@ -175,6 +175,7 @@ class DefaultTournamentParticipantServiceTest {
     participant.setClub(CLUB_1);
     participant.setBirthDate(BIRTH_DATE_1);
     participant.setCategory(CATEGORY_1);
+    participant.setByes("1");
 
     // When: the repository save method is called
     when(
@@ -182,8 +183,9 @@ class DefaultTournamentParticipantServiceTest {
                 .save(any(PersistentTournamentParticipantEntity.class))
     ).thenReturn(participant);
 
-    var result = tournamentParticipantService
-          .addParticipant(FIDE_ID_1, NAME_1, CLUB_1, BIRTH_DATE_1, CATEGORY_1);
+    var result = tournamentParticipantService.addParticipant(
+          FIDE_ID_1, NAME_1, CLUB_1, BIRTH_DATE_1, CATEGORY_1, "1"
+    );
 
     // Then: verify that the save method was called and the result is as
     // expected.

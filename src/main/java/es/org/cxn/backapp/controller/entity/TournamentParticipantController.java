@@ -74,12 +74,12 @@ public class TournamentParticipantController {
   final AddTournamentParticipantRequest participant) {
     final var savedParticipant = tournamentParticipantService.addParticipant(
           participant.fideId(), participant.name(), participant.club(),
-          participant.birthDate(), participant.category()
+          participant.birthDate(), participant.category(), participant.byes()
     );
     final var response = new TournamentParticipantResponse(
           savedParticipant.getFideId(), savedParticipant.getName(),
           savedParticipant.getClub(), savedParticipant.getBirthDate(),
-          savedParticipant.getCategory()
+          savedParticipant.getCategory(), savedParticipant.getByes()
     );
     return new ResponseEntity<>(response, HttpStatus.CREATED);
   }

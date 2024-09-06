@@ -52,7 +52,8 @@ public final class DefaultTournamentParticipantService
   @Override
   public PersistentTournamentParticipantEntity addParticipant(
         final BigInteger fideId, final String name, final String club,
-        final LocalDate birthDate, final TournamentCategory category
+        final LocalDate birthDate, final TournamentCategory category,
+        final String byes
   ) {
     final var participant = PersistentTournamentParticipantEntity.builder();
     participant.fideId(fideId);
@@ -60,6 +61,7 @@ public final class DefaultTournamentParticipantService
     participant.club(club);
     participant.birthDate(birthDate);
     participant.category(category);
+    participant.byes(byes);
     final var entity = participant.build();
     return tournamentParticipantRepository.save(entity);
   }

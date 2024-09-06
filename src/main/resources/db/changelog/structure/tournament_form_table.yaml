@@ -32,4 +32,13 @@ databaseChangeLog:
             type: varchar(25)
             constraints:
               nullable: false
-  
+- changeSet:
+    id: addByesColumnToTournamentParticipant
+    author: Santiago
+    changes:
+    - addColumn:
+        tableName: tournamentparticipant
+        columns:
+        - column:
+            name: byes
+            type: varchar(50)

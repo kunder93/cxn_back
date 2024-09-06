@@ -110,6 +110,12 @@ public class PersistentTournamentParticipantEntity
   private TournamentCategory category;
 
   /**
+   * The byes requested by the participant.
+   */
+  @Column(name = "byes", nullable = true)
+  private String byes;
+
+  /**
    * Enumeration of the possible tournament categories.
    */
   public enum TournamentCategory {

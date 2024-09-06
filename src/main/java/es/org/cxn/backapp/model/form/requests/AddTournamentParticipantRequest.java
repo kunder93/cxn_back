@@ -25,7 +25,7 @@ import org.springframework.validation.annotation.Validated;
  * </p>
  * <p>
  * The DTO includes fields for various tournament participant attributes such
- * as FIDE_ID, name, club, birthDate, and category.
+ * as FIDE_ID, name, club, birthDate,byes and category.
  * All fields are required to ensure data integrity and completeness.
  * </p>
  *
@@ -37,6 +37,7 @@ import org.springframework.validation.annotation.Validated;
  *             30 characters.
  * @param birthDate The birth date of the participant, which cannot be a
  *                  future date.
+ * @param byes The byes requested by participant.
  * @param category The tournament category the participant is competing in.
  */
 @Validated
@@ -65,8 +66,9 @@ public record AddTournamentParticipantRequest(
       LocalDate birthDate,
 
       @NotNull(message = "Category is required")
-      TournamentCategory category
+      TournamentCategory category,
 
+      String byes
 ) {
   /**
    * Max fide id number field.

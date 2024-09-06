@@ -85,7 +85,7 @@ class TournamentParticipantControllerTest {
     // Create participant data
     var request = new AddTournamentParticipantRequest(
           FIDE_ID_JOHN, "John Doe", "Chess Club", BIRTH_DATE_JOHN,
-          PersistentTournamentParticipantEntity.TournamentCategory.SUB12
+          PersistentTournamentParticipantEntity.TournamentCategory.SUB12, " 1"
     );
     var requestJson = gson.toJson(request);
 
@@ -119,30 +119,30 @@ class TournamentParticipantControllerTest {
     // Create sample participant data
     var participant1 = new PersistentTournamentParticipantEntity(
           FIDE_ID_JOHN, "John Doe", "Chess Club", BIRTH_DATE_JOHN,
-          PersistentTournamentParticipantEntity.TournamentCategory.SUB12
+          PersistentTournamentParticipantEntity.TournamentCategory.SUB12, "1"
     );
     var participant2 = new PersistentTournamentParticipantEntity(
           FIDE_ID_JANE, "Jane Smith", "Elite Club", BIRTH_DATE_JANE,
-          PersistentTournamentParticipantEntity.TournamentCategory.SUB14
+          PersistentTournamentParticipantEntity.TournamentCategory.SUB14, "1"
     );
     var participant3 = new PersistentTournamentParticipantEntity(
           FIDE_ID_ALICE, "Alice Johnson", "Pro Club", BIRTH_DATE_ALICE,
-          PersistentTournamentParticipantEntity.TournamentCategory.SUB10
+          PersistentTournamentParticipantEntity.TournamentCategory.SUB10, "1"
     );
     service.addParticipant(
           participant1.getFideId(), participant1.getName(),
           participant1.getClub(), participant1.getBirthDate(),
-          participant1.getCategory()
+          participant1.getCategory(), "1"
     );
     service.addParticipant(
           participant2.getFideId(), participant2.getName(),
           participant2.getClub(), participant2.getBirthDate(),
-          participant2.getCategory()
+          participant2.getCategory(), "1"
     );
     service.addParticipant(
           participant3.getFideId(), participant3.getName(),
           participant3.getClub(), participant3.getBirthDate(),
-          participant3.getCategory()
+          participant3.getCategory(), "1"
     );
 
     // Perform GET request and verify response
@@ -210,7 +210,7 @@ class TournamentParticipantControllerTest {
     // Create participant data with missing name
     var request = new AddTournamentParticipantRequest(
           FIDE_ID_JOHN, "", "Chess Club", BIRTH_DATE_JOHN,
-          PersistentTournamentParticipantEntity.TournamentCategory.SUB12
+          PersistentTournamentParticipantEntity.TournamentCategory.SUB12, "1"
     );
     var requestJson = gson.toJson(request);
 
