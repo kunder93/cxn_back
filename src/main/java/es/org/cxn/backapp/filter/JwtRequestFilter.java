@@ -11,6 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -22,10 +25,15 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * Filter http request looking for jwt token and checking if can authenticate.
  *
  * @author Santiago Paz.
- *
  */
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
+
+  /**
+   * The logger.
+   */
+  private static final Logger LOGGER =
+        LoggerFactory.getLogger(JwtRequestFilter.class);
 
   /**
    * Token spaces length for bearer token.
@@ -63,16 +71,46 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     String username = null;
     String jwt = null;
 
+    if (LOGGER.isInfoEnabled()) {
+      LOGGER.info(
+            "Encabezado de autorización recibido: {}", authorizationHeader
+      );
+    }
+
     if (authorizationHeader != null
-          && authorizationHeader.startsWith("Bearer")) {
+          && authorizationHeader.startsWith("Bearer ")) {
       jwt = authorizationHeader.substring(TOKEN_SPACES);
       username = DefaultJwtUtils.extractUsername(jwt);
+
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info("Token JWT extraído: {}", jwt);
+        LOGGER.info("Nombre de usuario extraído del token JWT: {}", username);
+      }
     }
-    if (username != null
-          && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+    if (username != null) {
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info(
+              "Autenticación actual en SecurityContextHolder: {}",
+              SecurityContextHolder.getContext().getAuthentication()
+        );
+      }
+
       var user = (MyPrincipalUser) this.userDetailsService
             .loadUserByUsername(username);
+
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info("Usuario cargado: {}", user.getUsername());
+      }
+
       var jwtTokenValidation = DefaultJwtUtils.validateToken(jwt, user);
+
+      if (LOGGER.isInfoEnabled()) {
+        LOGGER.info(
+              "Resultado de la validación del token: {}", jwtTokenValidation
+        );
+      }
+
       if (Boolean.TRUE.equals(jwtTokenValidation)) {
         var usernamePasswordAuthenticationToken =
               new UsernamePasswordAuthenticationToken(
@@ -83,9 +121,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         );
         SecurityContextHolder.getContext()
               .setAuthentication(usernamePasswordAuthenticationToken);
+
+        if (LOGGER.isInfoEnabled()) {
+          LOGGER.info("Autenticación actualizada en SecurityContextHolder");
+        }
       }
     }
+
     filterChain.doFilter(request, response);
   }
-
 }

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,6 +101,10 @@ public class InvoiceController {
    */
   @CrossOrigin
   @PostMapping()
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<InvoiceResponse> createInvoice(@RequestBody @Valid
   final CreateInvoiceRequest invoiceCreateRequestForm) {
     final var sellerNif = invoiceCreateRequestForm.sellerNif();
@@ -145,6 +150,10 @@ public class InvoiceController {
    */
   @CrossOrigin
   @GetMapping("/{series}/{number}")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable
   final String series, @PathVariable
   final int number) {
@@ -167,6 +176,10 @@ public class InvoiceController {
    */
   @CrossOrigin
   @GetMapping()
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<InvoiceListResponse> getAllInvoices() {
 
     final var invoices = invoiceService.getInvoices();
@@ -196,6 +209,10 @@ public class InvoiceController {
    */
   @CrossOrigin
   @DeleteMapping("/{series}/{number}")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<Boolean> deleteInvoice(@PathVariable
   final String series, @PathVariable
   final int number) {

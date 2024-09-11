@@ -23,82 +23,101 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import lombok.NoArgsConstructor;
-
 /**
  * Spring security configuration.
+ * <p>
+ * This class configures the security settings of the application, including
+ * CORS, JWT filters, password encoding, and authentication management.
+ * </p>
+ *
+ * <p>
+ * The {@link EnableWebSecurity} annotation enables Spring Security’s web
+ * security support, and the {@link EnableMethodSecurity} annotation allows
+ * method-level security with pre/post annotations.
+ * </p>
  *
  * @author Santiago Paz.
- *
  */
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
-@NoArgsConstructor
 public class SecurityConfiguration {
 
   /**
-   * Filter chain applied to http petitions.
+   * Configures the security filter chain applied to HTTP requests.
    *
-   * @param http             the petition.
-   * @param jwtRequestFilter the jwt filter.
-   * @return object built.
-   * @throws Exception if fails.
+   * @param http             the HTTP security configuration.
+   * @param jwtRequestFilter the JWT filter.
+   * @return the configured SecurityFilterChain.
+   * @throws Exception
    */
   @Bean
-  SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired
+  /* default */ SecurityFilterChain
+        filterChain(final HttpSecurity http, final @Autowired
   JwtRequestFilter jwtRequestFilter) throws Exception {
-    // Disabled csrf for API REST
-    http.csrf().disable().authorizeHttpRequests().requestMatchers("/**")
-          .permitAll().requestMatchers("/*").permitAll().anyRequest()
-          .authenticated().and().sessionManagement()
+    // Disable CSRF for REST API and use stateless session management
+    http.csrf().disable().sessionManagement()
           .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
           .cors(Customizer.withDefaults());
-    // For h2 web connection, make H2 web console working.
+
+    // Allow H2 console access by modifying frame options
     http.headers().frameOptions().sameOrigin();
+
+    // Add JWT filter before UsernamePasswordAuthenticationFilter
     http.addFilterBefore(
           jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
     );
+
+    // Permit all requests to /api/auth/signup and /api/auth/signin
+    http.authorizeHttpRequests()
+          .requestMatchers("/api/auth/signup", "/api/auth/signin").permitAll()
+          .anyRequest().authenticated();
+    // Require authentication for other requests
+
+    // Disable anonymous access
+    http.anonymous().disable();
 
     return http.build();
   }
 
   /**
-   * Bean fork enconde password.
+   * Provides a password encoder bean for encoding passwords using BCrypt.
    *
-   * @return password enconded.
+   * @return the password encoder.
    */
   @Bean
-  PasswordEncoder passwordEncoder() {
+  /* default */ PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
   /**
-   * Bean for managing user authentication.
+   * Provides an authentication manager bean for managing user authentication.
    *
-   * @param authConfig actual authentication configuration.
-   * @return authentication manager.
-   * @throws Exception when fails.
+   * @param authConfig the current authentication configuration.
+   * @return the authentication manager.
    */
   @Bean
-  AuthenticationManager
+  /* default */ AuthenticationManager
         authenticationManager(final AuthenticationConfiguration authConfig)
               throws Exception {
     return authConfig.getAuthenticationManager();
   }
 
   /**
-   * @return The cors configuration.
+   * Configures CORS settings for the application.
+   *
+   * @return the CORS configuration source.
    */
   @Bean
-  CorsConfigurationSource corsConfigurationSource() {
-    var configuration = new CorsConfiguration();
+  /* default */ CorsConfigurationSource corsConfigurationSource() {
+    final var configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Arrays.asList("*"));
     configuration.setAllowedMethods(Arrays.asList("*"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
-    var source = new UrlBasedCorsConfigurationSource();
+
+    final var source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
+
     return source;
   }
-
 }

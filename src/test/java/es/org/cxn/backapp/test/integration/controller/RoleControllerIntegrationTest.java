@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -112,6 +113,7 @@ class RoleControllerIntegrationTest {
   @DisplayName("Add role to created user expect user data with role added.")
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testUserChangeRolesToMoreRolesCheckRoles() throws Exception {
     List<UserRoleName> userRoleListToSet = new ArrayList<>();
     userRoleListToSet.add(UserRoleName.ROLE_TESORERO);
@@ -163,6 +165,7 @@ class RoleControllerIntegrationTest {
   @DisplayName("Change user roles to less roles")
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testChangeRolesToLessRolesCheckRoles() throws Exception {
     var userRolesList = new ArrayList<UserRoleName>();
     userRolesList.add(UserRoleName.ROLE_SOCIO);
@@ -221,6 +224,7 @@ class RoleControllerIntegrationTest {
   @DisplayName("Add role to not existing user is bad request.")
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testAddRoleToNotExistingUserBadRequest() throws Exception {
     var userRolesList = new ArrayList<UserRoleName>();
     userRolesList.add(UserRoleName.ROLE_TESORERO);

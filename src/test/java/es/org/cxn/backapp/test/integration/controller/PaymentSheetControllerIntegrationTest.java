@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -199,6 +200,7 @@ class PaymentSheetControllerIntegrationTest {
    */
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreatePaymentSheetResponseContainData() throws Exception {
     var numberOfPaymentSheets = 1;
 
@@ -277,6 +279,7 @@ class PaymentSheetControllerIntegrationTest {
    */
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreatePaymentSheetNotExistingUserBadRequest() throws Exception {
     var paymentSheetRequestForm = new CreatePaymentSheetRequest(
           "NotExisting@Email.es",
@@ -298,6 +301,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testPaymentSheetCreateAndGetDataFromIdOk() throws Exception {
 
     // Create payment sheet
@@ -365,6 +369,7 @@ class PaymentSheetControllerIntegrationTest {
    */
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testGetDataFromIdNotExistingPaymentSheetBadRequest() throws Exception {
     mockMvc.perform(
           get(
@@ -376,6 +381,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testPaymentSheetAddRegularTransportOk() throws Exception {
 
     // Create payment sheet
@@ -433,6 +439,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testNotExistingPaymentSheetAddRegularTransportBadRequest()
         throws Exception {
 
@@ -455,6 +462,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testPaymentSheetAddSelfVehicleOk() throws Exception {
 
     // Create payment sheet
@@ -499,6 +507,7 @@ class PaymentSheetControllerIntegrationTest {
    */
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testNotExistingPaymentSheetAddSelfVehicleBadRequest() throws Exception {
     // Prepare the request to add a self vehicle
     var svrequest = new AddSelfVehicleRequest(
@@ -517,6 +526,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testPaymentSheetAddFoodHousingOk() throws Exception {
 
     // Create payment sheet
@@ -555,6 +565,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testNotExistingPaymentSheetAddFoodHousingBadRequest() throws Exception {
     final var paymentSheetIdentifier = 8;
     // add food housing.
@@ -575,6 +586,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testDeletePaymentSheetAndAssociatedEntities() throws Exception {
 
     // Create payment sheet, expect 201 created
@@ -614,6 +626,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateRegularTransportsWithExistingKeyBadRequest() throws Exception {
 
     // Create payment sheet
@@ -673,6 +686,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveSelfVehicleFromPaymentSheetCheckPaymentsheet()
         throws Exception {
     // Create payment sheet
@@ -778,6 +792,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveSelfVehicleFromNotExistentPaymentSheet() throws Exception {
     mockMvc.perform(
           post(
@@ -789,6 +804,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveNotExistentPaymentSheetBadRequest() throws Exception {
     mockMvc.perform(
           delete(PAYMENT_SHEET_URL + "/" + PAYMENT_SHEET_NOT_EXISTING_ID)
@@ -798,6 +814,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveFoodHousingFromNotExistentPaymentSheetBadRequest()
         throws Exception {
     mockMvc.perform(
@@ -810,6 +827,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveFoodHousingFromPaymentSheetCheckPaymentsheet()
         throws Exception {
     // Create payment sheet
@@ -915,6 +933,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveRegularTransportFromNotExistentPaymentSheet()
         throws Exception {
     final var notExistentRegularTransportId = 13;
@@ -932,6 +951,7 @@ class PaymentSheetControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testAddTwoRegularTransportToPaymentSheetRemoveFirst() throws Exception {
     // Create 2 companies for the invoice buyer and seller
     // Create first company.

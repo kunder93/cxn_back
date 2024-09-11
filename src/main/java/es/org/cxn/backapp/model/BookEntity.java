@@ -8,39 +8,55 @@ import java.time.LocalDate;
 import java.util.Set;
 
 /**
- * Inteface for library books.
+ * Interface representing a book entity in the library.
+ * This interface provides methods to access various details about a book,
+ * such as its ISBN number, title, genre, publication year, language,
+ * and associated authors.
  *
  * @author Santiago Paz.
- *
  */
 public interface BookEntity extends Serializable {
+
   /**
-   * @return The book isbn number.
+   * Gets the ISBN number of the book.
+   *
+   * @return The book's ISBN number.
    */
   Long getIsbn();
 
   /**
-   * @return The book title.
+   * Gets the title of the book.
+   *
+   * @return The book's title.
    */
   String getTitle();
 
   /**
-   * @return The book gender.
+   * Gets the genre of the book.
+   *
+   * @return The book's genre.
    */
   String getGender();
 
   /**
-   * @return The book publish year date.
+   * Gets the publication year of the book.
+   *
+   * @return The book's publication year as a {@link LocalDate}.
    */
   LocalDate getPublishYear();
 
   /**
-   * @return The book language.
+   * Gets the language of the book.
+   *
+   * @return The language in which the book is written.
    */
   String getLanguage();
 
   /**
-   * @return Set with authors.
+   * Gets the set of authors associated with the book.
+   *
+   * @return A set of {@link PersistentAuthorEntity} representing the authors
+   * of the book.
    */
   Set<PersistentAuthorEntity> getAuthors();
 }

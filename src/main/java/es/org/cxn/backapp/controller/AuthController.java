@@ -68,27 +68,29 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthController {
 
   /**
-   * The user Service.
+   * The user service for handling user-related operations.
    */
   private final UserService userService;
 
   /**
-   * The authentication manager.
+   * The authentication manager for handling authentication requests.
    */
   private final AuthenticationManager authManager;
 
   /**
-   * The user details service.
+   * The user details service for loading user-specific details.
    */
   private final UserDetailsService usrDtlsSrv;
 
   /**
    * Constructs a controller with the specified dependencies.
    *
-   * @param serviceUser     the user service.
-   * @param authManag       the authenticationManager.
-   * @param userDetailsServ the userDetailsService.
-   * @param jwtUtil         the jwtUtils.
+   * @param serviceUser     the user service to manage user operations.
+   * @param authManag       the authentication manager to handle authentication.
+   * @param userDetailsServ the user details service to load user-specific
+   * details.
+   * @param jwtUtil         the JWT utility for generating and validating
+   * tokens.
    */
   public AuthController(
         final UserService serviceUser, final AuthenticationManager authManag,
@@ -101,12 +103,19 @@ public class AuthController {
           authManag, "Received a null pointer as authenticationManager"
     );
     this.usrDtlsSrv = Preconditions.checkNotNull(
-          userDetailsServ, "Received a null pointer as authenticationManager"
+          userDetailsServ, "Received a null pointer as userDetailsService"
     );
     Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
-
   }
 
+  /**
+   * Creates an address details object from the provided sign-up request form.
+   *
+   * @param signUpRequestForm the sign-up request form containing address
+   * information.
+   * @return an {@link AddressRegistrationDetailsDto} containing address
+   * details.
+   */
   private static AddressRegistrationDetailsDto
         createAddressDetails(final SignUpRequestForm signUpRequestForm) {
     return new AddressRegistrationDetailsDto(
@@ -115,9 +124,18 @@ public class AuthController {
           signUpRequestForm.street(), signUpRequestForm.countryNumericCode(),
           signUpRequestForm.countrySubdivisionName()
     );
-
   }
 
+  /**
+   * Creates a user details object from the provided sign-up request form and
+   * address details.
+   *
+   * @param signUpRequestForm the sign-up request form containing user
+   * information.
+   * @param addressDetails    the address details for the user.
+   * @return a {@link UserRegistrationDetailsDto} containing user and address
+   * details.
+   */
   private static UserRegistrationDetailsDto createUserDetails(
         final SignUpRequestForm signUpRequestForm,
         final AddressRegistrationDetailsDto addressDetails
@@ -132,10 +150,13 @@ public class AuthController {
   }
 
   /**
-   * Creates a user with default user Role.
+   * Registers a new user and assigns a default role.
    *
-   * @param signUpRequestForm user data to create user profile.
-   * @return the created user data {@link SignUpResponseForm}.
+   * @param signUpRequestForm the form containing user data for registration.
+   * @return a {@link ResponseEntity} containing the response form with the
+   * created user data and HTTP status code {@code 201 Created}.
+   * @throws ResponseStatusException if there is a problem with user
+   * registration.
    */
   @CrossOrigin
   @PostMapping("/signup")
@@ -165,11 +186,15 @@ public class AuthController {
   }
 
   /**
-   * Authenticate user with loginRequest and give a jwt Token.
+   * Authenticates a user and generates a JWT token.
    *
-   * @param loginRequest request form with user data email and password.
-   * @return ResponseEntity with result of authenticate, ACCEPTED or failed
-   *         with error description.
+   * @param loginRequest the form containing user email and password for
+   * authentication.
+   * @return a {@link ResponseEntity} containing the authentication response
+   * with JWT token
+   *         and HTTP status code {@code 200 OK}.
+   * @throws ResponseStatusException if authentication fails due to incorrect
+   * credentials, disabled account, or account locked.
    */
   @CrossOrigin
   @PostMapping("/signinn")

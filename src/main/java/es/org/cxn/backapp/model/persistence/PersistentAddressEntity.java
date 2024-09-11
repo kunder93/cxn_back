@@ -38,19 +38,20 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
- * User Entity.
+ * Entity representing an address in the system.
  * <p>
- * This makes use of JPA annotations for the persistence configuration.
+ * This class uses JPA annotations for mapping the entity to the database.
+ * It is equipped with Lombok annotations to generate getters, setters,
+ * and other boilerplate code.
+ * </p>
  *
- * @author Santiago Paz Perez.
+ * @author Santiago Paz Perez
  */
 @Entity(name = "AddressEntity")
 @Table(name = "address")
 @Data
-@NoArgsConstructor
 public class PersistentAddressEntity implements AddressEntity {
 
   /**
@@ -60,7 +61,7 @@ public class PersistentAddressEntity implements AddressEntity {
   private static final long serialVersionUID = 1396772919450111291L;
 
   /**
-   * The user dni. Its unique. Works as identifier.
+   * The unique identifier for this address, corresponding to the user's DNI.
    */
   @Id
   private String userDni;
@@ -84,20 +85,21 @@ public class PersistentAddressEntity implements AddressEntity {
   private String building = "";
 
   /**
-   * Address apartment or number.
+   * Address street.
    */
   @Column(name = "street", nullable = false, unique = false)
   private String street = "";
 
   /**
-   * Address apartment or number.
+   * Address city.
    */
   @Column(name = "city", nullable = false, unique = false)
   private String city = "";
 
   // RELATIONS
+
   /**
-   * The user who have this address.
+   * The user associated with this address.
    */
   @OneToOne
   @MapsId
@@ -105,17 +107,24 @@ public class PersistentAddressEntity implements AddressEntity {
   private PersistentUserEntity user;
 
   /**
-   * The address have one country.
+   * The country associated with this address.
    */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "country_numeric_code")
   private PersistentCountryEntity country;
 
   /**
-   * The address have one country subdivision.
+   * The country subdivision associated with this address.
    */
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "country_subdivision_id")
   private PersistentCountrySubdivisionEntity countrySubdivision;
+
+  /**
+   * Default constructor. This is used by JPA for entity instantiation.
+   */
+  public PersistentAddressEntity() {
+    // Default constructor
+  }
 
 }

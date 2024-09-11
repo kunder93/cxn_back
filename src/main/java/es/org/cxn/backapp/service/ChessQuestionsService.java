@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package es.org.cxn.backapp.service;
 
@@ -31,48 +8,54 @@ import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import java.util.List;
 
 /**
- * Service for the Company entity domain.
+ * Service interface for managing chess questions.
  * <p>
- * This is a domain service just to allow the endpoints querying the entities
- * they are asked for.
+ * This service provides methods for creating, retrieving, updating, and deleting
+ * chess questions.
+ * It is intended for use by endpoints that need to interact with chess
+ * question entities.
+ * </p>
  *
- * @author Santiago Paz Perez.
+ * @author Santiago Paz Perez
  */
 public interface ChessQuestionsService {
 
   /**
-   * Creates a new chess questions entity.
+   * Creates a new chess question entity.
    *
-   * @param email   The user who made question email.
-   * @param category    The chess question category.
-   * @param topic The chess question topic.
-   * @param message The chess question message.
-   * @return The chess question entity persisted.
-   *
+   * @param email    The email of the user who submitted the question.
+   * @param category The category of the chess question.
+   * @param topic    The topic of the chess question.
+   * @param message  The message content of the chess question.
+   * @return The created and persisted chess question entity.
    */
   ChessQuestionEntity
         add(String email, String category, String topic, String message);
 
   /**
-   * @return List with all chess questions.
+   * Retrieves all chess question entities.
+   *
+   * @return A list of all chess question entities.
    */
   List<PersistentChessQuestionEntity> getAll();
 
   /**
-   * Change chess question seen value.
+   * Updates the "seen" status of a chess question.
    *
-   * @param identifier The chess question identifier.
-   * @return The chess question entity with senn value changed.
-   * @throws ChessQuestionServiceException When chess question not found.
+   * @param identifier The identifier of the chess question to update.
+   * @return The updated chess question entity with the "seen" status changed.
+   * @throws ChessQuestionServiceException If the chess question with the given
+   * identifier is not found.
    */
   ChessQuestionEntity changeChessQuestionSeen(Integer identifier)
         throws ChessQuestionServiceException;
 
   /**
-   * Delaete chess question using a provided identifier.
+   * Deletes a chess question by its identifier.
    *
-   * @param identifier The chess question identifier.
-   * @throws ChessQuestionServiceException when cannot be deleted or fails.
+   * @param identifier The identifier of the chess question to delete.
+   * @throws ChessQuestionServiceException If the chess question cannot be
+   * deleted or an error occurs during the deletion.
    */
   void delete(int identifier) throws ChessQuestionServiceException;
 

@@ -373,6 +373,13 @@ public final class DefaultUserService implements UserService {
     return age < AGE_LIMIT;
   }
 
+  /**
+   * Validate change user kind member.
+   *
+   * @param userType kind of member to change.
+   * @param user The user entity.
+   * @return true if can change false if not.
+   */
   private static boolean validateKindMemberChange(
         final UserType userType, final PersistentUserEntity user
   ) {

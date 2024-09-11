@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package es.org.cxn.backapp.model;
 
@@ -28,89 +5,98 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * A Invoice entity interface.
+ * Represents an invoice entity with details such as number, series, dates, and
+ * tax exemption.
+ * Provides methods to access and modify invoice details.
  *
- * @author Santiago Paz Perez.
+ * @author Santiago Paz Perez
  */
 public interface InvoiceEntity extends Serializable {
 
   /**
-   * Returns the number of the invoice.
+   * Retrieves the number assigned to the invoice.
    *
-   * @return the invoice entity's number.
+   * @return The invoice number.
    */
   int getNumber();
 
   /**
-   * Get the invoice series.
+   * Retrieves the series of the invoice.
    *
-   * @return series.
+   * @return The invoice series.
    */
   String getSeries();
 
   /**
-   * Get the invoice expedition date.
+   * Retrieves the date when the invoice was issued.
    *
-   * @return the invoice expedition date.
+   * @return The invoice expedition date.
    */
   LocalDate getExpeditionDate();
 
   /**
-   * Get the invoice advance payment date ' fecha pago anticipado'.
+   * Retrieves the date of advance payment, if applicable.
    *
-   * @return the invoice advance payment date
+   * @return The advance payment date of the invoice, or {@code null} if not
+   * applicable.
    */
   LocalDate getAdvancePaymentDate();
 
   /**
-   * Get the invoice tax exempt 'operacion exenta'.
+   * Checks if the invoice is tax-exempt.
    *
-   * @return the invoice tax exempt.
+   * @return {@code true} if the invoice is tax-exempt, {@code false}
+   * otherwise, or {@code null} if not specified.
    */
   Boolean getTaxExempt();
 
   /**
-   * Changes the number of the invoice entity.
+   * Sets the number for the invoice.
    *
-   * @param value the number to set on the invoice entity.
+   * @param value The new invoice number.
    */
   void setNumber(int value);
 
   /**
-   * Changes the invoice series.
+   * Sets the series for the invoice.
    *
-   * @param value the series to set on the invoice.
+   * @param value The new invoice series.
    */
   void setSeries(String value);
 
   /**
-   * Changes the invoice expedition date.
+   * Sets the expedition date for the invoice.
    *
-   * @param value the expedition date to set on the invoice.
+   * @param value The new expedition date.
    */
   void setExpeditionDate(LocalDate value);
 
   /**
-   * Changes the invoice advance payment date.
+   * Sets the advance payment date for the invoice.
    *
-   * @param value the advance payment date to set on the invoice.
+   * @param value The new advance payment date.
    */
   void setAdvancePaymentDate(LocalDate value);
 
   /**
-   * Changes the invoice tax exempt.
+   * Sets whether the invoice is tax-exempt.
    *
-   * @param value the tax exempt to set on the invoice.
+   * @param value {@code true} if tax-exempt, {@code false} otherwise, or
+   * {@code null} if not specified.
    */
   void setTaxExempt(Boolean value);
 
   /**
-   * @return The company that is invoices seller.
+   * Retrieves the company that is the seller of the invoice.
+   *
+   * @return The seller company.
    */
   CompanyEntity getSeller();
 
   /**
-   * @return The company that is invoices buyer.
+   * Retrieves the company that is the buyer of the invoice.
+   *
+   * @return The buyer company.
    */
   CompanyEntity getBuyer();
 

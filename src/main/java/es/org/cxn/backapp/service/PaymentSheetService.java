@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package es.org.cxn.backapp.service;
 
@@ -37,6 +14,7 @@ import java.util.List;
  * <p>
  * This is a domain service just to allow the endpoints querying the entities
  * they are asked for.
+ * </p>
  *
  * @author Santiago Paz Perez.
  */
@@ -84,7 +62,7 @@ public interface PaymentSheetService {
    * @param place     The payment sheet event place.
    * @param startDate The payment sheet start date.
    * @param endDate   The payment sheet end date.
-   * @return The updated payment sheet entity
+   * @return The updated payment sheet entity.
    * @throws PaymentSheetServiceException If fails.
    */
   PersistentPaymentSheetEntity updatePaymentSheet(
@@ -93,7 +71,14 @@ public interface PaymentSheetService {
   ) throws PaymentSheetServiceException;
 
   /**
-   * @return Get a list with all existing payment sheets.
+   * Retrieves all existing payment sheets.
+   * <p>
+   * This method returns a list of all payment sheet entities currently stored
+   * in the system.
+   * </p>
+   *
+   * @return A list of {@link PersistentPaymentSheetEntity} representing all
+   *         existing payment sheets.
    */
   List<PersistentPaymentSheetEntity> getPaymentSheets();
 
@@ -177,7 +162,7 @@ public interface PaymentSheetService {
    * Delete payment sheet.
    *
    * @param paymentSheetId The payment sheet identifier.
-   * @throws PaymentSheetServiceException When paymentSheet witth id not found.
+   * @throws PaymentSheetServiceException When paymentSheet with id not found.
    */
   void deletePaymentSheet(Integer paymentSheetId)
         throws PaymentSheetServiceException;

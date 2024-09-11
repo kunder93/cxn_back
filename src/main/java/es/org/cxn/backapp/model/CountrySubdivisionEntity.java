@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package es.org.cxn.backapp.model;
 
@@ -31,39 +8,57 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * An Address entity interface.
+ * The CountrySubdivisionEntity interface represents a subdivision within a
+ * country, such as a state, province, or region. This interface provides
+ * methods to access the details of the subdivision, including its identifier,
+ * name, code, associated country, and related addresses.
  *
  * @author Santiago Paz Perez
  */
 public interface CountrySubdivisionEntity extends Serializable {
 
   /**
-   * @return The country subdivision identifier.
+   * Retrieves the unique identifier for the country subdivision.
+   *
+   * @return The identifier of the country subdivision, or {@code null} if
+   * not set.
    */
   Integer getId();
 
   /**
-   * @return The kind subdivision name.
+   * Retrieves the name or type of the subdivision (e.g., state, province).
+   *
+   * @return The kind or type of subdivision, or {@code null} if not set.
    */
   String getKindSubdivisionName();
 
   /**
-   * @return The country subdivision name.
+   * Retrieves the name of the country subdivision.
+   *
+   * @return The name of the country subdivision, or {@code null} if not set.
    */
   String getName();
 
   /**
-   * @return The country subdivision code.
+   * Retrieves the code associated with the country subdivision.
+   *
+   * @return The code of the country subdivision, or {@code null} if not set.
    */
   String getCode();
 
   /**
-   * @return The country subdivision country.
+   * Retrieves the country to which the subdivision belongs.
+   *
+   * @return The country entity associated with this subdivision, or
+   * {@code null} if not set.
    */
   PersistentCountryEntity getCountry();
 
   /**
-   * @return The address list that uses this country subdivision.
+   * Retrieves a list of addresses that use this country subdivision.
+   *
+   * @return A list of address entities associated with this country
+   * subdivision, or an empty list if none are found.
    */
   List<PersistentAddressEntity> getAddressList();
 
