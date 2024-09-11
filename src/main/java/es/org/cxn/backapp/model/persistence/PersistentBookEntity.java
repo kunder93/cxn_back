@@ -26,7 +26,12 @@ import lombok.NonNull;
 /**
  * Book Entity.
  * <p>
- * This makes use of JPA annotations for the persistence configuration.
+ * This class represents a book entity in the system, utilizing JPA annotations
+ * for persistence. It includes fields for ISBN, title, gender, publish year,
+ * language, and authors.
+ * The default constructor is provided by Lombok's @NoArgsConstructor
+ * annotation and is required by JPA for entity instantiation.
+ * </p>
  *
  * @author Santiago Paz Perez.
  */
@@ -40,12 +45,12 @@ public class PersistentBookEntity
       implements BookEntity, Comparable<PersistentBookEntity> {
 
   /**
-   * Serial UID.
+   * Serial UID for serialization.
    */
   private static final long serialVersionUID = 5749496625209170661L;
 
   /**
-   *  The book's isbn aka identifier.
+   * The book's ISBN, which acts as the unique identifier.
    */
   @Id
   @Column(name = "isbn", nullable = false, unique = true)
@@ -53,32 +58,33 @@ public class PersistentBookEntity
   private Long isbn;
 
   /**
-   * Book's title.
+   * The title of the book.
    */
   @Column(name = "title", nullable = false, unique = false)
   @NonNull
   private String title;
 
   /**
-   * The book gender.
+   * The genre or category of the book.
    */
   @Column(name = "gender", nullable = true, unique = false)
   private String gender;
 
   /**
-   * The book publish year date.
+   * The year the book was published.
    */
   @Column(name = "publish_year", nullable = true, unique = false)
   private LocalDate publishYear;
 
   /**
-   * The book language.
+   * The language in which the book is written.
    */
   @Column(name = "language", nullable = true, unique = false)
   private String language;
 
   /**
-   * Authors who wrote this book.
+   * The authors who wrote this book.
+   * This is a many-to-many relationship with the PersistentAuthorEntity.
    */
   @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
   @JoinTable(
@@ -89,7 +95,11 @@ public class PersistentBookEntity
   private Set<PersistentAuthorEntity> authors = new HashSet<>();
 
   /**
-   * Compare books with their title.
+   * Compares this book to another book based on their titles.
+   *
+   * @param otherBook The other book to compare to.
+   * @return A negative integer, zero, or a positive integer as this book's
+   * title is less than, equal to, or greater than the specified book's title.
    */
   @Override
   public int compareTo(final PersistentBookEntity otherBook) {

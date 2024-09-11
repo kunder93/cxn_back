@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package es.org.cxn.backapp.model;
 
@@ -28,50 +5,67 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
- * A Invoice entity interface.
+ * A SelfVehicle entity interface representing a self-service vehicle.
+ * This entity includes vehicle information such as places, distance traveled,
+ * and price per kilometer.
  *
  * @author Santiago Paz Perez.
  */
 public interface SelfVehicleEntity extends Serializable {
 
   /**
-   * @return The identifier.
+   * Retrieves the identifier of the vehicle.
+   *
+   * @return The identifier of the vehicle.
    */
   Integer getIdentifier();
 
   /**
-   * @return The places.
+   * Retrieves the number of available places in the vehicle.
+   *
+   * @return The number of available places.
    */
   String getPlaces();
 
   /**
-   * @return The distance.
+   * Retrieves the total distance traveled by the vehicle.
+   *
+   * @return The distance traveled by the vehicle.
    */
   BigDecimal getDistance();
 
   /**
-   * @return Price per kilometer.
+   * Retrieves the price charged per kilometer traveled by the vehicle.
+   *
+   * @return The price per kilometer.
    */
   BigDecimal getKmPrice();
 
   /**
-   * @param id The identifier.
+   * Sets the identifier of the vehicle.
+   *
+   * @param id The unique identifier of the vehicle.
    */
   void setIdentifier(Integer id);
 
   /**
-   * @param places The places.
+   * Sets the number of available places in the vehicle.
+   *
+   * @param places The number of available places.
    */
   void setPlaces(String places);
 
   /**
-   * @param distance The distance.
+   * Sets the total distance traveled by the vehicle.
+   *
+   * @param distance The distance traveled by the vehicle.
    */
   void setDistance(BigDecimal distance);
 
   /**
+   * Sets the price charged per kilometer traveled by the vehicle.
+   *
    * @param kmPrice The price per kilometer.
    */
   void setKmPrice(BigDecimal kmPrice);
-
 }

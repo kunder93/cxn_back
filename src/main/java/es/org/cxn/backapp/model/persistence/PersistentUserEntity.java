@@ -61,8 +61,8 @@ import lombok.NonNull;
  */
 @Entity(name = "UserEntity")
 @Table(name = "users")
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 @Builder
 public class PersistentUserEntity implements UserEntity {

@@ -42,6 +42,7 @@ import java.util.Collection;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,6 +87,10 @@ public class PaymentSheetController {
    */
   @GetMapping
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<PaymentSheetListResponse> getPaymentSheets() {
     try {
       // Fetch payment sheets entities from the service
@@ -122,6 +127,10 @@ public class PaymentSheetController {
    */
   @CrossOrigin
   @GetMapping("/{paymentSheetId}")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<PaymentSheetResponse> getPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
@@ -159,6 +168,10 @@ public class PaymentSheetController {
    */
   @PostMapping
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<PaymentSheetResponse>
         createPaymentSheet(@RequestBody @Valid
   final CreatePaymentSheetRequest createPaymentSheetRequestForm) {
@@ -195,6 +208,10 @@ public class PaymentSheetController {
    */
   @PostMapping("/{paymentSheetId}" + "/addRegularTransport")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<String> addRegularTransportToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddRegularTransportRequest requestForm) {
@@ -220,6 +237,10 @@ public class PaymentSheetController {
    */
   @PostMapping("/{paymentSheetId}" + "/{regularTransportId}")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<String>
         removeRegularTransportFromPaymentSheet(@PathVariable
   final Integer paymentSheetId, @PathVariable
@@ -246,6 +267,10 @@ public class PaymentSheetController {
    */
   @PostMapping("/{paymentSheetId}" + "/addSelfVehicle")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<String> addSelfVehicleToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddSelfVehicleRequest requestForm) {
@@ -273,6 +298,10 @@ public class PaymentSheetController {
    */
   @PostMapping("/{paymentSheetId}" + "/removeSelfVehicle")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<String> removeSelfVehicleFromPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
@@ -294,6 +323,10 @@ public class PaymentSheetController {
    */
   @PostMapping("/{paymentSheetId}" + "/addFoodHousing")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<String> addFoodHousingToPaymentSheet(@PathVariable
   final Integer paymentSheetId, @RequestBody
   final AddFoodHousingToPaymentSheetRequest requestForm) {
@@ -320,6 +353,10 @@ public class PaymentSheetController {
    */
   @PostMapping("/{paymentSheetId}" + "/removeFoodHousing")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<String> removeFoodHousingFromPaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {
@@ -341,6 +378,10 @@ public class PaymentSheetController {
    */
   @DeleteMapping("/{paymentSheetId}")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<Void> deletePaymentSheet(@PathVariable
   final Integer paymentSheetId) {
     try {

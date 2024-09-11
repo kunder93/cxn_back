@@ -23,6 +23,10 @@ import lombok.NoArgsConstructor;
  * Book Entity.
  * <p>
  * This makes use of JPA annotations for the persistence configuration.
+ * <p>
+ * The default constructor is provided by Lombok's @NoArgsConstructor
+ * annotation.
+ * This default constructor is required by JPA for entity instantiation.
  *
  * @author Santiago Paz Perez.
  */
@@ -51,11 +55,13 @@ public class PersistentAuthorEntity implements AuthorEntity {
    */
   @Column(name = "first_name", nullable = false, unique = false)
   private String firstName;
+
   /**
    * Author last name.
    */
   @Column(name = "last_name", nullable = false, unique = false)
   private String lastName;
+
   /**
    * Author nationality.
    */

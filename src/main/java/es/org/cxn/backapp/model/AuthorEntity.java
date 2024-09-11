@@ -4,25 +4,32 @@ package es.org.cxn.backapp.model;
 import java.io.Serializable;
 
 /**
- * Inteface for authors (books).
+ * Interface representing an Author entity, typically associated with books.
+ * This interface provides methods to retrieve details about the author,
+ * including their first name, last name, and nationality.
  *
  * @author Santiago Paz.
- *
  */
 public interface AuthorEntity extends Serializable {
 
   /**
-   * @return The author first name.
+   * Gets the first name of the author.
+   *
+   * @return The author's first name.
    */
   String getFirstName();
 
   /**
-   * @return The author last name.
+   * Gets the last name of the author.
+   *
+   * @return The author's last name.
    */
   String getLastName();
 
   /**
-   * @return The author nationality.
+   * Gets the nationality of the author.
+   *
+   * @return The author's nationality.
    */
   String getNationality();
 

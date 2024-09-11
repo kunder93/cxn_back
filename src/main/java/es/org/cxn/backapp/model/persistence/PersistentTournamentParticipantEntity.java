@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Entity representing a participant in a tournament.
@@ -27,13 +26,15 @@ import lombok.NoArgsConstructor;
  * <p>
  * The entity is mapped to the `tournamentParticipant` table in the database.
  * It includes fields for the participant's FIDE ID, name, club, birth date,
- * street address, and category. The {@link TournamentCategory} enum defines
+ * category, and byes. The {@link TournamentCategory} enum defines
  * the available categories a participant can be assigned to.
  * </p>
  *
  * <p>
  * This class is annotated with Lombok's {@code @Data} for generating
  * boilerplate code such as getters, setters, and {@code toString()} methods,
+ * and {@code @Builder} for providing a builder pattern. It also includes
+ * {@code @AllArgsConstructor} for a constructor that initializes all fields
  * and {@code @NoArgsConstructor} for a no-argument constructor.
  * </p>
  *
@@ -60,7 +61,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
 public class PersistentTournamentParticipantEntity
       implements TournamentParticipantEntity {
 
@@ -73,7 +73,20 @@ public class PersistentTournamentParticipantEntity
   private static final long serialVersionUID = 1393244932130122291L;
 
   /**
+   * Default no-argument constructor for the
+   * PersistentTournamentParticipantEntity class.
+   * <p>
+   * This constructor is provided for JPA and other frameworks that may require
+   * a no-argument constructor for creating instances of this entity.
+   * </p>
+   */
+  public PersistentTournamentParticipantEntity() {
+    // void constructor
+  }
+
+  /**
    * The unique FIDE ID of the tournament participant.
+   * This serves as the primary identifier for each participant.
    */
   @Id
   @Column(name = "fide_id")
@@ -93,7 +106,8 @@ public class PersistentTournamentParticipantEntity
   private String club;
 
   /**
-   * The participant's birth date. This field is mandatory.
+   * The participant's birth date. This field is mandatory and represents
+   * the participant's date of birth.
    */
   @Column(name = "birth_date", nullable = false)
   private LocalDate birthDate;
@@ -103,7 +117,8 @@ public class PersistentTournamentParticipantEntity
    * mandatory.
    * <p>
    * The category is defined using the {@link TournamentCategory} enum, which
-   * includes options such as SUB12, SUB10, and SUB8.
+   * includes categories such as SUB14, SUB12, SUB10, and SUB8 based on the
+   * participant's age.
    * </p>
    */
   @Column(name = "category", nullable = false)
@@ -111,30 +126,34 @@ public class PersistentTournamentParticipantEntity
 
   /**
    * The byes requested by the participant.
+   * <p>
+   * Byes allow a participant to skip certain rounds in the tournament.
+   * This field is optional.
+   * </p>
    */
   @Column(name = "byes", nullable = true)
   private String byes;
 
   /**
    * Enumeration of the possible tournament categories.
+   * Each category is based on the participant's age.
    */
   public enum TournamentCategory {
     /**
-     * Category for player with 14 years or less.
+     * Category for players aged 14 years or less.
      */
     SUB14,
     /**
-    *  Category for player with 12 years or less.
-    */
+     * Category for players aged 12 years or less.
+     */
     SUB12,
     /**
-    *  Category for player with 10 years or less.
-    */
+     * Category for players aged 10 years or less.
+     */
     SUB10,
     /**
-    *  Category for player with 8 years or less.
-    */
+     * Category for players aged 8 years or less.
+     */
     SUB8
   }
-
 }

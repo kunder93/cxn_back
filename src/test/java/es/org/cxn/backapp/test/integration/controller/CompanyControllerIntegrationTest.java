@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -157,9 +158,8 @@ class CompanyControllerIntegrationTest {
    */
   @BeforeAll
   public static void setup() {
-    var companyRequest = new CreateCompanyRequest(
-          COMPANY_NIF, COMPANY_NAME, COMPANY_ADDRESS
-    );
+    var companyRequest =
+          new CreateCompanyRequest(COMPANY_NIF, COMPANY_NAME, COMPANY_ADDRESS);
     var sameNifCifCompanyRequest = new CreateCompanyRequest(
           COMPANY_NIF, SECOND_COMPANY_NAME, SECOND_COMPANY_ADDRESS
     );
@@ -192,6 +192,7 @@ class CompanyControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateCompanyCheckResponseIsOk() throws Exception {
     // Do request, expect controller status created
     var requestResult =
@@ -221,6 +222,7 @@ class CompanyControllerIntegrationTest {
    */
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateCompanyExistingNifBadRequest() throws Exception {
     // Create first company.
     mockMvc.perform(
@@ -246,6 +248,7 @@ class CompanyControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveCompanyAndRetrieveAllCompaniesEmpty() throws Exception {
     // Create company expect created.
     mockMvc
@@ -280,6 +283,7 @@ class CompanyControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testDeleteNotExistingCompanyBadRequest() throws Exception {
     // Delete no existing company expect bad request as response status.
     var deleteCompanyResult = mockMvc
@@ -297,6 +301,7 @@ class CompanyControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testUpdateExistingCompany() throws Exception {
     // Create company expect created.
     mockMvc.perform(
@@ -320,6 +325,7 @@ class CompanyControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testUpdateNotExistingCompany() throws Exception {
     // Update company which not exists response with bad request status.
     mockMvc.perform(
@@ -331,6 +337,7 @@ class CompanyControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testDeleteCompanyWithInvoicesNotValid() throws Exception {
     final var invoiceANumber = BigInteger.valueOf(0001);
     final var invoiceASeries = "IAS";

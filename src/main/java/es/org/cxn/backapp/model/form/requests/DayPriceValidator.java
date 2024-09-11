@@ -9,9 +9,9 @@ import java.math.BigDecimal;
 /**
  * Validator for the {@link ValidDayPrice} annotation.
  * <p>
- * This validator checks if the {@link AddFoodHousingToPaymentSheetRequest} object
- * has a valid day price based on whether the request includes an overnight
- * stay or not.
+ * This validator checks if the {@link AddFoodHousingToPaymentSheetRequest}
+ * object has a valid day price based on whether the request includes an
+ * overnight stay or not.
  * </p>
  */
 public final class DayPriceValidator implements
@@ -37,6 +37,15 @@ public final class DayPriceValidator implements
     return validateDayPrice(dayPrice, overnight, context);
   }
 
+  /**
+   * Validates the day price based on whether the overnight stay is true or
+   * false.
+   *
+   * @param dayPrice The day price to validate.
+   * @param overnight Indicates whether the stay is overnight.
+   * @param context The context in which the constraint is evaluated.
+   * @return true if the day price is valid, false otherwise.
+   */
   private static boolean validateDayPrice(
         final BigDecimal dayPrice, final Boolean overnight,
         final ConstraintValidatorContext context
@@ -48,6 +57,13 @@ public final class DayPriceValidator implements
     }
   }
 
+  /**
+   * Validates the day price for an overnight stay.
+   *
+   * @param dayPrice The day price to validate.
+   * @param context The context in which the constraint is evaluated.
+   * @return true if the day price is valid for an overnight stay, false otherwise.
+   */
   private static boolean validateDayPriceForOvernight(
         final BigDecimal dayPrice, final ConstraintValidatorContext context
   ) {
@@ -61,6 +77,14 @@ public final class DayPriceValidator implements
     return true;
   }
 
+  /**
+   * Validates the day price for a non-overnight stay.
+   *
+   * @param dayPrice The day price to validate.
+   * @param context The context in which the constraint is evaluated.
+   * @return true if the day price is valid for a non-overnight stay,
+   * false otherwise.
+   */
   private static boolean validateDayPriceForNoOvernight(
         final BigDecimal dayPrice, final ConstraintValidatorContext context
   ) {

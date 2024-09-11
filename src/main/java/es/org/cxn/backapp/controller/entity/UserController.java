@@ -41,6 +41,7 @@ import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,7 +54,30 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Rest controller for the example entities.
+ * Rest controller for managing user-related operations.
+ *
+ * <p>This controller provides endpoints for authenticated users to:
+ * <ul>
+ *   <li>Retrieve their user data</li>
+ *   <li>Update their personal information</li>
+ *   <li>Change their email, password, and membership status</li>
+ *   <li>Unsubscribe from the system</li>
+ * </ul>
+ *
+ * <p>Authorization is enforced for all endpoints. The user must be
+ * authenticated to access most of the methods, and specific roles
+ * (ADMIN, PRESIDENTE, TESORERO, SECRETARIO) are required to access user lists.
+ *
+ * @see UserService
+ * @see UserUpdateRequestForm
+ * @see UserChangeEmailRequest
+ * @see UserChangeKindMemberRequest
+ * @see UserChangePasswordRequest
+ * @see UserUnsubscribeRequest
+ * @see UserUpdateResponseForm
+ * @see UserListDataResponse
+ * @see UserDataResponse
+ * @see UserServiceUpdateDto
  *
  * @author Santiago Paz
  */
@@ -61,29 +85,33 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/user")
 public class UserController {
 
-  /**s
-   * The user service.
+  /**
+   * The user service to handle business logic related to user operations.
    */
   private final UserService userService;
 
   /**
-   * Constructs a controller with the specified dependencies.
+   * Constructs the controller with a given user service.
    *
-   * @param service example entity service.
+   * @param service the user service instance, must not be null.
    */
   public UserController(final UserService service) {
     super();
-
     userService = checkNotNull(service, "Received a null pointer as service");
   }
 
   /**
-   * Returns a data from user.
+   * Retrieves the authenticated user's data.
    *
-   * @return info for this user.
+   * <p>The user must be authenticated to access this endpoint.
+   *
+   * @return a {@link UserDataResponse} containing the authenticated user's
+   * information.
+   * @throws ResponseStatusException if the user is not authenticated.
    */
   @CrossOrigin(origins = "*")
   @GetMapping()
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDataResponse> getUserData() {
     final var authName =
           SecurityContextHolder.getContext().getAuthentication().getName();
@@ -98,26 +126,25 @@ public class UserController {
   }
 
   /**
-   * Update user data.
+   * Updates the authenticated user's data.
    *
-   * @param userUpdateRequestForm form with data to update user
-   *                              {@link UserUpdateRequestForm}.
-   * @return form with the updated user data.
+   * <p>The user must be authenticated to access this endpoint.
+   *
+   * @param userUpdateRequestForm the form containing the updated user data.
+   * @return a {@link UserUpdateResponseForm} with the updated user information.
+   * @throws ResponseStatusException if the update fails.
    */
   @PostMapping()
   @CrossOrigin(origins = "*")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserUpdateResponseForm> updateUserData(@RequestBody
   final UserUpdateRequestForm userUpdateRequestForm) {
     final var userName =
           SecurityContextHolder.getContext().getAuthentication().getName();
-
-    final var name = userUpdateRequestForm.name();
-    final var firstSurname = userUpdateRequestForm.firstSurname();
-    final var secondSurname = userUpdateRequestForm.secondSurname();
-    final var birthDate = userUpdateRequestForm.birthDate();
-    final var gender = userUpdateRequestForm.gender();
     final var userServiceUpdateForm = new UserServiceUpdateDto(
-          name, firstSurname, secondSurname, birthDate, gender
+          userUpdateRequestForm.name(), userUpdateRequestForm.firstSurname(),
+          userUpdateRequestForm.secondSurname(),
+          userUpdateRequestForm.birthDate(), userUpdateRequestForm.gender()
     );
     try {
       final var userUpdated =
@@ -125,7 +152,6 @@ public class UserController {
       return new ResponseEntity<>(
             new UserUpdateResponseForm(userUpdated), HttpStatus.OK
       );
-
     } catch (UserServiceException e) {
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
@@ -134,28 +160,38 @@ public class UserController {
   }
 
   /**
-   * Returns all users data.
+   * Retrieves the list of all users' data.
    *
-   * @return list with all users info.
+   * <p>Requires the user to have one of the following roles: ADMIN,
+   * PRESIDENTE, TESORERO, SECRETARIO.
+   *
+   * @return a {@link UserListDataResponse} containing a list of all users.
    */
   @CrossOrigin(origins = "*")
   @GetMapping("/getAll")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or "
+          + "hasRole('SECRETARIO')"
+  )
   public ResponseEntity<UserListDataResponse> getAllUserData() {
     final var users = userService.getAll();
-    // Use the fromUserEntities method to create the UserListDataResponse
     final var response = UserListDataResponse.fromUserEntities(users);
     return new ResponseEntity<>(response, HttpStatus.OK);
   }
 
   /**
-   * Change user kind of member.
+   * Changes the kind of membership of a user.
    *
-   * @param userChangeKindMemberReq The email as user identifier and
+   * <p>The user must be authenticated to access this endpoint.
+   *
+   * @param userChangeKindMemberReq the request containing the user's email and
    * new kind of member.
-   * @return user data with new kind of member.
+   * @return a {@link UserDataResponse} with the updated membership information.
+   * @throws ResponseStatusException if the update fails.
    */
   @CrossOrigin(origins = "*")
   @PatchMapping("/changeKindOfMember")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDataResponse> changeUserKindOfMember(@RequestBody
   final UserChangeKindMemberRequest userChangeKindMemberReq) {
     final UserEntity result;
@@ -173,12 +209,18 @@ public class UserController {
   }
 
   /**
-   * Change user email.
-   * @param userChangeEmailRequest The current and new emails.
-   * @return user data with new email.
+   * Changes the user's email.
+   *
+   * <p>The user must be authenticated to access this endpoint.
+   *
+   * @param userChangeEmailRequest the request containing the current and new
+   * email.
+   * @return a {@link UserDataResponse} with the updated email.
+   * @throws ResponseStatusException if the update fails.
    */
   @CrossOrigin(origins = "*")
   @PatchMapping("/changeEmail")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDataResponse> changeUserEmail(@RequestBody
   final UserChangeEmailRequest userChangeEmailRequest) {
     final UserEntity result;
@@ -195,13 +237,18 @@ public class UserController {
   }
 
   /**
-   * Change user password.
-   * @param userChangePasswordRequest The current and
-   * new passwords and user email.
-   * @return user data.
+   * Changes the user's password.
+   *
+   * <p>The user must be authenticated to access this endpoint.
+   *
+   * @param userChangePasswordRequest the request containing the current and
+   * new password.
+   * @return a {@link UserDataResponse} with the updated password information.
+   * @throws ResponseStatusException if the update fails.
    */
   @CrossOrigin(origins = "*")
   @PatchMapping("/changePassword")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<UserDataResponse> changeUserPassword(@RequestBody
   final UserChangePasswordRequest userChangePasswordRequest) {
     final UserEntity result;
@@ -220,13 +267,18 @@ public class UserController {
   }
 
   /**
-   * Unsubscribe an user.
-   * @param userUnsubscribeRequest The current user unsubscribe request
-   * with email and password.
-   * @return  Ok or error.
+   * Unsubscribes the user from the system.
+   *
+   * <p>The user must be authenticated to access this endpoint.
+   *
+   * @param userUnsubscribeRequest the request containing the user's email
+   * and password.
+   * @return a {@link ResponseEntity} indicating the result of the operation.
+   * @throws ResponseStatusException if the unsubscription fails.
    */
   @CrossOrigin(origins = "*")
   @DeleteMapping("/unsubscribe")
+  @PreAuthorize("isAuthenticated()")
   public ResponseEntity<?> unsubscribeUser(@RequestBody
   final UserUnsubscribeRequest userUnsubscribeRequest) {
     try {

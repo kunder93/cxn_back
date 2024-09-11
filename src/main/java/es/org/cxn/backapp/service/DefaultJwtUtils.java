@@ -50,6 +50,9 @@ public final class DefaultJwtUtils {
    */
   private static final Duration EXPIRATION_TIME = Duration.ofHours(10);
 
+  /**
+   * Private no args constructor.
+   */
   private DefaultJwtUtils() {
     // private unnecessary constructor for utility class.
   }
@@ -142,6 +145,19 @@ public final class DefaultJwtUtils {
     return createToken(claims, userDetails.getUsername());
   }
 
+  /**
+   * Creates a JWT token with the specified claims and subject.
+   *
+   * @param claims A map of claims to be included in the token. Claims are
+   * key-value pairs
+   *               that represent various pieces of information about the
+   *               subject.
+   * @param subject The subject of the token, usually representing the user or
+   *                entity.
+   *                the token is associated with.
+   * @return A JWT token as a {@link String} that contains the provided claims
+   *         and subject, and is signed with the specified signing key.
+   */
   private static String
         createToken(final Map<String, Object> claims, final String subject) {
     final var now = Instant.now();

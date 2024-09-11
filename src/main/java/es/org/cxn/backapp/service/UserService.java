@@ -109,7 +109,10 @@ public interface UserService {
         throws UserServiceException;
 
   /**
-   * @return Get list with all users.
+   * Retrieves a list of all users in the system.
+   *
+   * @return A list containing all {@link UserEntity} objects representing the
+   * users.
    */
   List<UserEntity> getAll();
 

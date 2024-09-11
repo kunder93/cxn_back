@@ -7,93 +7,126 @@ import java.time.LocalDateTime;
 import lombok.NonNull;
 
 /**
- * The Chess question entity interface.
+ * The ChessQuestionEntity interface represents a chess-related inquiry with
+ * fields like category, email, message, and other metadata associated with
+ * the question.
+ *
+ * Each chess question includes a unique identifier, a topic, and a status flag
+ * indicating whether it has been seen.
  *
  * @author Santi
- *
  */
 public interface ChessQuestionEntity extends Serializable {
 
   /**
-   * @return The chess question category.
+   * Retrieves the category of the chess question.
+   *
+   * @return The category of the chess question, never null.
    */
   @NonNull
   String getCategory();
 
   /**
-   * @return The chess question email.
+   * Retrieves the email associated with the chess question.
+   *
+   * @return The email of the person asking the question, never null.
    */
   @NonNull
   String getEmail();
 
   /**
-   * @return The chess question identifier number.
+   * Retrieves the unique identifier for the chess question.
+   *
+   * @return The identifier number for the chess question, never null.
    */
   @NonNull
   Integer getIdentifier();
 
   /**
-   * @return The chess question main message.
+   * Retrieves the main message or content of the chess question.
+   *
+   * @return The main message of the chess question, never null.
    */
   @NonNull
   String getMessage();
 
   /**
-   * @return The chess question topic.
+   * Retrieves the topic of the chess question.
+   *
+   * @return The topic of the chess question, never null.
    */
   @NonNull
   String getTopic();
 
   /**
-   * @return true if chess question has been seen false else.
+   * Indicates whether the chess question has been marked as seen.
+   *
+   * @return {@code true} if the chess question has been seen, {@code false}
+   * otherwise.
    */
   boolean isSeen();
 
   /**
-   * @return date when chess question was received.
+   * Retrieves the date and time when the chess question was received.
+   *
+   * @return The date when the chess question was received, never null.
    */
   @NonNull
   LocalDateTime getDate();
 
   /**
-   * @param identifier The new chess question number identifier.
+   * Sets a new identifier for the chess question.
+   *
+   * @param identifier The new identifier for the chess question, never null.
    */
   void setIdentifier(@NonNull
   Integer identifier);
 
   /**
-   * @param category The new chess question category.
+   * Sets a new category for the chess question.
+   *
+   * @param category The new category for the chess question, never null.
    */
   void setCategory(@NonNull
   String category);
 
   /**
-   * @param email The new chess question email.
+   * Sets a new email for the chess question.
+   *
+   * @param email The new email associated with the chess question, never null.
    */
   void setEmail(@NonNull
   String email);
 
   /**
-   * @param message The new chess question message.
+   * Sets a new message for the chess question.
+   *
+   * @param message The new main message for the chess question, never null.
    */
   void setMessage(@NonNull
   String message);
 
   /**
-   * @param topic The new chess question topic.
+   * Sets a new topic for the chess question.
+   *
+   * @param topic The new topic for the chess question, never null.
    */
   void setTopic(@NonNull
   String topic);
 
   /**
-   * @param date The new chess question date.
+   * Sets a new date for when the chess question was received.
+   *
+   * @param date The new date for the chess question, never null.
    */
   void setDate(@NonNull
   LocalDateTime date);
 
   /**
-   * @param value the new boolean value for question seen state.
+   * Sets the seen status of the chess question.
+   *
+   * @param value {@code true} if the chess question has been seen,
+   * {@code false} otherwise.
    */
   void setSeen(boolean value);
-
 }

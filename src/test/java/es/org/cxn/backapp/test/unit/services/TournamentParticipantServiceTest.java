@@ -34,7 +34,7 @@ import org.mockito.MockitoAnnotations;
  * <strong>Author:</strong> Santiago Paz
  * </p>
  */
-class DefaultTournamentParticipantServiceTest {
+class TournamentParticipantServiceTest {
 
   /**
    * The FIDE ID for the first participant used in the tests.

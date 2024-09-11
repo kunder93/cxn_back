@@ -38,6 +38,7 @@ import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,10 +81,12 @@ public class CompanyController {
    *
    * @return all stored companies.
    */
-  //  @PreAuthorize("hasRole('PRESIDENTE')")
-  //  @PreAuthorize("isAuthenticated()")
   @GetMapping()
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<CompanyListResponse> getAllCompanies() {
     final var companiesList = companyService.getCompanies();
     return new ResponseEntity<>(
@@ -100,6 +103,10 @@ public class CompanyController {
    */
   @PostMapping()
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<CompanyResponse> createCompany(@RequestBody @Valid
   final CreateCompanyRequest createCompanyRequestForm) {
     try {
@@ -125,6 +132,10 @@ public class CompanyController {
    */
   @DeleteMapping("/{nif}")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<Boolean> deleteCompany(@PathVariable
   final String nif) {
     try {
@@ -147,6 +158,10 @@ public class CompanyController {
    */
   @PutMapping("/{nif}")
   @CrossOrigin
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<CompanyUpdateResponse> updateCompany(@PathVariable
   final String nif, @RequestBody
   final CompanyUpdateRequest requestForm) {

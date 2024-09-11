@@ -26,6 +26,9 @@ import org.junit.jupiter.params.provider.CsvSource;
  */
 class AddTournamentParticipantRequestTest {
 
+  /**
+   * The validator.
+   */
   private final Validator validator;
 
   AddTournamentParticipantRequestTest() {

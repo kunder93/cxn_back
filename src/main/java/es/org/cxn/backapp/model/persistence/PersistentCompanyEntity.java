@@ -39,32 +39,34 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
  * Company Entity.
  * <p>
- * This makes use of JPA annotations for the persistence configuration.
+ * This class represents a company entity in the system, utilizing JPA
+ * annotations for persistence. It includes fields for company identifier (NIF),
+ * name, address, and lists of invoices where the company is either a buyer
+ * or seller.
+ * </p>
  *
  * @author Santiago Paz Perez.
  */
 @Entity(name = "CompanyEntity")
 @Table(name = "companies")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PersistentCompanyEntity implements CompanyEntity {
 
   /**
-   * serial UID.
+   * Serial UID for serialization.
    */
   @Transient
   private static final long serialVersionUID = -8242222114230392000L;
 
   /**
-   * Entity's identifier.
+   * Entity's identifier, typically a tax identification number (NIF).
    */
   @Id
   @Column(name = "nif", nullable = false, unique = true)
@@ -72,37 +74,48 @@ public class PersistentCompanyEntity implements CompanyEntity {
   private String nif;
 
   /**
-   * name of the company.
-   *
+   * The name of the company.
    */
   @Column(name = "name", nullable = false, unique = false)
   @NonNull
   private String name;
 
   /**
-   * Company address.
-   *
+   * The address of the company.
    */
   @Column(name = "address", nullable = false, unique = false)
   @NonNull
   private String address;
 
   /**
-   * List of companies that have this company as buyer.
+   * List of invoices where this company is the buyer.
    */
   @OneToMany(mappedBy = "buyer")
   @Builder.Default
   private List<PersistentInvoiceEntity> invoicesAsBuyer = new ArrayList<>();
 
   /**
-   * List with invoices that have this company as seller.
+   * List of invoices where this company is the seller.
    */
   @OneToMany(mappedBy = "seller")
   @Builder.Default
   private List<PersistentInvoiceEntity> invoicesAsSeller = new ArrayList<>();
 
   /**
-   * Get invoices as Buyer.
+   * Default constructor for the entity.
+   * <p>
+   * Required by JPA. Initializes the invoices lists.
+   * </p>
+   */
+  public PersistentCompanyEntity() {
+    this.invoicesAsBuyer = new ArrayList<>();
+    this.invoicesAsSeller = new ArrayList<>();
+  }
+
+  /**
+   * Gets a list of invoice IDs where this company is the buyer.
+   *
+   * @return A list of invoice IDs.
    */
   @Override
   public List<Integer> getInvoicesAsBuyer() {
@@ -114,7 +127,9 @@ public class PersistentCompanyEntity implements CompanyEntity {
   }
 
   /**
-   * Add invoice as buyer.
+   * Adds an invoice to the list of invoices where this company is the buyer.
+   *
+   * @param invoiceAsBuyer The invoice to add.
    */
   @Override
   public void addInvoicesAsBuyer(final PersistentInvoiceEntity invoiceAsBuyer) {
@@ -122,7 +137,9 @@ public class PersistentCompanyEntity implements CompanyEntity {
   }
 
   /**
-   * Add invoice as seller.
+   * Adds an invoice to the list of invoices where this company is the seller.
+   *
+   * @param invoiceAsSeller The invoice to add.
    */
   @Override
   public void
@@ -131,7 +148,11 @@ public class PersistentCompanyEntity implements CompanyEntity {
   }
 
   /**
-   * Remove invoice as buyer.
+   * Removes an invoice from the list of invoices where this company is the
+   * buyer.
+   *
+   * @param invoiceAsBuyer The invoice to remove.
+   * @return true if the invoice was removed, false otherwise.
    */
   @Override
   public boolean
@@ -140,7 +161,11 @@ public class PersistentCompanyEntity implements CompanyEntity {
   }
 
   /**
-   * Remove invoice as seller.
+   * Removes an invoice from the list of invoices where this company is the
+   * seller.
+   *
+   * @param invoiceAsSeller The invoice to remove.
+   * @return true if the invoice was removed, false otherwise.
    */
   @Override
   public boolean
@@ -149,7 +174,9 @@ public class PersistentCompanyEntity implements CompanyEntity {
   }
 
   /**
-   * Get invoice as seller.
+   * Gets a list of invoice IDs where this company is the seller.
+   *
+   * @return A list of invoice IDs.
    */
   @Override
   public List<Integer> getInvoicesAsSeller() {

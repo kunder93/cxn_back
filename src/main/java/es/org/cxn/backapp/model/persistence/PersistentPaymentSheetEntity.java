@@ -50,6 +50,9 @@ import lombok.Setter;
 
 public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
 
+  /**
+   * The serial UID.
+   */
   @Transient
   private static final long serialVersionUID = -8238192117130392730L;
 

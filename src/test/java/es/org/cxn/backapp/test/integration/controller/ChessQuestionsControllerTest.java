@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -113,6 +114,7 @@ class ChessQuestionsControllerTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateSeveralChessQuestionsRetrieveAll() throws Exception {
     var numberOfChessQuestions = 2;
     final var email = "email@email.es";
@@ -159,6 +161,7 @@ class ChessQuestionsControllerTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testDeleteChessQuestionsCheckDeleted() throws Exception {
     // Create 2 Chess questions.
     var firstQuestionEmail = "firstTest@example.com";
@@ -242,6 +245,7 @@ class ChessQuestionsControllerTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testDeleteNotExistingQuestionReturnBadRequest() throws Exception {
     final var notExistingQuestionId = 88;
     // Perform delete of first question
@@ -254,6 +258,7 @@ class ChessQuestionsControllerTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testChangeQuestionHasSeen() throws Exception {
     var questionEmail = "test@example.com";
     var questionCategory = "Test Category";

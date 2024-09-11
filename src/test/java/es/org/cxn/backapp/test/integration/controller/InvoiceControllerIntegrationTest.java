@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -136,6 +137,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateInvoiceCheckDataIsOk() throws Exception {
 
     // Create invoice
@@ -147,6 +149,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateInvoiceNoExistingBuyerSeller() throws Exception {
 
     // invoice request with no existing seller and buyer
@@ -227,6 +230,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateTwoInvoicesWithSameBuyerSellerDeleteOneBuyerSellerNotRemoved()
         throws Exception {
 
@@ -268,6 +272,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateInvoiceSameBuyerSellerNoValid() throws Exception {
 
     // Prepare invoice request, same seller and buyer
@@ -292,6 +297,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateDeleteInvoices() throws Exception {
 
     // Retrieve invoices from controller.
@@ -398,6 +404,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testDeleteNotExistingInvoiceBadRequest() throws Exception {
 
     // Delete second invoice which is not stored.
@@ -411,6 +418,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateInvoiceExistingNumberInExistingSerieNotValidBadRequest()
         throws Exception {
     // Create first invoice.
@@ -457,6 +465,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateTwoInvoicesRetrieveDataFromFirstCheckData() throws Exception {
     // Create first invoice.
 
@@ -518,6 +527,7 @@ class InvoiceControllerIntegrationTest {
 
   @Test
   @Transactional
+  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testCreateTwoInvoicesRetrieveDataFromNotExistingInvoiceNumber()
         throws Exception {
     final var notExistingInvoiceNumber =

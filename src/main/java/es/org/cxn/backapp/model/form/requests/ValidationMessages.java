@@ -66,6 +66,9 @@ public final class ValidationMessages {
         "Authors list must contain at least "
               + ValidationConstants.MIN_AUTHORS_LIST_SIZE + " author";
 
+  /**
+   * Private no args constructor.
+   */
   private ValidationMessages() {
     //Private constructor.
   }

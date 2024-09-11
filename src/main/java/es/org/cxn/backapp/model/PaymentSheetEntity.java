@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 
 package es.org.cxn.backapp.model;
 
@@ -32,116 +9,131 @@ import java.time.LocalDate;
 import java.util.Set;
 
 /**
- * A payment sheet entity interface.
+ * Represents a payment sheet that records details about a specific payment event.
+ * This interface provides methods to access and modify information related to
+ * the payment sheet, including its identifier, reason, place, dates,
+ * and associated entities.
  *
- * @author Santiago Paz Perez.
+ * @author Santiago Paz Perez
  */
 public interface PaymentSheetEntity extends Serializable {
 
   /**
-   * Returns the payment sheet identifier.
+   * Retrieves the unique identifier of the payment sheet.
    *
-   * @return the payment sheet entity's identifier.
+   * @return The identifier of the payment sheet, or {@code null} if not set.
    */
   Integer getId();
 
   /**
-   * Returns the reason of the payment sheet event.
+   * Retrieves the reason for the payment sheet event.
    *
-   * @return the payment sheet entity's reason.
+   * @return The reason for the payment sheet event, or {@code null} if not set.
    */
   String getReason();
 
   /**
-   * Get the payment sheet event place.
+   * Retrieves the location where the payment sheet event took place.
    *
-   * @return payment sheet event place.
+   * @return The place of the payment sheet event, or {@code null} if not set.
    */
   String getPlace();
 
   /**
-   * Get the payment sheet event start date.
+   * Retrieves the start date of the payment sheet event.
    *
-   * @return the payment sheet event start date.
+   * @return The start date of the payment sheet event, or {@code null} if
+   * not set.
    */
   LocalDate getStartDate();
 
   /**
-   * Get the payment sheet event end date.
+   * Retrieves the end date of the payment sheet event.
    *
-   * @return the payment sheet event end date.
+   * @return The end date of the payment sheet event, or {@code null} if
+   * not set.
    */
   LocalDate getEndDate();
 
   /**
-   * Sets the identifier assigned to this payment sheet entity.
+   * Sets the unique identifier of the payment sheet.
    *
-   * @param value the new id of payment sheet entity.
+   * @param value The new identifier of the payment sheet.
    */
   void setId(Integer value);
 
   /**
-   * Changes the payment sheet event reason.
+   * Sets the reason for the payment sheet event.
    *
-   * @param value the new event reason of payment sheet.
+   * @param value The new reason for the payment sheet event.
    */
   void setReason(String value);
 
   /**
-   * Changes the payment sheet event place.
+   * Sets the location where the payment sheet event took place.
    *
-   * @param value the new event place of payment sheet.
+   * @param value The new place of the payment sheet event.
    */
   void setPlace(String value);
 
   /**
-   * Changes the payment sheet event end date.
+   * Sets the end date of the payment sheet event.
    *
-   * @param value the new event end date of the payment sheet.
+   * @param value The new end date of the payment sheet event.
    */
   void setEndDate(LocalDate value);
 
   /**
-   * Changes the payment sheet event starting date.
+   * Sets the start date of the payment sheet event.
    *
-   * @param value the new event starting date of the payment sheet.
+   * @param value The new start date of the payment sheet event.
    */
   void setStartDate(LocalDate value);
 
   /**
-   * Set the payment sheet user owner.
+   * Sets the user who owns this payment sheet.
    *
-   * @param value The user that owns payment sheet.
+   * @param value The user entity that owns the payment sheet.
    */
   void setUserOwner(PersistentUserEntity value);
 
   /**
-   * Get the payment sheet user owner.
+   * Retrieves the user who owns this payment sheet.
    *
-   * @return the payment sheet user owner.
+   * @return The user entity that owns the payment sheet, or {@code null}
+   * if not set.
    */
-  UserEntity getUserOwner();
+  PersistentUserEntity getUserOwner();
 
   /**
-   * Get the regular transport entities associated with this payment sheet.
+   * Retrieves the regular transport entities associated with this payment sheet.
    *
-   * @return Set with reagular transport entities associated.
+   * @return A set of regular transport entities associated with this payment
+   * sheet, or an empty set if none are found.
    */
   Set<PersistentRegularTransportEntity> getRegularTransports();
 
   /**
-   * @return Self vehicle entity associated with this payment sheet.
+   * Retrieves the self vehicle entity associated with this payment sheet.
+   *
+   * @return The self vehicle entity associated with this payment sheet, or
+   * {@code null} if not set.
    */
   SelfVehicleEntity getSelfVehicle();
 
   /**
-   * @return Food housing associated with this payment sheet.
+   * Retrieves the food housing entity associated with this payment sheet.
+   *
+   * @return The food housing entity associated with this payment sheet, or
+   * {@code null} if not set.
    */
   FoodHousingEntity getFoodHousing();
 
   /**
-   * @param value Set with regular transport entities associated with this
-   *              payment sheet.
+   * Sets the regular transport entities associated with this payment sheet.
+   *
+   * @param value A set of regular transport entities to be associated with
+   * this payment sheet.
    */
   void setRegularTransports(Set<PersistentRegularTransportEntity> value);
 

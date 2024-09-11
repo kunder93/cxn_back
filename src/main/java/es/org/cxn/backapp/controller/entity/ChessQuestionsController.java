@@ -40,6 +40,7 @@ import java.util.Collection;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -83,6 +84,10 @@ public class ChessQuestionsController {
    */
   @CrossOrigin
   @GetMapping
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<ChessQuestionsListResponse> getAllChessQuestions() {
     // Retrieve the collection of PersistentChessQuestionEntity from the service
     final Collection<PersistentChessQuestionEntity> chessQuestionsList =
@@ -138,6 +143,10 @@ public class ChessQuestionsController {
    */
   @PostMapping("/changeChessQuestionHasSeen")
   @CrossOrigin(origins = "*")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<ChessQuestionResponse>
         changeChessQuestionHasSeen(@RequestBody @Valid
   final ChangeChessQuestionHasSeenRequest chessQuestionHasSeenRequestForm) {
@@ -165,6 +174,10 @@ public class ChessQuestionsController {
    */
   @DeleteMapping("/{id}")
   @CrossOrigin(origins = "*")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
   public ResponseEntity<Void> deleteChessQuestion(@PathVariable("id")
   final Integer id) {
     try {
