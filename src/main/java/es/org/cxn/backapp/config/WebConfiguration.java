@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -29,16 +30,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
-  /**
-   * Default constructor for WebConfiguration.
-   * <p>
-   * This constructor is required for the Spring container to instantiate the
-   * class as part of its configuration. It doesn't require any parameters or
-   * additional setup.
-   * </p>
-   */
-  public WebConfiguration() {
-    // Default constructor
+  private final LoggingInterceptor loggingInterceptor;
+
+  public WebConfiguration(LoggingInterceptor loggingInterceptor) {
+    this.loggingInterceptor = loggingInterceptor;
+  }
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(loggingInterceptor);
   }
 
   @Override

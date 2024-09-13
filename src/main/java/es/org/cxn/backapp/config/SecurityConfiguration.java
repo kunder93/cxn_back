@@ -5,20 +5,24 @@ import es.org.cxn.backapp.filter.JwtRequestFilter;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -43,6 +47,34 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
+  private static final Logger LOGGER =
+        LoggerFactory.getLogger(SecurityConfiguration.class);
+
+  @Bean
+  public WebSecurityCustomizer webSecurityCustomizer() {
+    return (web) -> web.ignoring()
+          .requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
+  }
+
+  /**
+   * Configures CORS settings for the application.
+   *
+   * @return the CORS configuration source.
+   */
+  @Bean
+  /* default */ CorsConfigurationSource corsConfigurationSource() {
+    LOGGER.info("Configurando CORS");
+    final var configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(Arrays.asList("*"));
+    configuration.setAllowedMethods(Arrays.asList("*"));
+    configuration.setAllowedHeaders(Arrays.asList("*"));
+
+    final var source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+
+    return source;
+  }
+
   /**
    * Configures the security filter chain applied to HTTP requests.
    *
@@ -52,13 +84,13 @@ public class SecurityConfiguration {
    * @throws Exception
    */
   @Bean
-  /* default */ SecurityFilterChain
-        filterChain(final HttpSecurity http, final @Autowired
+  SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired
   JwtRequestFilter jwtRequestFilter) throws Exception {
+    LOGGER.info("Configurando SecurityFilterChain");
+
     // Disable CSRF for REST API and use stateless session management
     http.csrf().disable().sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-          .cors(Customizer.withDefaults());
+          .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().cors();
 
     // Allow H2 console access by modifying frame options
     http.headers().frameOptions().sameOrigin();
@@ -69,14 +101,21 @@ public class SecurityConfiguration {
     );
 
     // Permit all requests to /api/auth/signup and /api/auth/signin
-    http.authorizeHttpRequests()
-          .requestMatchers("/api/auth/signup", "/api/auth/signin").permitAll()
-          .anyRequest().authenticated();
-    // Require authentication for other requests
+    http.authorizeHttpRequests().requestMatchers("/h2-console/**").permitAll()
+          .requestMatchers("/api/auth/signup", "/api/auth/signinn").permitAll()
+          .requestMatchers("/swagger-ui-custom.html.", "v3/api-docs")
+          .permitAll()
+          .requestMatchers(
+                "/api/auth/signup", "/api/auth/signin",
+                "/api/address/getCountries", "/api/address/country/**"
+          ).permitAll().anyRequest().authenticated();
+    http.headers().frameOptions().sameOrigin();
+    // Permit all requests to /api/auth/signup, /api/auth/signin,
+    // and the AddressController endpoints
 
     // Disable anonymous access
-    http.anonymous().disable();
-
+    http.anonymous();
+    LOGGER.info("Autorizaciones configuradas para rutas específicas");
     return http.build();
   }
 
@@ -103,21 +142,4 @@ public class SecurityConfiguration {
     return authConfig.getAuthenticationManager();
   }
 
-  /**
-   * Configures CORS settings for the application.
-   *
-   * @return the CORS configuration source.
-   */
-  @Bean
-  /* default */ CorsConfigurationSource corsConfigurationSource() {
-    final var configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("*"));
-    configuration.setAllowedMethods(Arrays.asList("*"));
-    configuration.setAllowedHeaders(Arrays.asList("*"));
-
-    final var source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-
-    return source;
-  }
 }

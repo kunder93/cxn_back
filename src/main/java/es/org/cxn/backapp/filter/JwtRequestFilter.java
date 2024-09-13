@@ -45,6 +45,22 @@ public class JwtRequestFilter extends OncePerRequestFilter {
    */
   private UserDetailsService userDetailsService;
 
+  @Override
+  protected boolean shouldNotFilter(HttpServletRequest request)
+        throws ServletException {
+    var requestURI = request.getRequestURI();
+
+    LOGGER.info("La URI en shouldNotFilter es: {}", requestURI);
+    // Excluir la ruta /h2-console y otras rutas que no necesitan autenticación
+    var value = requestURI.startsWith("/h2-console")
+          || requestURI.startsWith("/api/auth/signup")
+          || requestURI.startsWith("/api/auth/signin")
+          || requestURI.startsWith("/api/address/getCountries");
+    LOGGER.info("El valor devuelto por shouldNotFilter es: {}", value);
+
+    return value;
+  }
+
   /**
    * Constructor for JwtRequestFilter.
    *
@@ -67,6 +83,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final HttpServletRequest request, final HttpServletResponse response,
         final FilterChain filterChain
   ) throws ServletException, IOException {
+    var requestURI = request.getRequestURI();
+    LOGGER.info("Processing request URI: {}", requestURI);
     final var authorizationHeader = request.getHeader("Authorization");
     String username = null;
     String jwt = null;
