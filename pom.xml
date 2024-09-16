@@ -38,9 +38,9 @@
     </developer>
   </developers>
 <scm>
-    <connection>scm:git:git@github.com/kunder93/cxn_back.git</connection>
-    <developerConnection>scm:git:git@github.com/kunder93/cxn_back.git</developerConnection>
-    <url>scm:git:git@github.com/kunder93/cxn_back.git</url>
+    <connection>scm:git:git@github.com:kunder93/cxn_back.git</connection>
+    <developerConnection>scm:git:git@github.com:kunder93/cxn_back.git</developerConnection>
+    <url>scm:git:git@github.com:kunder93/cxn_back.git</url>
     <tag>back-app-1.0.0</tag> 
 </scm>
 
