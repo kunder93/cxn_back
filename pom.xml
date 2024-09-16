@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>es.org.cxn</groupId>
   <artifactId>back-app</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <name>back-app</name>
   <description>BackEnd app para CXN naron</description>
   <url>https:xadreznaron.es</url>
@@ -41,7 +41,7 @@
     <connection>scm:git:git@github.com/kunder93/cxn_back.git</connection>
     <developerConnection>scm:git:git@github.com/kunder93/cxn_back.git</developerConnection>
     <url>scm:git:git@github.com/kunder93/cxn_back.git</url>
-    <tag>back-app-1.0.0</tag> 
+    <tag>back-app-0.0.1</tag> 
 </scm>
 
 
