@@ -1,6 +1,7 @@
 
 package es.org.cxn.backapp.config;
 
+import es.org.cxn.backapp.AppURL;
 import es.org.cxn.backapp.filter.JwtRequestFilter;
 
 import java.util.Arrays;
@@ -102,11 +103,12 @@ public class SecurityConfiguration {
 
     // Permit all requests to /api/auth/signup and /api/auth/signin
     http.authorizeHttpRequests().requestMatchers("/h2-console/**").permitAll()
-          .requestMatchers("/api/auth/signup", "/api/auth/signinn").permitAll()
-          .requestMatchers("/swagger-ui-custom.html.", "v3/api-docs")
+          .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()
+          .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll()
+          .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL)
+          .permitAll().requestMatchers("/v3/api-docs/swagger-config")
           .permitAll()
           .requestMatchers(
-                "/api/auth/signup", "/api/auth/signin",
                 "/api/address/getCountries", "/api/address/country/**"
           ).permitAll().anyRequest().authenticated();
     http.headers().frameOptions().sameOrigin();

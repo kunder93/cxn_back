@@ -56,6 +56,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Unit tests for {@link DefaultLibraryService}.
@@ -72,6 +73,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
       classes = { BookEntityRepository.class, LibraryService.class,
           DefaultLibraryService.class }
 )
+@ActiveProfiles("test")
 final class TestDefaultLibraryService {
   /**
    * ISBN number for the first book used in test cases.

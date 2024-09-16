@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Integration tests for {@link MyUserDetailsService}.
@@ -29,6 +30,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * </p>
  */
 @SpringBootTest
+@ActiveProfiles("test")
 class UserDetailsServiceTest {
 
   /**

@@ -1,6 +1,7 @@
 
 package es.org.cxn.backapp.filter;
 
+import es.org.cxn.backapp.AppURL;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.MyPrincipalUser;
 
@@ -49,13 +50,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
   protected boolean shouldNotFilter(HttpServletRequest request)
         throws ServletException {
     var requestURI = request.getRequestURI();
-
+    var httpMethod = request.getMethod();
     LOGGER.info("La URI en shouldNotFilter es: {}", requestURI);
     // Excluir la ruta /h2-console y otras rutas que no necesitan autenticación
     var value = requestURI.startsWith("/h2-console")
-          || requestURI.startsWith("/api/auth/signup")
-          || requestURI.startsWith("/api/auth/signin")
-          || requestURI.startsWith("/api/address/getCountries");
+          || requestURI.startsWith(AppURL.SIGN_UP_URL)
+          || requestURI.startsWith(AppURL.SIGN_IN_URL)
+          || requestURI.startsWith("/api/address/getCountries")
+          || (requestURI.startsWith(AppURL.CHESS_QUESTION_URL)
+                && "POST".equals(httpMethod))
+          || requestURI.startsWith(AppURL.PARTICIPANTS_URL)
+                && "POST".equals(httpMethod);
+
     LOGGER.info("El valor devuelto por shouldNotFilter es: {}", value);
 
     return value;

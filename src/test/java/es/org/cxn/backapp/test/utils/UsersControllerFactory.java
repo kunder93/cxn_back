@@ -27,7 +27,7 @@ public final class UsersControllerFactory {
   /**
    * User A DNI.
    */
-  public static final String USER_A_DNI = "32721859N";
+  public static final String USER_A_DNI = "32721860J";
   /**
    * User A name.
    */
@@ -55,7 +55,7 @@ public final class UsersControllerFactory {
   /**
    * User A email.
    */
-  public static final String USER_A_EMAIL = "santi@santi.es";
+  public static final String USER_A_EMAIL = "fake@email.es";
   /**
    * User A address postal code.
    */

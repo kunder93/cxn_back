@@ -45,6 +45,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Unit tests for {@link DefaultRoleService}.
@@ -59,6 +60,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
       classes = { UserEntityRepository.class, RoleEntityRepository.class,
           RoleService.class, DefaultRoleService.class }
 )
+@ActiveProfiles("test")
 final class TestDefaultRoleService {
 
   /**

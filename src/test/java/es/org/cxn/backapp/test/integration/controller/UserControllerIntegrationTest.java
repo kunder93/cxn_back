@@ -34,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -43,6 +44,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
  */
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @TestPropertySource("/application.properties")
 class UserControllerIntegrationTest {
 
@@ -598,7 +600,7 @@ class UserControllerIntegrationTest {
                 .content(userRequestJson)
     ).andExpect(MockMvcResultMatchers.status().isCreated());
 
-    var secondUserDNI = "32721860J";
+    var secondUserDNI = "00000000T";
     var secondUserEmail = "second@email.es";
     userRequest = new SignUpRequestForm(
           secondUserDNI, UsersControllerFactory.USER_A_NAME,

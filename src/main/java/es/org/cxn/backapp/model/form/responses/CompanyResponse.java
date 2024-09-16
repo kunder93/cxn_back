@@ -18,7 +18,8 @@ import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
  * @param address The company address.
  * @author Santiago Paz.
  */
-public record CompanyResponse(String nif, String name, String address) {
+public record CompanyResponse(String nif, String name, String address)
+      implements Comparable<CompanyResponse> {
 
   /**
    * Constructs a {@link CompanyResponse} from a
@@ -28,5 +29,11 @@ public record CompanyResponse(String nif, String name, String address) {
    */
   public CompanyResponse(final PersistentCompanyEntity company) {
     this(company.getNif(), company.getName(), company.getAddress());
+  }
+
+  @Override
+  public int compareTo(CompanyResponse other) {
+    // Example: Compare by company name
+    return this.name.compareTo(other.name);
   }
 }

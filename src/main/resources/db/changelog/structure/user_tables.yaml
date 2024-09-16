@@ -106,8 +106,6 @@ databaseChangeLog:
         constraintName: fk_roles_users_users
         referencedColumnNames: dni
         referencedTableName: users
-
-
 - changeSet:
       id: addColumnKindMember
       author: Santiago
