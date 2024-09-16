@@ -1,5 +1,5 @@
 # Utiliza una imagen base de Maven para compilar la aplicación
-FROM maven:3.9.6-eclipse-temurin-17-alpine AS builder
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
 
 # Copia el código fuente de la aplicación
 COPY . /usr/src/app
