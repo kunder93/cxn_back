@@ -38,12 +38,11 @@
     </developer>
   </developers>
 <scm>
-    <connection>scm:git:git@github.com/kunder93/cxn_back.git</connection>
-    <developerConnection>scm:git:git@github.com/kunder93/cxn_back.git</developerConnection>
-    <url>scm:git:git@github.com/kunder93/cxn_back.git</url>
-    <tag>back-app-0.0.1</tag> 
+    <connection>scm:git:https://github.com/kunder93/cxn_back.git</connection>
+    <developerConnection>scm:git:https://github.com/kunder93/cxn_back.git</developerConnection>
+    <url>https://github.com/kunder93/cxn_back</url>
+    <tag>back-app-1.0.1</tag> <!-- Asegúrate de que esta etiqueta no exista ya -->
 </scm>
-
 
   <properties>
     <java.version>21</java.version>
