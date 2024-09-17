@@ -714,4 +714,11 @@
       </plugin>
     </plugins>
   </reporting>
+  
+  <distributionManagement>
+    <repository>
+        <id>local-repo</id>
+        <url>file://${project.basedir}/target/repo</url>
+    </repository>
+</distributionManagement>
 </project>

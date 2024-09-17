@@ -4,6 +4,7 @@ package es.org.cxn.backapp.config;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
@@ -23,6 +24,9 @@ public class UserDataInitializer {
 
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private UserEntityRepository userRepo;
 
   /**
    * Creates an address details object from the provided sign-up request form.
@@ -94,9 +98,16 @@ public class UserDataInitializer {
       final var userDetails =
             createUserDetails(adminUserRequest, addressDetails);
 
-      userService.add(userDetails);
-      userService
-            .changeUserRoles(adminUserRequest.email(), initialUserRolesSet);
+      final var dniExists =
+            userRepo.findByDni(adminUserRequest.dni()).isPresent();
+      final var emailExists =
+            userRepo.findByEmail(adminUserRequest.email()).isPresent();
+
+      if (!dniExists && !emailExists) {
+        userService.add(userDetails);
+        userService
+              .changeUserRoles(adminUserRequest.email(), initialUserRolesSet);
+      }
 
     };
   }
