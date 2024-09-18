@@ -48,9 +48,21 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
+  /**
+   * The logger.
+   */
   private static final Logger LOGGER =
         LoggerFactory.getLogger(SecurityConfiguration.class);
 
+  /**
+   * Configures which web requests are ignored by Spring Security.
+   * <p>
+   * This method sets up a {@link WebSecurityCustomizer} that ignores requests
+   * to the H2 console endpoint.
+   * </p>
+   *
+   * @return the configured WebSecurityCustomizer.
+   */
   @Bean
   public WebSecurityCustomizer webSecurityCustomizer() {
     return (web) -> web.ignoring()
@@ -82,7 +94,7 @@ public class SecurityConfiguration {
    * @param http             the HTTP security configuration.
    * @param jwtRequestFilter the JWT filter.
    * @return the configured SecurityFilterChain.
-   * @throws Exception
+   * @throws Exception The exception when fails.
    */
   @Bean
   SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired

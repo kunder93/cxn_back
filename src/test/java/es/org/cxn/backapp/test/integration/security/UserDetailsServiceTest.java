@@ -19,6 +19,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -44,6 +46,12 @@ class UserDetailsServiceTest {
    */
   @Autowired
   private MyUserDetailsService myUserDetailsService;
+
+  /**
+   * Mocked mail sender.
+   */
+  @MockBean
+  private JavaMailSender javaMailSender;
 
   /**
    * Tests loading user details by username.

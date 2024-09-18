@@ -1,6 +1,7 @@
 
 package es.org.cxn.backapp.test.integration.controller;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -21,6 +22,8 @@ import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.DefaultUserService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 
 import java.time.LocalDate;
@@ -31,8 +34,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -63,6 +68,14 @@ class UserControllerIntegrationTest {
    *  response payloads in the tests.
    */
   private static Gson gson;
+
+  /**
+   * Mocked mail sender.
+   */
+  @MockBean
+  private JavaMailSender javaMailSender;
+
+  MimeMessage mimeMessage = new MimeMessage((Session) null);
 
   /**
    * URL endpoint for retrieving user data.
@@ -118,6 +131,7 @@ class UserControllerIntegrationTest {
   @BeforeAll
   static void setup() {
     gson = UsersControllerFactory.GSON;
+
   }
 
   /**
@@ -152,6 +166,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeMemberEmailNotExistingMemberBadRequest() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     final var notExistingMemberEmail = "email@email.es";
     var newEmail = "newEmail@email.es";
 
@@ -186,6 +202,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeMemberEmail() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var memberEmail = UsersControllerFactory.USER_A_EMAIL;
     var memberPassword = UsersControllerFactory.USER_A_PASSWORD;
     var newEmail = "newEmail@email.es";
@@ -231,6 +249,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeMemberPasswordPasswordChanged() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var memberEmail = UsersControllerFactory.USER_A_EMAIL;
     var currentPassword = UsersControllerFactory.USER_A_PASSWORD;
     var newPassword = "321321";
@@ -285,6 +305,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeMemberPasswordNotExistingMemberBadRequest() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     final var notExistingMemberEmail = "email@email.es";
     final var currentPassword = "123123";
     final var newPassword = "321321";
@@ -320,6 +342,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeMemberPasswordCurrentPasswordDontMatch() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var memberEmail = UsersControllerFactory.USER_A_EMAIL;
     var memberRequestPasswordNotValid = "456456";
     var memberNewPassword = "321321";
@@ -366,6 +390,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeKindOfMemberNotExistingMemberBadRequest() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var memberRequestJson = gson.toJson(memberRequest);
     mockMvc.perform(
@@ -399,6 +425,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeKindOfMemberSocioNumeroSocioHonorario() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var memberRequestJson = gson.toJson(memberRequest);
@@ -463,7 +491,8 @@ class UserControllerIntegrationTest {
           UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
           UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME
     );
-
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var userARequestJson = gson.toJson(userARequest);
     // Register user correctly
     mockMvc.perform(
@@ -510,6 +539,8 @@ class UserControllerIntegrationTest {
   @Transactional
   void testChangeKindOfMemberSocioNumeroSocioAspiranteNotAllowedBirthDate()
         throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     //User age NOT under 18.
     var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var userARequestJson = gson.toJson(userARequest);
@@ -547,6 +578,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testChangeKindOfMemberSocioNumeroSocioFamiliar() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var userARequestJson = gson.toJson(userARequest);
     // Register user correctly
@@ -591,6 +624,8 @@ class UserControllerIntegrationTest {
   @Transactional
   @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testGetAllUsersData() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     //FIRST MEMBER
     var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var userRequestJson = gson.toJson(userRequest);
@@ -670,6 +705,8 @@ class UserControllerIntegrationTest {
   @Test
   @Transactional
   void testGetOneUsersData() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     //FIRST MEMBER
     var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var userRequestJson = gson.toJson(userRequest);
@@ -704,6 +741,8 @@ class UserControllerIntegrationTest {
   @Transactional
   @Test
   void testUnsubscribeUserCheckUnsubscriber() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
     var memberRequestJson = gson.toJson(memberRequest);
     mockMvc.perform(

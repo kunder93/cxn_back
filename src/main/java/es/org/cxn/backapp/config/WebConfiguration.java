@@ -32,12 +32,25 @@ public class WebConfiguration implements WebMvcConfigurer {
 
   private final LoggingInterceptor loggingInterceptor;
 
-  public WebConfiguration(LoggingInterceptor loggingInterceptor) {
+  /**
+   * Constructs a {@code WebConfiguration} instance with the specified
+   * {@code LoggingInterceptor}.
+   * <p>
+   * This constructor is used to inject a {@code LoggingInterceptor} into the
+   * configuration to handle logging of HTTP requests and responses.
+   * </p>
+   *
+   * @param loggingInterceptor the interceptor used for logging HTTP requests
+   *                           and responses.
+   *                           This object is typically injected by the Spring
+   *                           framework.
+   */
+  public WebConfiguration(final LoggingInterceptor loggingInterceptor) {
     this.loggingInterceptor = loggingInterceptor;
   }
 
   @Override
-  public void addInterceptors(InterceptorRegistry registry) {
+  public void addInterceptors(final InterceptorRegistry registry) {
     registry.addInterceptor(loggingInterceptor);
   }
 

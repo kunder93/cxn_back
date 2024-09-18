@@ -1,6 +1,7 @@
 
 package es.org.cxn.backapp.test.integration.controller;
 
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.google.gson.Gson;
@@ -14,6 +15,9 @@ import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
+
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -22,7 +26,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,6 +57,15 @@ import org.springframework.transaction.annotation.Transactional;
 @TestPropertySource("/application.properties")
 @ActiveProfiles("test")
 class AuthControllerIntegrationTest {
+
+  /**
+   * Mocked mail sender.
+   */
+  @MockBean
+  private JavaMailSender javaMailSender; // Mockear el bean de JavaMailSender
+
+  // Crear un objeto MimeMessage simulado
+  MimeMessage mimeMessage = new MimeMessage((Session) null);
 
   /**
    * URL endpoint for user sign-up.
@@ -102,6 +117,8 @@ class AuthControllerIntegrationTest {
   @Test
   @Transactional
   void testSignUpReturnUserDataWithDefautlRole() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var numberOfRoles = 1;
     var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
@@ -166,7 +183,8 @@ class AuthControllerIntegrationTest {
   @Test
   @Transactional
   void testSignUpSecondUserWithSameEmailBadRequest() throws Exception {
-
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(
@@ -209,7 +227,10 @@ class AuthControllerIntegrationTest {
   @Test
   @Transactional
   void testSignUpSecondUserWithSameDniBadRequest() throws Exception {
-
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(
@@ -251,6 +272,8 @@ class AuthControllerIntegrationTest {
   @Test
   @Transactional
   void testAuthenticateUserReturnJwt() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(
@@ -312,7 +335,8 @@ class AuthControllerIntegrationTest {
   @Test
   @Transactional
   void testAuthenticateUserBadPasswordUnauthorized() throws Exception {
-
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     var userARequestJson = UsersControllerFactory.getUserARequestJson();
     // Register user correctly
     mockMvc.perform(

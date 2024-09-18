@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.config;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
@@ -12,7 +14,6 @@ import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -22,11 +23,29 @@ import org.springframework.stereotype.Component;
 @Profile("!test")
 public class UserDataInitializer {
 
-  @Autowired
+  /**
+   * The user service.
+   */
   private UserService userService;
 
-  @Autowired
-  private UserEntityRepository userRepo;
+  /**
+   * The user repository.
+   */
+  private UserEntityRepository userRepository;
+
+  /**
+   * Default public constructor.
+   *
+   * @param userServ The user service for use in this class.
+   * @param userRepo user repository for use in this class.
+   */
+  public UserDataInitializer(
+        final UserService userServ, final UserEntityRepository userRepo
+  ) {
+    userService = checkNotNull(userServ, "Received user service as null.");
+    userRepository =
+          checkNotNull(userRepo, "Received user repository as null.");
+  }
 
   /**
    * Creates an address details object from the provided sign-up request form.
@@ -69,11 +88,16 @@ public class UserDataInitializer {
     );
   }
 
+  /**
+   * Create initial user with admin privileges.
+   *
+   * @return Creates initial admin user if email and dni is not present in db.
+   */
   @Bean
   public CommandLineRunner init() {
     return args -> {
       // Usuario inicial.
-      var adminUserRequest = new SignUpRequestForm(
+      final var adminUserRequest = new SignUpRequestForm(
             "32721859N", // DNI
             "Santiago", // Nombre
             "Paz", // Primer apellido
@@ -99,9 +123,9 @@ public class UserDataInitializer {
             createUserDetails(adminUserRequest, addressDetails);
 
       final var dniExists =
-            userRepo.findByDni(adminUserRequest.dni()).isPresent();
+            userRepository.findByDni(adminUserRequest.dni()).isPresent();
       final var emailExists =
-            userRepo.findByEmail(adminUserRequest.email()).isPresent();
+            userRepository.findByEmail(adminUserRequest.email()).isPresent();
 
       if (!dniExists && !emailExists) {
         userService.add(userDetails);

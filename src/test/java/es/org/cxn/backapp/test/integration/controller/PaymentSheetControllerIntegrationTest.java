@@ -1,6 +1,9 @@
 
 package es.org.cxn.backapp.test.integration.controller;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -15,12 +18,14 @@ import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.requests.CreatePaymentSheetRequest;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
+import es.org.cxn.backapp.service.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.CompanyControllerFactory;
 import es.org.cxn.backapp.test.utils.InvoicesControllerFactory;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.PaymentSheetControllerFactory;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
+import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 
 import java.math.BigDecimal;
@@ -33,7 +38,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
@@ -48,6 +55,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @AutoConfigureMockMvc
 @TestPropertySource("/application.properties")
 class PaymentSheetControllerIntegrationTest {
+
+  /**
+   * Mocked mail sender.
+   */
+  @MockBean
+  private JavaMailSender javaMailSender;
+
+  @MockBean
+  private MimeMessage mimeMessage;
 
   /**
    * The URL endpoint for interacting with payment sheets.
@@ -152,6 +168,9 @@ class PaymentSheetControllerIntegrationTest {
    */
   private static final int FOOD_HOUSING_AMOUNT_DAYS = 5;
 
+  @MockBean
+  private DefaultEmailService emailService;
+
   /**
    * Gson instance used for JSON serialization and deserialization.
    * This static field provides a single instance of Gson for the entire class,
@@ -175,6 +194,10 @@ class PaymentSheetControllerIntegrationTest {
 
   @BeforeEach
   public void beforeTestCase() throws Exception {
+    // Configurar el comportamiento para que no haga nada cuando se llame a sendSignUpEmail
+    doNothing().when(emailService)
+          .sendSignUpEmail(anyString(), anyString(), anyString());
+
     // Create user, expect 201 created.
     mockMvc.perform(
           post(CREATE_USER_URL).contentType(MediaType.APPLICATION_JSON)
@@ -819,6 +842,8 @@ class PaymentSheetControllerIntegrationTest {
   @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveFoodHousingFromNotExistentPaymentSheetBadRequest()
         throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     mockMvc.perform(
           post(
                 PAYMENT_SHEET_URL + "/" + PAYMENT_SHEET_NOT_EXISTING_ID
@@ -832,6 +857,8 @@ class PaymentSheetControllerIntegrationTest {
   @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveFoodHousingFromPaymentSheetCheckPaymentsheet()
         throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     // Create payment sheet
     var paymentSheetResponseJson = mockMvc
           .perform(
@@ -938,6 +965,8 @@ class PaymentSheetControllerIntegrationTest {
   @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testRemoveRegularTransportFromNotExistentPaymentSheet()
         throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     final var notExistentRegularTransportId = 13;
     mockMvc.perform(
           post(
@@ -955,6 +984,8 @@ class PaymentSheetControllerIntegrationTest {
   @Transactional
   @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
   void testAddTwoRegularTransportToPaymentSheetRemoveFirst() throws Exception {
+    // Configurar el comportamiento del mock JavaMailSender
+    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
     // Create 2 companies for the invoice buyer and seller
     // Create first company.
     mockMvc.perform(
