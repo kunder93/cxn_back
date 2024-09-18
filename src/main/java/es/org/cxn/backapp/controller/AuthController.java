@@ -32,12 +32,14 @@ import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.service.DefaultEmailService;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 import java.util.ArrayList;
@@ -83,18 +85,25 @@ public class AuthController {
   private final UserDetailsService usrDtlsSrv;
 
   /**
+   * The email service for sending emails.
+   */
+  private final DefaultEmailService emailService;
+
+  /**
    * Constructs a controller with the specified dependencies.
    *
    * @param serviceUser     the user service to manage user operations.
    * @param authManag       the authentication manager to handle authentication.
    * @param userDetailsServ the user details service to load user-specific
    * details.
+   * @param emailServ       the email service for send email messages.
    * @param jwtUtil         the JWT utility for generating and validating
    * tokens.
    */
   public AuthController(
         final UserService serviceUser, final AuthenticationManager authManag,
-        final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtil
+        final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtil,
+        final DefaultEmailService emailServ
   ) {
     super();
     this.userService = Preconditions
@@ -105,6 +114,8 @@ public class AuthController {
     this.usrDtlsSrv = Preconditions.checkNotNull(
           userDetailsServ, "Received a null pointer as userDetailsService"
     );
+    this.emailService = Preconditions
+          .checkNotNull(emailServ, "Received a null pointer as email service.");
     Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
   }
 
@@ -177,8 +188,19 @@ public class AuthController {
             .changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
       final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
 
+      emailService.sendSignUpEmail(
+            signUpRequestForm.email(), signUpRequestForm.name(),
+            "Te damos la bienvenida a Círculo Xadrez Narón."
+      );
+
       return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
     } catch (UserServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
+    } catch (MessagingException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
       throw new ResponseStatusException(
             HttpStatus.BAD_REQUEST, e.getMessage(), e
       );
