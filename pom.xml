@@ -49,7 +49,7 @@
 	<properties>
 		<java.version>21</java.version>
 		<jackson.version>2.17.2</jackson.version>
-		<spring.boot.version>3.0.13</spring.boot.version>
+		<spring.boot.version>3.3.4</spring.boot.version>
 		<spring.framework.version>6.3.3</spring.framework.version>
 		<jjwt.version>0.12.6</jjwt.version>
 		<hikariCP.version>5.1.0</hikariCP.version>
@@ -57,28 +57,28 @@
 		<mockito.version>5.13.0</mockito.version>
 		<spring.test.version>6.1.13</spring.test.version>
 		<jakarta.validation.version>3.1.0</jakarta.validation.version>
-		<jakarta.persistence.version>3.2.0</jakarta.persistence.version>
+		<jakarta.persistence.version>3.1.0</jakarta.persistence.version>
 		<log4j.version>2.24.0</log4j.version>
 		<hamcrest.version>3.0</hamcrest.version>
 		<junit.jupiter.version>5.11.0</junit.jupiter.version>
-		<spring.version>6.0.23</spring.version>
-		<spring.security.version>6.0.8</spring.security.version>
+		<spring.version>6.1.13</spring.version>
+		<spring.security.version>6.3.3</spring.security.version>
 		<slf4j.version>2.0.16</slf4j.version>
-		<spring.webmvc.version>6.0.4</spring.webmvc.version>
+		<spring.webmvc.version>6.1.13</spring.webmvc.version>
 		<spring.tx.version>6.1.13</spring.tx.version>
 		<hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-		<hibernate.version>6.1.7.Final</hibernate.version>
+		<hibernate.version>6.3.2.Final</hibernate.version>
 		<h2.version>2.3.232</h2.version>
 		<lombok.version>1.18.34</lombok.version>
 		<postgresql.version>42.7.4</postgresql.version>
 		<spring.data.version>3.2.10</spring.data.version>
-		<logback.version>1.5.6</logback.version>
+		<logback.version>1.5.8</logback.version>
 		<pmd.plugin.version>3.25.0</pmd.plugin.version>
 		<assertj.version>3.26.3</assertj.version>
 		<gson.version>2.11.0</gson.version>
 		<guava.version>33.3.0-jre</guava.version>
 		<glassfish.jakarta.el.version>4.0.2</glassfish.jakarta.el.version>
-		<spring.web.version>6.0.2</spring.web.version>
+		<spring.web.version>6.1.13</spring.web.version>
 		<liquibase.version>4.29.2</liquibase.version>
 		<maven.dependency.plugin.version>3.8.0</maven.dependency.plugin.version>
 		<maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
@@ -304,6 +304,12 @@
 		<!-- ============================================== -->
 		<!-- ================= ASPECTJ ==================== -->
 		<!-- ============================================== -->
+		
+		    <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjrt</artifactId>
+        <version>1.9.19</version> <!-- You can use the latest stable version -->
+    </dependency>
 		<dependency>
 			<!-- AspectJ Weaver -->
 			<groupId>org.aspectj</groupId>
@@ -337,11 +343,6 @@
 			<groupId>jakarta.persistence</groupId>
 			<artifactId>jakarta.persistence-api</artifactId>
 			<version>${jakarta.persistence.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.aspectj</groupId>
-			<artifactId>aspectjrt</artifactId>
-			<version>1.9.22.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.assertj</groupId>
@@ -404,7 +405,7 @@
 		<dependency>
 			<groupId>jakarta.el</groupId>
 			<artifactId>jakarta.el-api</artifactId>
-			<version>6.0.0</version>
+			<version>6.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -539,13 +540,12 @@
 							<version>${lombok.version}</version>
 						</path>
 					</annotationProcessorPaths>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
 					<compilerArgs>
 						<arg>-parameters</arg>
 						<arg>-encoding</arg>
 						<arg>UTF-8</arg>
 					</compilerArgs>
+					<release>${java.version}</release>
 				</configuration>
 			</plugin>
 			<plugin>

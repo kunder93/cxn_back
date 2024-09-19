@@ -7,6 +7,8 @@ import es.org.cxn.backapp.filter.JwtRequestFilter;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +66,8 @@ public class SecurityConfiguration {
    * @return the configured WebSecurityCustomizer.
    */
   @Bean
-  public WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.ignoring()
+  WebSecurityCustomizer webSecurityCustomizer() {
+    return web -> web.ignoring()
           .requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
   }
 
@@ -75,7 +77,7 @@ public class SecurityConfiguration {
    * @return the CORS configuration source.
    */
   @Bean
-  /* default */ CorsConfigurationSource corsConfigurationSource() {
+  CorsConfigurationSource corsConfigurationSource() {
     LOGGER.info("Configurando CORS");
     final var configuration = new CorsConfiguration();
     configuration.setAllowedOrigins(Arrays.asList("*"));
@@ -101,34 +103,34 @@ public class SecurityConfiguration {
   JwtRequestFilter jwtRequestFilter) throws Exception {
     LOGGER.info("Configurando SecurityFilterChain");
 
-    // Disable CSRF for REST API and use stateless session management
-    http.csrf().disable().sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().cors();
+      // Disable CSRF for REST API and use stateless session management
+      http.csrf(csrf -> csrf.disable()).sessionManagement(management -> management
+              .sessionCreationPolicy(SessionCreationPolicy.STATELESS)).cors(withDefaults());
 
-    // Allow H2 console access by modifying frame options
-    http.headers().frameOptions().sameOrigin();
+      // Allow H2 console access by modifying frame options
+      http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
 
     // Add JWT filter before UsernamePasswordAuthenticationFilter
     http.addFilterBefore(
           jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
     );
 
-    // Permit all requests to /api/auth/signup and /api/auth/signin
-    http.authorizeHttpRequests().requestMatchers("/h2-console/**").permitAll()
-          .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()
-          .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll()
-          .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL)
-          .permitAll().requestMatchers("/v3/api-docs/swagger-config")
-          .permitAll()
-          .requestMatchers(
-                "/api/address/getCountries", "/api/address/country/**"
-          ).permitAll().anyRequest().authenticated();
-    http.headers().frameOptions().sameOrigin();
-    // Permit all requests to /api/auth/signup, /api/auth/signin,
-    // and the AddressController endpoints
+      // Permit all requests to /api/auth/signup and /api/auth/signin
+      http.authorizeHttpRequests(requests -> requests.requestMatchers("/h2-console/**").permitAll()
+              .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()
+              .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll()
+              .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL)
+              .permitAll().requestMatchers("/v3/api-docs/swagger-config")
+              .permitAll()
+              .requestMatchers(
+                      "/api/address/getCountries", "/api/address/country/**"
+              ).permitAll().anyRequest().authenticated());
+      http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
+      // Permit all requests to /api/auth/signup, /api/auth/signin,
+      // and the AddressController endpoints
 
-    // Disable anonymous access
-    http.anonymous();
+      // Disable anonymous access
+      http.anonymous(withDefaults());
     LOGGER.info("Autorizaciones configuradas para rutas específicas");
     return http.build();
   }
@@ -139,7 +141,7 @@ public class SecurityConfiguration {
    * @return the password encoder.
    */
   @Bean
-  /* default */ PasswordEncoder passwordEncoder() {
+  PasswordEncoder passwordEncoder() {
     return new BCryptPasswordEncoder();
   }
 
@@ -150,7 +152,7 @@ public class SecurityConfiguration {
    * @return the authentication manager.
    */
   @Bean
-  /* default */ AuthenticationManager
+  AuthenticationManager
         authenticationManager(final AuthenticationConfiguration authConfig)
               throws Exception {
     return authConfig.getAuthenticationManager();

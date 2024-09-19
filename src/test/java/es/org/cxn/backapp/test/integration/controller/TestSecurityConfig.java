@@ -45,10 +45,10 @@ public class TestSecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(final HttpSecurity http)
         throws Exception {
-    // Desactiva la seguridad para las pruebas
-    http.csrf().disable().authorizeHttpRequests().anyRequest().permitAll().and()
-          .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+      // Desactiva la seguridad para las pruebas
+      http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(requests -> requests.anyRequest().permitAll())
+              .sessionManagement(management -> management
+                      .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     return http.build();
   }
 }

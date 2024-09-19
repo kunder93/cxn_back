@@ -94,7 +94,7 @@ public class UserDataInitializer {
    * @return Creates initial admin user if email and dni is not present in db.
    */
   @Bean
-  public CommandLineRunner init() {
+  CommandLineRunner init() {
     return args -> {
       // Usuario inicial.
       final var adminUserRequest = new SignUpRequestForm(

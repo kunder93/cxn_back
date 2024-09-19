@@ -178,7 +178,7 @@ public class ChessQuestionsController {
     "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
           + " hasRole('SECRETARIO')"
   )
-  public ResponseEntity<Void> deleteChessQuestion(@PathVariable("id")
+  public ResponseEntity<Void> deleteChessQuestion(@PathVariable
   final Integer id) {
     try {
       chessQuestionsService.delete(id);

@@ -38,7 +38,7 @@ public class OpenApiConfig {
    * metadata.
    */
   @Bean
-  public OpenAPI customOpenAPI() {
+  OpenAPI customOpenAPI() {
     return new OpenAPI()
           .info(
                 new Info().title("CXN API")
