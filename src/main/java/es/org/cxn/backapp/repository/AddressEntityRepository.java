@@ -39,6 +39,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface AddressEntityRepository
-      extends JpaRepository<PersistentAddressEntity, Integer> {
+      extends JpaRepository<PersistentAddressEntity, String> {
 
 }

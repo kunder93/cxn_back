@@ -39,7 +39,7 @@ import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
  */
 @Repository
 public interface CompanyEntityRepository
-      extends JpaRepository<PersistentCompanyEntity, Integer> {
+      extends JpaRepository<PersistentCompanyEntity, String> {
 
   /**
    * Find company entity with provided nif.

@@ -1,0 +1,71 @@
+databaseChangeLog:
+-  changeSet:
+      id: user_lichess_integration_tables
+      author: Santiago
+      changes:
+      -  createTable:
+            tableName: lichessAuth
+            columns:
+            -  column:
+                  name: id
+                  type: bigint
+                  constraints:
+                     nullable: false
+            -  column:
+                  name: user_dni
+                  type: varchar(10)
+                  constraints:
+                     nullable: false
+            -  column:
+                  name: access_token
+                  type: varchar(150)
+            -  column:
+                  name: expires_in
+                  type: integer
+            -  column:
+                  name: scope
+                  type: varchar(40)
+            -  column:
+                  name: token_type
+                  type: varchar(40)
+            -  column:
+                  name: created_at
+                  type: timestamp
+            -  column:
+                  name: updated_at
+                  type: timestamp
+            -  addForeignKeyConstraint: null
+               baseTableName: lichessAuth
+               baseColumnNames: user_dni
+               constraintName: fk_lichessAuth_users
+               referencedTableName: users
+               referencedColumnNames: dni
+               onDelete: CASCADE
+      -  createTable:
+            tableName: oauth_authorization_requests
+            columns:
+            -  column:
+                  name: id
+                  type: bigint
+                  constraints:
+                     primaryKey: true
+                     nullable: false
+            -  column:
+                  name: user_dni
+                  type: varchar(10)
+            -  column:
+                  name: code_verifier
+                  type: varchar(200)
+            -  column:
+                  name: state
+                  type: varchar(60)
+            -  column:
+                  name: created_at
+                  type: timestamp
+            - addForeignKeyConstraint:
+            baseTableName: oauth_authorization_requests
+            baseColumnNames: user_dni
+            constraintName: fk_oauth_authorization_requests_users
+            referencedTableName: users
+            referencedColumnNames: dni
+            onDelete: CASCADE
