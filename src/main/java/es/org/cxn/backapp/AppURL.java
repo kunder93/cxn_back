@@ -14,32 +14,34 @@ package es.org.cxn.backapp;
  */
 public final class AppURL {
 
-  /**
-   * The URL for the user sign-up endpoint.
-   */
-  public static final String SIGN_UP_URL = "/api/auth/signup";
+    /**
+     * The URL for the user sign-up endpoint.
+     */
+    public static final String SIGN_UP_URL = "/api/auth/signup";
 
-  /**
-   * The URL for the user sign-in endpoint.
-   * <p>Note: there seems to be a typo in the path
-   * (should be {@code "/api/auth/signin"})</p>
-   */
-  public static final String SIGN_IN_URL = "/api/auth/signinn";
+    /**
+     * The URL for the user sign-in endpoint.
+     * <p>
+     * Note: there seems to be a typo in the path (should be
+     * {@code "/api/auth/signin"})
+     * </p>
+     */
+    public static final String SIGN_IN_URL = "/api/auth/signinn";
 
-  /**
-   * The URL for accessing chess questions.
-   */
-  public static final String CHESS_QUESTION_URL = "/api/chessQuestion";
+    /**
+     * The URL for accessing chess questions.
+     */
+    public static final String CHESS_QUESTION_URL = "/api/chessQuestion";
 
-  /**
-   * The URL for accessing the participants.
-   */
-  public static final String PARTICIPANTS_URL = "/api/participants";
+    /**
+     * The URL for accessing the participants.
+     */
+    public static final String PARTICIPANTS_URL = "/api/participants";
 
-  /**
-   * Private constructor to prevent instantiation of this utility class.
-   */
-  private AppURL() {
-    // Private constructor to prevent instantiation.
-  }
+    /**
+     * Private constructor to prevent instantiation of this utility class.
+     */
+    private AppURL() {
+        // Private constructor to prevent instantiation.
+    }
 }

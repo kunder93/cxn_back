@@ -15,8 +15,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Spring Web Configuration.
  * <p>
- * This class configures the web application, including CORS mappings,
- * view controllers, and error page handling.
+ * This class configures the web application, including CORS mappings, view
+ * controllers, and error page handling.
  * </p>
  *
  * <p>
@@ -30,56 +30,77 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfiguration implements WebMvcConfigurer {
 
-  private final LoggingInterceptor loggingInterceptor;
+    /**
+     * The logging intercepter.
+     */
+    private final LoggingInterceptor loggingInterceptor;
 
-  /**
-   * Constructs a {@code WebConfiguration} instance with the specified
-   * {@code LoggingInterceptor}.
-   * <p>
-   * This constructor is used to inject a {@code LoggingInterceptor} into the
-   * configuration to handle logging of HTTP requests and responses.
-   * </p>
-   *
-   * @param loggingInterceptor the interceptor used for logging HTTP requests
-   *                           and responses.
-   *                           This object is typically injected by the Spring
-   *                           framework.
-   */
-  public WebConfiguration(final LoggingInterceptor loggingInterceptor) {
-    this.loggingInterceptor = loggingInterceptor;
-  }
+    /**
+     * Constructs a {@code WebConfiguration} instance with the specified
+     * {@code LoggingInterceptor}.
+     * <p>
+     * This constructor is used to inject a {@code LoggingInterceptor} into the
+     * configuration to handle logging of HTTP requests and responses.
+     * </p>
+     *
+     * @param value the interceptor used for logging HTTP requests and responses.
+     *              This object is typically injected by the Spring framework.
+     */
+    public WebConfiguration(final LoggingInterceptor value) {
+        loggingInterceptor = value;
+    }
 
-  @Override
-  public void addInterceptors(final InterceptorRegistry registry) {
-    registry.addInterceptor(loggingInterceptor);
-  }
+    /**
+     * Configures Cross-Origin Resource Sharing (CORS) settings.
+     *
+     * <p>
+     * This method allows any origin and any HTTP method to access resources within
+     * the application, which is suitable for scenarios where the backend serves
+     * clients from different origins.
+     * </p>
+     *
+     * @param registry the {@link CorsRegistry} used to specify the CORS mappings
+     */
+    @Override
+    public final void addCorsMappings(final CorsRegistry registry) {
+        registry.addMapping("/**").allowedMethods("*");
+    }
 
-  @Override
-  public final void addCorsMappings(final CorsRegistry registry) {
-    registry.addMapping("/**").allowedMethods("*");
-  }
+    /**
+     * Adds an interceptor for logging requests.
+     *
+     * <p>
+     * This method registers the {@code loggingInterceptor} to be applied to all
+     * incoming requests. Interceptors are useful for cross-cutting concerns such as
+     * logging, authentication, or modifying requests.
+     * </p>
+     *
+     * @param registry the {@link InterceptorRegistry} used to add the interceptor
+     */
+    @Override
+    public void addInterceptors(final InterceptorRegistry registry) {
+        registry.addInterceptor(loggingInterceptor);
+    }
 
-  /**
-   * Adds view controllers for handling specific routes.
-   * <p>
-   * This example forwards requests to "/notFound" to the root ("/").
-   * </p>
-   */
-  @Override
-  public void addViewControllers(final ViewControllerRegistry registry) {
-    registry.addViewController("/notFound").setViewName("forward:/");
-  }
+    /**
+     * Adds view controllers for handling specific routes.
+     * <p>
+     * This example forwards requests to "/notFound" to the root ("/").
+     * </p>
+     */
+    @Override
+    public void addViewControllers(final ViewControllerRegistry registry) {
+        registry.addViewController("/notFound").setViewName("forward:/");
+    }
 
-  /**
-   * Configures the web server to handle a 404 (NOT_FOUND) error by forwarding
-   * it to the "/notFound" view.
-   *
-   * @return A customizer that adds an error page for HTTP status 404.
-   */
-  @Bean
-  WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>
-        containerCustomizer() {
-    return container -> container
-          .addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
-  }
+    /**
+     * Configures the web server to handle a 404 (NOT_FOUND) error by forwarding it
+     * to the "/notFound" view.
+     *
+     * @return A customizer that adds an error page for HTTP status 404.
+     */
+    @Bean
+    WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
+        return container -> container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
+    }
 }

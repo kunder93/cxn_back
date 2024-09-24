@@ -4,24 +4,21 @@ databaseChangeLog:
       author: Santiago
       changes:
       -  createTable:
-            tableName: lichessAuth
+            tableName: lichess_auth
             columns:
-            -  column:
-                  name: id
-                  type: bigint
-                  constraints:
-                     nullable: false
+
             -  column:
                   name: user_dni
                   type: varchar(10)
                   constraints:
+                     primaryKey: true
                      nullable: false
             -  column:
                   name: access_token
                   type: varchar(150)
             -  column:
-                  name: expires_in
-                  type: integer
+                  name: expiration_date
+                  type: timestamp
             -  column:
                   name: scope
                   type: varchar(40)
@@ -32,8 +29,8 @@ databaseChangeLog:
                   name: created_at
                   type: timestamp
             -  column:
-                  name: updated_at
-                  type: timestamp
+                  name: state
+                  type: varchar(60)
             -  addForeignKeyConstraint: null
                baseTableName: lichessAuth
                baseColumnNames: user_dni
@@ -45,14 +42,11 @@ databaseChangeLog:
             tableName: oauth_authorization_requests
             columns:
             -  column:
-                  name: id
-                  type: bigint
+                  name: user_dni
+                  type: varchar(10)
                   constraints:
                      primaryKey: true
                      nullable: false
-            -  column:
-                  name: user_dni
-                  type: varchar(10)
             -  column:
                   name: code_verifier
                   type: varchar(200)

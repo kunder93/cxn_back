@@ -1,19 +1,16 @@
 
 package es.org.cxn.backapp.config;
 
-import es.org.cxn.backapp.AppURL;
-import es.org.cxn.backapp.filter.JwtRequestFilter;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 import java.util.Arrays;
 
 import org.slf4j.Logger;
-
-import static org.springframework.security.config.Customizer.withDefaults;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -29,6 +26,9 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import es.org.cxn.backapp.AppURL;
+import es.org.cxn.backapp.filter.JwtRequestFilter;
 
 /**
  * Spring security configuration.
@@ -50,112 +50,107 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
-  /**
-   * The logger.
-   */
-  private static final Logger LOGGER =
-        LoggerFactory.getLogger(SecurityConfiguration.class);
+    /**
+     * The logger.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
 
-  /**
-   * Configures which web requests are ignored by Spring Security.
-   * <p>
-   * This method sets up a {@link WebSecurityCustomizer} that ignores requests
-   * to the H2 console endpoint.
-   * </p>
-   *
-   * @return the configured WebSecurityCustomizer.
-   */
-  @Bean
-  WebSecurityCustomizer webSecurityCustomizer() {
-    return web -> web.ignoring()
-          .requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
-  }
+    /**
+     * Provides an authentication manager bean for managing user authentication.
+     *
+     * @param authConfig the current authentication configuration.
+     * @return the authentication manager.
+     * @throws Exception When fails.
+     */
+    @Bean
+    AuthenticationManager authenticationManager(final AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
+    }
 
-  /**
-   * Configures CORS settings for the application.
-   *
-   * @return the CORS configuration source.
-   */
-  @Bean
-  CorsConfigurationSource corsConfigurationSource() {
-    LOGGER.info("Configurando CORS");
-    final var configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("*"));
-    configuration.setAllowedMethods(Arrays.asList("*"));
-    configuration.setAllowedHeaders(Arrays.asList("*"));
+    /**
+     * Configures CORS settings for the application.
+     *
+     * @return the CORS configuration source.
+     */
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        LOGGER.info("Configurando CORS");
+        final var configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedMethods(Arrays.asList("*"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
 
-    final var source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
+        final var source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
 
-    return source;
-  }
+        return source;
+    }
 
-  /**
-   * Configures the security filter chain applied to HTTP requests.
-   *
-   * @param http             the HTTP security configuration.
-   * @param jwtRequestFilter the JWT filter.
-   * @return the configured SecurityFilterChain.
-   * @throws Exception The exception when fails.
-   */
-  @Bean
-  SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired
-  JwtRequestFilter jwtRequestFilter) throws Exception {
-    LOGGER.info("Configurando SecurityFilterChain");
+    /**
+     * Configures the security filter chain applied to HTTP requests.
+     *
+     * @param http             the HTTP security configuration.
+     * @param jwtRequestFilter the JWT filter.
+     * @return the configured SecurityFilterChain.
+     * @throws Exception The exception when fails.
+     */
+    @Bean
+    SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired JwtRequestFilter jwtRequestFilter)
+            throws Exception {
+        LOGGER.info("Configurando SecurityFilterChain");
+        // Disable CSRF for REST API and use stateless session management
+        http.csrf(csrf -> csrf.disable())
+                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(withDefaults());
 
-      // Disable CSRF for REST API and use stateless session management
-      http.csrf(csrf -> csrf.disable()).sessionManagement(management -> management
-              .sessionCreationPolicy(SessionCreationPolicy.STATELESS)).cors(withDefaults());
+        // Allow H2 console access by modifying frame options
+        http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
 
-      // Allow H2 console access by modifying frame options
-      http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
+        // Add JWT filter before UsernamePasswordAuthenticationFilter
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-    // Add JWT filter before UsernamePasswordAuthenticationFilter
-    http.addFilterBefore(
-          jwtRequestFilter, UsernamePasswordAuthenticationFilter.class
-    );
+        // Permit all requests to /api/auth/signup and /api/auth/signin
+        http.authorizeHttpRequests(requests -> requests.requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll()
+                .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL).permitAll()
+                .requestMatchers("/v3/api-docs/swagger-config").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/lichessAuth").authenticated()
+                .requestMatchers("/api/address/getCountries", "/api/address/country/**").permitAll().anyRequest()
+                .authenticated());
+        http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
+        // Permit all requests to /api/auth/signup, /api/auth/signin,
+        // and the AddressController endpoints
 
-      // Permit all requests to /api/auth/signup and /api/auth/signin
-      http.authorizeHttpRequests(requests -> requests.requestMatchers("/h2-console/**").permitAll()
-              .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()
-              .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll()
-              .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL)
-              .permitAll().requestMatchers("/v3/api-docs/swagger-config")
-              .permitAll()
-              .requestMatchers(
-                      "/api/address/getCountries", "/api/address/country/**"
-              ).permitAll().anyRequest().authenticated());
-      http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
-      // Permit all requests to /api/auth/signup, /api/auth/signin,
-      // and the AddressController endpoints
+        // Disable anonymous access
+        http.anonymous(withDefaults());
+        LOGGER.info("Autorizaciones configuradas para rutas específicas");
+        return http.build();
+    }
 
-      // Disable anonymous access
-      http.anonymous(withDefaults());
-    LOGGER.info("Autorizaciones configuradas para rutas específicas");
-    return http.build();
-  }
+    /**
+     * Provides a password encoder bean for encoding passwords using BCrypt.
+     *
+     * @return the password encoder.
+     */
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-  /**
-   * Provides a password encoder bean for encoding passwords using BCrypt.
-   *
-   * @return the password encoder.
-   */
-  @Bean
-  PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
-  }
-
-  /**
-   * Provides an authentication manager bean for managing user authentication.
-   *
-   * @param authConfig the current authentication configuration.
-   * @return the authentication manager.
-   */
-  @Bean
-  AuthenticationManager
-        authenticationManager(final AuthenticationConfiguration authConfig)
-              throws Exception {
-    return authConfig.getAuthenticationManager();
-  }
+    /**
+     * Configures which web requests are ignored by Spring Security.
+     * <p>
+     * This method sets up a {@link WebSecurityCustomizer} that ignores requests to
+     * the H2 console endpoint.
+     * </p>
+     *
+     * @return the configured WebSecurityCustomizer.
+     */
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
+    }
 
 }

@@ -7,25 +7,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.google.gson.Gson;
-
-import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
-import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
-import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
-import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
-import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
-import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
-import es.org.cxn.backapp.model.form.responses.UserDataResponse;
-import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
-import es.org.cxn.backapp.service.DefaultUserService;
-import es.org.cxn.backapp.test.utils.UsersControllerFactory;
-
-import jakarta.mail.Session;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.transaction.Transactional;
-
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Assertions;
@@ -44,6 +25,24 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.google.gson.Gson;
+
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
+import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
+import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
+import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
+import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
+import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.service.DefaultUserService;
+import es.org.cxn.backapp.test.utils.UsersControllerFactory;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
+
 /**
  * @author Santiago Paz. User controller integration tests.
  */
@@ -53,733 +52,550 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @TestPropertySource("/application.properties")
 class UserControllerIntegrationTest {
 
-  /**
-   * Provides the ability to perform HTTP requests and receive responses for
-   * testing.
-   * Used for sending HTTP requests to the controllers and verifying the
-   * responses in integration tests.
-   */
-  @Autowired
-  private MockMvc mockMvc;
-
-  /**
-   * Gson instance used for converting Java objects to JSON and vice versa.
-   * This static instance is used for serializing and deserializing request and
-   *  response payloads in the tests.
-   */
-  private static Gson gson;
-
-  /**
-   * Mocked mail sender.
-   */
-  @MockBean
-  private JavaMailSender javaMailSender;
-
-  MimeMessage mimeMessage = new MimeMessage((Session) null);
-
-  /**
-   * URL endpoint for retrieving user data.
-   * This static final string represents the URL used to fetch data of a
-   * specific user.
-   */
-  private static final String GET_USER_DATA_URL = "/api/user";
-
-  /**
-   * URL endpoint for retrieving data of all users.
-   * This static final string represents the URL used to fetch a list of
-   * all users.
-   */
-  private static final String GET_ALL_USERS_DATA_URL = "/api/user/getAll";
-
-  /**
-   * URL endpoint for user sign-in.
-   * This static final string represents the URL used for user authentication
-   * and generating JWT tokens.
-   */
-  private static final String SIGN_IN_URL = "/api/auth/signinn";
-
-  /**
-   * URL endpoint for changing a user's email address.
-   * This static final string represents the URL used to update a user's
-   *  email address.
-   */
-  private static final String CHANGE_MEMBER_EMAIL_URL = "/api/user/changeEmail";
-
-  /**
-   * URL endpoint for changing a user's password.
-   * This static final string represents the URL used to update a
-   * user's password.
-   */
-  private static final String CHANGE_MEMBER_PASSWORD_URL =
-        "/api/user/changePassword";
-
-  /**
-   * URL endpoint for user registration (sign-up).
-   * This static final string represents the URL used to create a new
-   * user account.
-   */
-  private static final String SIGN_UP_URL = "/api/auth/signup";
-
-  /**
-   * URL endpoint for changing the type of a user.
-   * This static final string represents the URL used to update a
-   * user's role or membership type.
-   */
-  private static final String CHANGE_KIND_MEMBER_URL =
-        "/api/user/changeKindOfMember";
-
-  @BeforeAll
-  static void setup() {
-    gson = UsersControllerFactory.GSON;
-
-  }
-
-  /**
-   * Main class constructor.
-   */
-  UserControllerIntegrationTest() {
-    super();
-  }
-
-  private String authenticateAndGetToken(String email, String password)
-        throws Exception {
-    var authRequest = new AuthenticationRequest(email, password);
-    var authRequestJson = gson.toJson(authRequest);
-
-    var response = mockMvc
-          .perform(
-                post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                      .content(authRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
-
-    var authResponse = gson.fromJson(response, AuthenticationResponse.class);
-    return authResponse.jwt();
-  }
-
-  /**
-   * Check that try changing email of not existing member
-   * return 400 bad request.
-   *
-   * @throws Exception Test fails.
-   */
-  @Test
-  @Transactional
-  void testChangeMemberEmailNotExistingMemberBadRequest() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    final var notExistingMemberEmail = "email@email.es";
-    var newEmail = "newEmail@email.es";
-
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    var changeEmailRequest =
-          new UserChangeEmailRequest(notExistingMemberEmail, newEmail);
-    var changeEmailRequestJson = gson.toJson(changeEmailRequest);
-
-    mockMvc.perform(
-          patch(CHANGE_MEMBER_EMAIL_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(changeEmailRequestJson)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
-  }
-
-  /**
-   * Check that change email for existing member returns
-   * member data with new email.
-   *
-   * @throws Exception Test fails.
-   */
-  @Test
-  @Transactional
-  void testChangeMemberEmail() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var memberEmail = UsersControllerFactory.USER_A_EMAIL;
-    var memberPassword = UsersControllerFactory.USER_A_PASSWORD;
-    var newEmail = "newEmail@email.es";
-
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var jwtToken = authenticateAndGetToken(memberEmail, memberPassword);
-
-    var changeEmailRequest = new UserChangeEmailRequest(memberEmail, newEmail);
-    var changeEmailRequestJson = gson.toJson(changeEmailRequest);
-
-    var changeMemberEmailResponseJson = mockMvc
-          .perform(
-                patch(CHANGE_MEMBER_EMAIL_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                      .content(changeEmailRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
-    var response =
-          gson.fromJson(changeMemberEmailResponseJson, UserDataResponse.class);
-
-    Assertions.assertNotEquals(
-          memberEmail, response.email(),
-          "Response not cointains in itial member email."
-    );
-    Assertions.assertEquals(
-          newEmail, response.email(), "Response contains new member email."
-    );
-  }
-
-  /**
-   * Check that try changing password of not existing member
-   * return 400 bad request.
-   *
-   * @throws Exception Test fails.
-   */
-  @Test
-  @Transactional
-  void testChangeMemberPasswordPasswordChanged() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var memberEmail = UsersControllerFactory.USER_A_EMAIL;
-    var currentPassword = UsersControllerFactory.USER_A_PASSWORD;
-    var newPassword = "321321";
-
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var jwtToken = authenticateAndGetToken(memberEmail, currentPassword);
-
-    var changePasswordRequest = new UserChangePasswordRequest(
-          memberEmail, currentPassword, newPassword
-    );
-
-    var changePasswordRequestJson = gson.toJson(changePasswordRequest);
-    mockMvc.perform(
-          patch(CHANGE_MEMBER_PASSWORD_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + jwtToken)
-                .content(changePasswordRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isOk());
-
-    // Try login with the new password and old password,
-    // only works new password.
-    var authenticationRequest =
-          new AuthenticationRequest(memberEmail, currentPassword);
-    var authenticationRequestJson = gson.toJson(authenticationRequest);
-
-    mockMvc.perform(
-          post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(authenticationRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isUnauthorized());
-
-    authenticationRequest = new AuthenticationRequest(memberEmail, newPassword);
-    authenticationRequestJson = gson.toJson(authenticationRequest);
-
-    mockMvc.perform(
-          post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(authenticationRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isOk());
-  }
-
-  /**
-   * Check that try changing password of not existing member
-   * return 400 bad request.
-   *
-   * @throws Exception Test fails.
-   */
-  @Test
-  @Transactional
-  void testChangeMemberPasswordNotExistingMemberBadRequest() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    final var notExistingMemberEmail = "email@email.es";
-    final var currentPassword = "123123";
-    final var newPassword = "321321";
-    var changePasswordRequest = new UserChangePasswordRequest(
-          notExistingMemberEmail, currentPassword, newPassword
-    );
-
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    var changePasswordRequestJson = gson.toJson(changePasswordRequest);
-    mockMvc.perform(
-          patch(CHANGE_MEMBER_PASSWORD_URL)
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                .content(changePasswordRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
-  }
-
-  /**
-   * Check that change password of user not valid password.
-   *
-   * @throws Exception Test fails.
-   */
-  @Test
-  @Transactional
-  void testChangeMemberPasswordCurrentPasswordDontMatch() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var memberEmail = UsersControllerFactory.USER_A_EMAIL;
-    var memberRequestPasswordNotValid = "456456";
-    var memberNewPassword = "321321";
-
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    var changePasswordRequest = new UserChangePasswordRequest(
-          memberEmail, memberRequestPasswordNotValid, memberNewPassword
-    );
-
-    var changePasswordRequestJson = gson.toJson(changePasswordRequest);
-
-    var changeMemberPasswordResponseJson = mockMvc
-          .perform(
-                patch(CHANGE_MEMBER_PASSWORD_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                      .content(changePasswordRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn()
-          .getResponse().getContentAsString();
-    Assertions.assertTrue(
-          changeMemberPasswordResponseJson
-                .contains(DefaultUserService.USER_PASSWORD_NOT_MATCH),
-          "Message content user password dont match."
-    );
-  }
-
-  /**
-   * Test that check that change not existing user kind of member
-   * returns a http status 400 bad request.
-   *
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testChangeKindOfMemberNotExistingMemberBadRequest() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    var changeKindMemberRequest = new UserChangeKindMemberRequest(
-          UsersControllerFactory.USER_B_EMAIL, UserType.SOCIO_HONORARIO
-    );
-    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
-    mockMvc
-          .perform(
-                patch(CHANGE_KIND_MEMBER_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                      .content(changeKindMemberRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn()
-          .getResponse().getContentAsString();
-  }
-
-  /**
-   * Change member type from.
-   *
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testChangeKindOfMemberSocioNumeroSocioHonorario() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    var changeKindMemberRequest = new UserChangeKindMemberRequest(
-          UsersControllerFactory.USER_A_EMAIL, UserType.SOCIO_HONORARIO
-    );
-    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
-    // Update kind of member.
-    var changeKindMemberResponseJson = mockMvc
-          .perform(
-                patch(CHANGE_KIND_MEMBER_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                      .content(changeKindMemberRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
-    var changeKindMemberResponse =
-          gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
-    Assertions.assertEquals(
-          UserType.SOCIO_HONORARIO, changeKindMemberResponse.kindMember(),
-          "kind of member has been changed."
-    );
-    Assertions.assertEquals(
-          userARequest.email(), changeKindMemberResponse.email(),
-          "email is the user email."
-    );
-  }
-
-  /**
-   * Test  change kind of existing member from "socio numero" to
-   * "socio aspirante"  can be done only if age is under 18.
-   * TO-DO -NOT FAIL WHEN AGE IS UNDER 18 (WRONG)
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testChangeKindOfMemberSocioNumeroSocioAspirante() throws Exception {
-    // Age under 18.
-    final var userAgeUnder18 = LocalDate.of(2010, 2, 2);
-    var userARequest = new SignUpRequestForm(
-          UsersControllerFactory.USER_A_DNI, UsersControllerFactory.USER_A_NAME,
-          UsersControllerFactory.USER_A_FIRST_SURNAME,
-          UsersControllerFactory.USER_A_SECOND_SURNAME, userAgeUnder18,
-          UsersControllerFactory.USER_A_GENDER,
-          UsersControllerFactory.USER_A_PASSWORD,
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_POSTAL_CODE,
-          UsersControllerFactory.USER_A_APARTMENT_NUMBER,
-          UsersControllerFactory.USER_A_BUILDING,
-          UsersControllerFactory.USER_A_STREET,
-          UsersControllerFactory.USER_A_CITY,
-          UsersControllerFactory.USER_A_KIND_MEMBER,
-          UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
-          UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME
-    );
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var userARequestJson = gson.toJson(userARequest);
-    // Register user correctly
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userARequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    var changeKindMemberRequest = new UserChangeKindMemberRequest(
-          UsersControllerFactory.USER_A_EMAIL, UserType.SOCIO_ASPIRANTE
-    );
-    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
-    // Update kind of member.
-    var changeKindMemberResponseJson = mockMvc
-          .perform(
-                patch(CHANGE_KIND_MEMBER_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                      .content(changeKindMemberRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
-    var changeKindMemberResponse =
-          gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
-    Assertions.assertEquals(
-          UserType.SOCIO_ASPIRANTE, changeKindMemberResponse.kindMember(),
-          "kind of member has been changed."
-    );
-    Assertions.assertEquals(
-          userARequest.email(), changeKindMemberResponse.email(),
-          "email is the user email."
-    );
-  }
-
-  /**
-   * TO-DO.
-   *
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testChangeKindOfMemberSocioNumeroSocioAspiranteNotAllowedBirthDate()
-        throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    //User age NOT under 18.
-    var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var userARequestJson = gson.toJson(userARequest);
-    // Register user correctly
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userARequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    var changeKindMemberRequest = new UserChangeKindMemberRequest(
-          UsersControllerFactory.USER_A_EMAIL, UserType.SOCIO_ASPIRANTE
-    );
-    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
-    // Update kind of member.
-    mockMvc
-          .perform(
-                patch(CHANGE_KIND_MEMBER_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                      .content(changeKindMemberRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn()
-          .getResponse().getContentAsString();
-  }
-
-  /**
-   * TO-DO.
-   *
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testChangeKindOfMemberSocioNumeroSocioFamiliar() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var userARequestJson = gson.toJson(userARequest);
-    // Register user correctly
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userARequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    var changeKindMemberRequest = new UserChangeKindMemberRequest(
-          UsersControllerFactory.USER_A_EMAIL, UserType.SOCIO_FAMILIAR
-    );
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-    var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
-    // Update kind of member.
-    var changeKindMemberResponseJson = mockMvc
-          .perform(
-                patch(CHANGE_KIND_MEMBER_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                      .content(changeKindMemberRequestJson)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
-    var changeKindMemberResponse =
-          gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
-    Assertions.assertEquals(
-          UserType.SOCIO_FAMILIAR, changeKindMemberResponse.kindMember(),
-          "kind of member has been changed."
-    );
-    Assertions.assertEquals(
-          userARequest.email(), changeKindMemberResponse.email(),
-          "email is the user email."
-    );
-  }
-
-  /**
-   * Create 3 members and get their data.
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
-  void testGetAllUsersData() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    //FIRST MEMBER
-    var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var userRequestJson = gson.toJson(userRequest);
-    // Register user correctly
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var secondUserDNI = "00000000T";
-    var secondUserEmail = "second@email.es";
-    userRequest = new SignUpRequestForm(
-          secondUserDNI, UsersControllerFactory.USER_A_NAME,
-          UsersControllerFactory.USER_A_FIRST_SURNAME,
-          UsersControllerFactory.USER_A_SECOND_SURNAME,
-          UsersControllerFactory.USER_A_BIRTH_DATE,
-          UsersControllerFactory.USER_A_GENDER,
-          UsersControllerFactory.USER_A_PASSWORD, secondUserEmail,
-          UsersControllerFactory.USER_A_POSTAL_CODE,
-          UsersControllerFactory.USER_A_APARTMENT_NUMBER,
-          UsersControllerFactory.USER_A_BUILDING,
-          UsersControllerFactory.USER_A_STREET,
-          UsersControllerFactory.USER_A_CITY,
-          UsersControllerFactory.USER_A_KIND_MEMBER,
-          UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
-          UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME
-    );
-    userRequestJson = gson.toJson(userRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var thirdUserDNI = "11111111H";
-    var thirdUserEmail = "third@email.es";
-    userRequest = new SignUpRequestForm(
-          thirdUserDNI, UsersControllerFactory.USER_A_NAME,
-          UsersControllerFactory.USER_A_FIRST_SURNAME,
-          UsersControllerFactory.USER_A_SECOND_SURNAME,
-          UsersControllerFactory.USER_A_BIRTH_DATE,
-          UsersControllerFactory.USER_A_GENDER,
-          UsersControllerFactory.USER_A_PASSWORD, thirdUserEmail,
-          UsersControllerFactory.USER_A_POSTAL_CODE,
-          UsersControllerFactory.USER_A_APARTMENT_NUMBER,
-          UsersControllerFactory.USER_A_BUILDING,
-          UsersControllerFactory.USER_A_STREET,
-          UsersControllerFactory.USER_A_CITY,
-          UsersControllerFactory.USER_A_KIND_MEMBER,
-          UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
-          UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME
-    );
-
-    userRequestJson = gson.toJson(userRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-
-    var resultJson = mockMvc.perform(get(GET_ALL_USERS_DATA_URL))
-          .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
-
-    var userListResponse =
-          gson.fromJson(resultJson, UserListDataResponse.class);
-    final var usersCount = 3;
-    Assertions.assertEquals(
-          usersCount, userListResponse.usersList().size(),
-          "The user list size is 3"
-    );
-
-  }
-
-  /**
-   *
-   * @throws Exception When fails.
-   */
-  @Test
-  @Transactional
-  void testGetOneUsersData() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    //FIRST MEMBER
-    var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var userRequestJson = gson.toJson(userRequest);
-    // Register user correctly
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(userRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    // get authorization jwt token
-    var authReq = new AuthenticationRequest(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-    var authReqJson = gson.toJson(authReq);
-    var authResponseJson = mockMvc
-          .perform(
-                post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                      .content(authReqJson)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
-    var authResponse =
-          gson.fromJson(authResponseJson, AuthenticationResponse.class);
-
-    var accessToken = authResponse.jwt();
-
-    mockMvc.perform(
-          get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-    ).andReturn().getResponse().getContentAsString();
-  }
-
-  @Transactional
-  @Test
-  void testUnsubscribeUserCheckUnsubscriber() throws Exception {
-    // Configurar el comportamiento del mock JavaMailSender
-    when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-    var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-    var memberRequestJson = gson.toJson(memberRequest);
-    mockMvc.perform(
-          post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                .content(memberRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isCreated());
-    var jwtToken = authenticateAndGetToken(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    // Check that user was unsubscribed succesfully.
-    mockMvc.perform(
-          get(GET_USER_DATA_URL).header("Authorization", "Bearer " + jwtToken)
-    );
-
-    // Unsubscribe user.
-    final var userUnsubscribeRequest = new UserUnsubscribeRequest(
-          UsersControllerFactory.USER_A_EMAIL,
-          UsersControllerFactory.USER_A_PASSWORD
-    );
-
-    final var userUnsubscribeRequestJson = gson.toJson(userUnsubscribeRequest);
-
-    mockMvc.perform(
-          delete(GET_USER_DATA_URL + "/unsubscribe")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken)
-                .content(userUnsubscribeRequestJson)
-    ).andExpect(MockMvcResultMatchers.status().isOk());
-
-    // Check that user was unsubscribed succesfully.
-    mockMvc.perform(
-          get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer " + jwtToken)
-    );
-    /*.andExpect(MockMvcResultMatchers.status().isUnauthorized());*/
-  }
+    /**
+     * Gson instance used for converting Java objects to JSON and vice versa. This
+     * static instance is used for serializing and deserializing request and
+     * response payloads in the tests.
+     */
+    private static Gson gson;
+
+    /**
+     * URL endpoint for retrieving user data. This static final string represents
+     * the URL used to fetch data of a specific user.
+     */
+    private static final String GET_USER_DATA_URL = "/api/user";
+
+    /**
+     * URL endpoint for retrieving data of all users. This static final string
+     * represents the URL used to fetch a list of all users.
+     */
+    private static final String GET_ALL_USERS_DATA_URL = "/api/user/getAll";
+
+    /**
+     * URL endpoint for user sign-in. This static final string represents the URL
+     * used for user authentication and generating JWT tokens.
+     */
+    private static final String SIGN_IN_URL = "/api/auth/signinn";
+
+    /**
+     * URL endpoint for changing a user's email address. This static final string
+     * represents the URL used to update a user's email address.
+     */
+    private static final String CHANGE_MEMBER_EMAIL_URL = "/api/user/changeEmail";
+
+    /**
+     * URL endpoint for changing a user's password. This static final string
+     * represents the URL used to update a user's password.
+     */
+    private static final String CHANGE_MEMBER_PASSWORD_URL = "/api/user/changePassword";
+
+    /**
+     * URL endpoint for user registration (sign-up). This static final string
+     * represents the URL used to create a new user account.
+     */
+    private static final String SIGN_UP_URL = "/api/auth/signup";
+
+    /**
+     * URL endpoint for changing the type of a user. This static final string
+     * represents the URL used to update a user's role or membership type.
+     */
+    private static final String CHANGE_KIND_MEMBER_URL = "/api/user/changeKindOfMember";
+
+    @BeforeAll
+    static void setup() {
+        gson = UsersControllerFactory.GSON;
+
+    }
+
+    /**
+     * Provides the ability to perform HTTP requests and receive responses for
+     * testing. Used for sending HTTP requests to the controllers and verifying the
+     * responses in integration tests.
+     */
+    @Autowired
+    private MockMvc mockMvc;
+
+    /**
+     * Mocked mail sender.
+     */
+    @MockBean
+    private JavaMailSender javaMailSender;
+
+    /**
+     * Mime message.
+     */
+    private MimeMessage mimeMessage = new MimeMessage((Session) null);
+
+    /**
+     * Main class constructor.
+     */
+    UserControllerIntegrationTest() {
+        super();
+    }
+
+    private String authenticateAndGetToken(final String email, final String password) throws Exception {
+        var authRequest = new AuthenticationRequest(email, password);
+        var authRequestJson = gson.toJson(authRequest);
+
+        var response = mockMvc
+                .perform(post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON).content(authRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+
+        var authResponse = gson.fromJson(response, AuthenticationResponse.class);
+        return authResponse.jwt();
+    }
+
+    /**
+     * Test that check that change not existing user kind of member returns a http
+     * status 400 bad request.
+     *
+     * @throws Exception When fails.
+     */
+    @Test
+    @Transactional
+    void testChangeKindOfMemberNotExistingMemberBadRequest() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        var changeKindMemberRequest = new UserChangeKindMemberRequest(UsersControllerFactory.USER_B_EMAIL,
+                UserType.SOCIO_HONORARIO);
+        var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+        mockMvc.perform(patch(CHANGE_KIND_MEMBER_URL).contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changeKindMemberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn().getResponse()
+                .getContentAsString();
+    }
+
+    /**
+     * Test change kind of existing member from "socio numero" to "socio aspirante"
+     * can be done only if age is under 18. TO-DO -NOT FAIL WHEN AGE IS UNDER 18
+     * (WRONG)
+     *
+     * @throws Exception When fails.
+     */
+    @Test
+    @Transactional
+    void testChangeKindOfMemberSocioNumeroSocioAspirante() throws Exception {
+        // Age under 18.
+        final var userAgeUnder18 = LocalDate.of(2010, 2, 2);
+        var userARequest = new SignUpRequestForm(UsersControllerFactory.USER_A_DNI, UsersControllerFactory.USER_A_NAME,
+                UsersControllerFactory.USER_A_FIRST_SURNAME, UsersControllerFactory.USER_A_SECOND_SURNAME,
+                userAgeUnder18, UsersControllerFactory.USER_A_GENDER, UsersControllerFactory.USER_A_PASSWORD,
+                UsersControllerFactory.USER_A_EMAIL, UsersControllerFactory.USER_A_POSTAL_CODE,
+                UsersControllerFactory.USER_A_APARTMENT_NUMBER, UsersControllerFactory.USER_A_BUILDING,
+                UsersControllerFactory.USER_A_STREET, UsersControllerFactory.USER_A_CITY,
+                UsersControllerFactory.USER_A_KIND_MEMBER, UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
+                UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME);
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var userARequestJson = gson.toJson(userARequest);
+        // Register user correctly
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        var changeKindMemberRequest = new UserChangeKindMemberRequest(UsersControllerFactory.USER_A_EMAIL,
+                UserType.SOCIO_ASPIRANTE);
+        var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+        // Update kind of member.
+        var changeKindMemberResponseJson = mockMvc
+                .perform(patch(CHANGE_KIND_MEMBER_URL).contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changeKindMemberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        var changeKindMemberResponse = gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
+        Assertions.assertEquals(UserType.SOCIO_ASPIRANTE, changeKindMemberResponse.kindMember(),
+                "kind of member has been changed.");
+        Assertions.assertEquals(userARequest.email(), changeKindMemberResponse.email(), "email is the user email.");
+    }
+
+    /**
+     * TO-DO.
+     *
+     * @throws Exception When fails.
+     */
+    @Test
+    @Transactional
+    void testChangeKindOfMemberSocioNumeroSocioAspiranteNotAllowedBirthDate() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        // User age NOT under 18.
+        var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var userARequestJson = gson.toJson(userARequest);
+        // Register user correctly
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        var changeKindMemberRequest = new UserChangeKindMemberRequest(UsersControllerFactory.USER_A_EMAIL,
+                UserType.SOCIO_ASPIRANTE);
+        var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+        // Update kind of member.
+        mockMvc.perform(patch(CHANGE_KIND_MEMBER_URL).contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changeKindMemberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn().getResponse()
+                .getContentAsString();
+    }
+
+    /**
+     * TO-DO.
+     *
+     * @throws Exception When fails.
+     */
+    @Test
+    @Transactional
+    void testChangeKindOfMemberSocioNumeroSocioFamiliar() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var userARequestJson = gson.toJson(userARequest);
+        // Register user correctly
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        var changeKindMemberRequest = new UserChangeKindMemberRequest(UsersControllerFactory.USER_A_EMAIL,
+                UserType.SOCIO_FAMILIAR);
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+        var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+        // Update kind of member.
+        var changeKindMemberResponseJson = mockMvc
+                .perform(patch(CHANGE_KIND_MEMBER_URL).contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changeKindMemberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        var changeKindMemberResponse = gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
+        Assertions.assertEquals(UserType.SOCIO_FAMILIAR, changeKindMemberResponse.kindMember(),
+                "kind of member has been changed.");
+        Assertions.assertEquals(userARequest.email(), changeKindMemberResponse.email(), "email is the user email.");
+    }
+
+    /**
+     * Change member type from.
+     *
+     * @throws Exception When fails.
+     */
+    @Test
+    @Transactional
+    void testChangeKindOfMemberSocioNumeroSocioHonorario() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        var changeKindMemberRequest = new UserChangeKindMemberRequest(UsersControllerFactory.USER_A_EMAIL,
+                UserType.SOCIO_HONORARIO);
+        var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
+        // Update kind of member.
+        var changeKindMemberResponseJson = mockMvc
+                .perform(patch(CHANGE_KIND_MEMBER_URL).contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changeKindMemberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        var changeKindMemberResponse = gson.fromJson(changeKindMemberResponseJson, UserDataResponse.class);
+        Assertions.assertEquals(UserType.SOCIO_HONORARIO, changeKindMemberResponse.kindMember(),
+                "kind of member has been changed.");
+        Assertions.assertEquals(userARequest.email(), changeKindMemberResponse.email(), "email is the user email.");
+    }
+
+    /**
+     * Check that change email for existing member returns member data with new
+     * email.
+     *
+     * @throws Exception Test fails.
+     */
+    @Test
+    @Transactional
+    void testChangeMemberEmail() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var memberEmail = UsersControllerFactory.USER_A_EMAIL;
+        var memberPassword = UsersControllerFactory.USER_A_PASSWORD;
+        var newEmail = "newEmail@email.es";
+
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var jwtToken = authenticateAndGetToken(memberEmail, memberPassword);
+
+        var changeEmailRequest = new UserChangeEmailRequest(memberEmail, newEmail);
+        var changeEmailRequestJson = gson.toJson(changeEmailRequest);
+
+        var changeMemberEmailResponseJson = mockMvc
+                .perform(patch(CHANGE_MEMBER_EMAIL_URL).contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changeEmailRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        var response = gson.fromJson(changeMemberEmailResponseJson, UserDataResponse.class);
+
+        Assertions.assertNotEquals(memberEmail, response.email(), "Response not cointains in itial member email.");
+        Assertions.assertEquals(newEmail, response.email(), "Response contains new member email.");
+    }
+
+    /**
+     * Check that try changing email of not existing member return 400 bad request.
+     *
+     * @throws Exception Test fails.
+     */
+    @Test
+    @Transactional
+    void testChangeMemberEmailNotExistingMemberBadRequest() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        final var notExistingMemberEmail = "email@email.es";
+        var newEmail = "newEmail@email.es";
+
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        var changeEmailRequest = new UserChangeEmailRequest(notExistingMemberEmail, newEmail);
+        var changeEmailRequestJson = gson.toJson(changeEmailRequest);
+
+        mockMvc.perform(patch(CHANGE_MEMBER_EMAIL_URL).contentType(MediaType.APPLICATION_JSON)
+                .content(changeEmailRequestJson).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Check that change password of user not valid password.
+     *
+     * @throws Exception Test fails.
+     */
+    @Test
+    @Transactional
+    void testChangeMemberPasswordCurrentPasswordDontMatch() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var memberEmail = UsersControllerFactory.USER_A_EMAIL;
+        var memberRequestPasswordNotValid = "456456";
+        var memberNewPassword = "321321";
+
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        var changePasswordRequest = new UserChangePasswordRequest(memberEmail, memberRequestPasswordNotValid,
+                memberNewPassword);
+
+        var changePasswordRequestJson = gson.toJson(changePasswordRequest);
+
+        var changeMemberPasswordResponseJson = mockMvc
+                .perform(patch(CHANGE_MEMBER_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON)
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changePasswordRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn().getResponse()
+                .getContentAsString();
+        Assertions.assertTrue(changeMemberPasswordResponseJson.contains(DefaultUserService.USER_PASSWORD_NOT_MATCH),
+                "Message content user password dont match.");
+    }
+
+    /**
+     * Check that try changing password of not existing member return 400 bad
+     * request.
+     *
+     * @throws Exception Test fails.
+     */
+    @Test
+    @Transactional
+    void testChangeMemberPasswordNotExistingMemberBadRequest() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        final var notExistingMemberEmail = "email@email.es";
+        final var currentPassword = "123123";
+        final var newPassword = "321321";
+        var changePasswordRequest = new UserChangePasswordRequest(notExistingMemberEmail, currentPassword, newPassword);
+
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        var changePasswordRequestJson = gson.toJson(changePasswordRequest);
+        mockMvc.perform(patch(CHANGE_MEMBER_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changePasswordRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+    }
+
+    /**
+     * Check that try changing password of not existing member return 400 bad
+     * request.
+     *
+     * @throws Exception Test fails.
+     */
+    @Test
+    @Transactional
+    void testChangeMemberPasswordPasswordChanged() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var memberEmail = UsersControllerFactory.USER_A_EMAIL;
+        var currentPassword = UsersControllerFactory.USER_A_PASSWORD;
+        var newPassword = "321321";
+
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var jwtToken = authenticateAndGetToken(memberEmail, currentPassword);
+
+        var changePasswordRequest = new UserChangePasswordRequest(memberEmail, currentPassword, newPassword);
+
+        var changePasswordRequestJson = gson.toJson(changePasswordRequest);
+        mockMvc.perform(patch(CHANGE_MEMBER_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", "Bearer " + jwtToken).content(changePasswordRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Try login with the new password and old password,
+        // only works new password.
+        var authenticationRequest = new AuthenticationRequest(memberEmail, currentPassword);
+        var authenticationRequestJson = gson.toJson(authenticationRequest);
+
+        mockMvc.perform(post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON).content(authenticationRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+
+        authenticationRequest = new AuthenticationRequest(memberEmail, newPassword);
+        authenticationRequestJson = gson.toJson(authenticationRequest);
+
+        mockMvc.perform(post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON).content(authenticationRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    /**
+     * Create 3 members and get their data.
+     *
+     * @throws Exception When fails.
+     */
+    @Test
+    @Transactional
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testGetAllUsersData() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        // FIRST MEMBER
+        var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var userRequestJson = gson.toJson(userRequest);
+        // Register user correctly
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var secondUserDNI = "00000000T";
+        var secondUserEmail = "second@email.es";
+        userRequest = new SignUpRequestForm(secondUserDNI, UsersControllerFactory.USER_A_NAME,
+                UsersControllerFactory.USER_A_FIRST_SURNAME, UsersControllerFactory.USER_A_SECOND_SURNAME,
+                UsersControllerFactory.USER_A_BIRTH_DATE, UsersControllerFactory.USER_A_GENDER,
+                UsersControllerFactory.USER_A_PASSWORD, secondUserEmail, UsersControllerFactory.USER_A_POSTAL_CODE,
+                UsersControllerFactory.USER_A_APARTMENT_NUMBER, UsersControllerFactory.USER_A_BUILDING,
+                UsersControllerFactory.USER_A_STREET, UsersControllerFactory.USER_A_CITY,
+                UsersControllerFactory.USER_A_KIND_MEMBER, UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
+                UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME);
+        userRequestJson = gson.toJson(userRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var thirdUserDNI = "11111111H";
+        var thirdUserEmail = "third@email.es";
+        userRequest = new SignUpRequestForm(thirdUserDNI, UsersControllerFactory.USER_A_NAME,
+                UsersControllerFactory.USER_A_FIRST_SURNAME, UsersControllerFactory.USER_A_SECOND_SURNAME,
+                UsersControllerFactory.USER_A_BIRTH_DATE, UsersControllerFactory.USER_A_GENDER,
+                UsersControllerFactory.USER_A_PASSWORD, thirdUserEmail, UsersControllerFactory.USER_A_POSTAL_CODE,
+                UsersControllerFactory.USER_A_APARTMENT_NUMBER, UsersControllerFactory.USER_A_BUILDING,
+                UsersControllerFactory.USER_A_STREET, UsersControllerFactory.USER_A_CITY,
+                UsersControllerFactory.USER_A_KIND_MEMBER, UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
+                UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME);
+
+        userRequestJson = gson.toJson(userRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var resultJson = mockMvc.perform(get(GET_ALL_USERS_DATA_URL)).andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        var userListResponse = gson.fromJson(resultJson, UserListDataResponse.class);
+        final var usersCount = 3;
+        Assertions.assertEquals(usersCount, userListResponse.usersList().size(), "The user list size is 3");
+
+    }
+
+    /**
+     *
+     * @throws Exception When fails.
+     */
+    @Test
+    @Transactional
+    void testGetOneUsersData() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        // FIRST MEMBER
+        var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var userRequestJson = gson.toJson(userRequest);
+        // Register user correctly
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        // get authorization jwt token
+        var authReq = new AuthenticationRequest(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+        var authReqJson = gson.toJson(authReq);
+        var authResponseJson = mockMvc
+                .perform(post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON).content(authReqJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        var authResponse = gson.fromJson(authResponseJson, AuthenticationResponse.class);
+
+        var accessToken = authResponse.jwt();
+
+        mockMvc.perform(get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON).header(HttpHeaders.AUTHORIZATION,
+                "Bearer " + accessToken)).andReturn().getResponse().getContentAsString();
+    }
+
+    @Transactional
+    @Test
+    void testUnsubscribeUserCheckUnsubscriber() throws Exception {
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var memberRequestJson = gson.toJson(memberRequest);
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        // Check that user was unsubscribed succesfully.
+        mockMvc.perform(get(GET_USER_DATA_URL).header("Authorization", "Bearer " + jwtToken));
+
+        // Unsubscribe user.
+        final var userUnsubscribeRequest = new UserUnsubscribeRequest(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        final var userUnsubscribeRequestJson = gson.toJson(userUnsubscribeRequest);
+
+        mockMvc.perform(delete(GET_USER_DATA_URL + "/unsubscribe").contentType(MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(userUnsubscribeRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Check that user was unsubscribed succesfully.
+        mockMvc.perform(get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON).header("Authorization",
+                "Bearer " + jwtToken));
+        /* .andExpect(MockMvcResultMatchers.status().isUnauthorized()); */
+    }
 
 }
