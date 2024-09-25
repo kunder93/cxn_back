@@ -4,20 +4,23 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import es.org.cxn.backapp.exceptions.LichessAuthServiceException;
+import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
+import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.repository.LichessAuthRepository;
+import es.org.cxn.backapp.repository.LichessEntityRepository;
 import es.org.cxn.backapp.repository.OAuthAuthorizationRequestRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.dto.CreateLichessProfileDto;
 import jakarta.transaction.Transactional;
 
 /**
  * Service for manage Authorization and Authentication of lichess profiles.
  */
 @Service
-public class DefaultLichessAuthService implements LichessAuthService {
+public class DefaultLichessService implements LichessService {
 
     /**
      * The lichess authentication repository.
@@ -35,18 +38,25 @@ public class DefaultLichessAuthService implements LichessAuthService {
     private final UserEntityRepository userEntityRepository;
 
     /**
+     * The lichess user profile repository.
+     */
+    private final LichessEntityRepository lichessEntityRepository;
+
+    /**
      * Builds this service. Main constructor.
      *
      * @param lichessAuthRepo               The Lichess authentication repository.
      * @param oAuthAuthorizationRequestRepo The Lichess authorization repository.
      * @param userEntityRepo                The user entity repository.
+     * @param lichessEntityRepo             The lichess profile entity repository.
      */
-    public DefaultLichessAuthService(final LichessAuthRepository lichessAuthRepo,
+    public DefaultLichessService(final LichessAuthRepository lichessAuthRepo,
             final OAuthAuthorizationRequestRepository oAuthAuthorizationRequestRepo,
-            final UserEntityRepository userEntityRepo) {
+            final UserEntityRepository userEntityRepo, final LichessEntityRepository lichessEntityRepo) {
         lichessAuthRepository = lichessAuthRepo;
         oAuthAuthorizationRequestRepository = oAuthAuthorizationRequestRepo;
         userEntityRepository = userEntityRepo;
+        lichessEntityRepository = lichessEntityRepo;
     }
 
     /**
@@ -54,16 +64,34 @@ public class DefaultLichessAuthService implements LichessAuthService {
      *
      * @param userEmail The user email, user identifier.
      * @return The code verifier.
-     * @throws LichessAuthServiceException When user with provided email not found.
+     * @throws LichessServiceException When user with provided email not found.
      */
     @Override
-    public String getCodeVerifier(final String userEmail) throws LichessAuthServiceException {
+    public String getCodeVerifier(final String userEmail) throws LichessServiceException {
         final var userEntity = getUserByEmail(userEmail);
         final var oAuthAuthorizationRequest = oAuthAuthorizationRequestRepository.findById(userEntity.getDni());
         if (oAuthAuthorizationRequest.isEmpty()) {
-            throw new LichessAuthServiceException("User with dni: " + userEntity.getDni() + "no have OAuthRequest.");
+            throw new LichessServiceException("User with dni: " + userEntity.getDni() + "no have OAuthRequest.");
         }
         return oAuthAuthorizationRequest.get().getCodeVerifier();
+    }
+
+    /**
+     * Get lichess profile.
+     *
+     * @throws Exception
+     */
+    @Override
+    public PersistentLichessProfileEntity getLichessProfile(final String userEmail) throws Exception {
+        final var userEntity = getUserByEmail(userEmail);
+        final String userDni = userEntity.getDni();
+
+        final var lichessProfileOptional = lichessEntityRepository.findById(userDni);
+
+        if (lichessProfileOptional.isEmpty()) {
+            throw new LichessServiceException("Lichess profile with user DNI: " + userDni + " not found.");
+        }
+        return lichessProfileOptional.get();
     }
 
     /**
@@ -71,12 +99,12 @@ public class DefaultLichessAuthService implements LichessAuthService {
      *
      * @param userEmail The user email.
      * @return The user entity with provided email.
-     * @throws LichessAuthServiceException If no user found.
+     * @throws LichessServiceException If no user found.
      */
-    private PersistentUserEntity getUserByEmail(final String userEmail) throws LichessAuthServiceException {
+    private PersistentUserEntity getUserByEmail(final String userEmail) throws LichessServiceException {
         final var userOptional = userEntityRepository.findByEmail(userEmail);
         if (userOptional.isEmpty()) {
-            throw new LichessAuthServiceException("User with email: " + userEmail + " not found.");
+            throw new LichessServiceException("User with email: " + userEmail + " not found.");
         }
         return userOptional.get();
     }
@@ -88,13 +116,13 @@ public class DefaultLichessAuthService implements LichessAuthService {
      * @param accessToken    The token itself.
      * @param expirationDate The date when token should not be valid.
      * @param userEmail      The user email, user identifier.
-     * @throws LichessAuthServiceException When cannot be added cause user with
-     *                                     provided email not found.
+     * @throws LichessServiceException When cannot be added cause user with provided
+     *                                 email not found.
      */
     @Transactional
     @Override
     public void saveAuthToken(final String tokenType, final String accessToken, final LocalDateTime expirationDate,
-            final String userEmail) throws LichessAuthServiceException {
+            final String userEmail) throws LichessServiceException {
         final var userEntity = getUserByEmail(userEmail);
 
         final PersistentLichessAuthEntity authEntity = new PersistentLichessAuthEntity();
@@ -125,16 +153,76 @@ public class DefaultLichessAuthService implements LichessAuthService {
     }
 
     /**
+     *
+     * @param dto The dto with profile data params.
+     * @return The Lichess profile entity stored.
+     * @throws LichessServiceException When user with provided email not found.
+     */
+    @Override
+    public PersistentLichessProfileEntity saveLichessProfile(final CreateLichessProfileDto dto)
+            throws LichessServiceException {
+        PersistentLichessProfileEntity entity = new PersistentLichessProfileEntity();
+        var userOptional = userEntityRepository.findByEmail(dto.userEmail());
+        final var userEntity = getUserByEmail(dto.userEmail());
+
+        // Map main fields
+        entity.setUserDni(userEntity.getDni());
+        entity.setId(dto.id());
+        entity.setUsername(dto.username());
+
+        // Map Blitz statistics
+        entity.setBlitzGames(dto.blitz().games());
+        entity.setBlitzRating(dto.blitz().rating());
+        entity.setBlitzRd(dto.blitz().rd());
+        entity.setBlitzProg(dto.blitz().prog());
+        entity.setBlitzProv(dto.blitz().prov());
+
+        // Map Bullet statistics
+        entity.setBulletGames(dto.bullet().games());
+        entity.setBulletRating(dto.bullet().rating());
+        entity.setBulletRd(dto.bullet().rd());
+        entity.setBulletProg(dto.bullet().prog());
+        entity.setBulletProv(dto.bullet().prov());
+
+        // Map Classical statistics
+        entity.setClassicalGames(dto.classical().games());
+        entity.setClassicalRating(dto.classical().rating());
+        entity.setClassicalRd(dto.classical().rd());
+        entity.setClassicalProg(dto.classical().prog());
+        entity.setClassicalProv(dto.classical().prov());
+
+        // Map Rapid statistics
+        entity.setRapidGames(dto.rapid().games());
+        entity.setRapidRating(dto.rapid().rating());
+        entity.setRapidRd(dto.rapid().rd());
+        entity.setRapidProg(dto.rapid().prog());
+        entity.setRapidProv(dto.rapid().prov());
+
+        // Map Puzzle statistics
+        entity.setPuzzleGames(dto.puzzle().games());
+        entity.setPuzzleRating(dto.puzzle().rating());
+        entity.setPuzzleRd(dto.puzzle().rd());
+        entity.setPuzzleProg(dto.puzzle().prog());
+        entity.setPuzzleProv(dto.puzzle().prov());
+
+        // Map FIDE rating
+        entity.setFideRating(dto.fideRating());
+
+        // Save the entity to the repository
+        return lichessEntityRepository.save(entity);
+    }
+
+    /**
      * Save authorization code request from user.
      *
      * @param userEmail    The user email, user identifier.
      * @param codeVerifier The authorization code used to request token.
      * @return The Authorization entity stored.
-     * @throws LichessAuthServiceException When user with provided email not found.
+     * @throws LichessServiceException When user with provided email not found.
      */
     @Override
     public PersistentOAuthAuthorizationRequestEntity saveOAuthRequest(final String userEmail, final String codeVerifier)
-            throws LichessAuthServiceException {
+            throws LichessServiceException {
         final var userEntity = getUserByEmail(userEmail);
         final var oAuthAuthorizationRequestEntity = new PersistentOAuthAuthorizationRequestEntity();
         oAuthAuthorizationRequestEntity.setUserDni(userEntity.getDni());

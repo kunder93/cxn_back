@@ -11,7 +11,7 @@ package es.org.cxn.backapp.exceptions;
  *
  * @author Santiago Paz
  */
-public final class LichessAuthServiceException extends Exception {
+public final class LichessServiceException extends Exception {
 
     /**
      * Serial version UID for serialization.
@@ -25,7 +25,7 @@ public final class LichessAuthServiceException extends Exception {
      * @param value the detail message (which is saved for later retrieval by the
      *              {@link Throwable#getMessage()} method).
      */
-    public LichessAuthServiceException(final String value) {
+    public LichessServiceException(final String value) {
         super(value);
     }
 }

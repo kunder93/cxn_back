@@ -6,7 +6,6 @@ databaseChangeLog:
       -  createTable:
             tableName: lichess_auth
             columns:
-
             -  column:
                   name: user_dni
                   type: varchar(10)
@@ -63,3 +62,112 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: dni
             onDelete: CASCADE
+-  changeSet:
+      id: user_lichess_profile_table
+      author: Santiago
+      changes:
+      -  createTable:
+            tableName: lichess_profile
+            columns:
+            -  column:
+                  name: user_dni
+                  type: varchar(10)
+                  constraints:
+                     primaryKey: true
+                     nullable: false
+            -  column:
+                  name: id
+                  type: varchar(50)          
+            -  column:         
+                  name: username
+                  type: varchar(50)                     
+            -  column:
+                  name: blitz_games
+                  type: int
+            -  column:
+                  name: blitz_rating
+                  type: int
+            -  column:
+                  name: blitz_rd
+                  type: int
+            -  column:
+                  name: blitz_prog
+                  type: int
+            -  column:
+                  name: blitz_prov
+                  type: boolean
+            -  column:
+                  name: bullet_games
+                  type: int
+            -  column:
+                  name: bullet_rating
+                  type: int
+            -  column:
+                  name: bullet_rd
+                  type: int
+            -  column:
+                  name: bullet_prog
+                  type: int
+            -  column:
+                  name: bullet_prov
+                  type: boolean          
+            -  column:
+                  name: classical_games
+                  type: int
+            -  column:
+                  name: classical_rating
+                  type: int
+            -  column:
+                  name: classical_rd
+                  type: int
+            -  column:
+                  name: classical_prog
+                  type: int
+            -  column:
+                  name: classical_prov
+                  type: boolean        
+            -  column:
+                  name: rapid_games
+                  type: int
+            -  column:
+                  name: rapid_rating
+                  type: int
+            -  column:
+                  name: rapid_rd
+                  type: int
+            -  column:
+                  name: rapid_prog
+                  type: int
+            -  column:
+                  name: rapid_prov
+                  type: boolean   
+            -  column:
+                  name: puzzle_games
+                  type: int
+            -  column:
+                  name: puzzle_rating
+                  type: int
+            -  column:
+                  name: puzzle_rd
+                  type: int
+            -  column:
+                  name: puzzle_prog
+                  type: int
+            -  column:
+                  name: puzzle_prov
+                  type: boolean   
+            -  column:
+                  name: fide_rating
+                  type: int
+            -  addForeignKeyConstraint: null
+               baseTableName: lichess_profile
+               baseColumnNames: user_dni
+               constraintName: fk_lichessAuth_users
+               referencedTableName: users
+               referencedColumnNames: dni
+               onDelete: CASCADE
+   
+            
+            
+            
+            
