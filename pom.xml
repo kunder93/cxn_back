@@ -5,7 +5,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.0.0</version>
-        <relativePath />
+        <relativePath/>
     </parent>
     <groupId>es.org.cxn</groupId>
     <artifactId>back-app</artifactId>
@@ -42,7 +42,7 @@
                 <role>Developer</role>
             </roles>
             <timezone>+1</timezone>
-            <properties />
+            <properties/>
         </developer>
     </developers>
     <properties>
@@ -94,7 +94,7 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.5</version>
+            <version>0.12.6</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
