@@ -117,8 +117,10 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         // Excluir la ruta /h2-console y otras rutas que no necesitan autenticación
         final var value = requestURI.startsWith("/h2-console") || requestURI.startsWith(AppURL.SIGN_UP_URL)
                 || requestURI.startsWith(AppURL.SIGN_IN_URL) || requestURI.startsWith("/api/address/getCountries")
+                || requestURI.startsWith("/getAllLichessProfiles")
                 || (requestURI.startsWith(AppURL.CHESS_QUESTION_URL) && "POST".equals(httpMethod))
                 || (requestURI.matches("/api/[^/]+/lichessAuth") && "GET".equals(httpMethod))
+
                 || requestURI.startsWith(AppURL.PARTICIPANTS_URL) && "POST".equals(httpMethod);
 
         LOGGER.info("El valor devuelto por shouldNotFilter es: {}", value);

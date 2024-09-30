@@ -1,6 +1,8 @@
 package es.org.cxn.backapp.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -13,7 +15,8 @@ import es.org.cxn.backapp.repository.LichessAuthRepository;
 import es.org.cxn.backapp.repository.LichessEntityRepository;
 import es.org.cxn.backapp.repository.OAuthAuthorizationRequestRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.dto.CreateLichessProfileDto;
+import es.org.cxn.backapp.service.dto.LichessProfileDto;
+import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 import jakarta.transaction.Transactional;
 
 /**
@@ -77,21 +80,93 @@ public class DefaultLichessService implements LichessService {
     }
 
     /**
-     * Get lichess profile.
+     * Get Lichess profile using user email to locate it.
      *
      * @throws Exception
      */
     @Override
-    public PersistentLichessProfileEntity getLichessProfile(final String userEmail) throws Exception {
+    public LichessProfileDto getLichessProfile(final String userEmail) throws LichessServiceException {
         final var userEntity = getUserByEmail(userEmail);
         final String userDni = userEntity.getDni();
 
         final var lichessProfileOptional = lichessEntityRepository.findById(userDni);
-
         if (lichessProfileOptional.isEmpty()) {
-            throw new LichessServiceException("Lichess profile with user DNI: " + userDni + " not found.");
+            // estadísticas vacías
+            LichessProfileDto.GameStatistics emptyStats = new LichessProfileDto.GameStatistics(0, 0, 0, 0, false);
+
+            return new LichessProfileDto(userEntity.getCompleteName(), "", "", LocalDateTime.now(), emptyStats,
+                    emptyStats, emptyStats, emptyStats, emptyStats);
+
         }
-        return lichessProfileOptional.get();
+
+        final var lichessProfileEntity = lichessProfileOptional.get();
+
+        // Map params for each kind of game.
+        LichessProfileDto.GameStatistics blitzStats = new LichessProfileDto.GameStatistics(
+                lichessProfileEntity.getBlitzGames(), lichessProfileEntity.getBlitzRating(),
+                lichessProfileEntity.getBlitzRd(), lichessProfileEntity.getBlitzProg(),
+                lichessProfileEntity.getBlitzProv());
+
+        LichessProfileDto.GameStatistics bulletStats = new LichessProfileDto.GameStatistics(
+                lichessProfileEntity.getBulletGames(), lichessProfileEntity.getBulletRating(),
+                lichessProfileEntity.getBulletRd(), lichessProfileEntity.getBulletProg(),
+                lichessProfileEntity.getBulletProv());
+
+        LichessProfileDto.GameStatistics classicalStats = new LichessProfileDto.GameStatistics(
+                lichessProfileEntity.getClassicalGames(), lichessProfileEntity.getClassicalRating(),
+                lichessProfileEntity.getClassicalRd(), lichessProfileEntity.getClassicalProg(),
+                lichessProfileEntity.getClassicalProv());
+
+        LichessProfileDto.GameStatistics rapidStats = new LichessProfileDto.GameStatistics(
+                lichessProfileEntity.getRapidGames(), lichessProfileEntity.getRapidRating(),
+                lichessProfileEntity.getRapidRd(), lichessProfileEntity.getRapidProg(),
+                lichessProfileEntity.getRapidProv());
+
+        LichessProfileDto.GameStatistics puzzleStats = new LichessProfileDto.GameStatistics(
+                lichessProfileEntity.getPuzzleGames(), lichessProfileEntity.getPuzzleRating(),
+                lichessProfileEntity.getPuzzleRd(), lichessProfileEntity.getPuzzleProg(),
+                lichessProfileEntity.getPuzzleProv());
+
+        return new LichessProfileDto(userEntity.getCompleteName(), lichessProfileEntity.getId(),
+                lichessProfileEntity.getUsername(), lichessProfileEntity.getUpdatedAt(), blitzStats, bulletStats,
+                classicalStats, rapidStats, puzzleStats);
+    }
+
+    /**
+     * Get all lichess profiles and return data as List of dto.
+     */
+    @Override
+    public List<LichessProfileDto> getLichessProfiles() {
+        List<PersistentLichessProfileEntity> entitiesList = lichessEntityRepository.findAll();
+        List<LichessProfileDto> dtoList = new ArrayList<>();
+
+        entitiesList.forEach((PersistentLichessProfileEntity entity) -> {
+            var user = userEntityRepository.findByDni(entity.getUserDni());
+            var userEntity = user.get();
+
+            // Map statistics from entity to GameStatistics DTO
+            LichessProfileDto.GameStatistics blitzStats = new LichessProfileDto.GameStatistics(entity.getBlitzGames(),
+                    entity.getBlitzRating(), entity.getBlitzRd(), entity.getBlitzProg(), entity.getBlitzProv());
+
+            LichessProfileDto.GameStatistics bulletStats = new LichessProfileDto.GameStatistics(entity.getBulletGames(),
+                    entity.getBulletRating(), entity.getBulletRd(), entity.getBulletProg(), entity.getBulletProv());
+
+            LichessProfileDto.GameStatistics classicalStats = new LichessProfileDto.GameStatistics(
+                    entity.getClassicalGames(), entity.getClassicalRating(), entity.getClassicalRd(),
+                    entity.getClassicalProg(), entity.getClassicalProv());
+
+            LichessProfileDto.GameStatistics rapidStats = new LichessProfileDto.GameStatistics(entity.getRapidGames(),
+                    entity.getRapidRating(), entity.getRapidRd(), entity.getRapidProg(), entity.getRapidProv());
+
+            LichessProfileDto.GameStatistics puzzleStats = new LichessProfileDto.GameStatistics(entity.getPuzzleGames(),
+                    entity.getPuzzleRating(), entity.getPuzzleRd(), entity.getPuzzleProg(), entity.getPuzzleProv());
+
+            // Create LichessProfileDto
+            dtoList.add(new LichessProfileDto(userEntity.getCompleteName(), entity.getId(), entity.getUsername(),
+                    entity.getUpdatedAt(), blitzStats, bulletStats, classicalStats, rapidStats, puzzleStats));
+        });
+
+        return dtoList;
     }
 
     /**
@@ -159,16 +234,16 @@ public class DefaultLichessService implements LichessService {
      * @throws LichessServiceException When user with provided email not found.
      */
     @Override
-    public PersistentLichessProfileEntity saveLichessProfile(final CreateLichessProfileDto dto)
+    public PersistentLichessProfileEntity saveLichessProfile(final LichessSaveProfileDto dto)
             throws LichessServiceException {
         PersistentLichessProfileEntity entity = new PersistentLichessProfileEntity();
-        var userOptional = userEntityRepository.findByEmail(dto.userEmail());
         final var userEntity = getUserByEmail(dto.userEmail());
 
         // Map main fields
         entity.setUserDni(userEntity.getDni());
         entity.setId(dto.id());
         entity.setUsername(dto.username());
+        entity.setUpdatedAt(LocalDateTime.now());
 
         // Map Blitz statistics
         entity.setBlitzGames(dto.blitz().games());
@@ -204,9 +279,6 @@ public class DefaultLichessService implements LichessService {
         entity.setPuzzleRd(dto.puzzle().rd());
         entity.setPuzzleProg(dto.puzzle().prog());
         entity.setPuzzleProv(dto.puzzle().prov());
-
-        // Map FIDE rating
-        entity.setFideRating(dto.fideRating());
 
         // Save the entity to the repository
         return lichessEntityRepository.save(entity);

@@ -55,7 +55,7 @@ databaseChangeLog:
             -  column:
                   name: created_at
                   type: timestamp
-            - addForeignKeyConstraint:
+            -  addForeignKeyConstraint: null
             baseTableName: oauth_authorization_requests
             baseColumnNames: user_dni
             constraintName: fk_oauth_authorization_requests_users
@@ -77,10 +77,13 @@ databaseChangeLog:
                      nullable: false
             -  column:
                   name: id
-                  type: varchar(50)          
-            -  column:         
+                  type: varchar(50)
+            -  column:
                   name: username
-                  type: varchar(50)                     
+                  type: varchar(50)
+            -  colunn:
+                  name: updated_at
+                  type: timestamp
             -  column:
                   name: blitz_games
                   type: int
@@ -110,7 +113,7 @@ databaseChangeLog:
                   type: int
             -  column:
                   name: bullet_prov
-                  type: boolean          
+                  type: boolean
             -  column:
                   name: classical_games
                   type: int
@@ -125,7 +128,7 @@ databaseChangeLog:
                   type: int
             -  column:
                   name: classical_prov
-                  type: boolean        
+                  type: boolean
             -  column:
                   name: rapid_games
                   type: int
@@ -140,7 +143,7 @@ databaseChangeLog:
                   type: int
             -  column:
                   name: rapid_prov
-                  type: boolean   
+                  type: boolean
             -  column:
                   name: puzzle_games
                   type: int
@@ -155,10 +158,7 @@ databaseChangeLog:
                   type: int
             -  column:
                   name: puzzle_prov
-                  type: boolean   
-            -  column:
-                  name: fide_rating
-                  type: int
+                  type: boolean
             -  addForeignKeyConstraint: null
                baseTableName: lichess_profile
                baseColumnNames: user_dni
@@ -166,8 +166,3 @@ databaseChangeLog:
                referencedTableName: users
                referencedColumnNames: dni
                onDelete: CASCADE
-   
-            
-            
-            
-            

@@ -1,12 +1,14 @@
 package es.org.cxn.backapp.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
 import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
-import es.org.cxn.backapp.service.dto.CreateLichessProfileDto;
+import es.org.cxn.backapp.service.dto.LichessProfileDto;
+import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 
 /**
  * Interface for Lichess user authentication processes.
@@ -23,11 +25,18 @@ public interface LichessService {
     String getCodeVerifier(String userEmail) throws LichessServiceException;
 
     /**
-     * @param userEmail
-     * @return
-     * @throws Exception
+     * @param userEmail The user email.
+     * @return The lichess profile associated to userEmail.
+     * @throws LichessServiceException When cannot no lichess profile for userEmail.
      */
-    PersistentLichessProfileEntity getLichessProfile(String userEmail) throws Exception;
+    LichessProfileDto getLichessProfile(String userEmail) throws LichessServiceException;
+
+    /**
+     * Get all lichess profiles and return dto with data.
+     *
+     * @return Dto with all lichess profiles.
+     */
+    List<LichessProfileDto> getLichessProfiles();
 
     /**
      * Save Authorization token with other data related to user.
@@ -55,7 +64,7 @@ public interface LichessService {
      * @return The Lichess profile entity stored.
      * @throws LichessServiceException When user not found.
      */
-    PersistentLichessProfileEntity saveLichessProfile(CreateLichessProfileDto lichessProfileDto)
+    PersistentLichessProfileEntity saveLichessProfile(LichessSaveProfileDto lichessProfileDto)
             throws LichessServiceException;
 
     /**

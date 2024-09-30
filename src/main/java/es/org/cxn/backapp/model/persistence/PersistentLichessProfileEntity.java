@@ -1,394 +1,669 @@
 package es.org.cxn.backapp.model.persistence;
 
+import java.time.LocalDateTime;
+
 import es.org.cxn.backapp.model.LichessProfileEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+/**
+ * Persistent entity representing a Lichess profile in the database. Contains
+ * various game statistics such as Blitz, Bullet, Classical, Rapid, and Puzzle.
+ * Implements the {@link LichessProfileEntity} interface.
+ */
 @Entity
 @Table(name = "lichess_profile")
 public class PersistentLichessProfileEntity implements LichessProfileEntity {
 
+    /**
+     * The user's unique identifier (DNI), used as the primary key.
+     */
     @Id
     @Column(name = "user_dni", nullable = false, length = 10)
     private String userDni;
 
+    /**
+     * The user's Lichess profile ID.
+     */
     @Column(name = "id")
     private String id;
 
+    /**
+     * The username associated with the Lichess profile.
+     */
     @Column(name = "username")
     private String username;
 
     // Blitz statistics
+
+    /**
+     * The number of blitz games played by the user.
+     */
     @Column(name = "blitz_games")
     private Integer blitzGames;
 
+    /**
+     * The user's blitz rating.
+     */
     @Column(name = "blitz_rating")
     private Integer blitzRating;
 
+    /**
+     * The blitz rating deviation (RD), which indicates the accuracy of the rating.
+     */
     @Column(name = "blitz_rd")
     private Integer blitzRd;
 
+    /**
+     * The blitz progress, which indicates the user's rating progression.
+     */
     @Column(name = "blitz_prog")
     private Integer blitzProg;
 
+    /**
+     * Whether the user's blitz rating is provisional.
+     */
     @Column(name = "blitz_prov")
     private Boolean blitzProv;
 
     // Bullet statistics
+
+    /**
+     * The number of bullet games played by the user.
+     */
     @Column(name = "bullet_games")
     private Integer bulletGames;
 
+    /**
+     * The user's bullet rating.
+     */
     @Column(name = "bullet_rating")
     private Integer bulletRating;
 
+    /**
+     * The bullet rating deviation (RD), which indicates the accuracy of the rating.
+     */
     @Column(name = "bullet_rd")
     private Integer bulletRd;
 
+    /**
+     * The bullet progress, which indicates the user's rating progression.
+     */
     @Column(name = "bullet_prog")
     private Integer bulletProg;
 
+    /**
+     * Whether the user's bullet rating is provisional.
+     */
     @Column(name = "bullet_prov")
     private Boolean bulletProv;
 
-    // Ultrabullet statistics
-    @Column(name = "ultrabullet_games")
-    private Integer ultrabulletGames;
-
-    @Column(name = "ultrabullet_rating")
-    private Integer ultrabulletRating;
-
-    @Column(name = "ultrabullet_rd")
-    private Integer ultrabulletRd;
-
-    @Column(name = "ultrabullet_prog")
-    private Integer ultrabulletProg;
-
-    @Column(name = "ultrabullet_prov")
-    private Boolean ultrabulletProv;
-
     // Classical statistics
+
+    /**
+     * The number of classical games played by the user.
+     */
     @Column(name = "classical_games")
     private Integer classicalGames;
 
+    /**
+     * The user's classical rating.
+     */
     @Column(name = "classical_rating")
     private Integer classicalRating;
 
+    /**
+     * The classical rating deviation (RD), which indicates the accuracy of the
+     * rating.
+     */
     @Column(name = "classical_rd")
     private Integer classicalRd;
 
+    /**
+     * The classical progress, which indicates the user's rating progression.
+     */
     @Column(name = "classical_prog")
     private Integer classicalProg;
 
+    /**
+     * Whether the user's classical rating is provisional.
+     */
     @Column(name = "classical_prov")
     private Boolean classicalProv;
 
     // Rapid statistics
+
+    /**
+     * The number of rapid games played by the user.
+     */
     @Column(name = "rapid_games")
     private Integer rapidGames;
 
+    /**
+     * The user's rapid rating.
+     */
     @Column(name = "rapid_rating")
     private Integer rapidRating;
 
+    /**
+     * The rapid rating deviation (RD), which indicates the accuracy of the rating.
+     */
     @Column(name = "rapid_rd")
     private Integer rapidRd;
 
+    /**
+     * The rapid progress, which indicates the user's rating progression.
+     */
     @Column(name = "rapid_prog")
     private Integer rapidProg;
 
+    /**
+     * Whether the user's rapid rating is provisional.
+     */
     @Column(name = "rapid_prov")
     private Boolean rapidProv;
 
     // Puzzle statistics
+
+    /**
+     * The number of puzzle games played by the user.
+     */
     @Column(name = "puzzle_games")
     private Integer puzzleGames;
 
+    /**
+     * The user's puzzle rating.
+     */
     @Column(name = "puzzle_rating")
     private Integer puzzleRating;
 
+    /**
+     * The puzzle rating deviation (RD), which indicates the accuracy of the rating.
+     */
     @Column(name = "puzzle_rd")
     private Integer puzzleRd;
 
+    /**
+     * The puzzle progress, which indicates the user's rating progression in solving
+     * puzzles.
+     */
     @Column(name = "puzzle_prog")
     private Integer puzzleProg;
 
+    /**
+     * Whether the user's puzzle rating is provisional.
+     */
     @Column(name = "puzzle_prov")
     private Boolean puzzleProv;
 
-    @Column(name = "fide_rating")
-    private Integer fideRating;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
+    // Blitz games getters.
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBlitzGames() {
         return blitzGames;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBlitzProg() {
         return blitzProg;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Boolean getBlitzProv() {
         return blitzProv;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBlitzRating() {
         return blitzRating;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBlitzRd() {
         return blitzRd;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBulletGames() {
         return bulletGames;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBulletProg() {
         return bulletProg;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Boolean getBulletProv() {
         return bulletProv;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBulletRating() {
         return bulletRating;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBulletRd() {
         return bulletRd;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getClassicalGames() {
         return classicalGames;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getClassicalProg() {
         return classicalProg;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Boolean getClassicalProv() {
         return classicalProv;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getClassicalRating() {
         return classicalRating;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getClassicalRd() {
         return classicalRd;
     }
 
-    public Integer getFideRating() {
-        return fideRating;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getId() {
         return id;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getPuzzleGames() {
         return puzzleGames;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getPuzzleProg() {
         return puzzleProg;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Boolean getPuzzleProv() {
         return puzzleProv;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getPuzzleRating() {
         return puzzleRating;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getPuzzleRd() {
         return puzzleRd;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getRapidGames() {
         return rapidGames;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getRapidProg() {
         return rapidProg;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Boolean getRapidProv() {
         return rapidProv;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getRapidRating() {
         return rapidRating;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getRapidRd() {
         return rapidRd;
     }
 
-    public Integer getUltrabulletGames() {
-        return ultrabulletGames;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public Integer getUltrabulletProg() {
-        return ultrabulletProg;
-    }
-
-    public Boolean getUltrabulletProv() {
-        return ultrabulletProv;
-    }
-
-    public Integer getUltrabulletRating() {
-        return ultrabulletRating;
-    }
-
-    public Integer getUltrabulletRd() {
-        return ultrabulletRd;
-    }
-
-    // Getters and Setters
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getUserDni() {
         return userDni;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public String getUsername() {
         return username;
     }
 
-    public void setBlitzGames(Integer blitzGames) {
-        this.blitzGames = blitzGames;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBlitzGames(final Integer value) {
+        blitzGames = value;
     }
 
-    public void setBlitzProg(Integer blitzProg) {
-        this.blitzProg = blitzProg;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBlitzProg(final Integer value) {
+        blitzProg = value;
     }
 
-    public void setBlitzProv(Boolean blitzProv) {
-        this.blitzProv = blitzProv;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBlitzProv(final Boolean value) {
+        blitzProv = value;
     }
 
-    public void setBlitzRating(Integer blitzRating) {
-        this.blitzRating = blitzRating;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBlitzRating(final Integer value) {
+        blitzRating = value;
     }
 
-    public void setBlitzRd(Integer blitzRd) {
-        this.blitzRd = blitzRd;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBlitzRd(final Integer value) {
+        blitzRd = value;
     }
 
-    public void setBulletGames(Integer bulletGames) {
-        this.bulletGames = bulletGames;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBulletGames(final Integer value) {
+        bulletGames = value;
     }
 
-    public void setBulletProg(Integer bulletProg) {
-        this.bulletProg = bulletProg;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBulletProg(final Integer value) {
+        bulletProg = value;
     }
 
-    public void setBulletProv(Boolean bulletProv) {
-        this.bulletProv = bulletProv;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBulletProv(final Boolean value) {
+        bulletProv = value;
     }
 
-    public void setBulletRating(Integer bulletRating) {
-        this.bulletRating = bulletRating;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBulletRating(final Integer value) {
+        bulletRating = value;
     }
 
-    public void setBulletRd(Integer bulletRd) {
-        this.bulletRd = bulletRd;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setBulletRd(final Integer value) {
+        bulletRd = value;
     }
 
-    public void setClassicalGames(Integer classicalGames) {
-        this.classicalGames = classicalGames;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setClassicalGames(final Integer value) {
+        classicalGames = value;
     }
 
-    public void setClassicalProg(Integer classicalProg) {
-        this.classicalProg = classicalProg;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setClassicalProg(final Integer value) {
+        classicalProg = value;
     }
 
-    public void setClassicalProv(Boolean classicalProv) {
-        this.classicalProv = classicalProv;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setClassicalProv(final Boolean value) {
+        classicalProv = value;
     }
 
-    public void setClassicalRating(Integer classicalRating) {
-        this.classicalRating = classicalRating;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setClassicalRating(final Integer value) {
+        classicalRating = value;
     }
 
-    public void setClassicalRd(Integer classicalRd) {
-        this.classicalRd = classicalRd;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setClassicalRd(final Integer value) {
+        classicalRd = value;
     }
 
-    public void setFideRating(Integer fideRating) {
-        this.fideRating = fideRating;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setId(final String value) {
+        id = value;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPuzzleGames(final Integer value) {
+        puzzleGames = value;
     }
 
-    public void setPuzzleGames(Integer puzzleGames) {
-        this.puzzleGames = puzzleGames;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPuzzleProg(final Integer value) {
+        puzzleProg = value;
     }
 
-    public void setPuzzleProg(Integer puzzleProg) {
-        this.puzzleProg = puzzleProg;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPuzzleProv(final Boolean value) {
+        puzzleProv = value;
     }
 
-    public void setPuzzleProv(Boolean puzzleProv) {
-        this.puzzleProv = puzzleProv;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPuzzleRating(final Integer value) {
+        puzzleRating = value;
     }
 
-    public void setPuzzleRating(Integer puzzleRating) {
-        this.puzzleRating = puzzleRating;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setPuzzleRd(final Integer value) {
+        puzzleRd = value;
     }
 
-    public void setPuzzleRd(Integer puzzleRd) {
-        this.puzzleRd = puzzleRd;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRapidGames(final Integer value) {
+        rapidGames = value;
     }
 
-    public void setRapidGames(Integer rapidGames) {
-        this.rapidGames = rapidGames;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRapidProg(final Integer value) {
+        rapidProg = value;
     }
 
-    public void setRapidProg(Integer rapidProg) {
-        this.rapidProg = rapidProg;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRapidProv(final Boolean value) {
+        rapidProv = value;
     }
 
-    public void setRapidProv(Boolean rapidProv) {
-        this.rapidProv = rapidProv;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRapidRating(final Integer value) {
+        rapidRating = value;
     }
 
-    public void setRapidRating(Integer rapidRating) {
-        this.rapidRating = rapidRating;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setRapidRd(final Integer value) {
+        rapidRd = value;
     }
 
-    public void setRapidRd(Integer rapidRd) {
-        this.rapidRd = rapidRd;
+    /**
+     * {inheritDoc}
+     */
+    @Override
+    public void setUpdatedAt(LocalDateTime value) {
+        updatedAt = value;
     }
 
-    public void setUltrabulletGames(Integer ultrabulletGames) {
-        this.ultrabulletGames = ultrabulletGames;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setUserDni(String value) {
+        userDni = value;
     }
 
-    public void setUltrabulletProg(Integer ultrabulletProg) {
-        this.ultrabulletProg = ultrabulletProg;
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setUsername(String value) {
+        username = value;
     }
 
-    public void setUltrabulletProv(Boolean ultrabulletProv) {
-        this.ultrabulletProv = ultrabulletProv;
-    }
-
-    public void setUltrabulletRating(Integer ultrabulletRating) {
-        this.ultrabulletRating = ultrabulletRating;
-    }
-
-    public void setUltrabulletRd(Integer ultrabulletRd) {
-        this.ultrabulletRd = ultrabulletRd;
-    }
-
-    public void setUserDni(String userDni) {
-        this.userDni = userDni;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
 }

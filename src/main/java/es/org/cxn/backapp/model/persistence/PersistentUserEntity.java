@@ -246,6 +246,13 @@ public class PersistentUserEntity implements UserEntity {
     }
 
     /**
+     * @return The complete user name, name, first surname and second surname.
+     */
+    public String getCompleteName() {
+        return (name + " " +  firstSurname +  " " + secondSurname );
+    }
+
+    /**
      * Hash code with dni and email fields.
      */
     @Override
@@ -263,5 +270,6 @@ public class PersistentUserEntity implements UserEntity {
         return result;
 
     }
+
 
 }

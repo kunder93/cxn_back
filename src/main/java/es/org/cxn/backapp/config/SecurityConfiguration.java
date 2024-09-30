@@ -116,8 +116,10 @@ public class SecurityConfiguration {
                 .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL).permitAll()
                 .requestMatchers("/v3/api-docs/swagger-config").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
+                .requestMatchers("/getAllLichessProfiles").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/lichessAuth").authenticated()
                 .requestMatchers("/api/address/getCountries", "/api/address/country/**").permitAll().anyRequest()
+
                 .authenticated());
         http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
         // Permit all requests to /api/auth/signup, /api/auth/signin,
