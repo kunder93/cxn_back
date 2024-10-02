@@ -246,10 +246,12 @@ public class PersistentUserEntity implements UserEntity {
     }
 
     /**
+     * Generate complete name with user name, first name and second surname.
+     *
      * @return The complete user name, name, first surname and second surname.
      */
     public String getCompleteName() {
-        return (name + " " +  firstSurname +  " " + secondSurname );
+        return (name + " " +  firstSurname +  " " + secondSurname);
     }
 
     /**

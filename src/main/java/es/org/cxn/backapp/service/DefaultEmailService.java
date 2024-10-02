@@ -2,7 +2,6 @@ package es.org.cxn.backapp.service;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.stream.Collectors;
 
 import org.springframework.core.io.ClassPathResource;
@@ -43,9 +42,12 @@ public class DefaultEmailService implements EmailService {
     private String loadEmailTemplate() throws IOException {
         final ClassPathResource resource = new ClassPathResource("mailTemplates/SignUpWelcomeEmail.html");
 
-        // Use try-with-resources to ensure the stream is closed properly
-        try (final var stream = Files.lines(resource.getFile().toPath(), StandardCharsets.UTF_8)) {
-            return stream.collect(Collectors.joining("\n"));
+        // Use InputStream instead of Files.lines to handle resources inside the JAR
+        try (var inputStream = resource.getInputStream();
+                var reader = new java.io.InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                var bufferedReader = new java.io.BufferedReader(reader)) {
+
+            return bufferedReader.lines().collect(Collectors.joining("\n"));
         }
     }
 

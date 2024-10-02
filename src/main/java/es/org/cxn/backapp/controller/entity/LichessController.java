@@ -1,11 +1,15 @@
 package es.org.cxn.backapp.controller.entity;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,6 +42,9 @@ import es.org.cxn.backapp.service.LichessService;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto.SaveGameStatistics;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 /**
  * Controller class for handling Lichess OAuth2 authorization. It provides
@@ -54,57 +61,154 @@ public class LichessController {
     private static final Logger LOGGER = LoggerFactory.getLogger(LichessController.class);
 
     /**
+     * Minimum size for the code verifier as defined by RFC 7636. The code verifier
+     * must be at least 43 characters long.
+     */
+    private static final int CODE_VERIFIER_MIN_SIZE = 43;
+
+    /**
+     * Maximum size for the code verifier as defined by RFC 7636. The code verifier
+     * must not exceed 128 characters in length.
+     */
+    private static final int CODE_VERIFIER_MAX_SIZE = 128;
+
+    /**
+     * Maximum length for auth code.
+     */
+    private static final int MAX_LENGTH_AUTH_CODE = 43;
+
+    /**
+     * Maximum length for state code.
+     */
+    private static final int MAX_LENGTH_STATE = 128;
+
+    /**
+     * Holds the environment configuration of the application.
+     *
+     * <p>
+     * This field allows access to the current environment properties and profiles,
+     * enabling the application to differentiate between environments such as
+     * development, staging, and production.
+     * </p>
+     *
+     * <p>
+     * It is useful for checking active profiles, loading environment-specific
+     * properties, and configuring beans or services based on the environment
+     * settings.
+     * </p>
+     */
+    private final Environment environment;
+
+    /**
      * Lichess authentication and authorization service.
      */
-    LichessService lichessService;
+    private final LichessService lichessService;
 
     /**
      * Main Constructor.
      *
      * @param lichessServ The provided service instance.
+     * @param env         The Spring environment.
      */
-    public LichessController(final LichessService lichessServ) {
+    public LichessController(final LichessService lichessServ, final Environment env) {
         lichessService = lichessServ;
+        environment = env;
     }
 
     /**
-     * Hace una petición GET a la API de Lichess para obtener el perfil del usuario
-     * y lo mapea a un CreateLichessProfileDto para su almacenamiento en la base de
-     * datos.
+     * Converts a Lichess profile Data Transfer Object (DTO) from the service layer
+     * to a controller response format. This method encapsulates the transformation
+     * of the service DTO into a LichessProfileResponse record, including the user's
+     * name, Lichess username, last update time, and game statistics for various
+     * game types.
      *
-     * @param accessToken El token de acceso válido obtenido de Lichess
-     * @return Un CreateLichessProfileDto con los datos del perfil de Lichess
-     * @throws LichessServiceException
+     * @param serviceDto The LichessProfileDto object containing the user's profile
+     *                   information and game statistics from the service layer.
+     * @return A LichessProfileResponse object representing the user's profile,
+     *         including their Lichess username and game statistics for Blitz,
+     *         Bullet, Rapid, Classical, and Puzzle game types.
      */
-    private LichessSaveProfileDto getLichessProfileAsDto(String accessToken, String userDni)
-            throws LichessServiceException {
-        String lichessApiUrl = "https://lichess.org/api/account";
+    private LichessProfileResponse fromLichessProfileServiceDtoToControllerResponse(
+            final LichessProfileDto serviceDto) {
+        return new LichessProfileResponse(serviceDto.completeUserName(), // nombre completo
 
-        RestTemplate restTemplate = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
+                serviceDto.username(), // nombre de usuario en Lichess
+                serviceDto.updatedAt(), // última actualización
+                new LichessProfileResponse.Game(serviceDto.blitz().rating(), // Elo Blitz
+                        serviceDto.blitz().games(), // total de juegos Blitz
+                        serviceDto.blitz().prov() // si el Elo es provisional
+                ), new LichessProfileResponse.Game(serviceDto.bullet().rating(), // Elo Bullet
+                        serviceDto.bullet().games(), // total de juegos Bullet
+                        serviceDto.bullet().prov() // si el Elo es provisional
+                ), new LichessProfileResponse.Game(serviceDto.rapid().rating(), // Elo Rapid
+                        serviceDto.rapid().games(), // total de juegos Rapid
+                        serviceDto.rapid().prov() // si el Elo es provisional
+                ), new LichessProfileResponse.Game(serviceDto.classical().rating(), // Elo Classical
+                        serviceDto.classical().games(), // total de juegos Classical
+                        serviceDto.classical().prov() // si el Elo es provisional
+                ), new LichessProfileResponse.Game(serviceDto.puzzle().rating(), // Elo Puzzle
+                        serviceDto.puzzle().games(), // total de juegos Puzzle
+                        serviceDto.puzzle().prov() // si el Elo es provisional
+                ));
+    }
+
+    /**
+     * Converts a list of {@link LichessProfileDto} objects to a
+     * {@link LichessProfileListResponse}.
+     *
+     * This method maps each {@link LichessProfileDto} to a
+     * {@link LichessProfileResponse}, encapsulating user details and their
+     * corresponding game statistics. It transforms the necessary fields from the
+     * DTOs to the response format used by the controller.
+     *
+     * @param profilesListDto A list of {@link LichessProfileDto} objects
+     *                        representing the Lichess profiles to be converted.
+     * @return A {@link LichessProfileListResponse} containing a list of
+     *         {@link LichessProfileResponse} objects derived from the input DTOs.
+     */
+    private LichessProfileListResponse fromServiceDtoToControllerResponseList(
+            final List<LichessProfileDto> profilesListDto) {
+        final var responsesList = profilesListDto.stream().map(dto -> new LichessProfileResponse(dto.completeUserName(),
+                dto.id(), dto.updatedAt(),
+                new LichessProfileResponse.Game(dto.blitz().rating(), dto.blitz().games(), dto.blitz().prov()),
+                new LichessProfileResponse.Game(dto.bullet().rating(), dto.bullet().games(), dto.bullet().prov()),
+                new LichessProfileResponse.Game(dto.rapid().rating(), dto.rapid().games(), dto.rapid().prov()),
+                new LichessProfileResponse.Game(dto.classical().rating(), dto.classical().games(),
+                        dto.classical().prov()),
+                new LichessProfileResponse.Game(dto.puzzle().rating(), dto.puzzle().games(), dto.puzzle().prov())))
+                .toList();
+        return new LichessProfileListResponse(responsesList);
+    }
+
+    private LichessSaveProfileDto getLichessProfileAsDto(final String accessToken, final String userDni)
+            throws LichessServiceException {
+        final String lichessApiUrl = "https://lichess.org/api/account";
+
+        final RestTemplate restTemplate = new RestTemplate();
+        final HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(accessToken);
 
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        final HttpEntity<String> entity = new HttpEntity<>(headers);
 
         try {
-            ResponseEntity<String> response = restTemplate.exchange(lichessApiUrl, HttpMethod.GET, entity,
+            final ResponseEntity<String> response = restTemplate.exchange(lichessApiUrl, HttpMethod.GET, entity,
                     String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 // Convertir la respuesta en JSON a un objeto de Java
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode rootNode = objectMapper.readTree(response.getBody());
+                final ObjectMapper objectMapper = new ObjectMapper();
+                final JsonNode rootNode = objectMapper.readTree(response.getBody());
 
                 // Extraer y mapear los campos necesarios al DTO
-                String id = rootNode.path("id").asText();
-                String username = rootNode.path("username").asText();
+                final String id = rootNode.path("id").asText();
+                final String username = rootNode.path("username").asText();
                 // Obtener estadísticas de diferentes modalidades
-                SaveGameStatistics blitz = mapSaveGameStatistics(rootNode.path("perfs").path("blitz"));
-                SaveGameStatistics bullet = mapSaveGameStatistics(rootNode.path("perfs").path("bullet"));
-                SaveGameStatistics classical = mapSaveGameStatistics(rootNode.path("perfs").path("classical"));
-                SaveGameStatistics rapid = mapSaveGameStatistics(rootNode.path("perfs").path("rapid"));
-                SaveGameStatistics puzzle = mapSaveGameStatistics(rootNode.path("perfs").path("puzzle"));
+                final SaveGameStatistics blitz = mapSaveGameStatistics(rootNode.path("perfs").path("blitz"));
+                final SaveGameStatistics bullet = mapSaveGameStatistics(rootNode.path("perfs").path("bullet"));
+                final SaveGameStatistics classical = mapSaveGameStatistics(rootNode.path("perfs").path("classical"));
+                final SaveGameStatistics rapid = mapSaveGameStatistics(rootNode.path("perfs").path("rapid"));
+                final SaveGameStatistics puzzle = mapSaveGameStatistics(rootNode.path("perfs").path("puzzle"));
                 // Crear el DTO con la información mapeada
                 return new LichessSaveProfileDto(userDni, id, username, LocalDateTime.now(), blitz, bullet, classical,
                         rapid, puzzle);
@@ -124,125 +228,191 @@ public class LichessController {
     @GetMapping("/getAllLichessProfiles")
     public ResponseEntity<LichessProfileListResponse> getLichessProfiles() {
         final var profilesListDto = lichessService.getLichessProfiles();
-        // Convert DTOs to Response objects
-        List<LichessProfileResponse> responseList = profilesListDto.stream().map(dto -> new LichessProfileResponse(
-                dto.completeUserName(), // Use the correct getter for username
-                dto.id(), // id corresponds to lichessUserName
-                dto.updatedAt(),
-                new LichessProfileResponse.Game(dto.blitz().rating(), dto.blitz().games(), dto.blitz().prov()),
-                new LichessProfileResponse.Game(dto.bullet().rating(), dto.bullet().games(), dto.bullet().prov()),
-                new LichessProfileResponse.Game(dto.rapid().rating(), dto.rapid().games(), dto.rapid().prov()),
-                new LichessProfileResponse.Game(dto.classical().rating(), dto.classical().games(),
-                        dto.classical().prov()),
-                new LichessProfileResponse.Game(dto.puzzle().rating(), dto.puzzle().games(), dto.puzzle().prov())))
-                .toList();
-
         // Create the response object
-        LichessProfileListResponse response = new LichessProfileListResponse(responseList);
-
+        final LichessProfileListResponse response = fromServiceDtoToControllerResponseList(profilesListDto);
         // Return the response entity with OK status and the response body
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * Retrieves the authenticated user's Lichess profile. This endpoint fetches the
+     * user's profile information, including their username and game statistics. If
+     * the user is not found or an error occurs during the retrieval process, a Bad
+     * Request response is returned.
+     *
+     * @return A ResponseEntity containing the LichessProfileResponse object with
+     *         the user's profile information and an HTTP status of 200 OK if
+     *         successful, or a 400 Bad Request if the user is not found or an error
+     *         occurs.
+     */
     @GetMapping("/getMyLichessProfile")
     public ResponseEntity<LichessProfileResponse> getMyLichessProfile() {
-        // Obtén la información de autenticación del usuario actual
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        // Asegúrate de que el usuario esté autenticado
-        if (authentication != null && authentication.isAuthenticated()) {
-            // Extrae el nombre de usuario (o detalles adicionales) del usuario autenticado
-            String username = authentication.getName();
-
-            // Obtiene el perfil de Lichess del usuario
-            LichessProfileDto lichessProfile = null;
-            try {
-                lichessProfile = lichessService.getLichessProfile(username);
-            } catch (LichessServiceException e) {
-                return ResponseEntity.status(401).build();
-            }
-            // Rellena el objeto `response` con la información necesaria
-            LichessProfileResponse response = new LichessProfileResponse(lichessProfile.completeUserName(), // nombre
-                                                                                                            // completo
-                    lichessProfile.username(), // nombre de usuario en Lichess
-                    lichessProfile.updatedAt(), // última actualización
-                    new LichessProfileResponse.Game(lichessProfile.blitz().rating(), // Elo Blitz
-                            lichessProfile.blitz().games(), // total de juegos Blitz
-                            lichessProfile.blitz().prov() // si el Elo es provisional
-                    ), new LichessProfileResponse.Game(lichessProfile.bullet().rating(), // Elo Bullet
-                            lichessProfile.bullet().games(), // total de juegos Bullet
-                            lichessProfile.bullet().prov() // si el Elo es provisional
-                    ), new LichessProfileResponse.Game(lichessProfile.rapid().rating(), // Elo Rapid
-                            lichessProfile.rapid().games(), // total de juegos Rapid
-                            lichessProfile.rapid().prov() // si el Elo es provisional
-                    ), new LichessProfileResponse.Game(lichessProfile.classical().rating(), // Elo Classical
-                            lichessProfile.classical().games(), // total de juegos Classical
-                            lichessProfile.classical().prov() // si el Elo es provisional
-                    ), new LichessProfileResponse.Game(lichessProfile.puzzle().rating(), // Elo Puzzle
-                            lichessProfile.puzzle().games(), // total de juegos Puzzle
-                            lichessProfile.puzzle().prov() // si el Elo es provisional
-                    ));
-
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String username = authentication.getName();
+        try {
+            // Directly assign the result of getLichessProfile to lichessProfile
+            final LichessProfileDto lichessProfile = lichessService.getLichessProfile(username);
+            final LichessProfileResponse response = fromLichessProfileServiceDtoToControllerResponse(lichessProfile);
             return ResponseEntity.ok(response);
-        } else {
-            // Si no hay un usuario autenticado, devuelve un error 401
-            return ResponseEntity.status(401).build();
+        } catch (LichessServiceException e) { // When user with given email not found.
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
     /**
      * Handles the callback from Lichess with the authorization code. This method
      * retrieves the authorization code, exchanges it for an access token, and logs
-     * relevant information.
+     * relevant information. It retrieves the user's Lichess profile and saves it to
+     * the database. If successful, it returns an HTML response indicating success;
+     * otherwise, it returns an HTML response indicating an error.
      *
-     * @param userEmail         the email of the authenticated user
-     * @param authorizationCode the authorization code received from Lichess
-     * @param state             the state parameter to prevent CSRF attacks
-     * @return token saved.
+     * <p>
+     * In case of success, the user is notified that their Lichess profile has been
+     * linked successfully, and they are instructed to log out and back into the
+     * application to see the changes reflected.
+     * </p>
+     * <p>
+     * If the operation fails, the user is informed of the error and provided with
+     * contact information for support.
+     * </p>
+     *
+     * @param userEmail         the email of the authenticated user, must be a valid
+     *                          email
+     * @param authorizationCode the authorization code received from Lichess, must
+     *                          not be blank and has a maximum length of 43
+     *                          characters
+     * @param state             the state parameter to prevent CSRF attacks, with a
+     *                          maximum length of 128 characters
+     * @return A ResponseEntity containing an HTML response: - On success: an HTML
+     *         page notifying the user that the linking was successful. - On error:
+     *         an HTML page notifying the user of the error and providing contact
+     *         information.
      * @throws LichessServiceException if an error occurs during the token exchange
-     *                                 process
+     *                                 process or while saving the profile.
      */
     @GetMapping("/{userEmail}/lichessAuth")
-    public ResponseEntity<String> handleLichessCallback(@PathVariable final String userEmail,
-            @RequestParam("code") final String authorizationCode, @RequestParam final String state)
+    public ResponseEntity<String> handleLichessCallback(@PathVariable @Email @NotBlank final String userEmail,
+            @RequestParam("code") @NotBlank @Size(max = MAX_LENGTH_AUTH_CODE, message = "MAX SIZE OF AUTH_CODE NOT VALID") final String authorizationCode,
+            @RequestParam @Size(max = MAX_LENGTH_STATE, message = "MAX SIZE OF STATE NOT VALID") final String state)
             throws LichessServiceException {
+
+        final ResponseEntity<String> responseEntity;
+
         final String clientId = "xadreznaron.es";
-
-        LOGGER.info("Received userEmail: {}", userEmail);
-        LOGGER.info("Received authorization code: {}", authorizationCode);
-        LOGGER.info("Received state: {}", state);
-
-        final String redirectUri = "http://localhost:8080/api/" + userEmail + "/lichessAuth";
-
+        final String redirectUri = isProdProfile() ? "https://xadreznaron.es:4443/api/" + userEmail + "/lichessAuth"
+                : "http://localhost:8080/api/" + userEmail + "/lichessAuth";
         final String codeVerifier = lichessService.getCodeVerifier(userEmail);
-
         final String accessToken = requestAccessToken(authorizationCode, codeVerifier, redirectUri, clientId,
                 userEmail);
 
-        LichessSaveProfileDto dto = getLichessProfileAsDto(accessToken, userEmail);
+        final LichessSaveProfileDto dto = getLichessProfileAsDto(accessToken, userEmail);
         lichessService.saveLichessProfile(dto);
-        if (accessToken != null) {
-            return new ResponseEntity<>(accessToken, HttpStatus.OK);
 
-        } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        try {
+            if (accessToken != null) {
+                final String htmlResponseSuccess = loadResponseTemplateSuccess();
+                responseEntity = ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(htmlResponseSuccess);
+            } else {
+                final String htmlResponseError = loadResponseTemplateError();
+                responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).contentType(MediaType.TEXT_HTML)
+                        .body(htmlResponseError);
+            }
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+
+        return responseEntity;
+    }
+
+    /**
+     * @return Boolean value if environment matches with production profile.
+     */
+    private boolean isProdProfile() {
+        return environment.matchesProfiles("prod");
+    }
+
+    /**
+     * Utility method to check if the response was successful.
+     *
+     * @param response the HTTP response
+     * @return true if the response status code is in the 2xx range, false otherwise
+     */
+    private boolean isResponseSuccessful(final ResponseEntity<String> response) {
+        return response != null && response.getStatusCode().is2xxSuccessful();
+    }
+
+    /**
+     * Load response template for error case from file.
+     *
+     * @return The response template html for error case.
+     * @throws IOException When cannot load the file.
+     */
+    private String loadResponseTemplateError() throws IOException {
+        final ClassPathResource resource = new ClassPathResource("LichessResponseOauthTemplates/error.html");
+        // Use InputStream instead of Files.lines to handle resources inside the JAR
+        try (var inputStream = resource.getInputStream();
+                var reader = new java.io.InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                var bufferedReader = new java.io.BufferedReader(reader)) {
+
+            return bufferedReader.lines().collect(Collectors.joining("\n"));
+
         }
     }
 
     /**
-     * Mapea las estadísticas de una modalidad de juego a un GameStatistics.
+     * Load response template for success case from file.
      *
-     * @param node El nodo JSON que contiene las estadísticas de una modalidad
-     * @return Un objeto GameStatistics con los datos mapeados
+     * @return The response template html for success case.
+     * @throws IOException When cannot load the file.
      */
-    private SaveGameStatistics mapSaveGameStatistics(JsonNode node) {
-        int games = node.path("games").asInt();
-        int rating = node.path("rating").asInt();
-        int rd = node.path("rd").asInt();
-        int prog = node.path("prog").asInt();
-        boolean prov = node.path("prov").asBoolean();
+    private String loadResponseTemplateSuccess() throws IOException {
+        final ClassPathResource resource = new ClassPathResource("LichessResponseOauthTemplates/success.html");
+        // Use InputStream instead of Files.lines to handle resources inside the JAR
+        try (var inputStream = resource.getInputStream();
+                var reader = new java.io.InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                var bufferedReader = new java.io.BufferedReader(reader)) {
 
-        return new SaveGameStatistics(games, rating, rd, prog, prov);
+            return bufferedReader.lines().collect(Collectors.joining("\n"));
+
+        }
+    }
+
+    /**
+     * Logs an error if the token retrieval failed.
+     *
+     * @param response the HTTP response
+     */
+    private void logError(final ResponseEntity<String> response) {
+        if (LOGGER.isErrorEnabled()) {
+            LOGGER.error("Failed to retrieve access token. Status code: {}", response.getStatusCode());
+        }
+    }
+
+    /**
+     * Logs an exception if an error occurs during parsing.
+     *
+     * @param exception The IO Exception.
+     */
+    private void logException(final IOException exception) {
+        if (LOGGER.isErrorEnabled()) {
+            LOGGER.error("Error parsing the token response", exception);
+        }
+    }
+
+    /**
+     * Maps the statistics of a game mode to a GameStatistics object.
+     *
+     * @param node The JSON node containing the statistics of a game mode
+     * @return A GameStatistics object with the mapped data
+     */
+    private SaveGameStatistics mapSaveGameStatistics(final JsonNode node) {
+        final int gameAmount = node.path("games").asInt();
+        final int gameRating = node.path("rating").asInt();
+        final int gameRd = node.path("rd").asInt();
+        final int prog = node.path("prog").asInt();
+        final boolean prov = node.path("prov").asBoolean();
+
+        return new SaveGameStatistics(gameAmount, gameRating, gameRd, prog, prov);
     }
 
     /**
@@ -261,7 +431,10 @@ public class LichessController {
      */
     private String requestAccessToken(final String code, final String codeVerifier, final String redirectUri,
             final String clientId, final String userEmail) throws LichessServiceException {
+
         final RestTemplate restTemplate = new RestTemplate();
+
+        // Use MultiValueMap interface for body
         final MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
         body.add("code", code);
@@ -269,16 +442,11 @@ public class LichessController {
         body.add("redirect_uri", redirectUri);
         body.add("client_id", clientId);
 
-        final HttpHeaders headers = new HttpHeaders();
+        // Use MultiValueMap for headers
+        final MultiValueMap<String, String> headers = new HttpHeaders();
         headers.set("Content-Type", "application/x-www-form-urlencoded");
 
         final HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(body, headers);
-
-        LOGGER.info("HTTP request to Lichess to retrieve the access token:");
-        LOGGER.info("code: {}", code);
-        LOGGER.info("code_verifier: {}", codeVerifier);
-        LOGGER.info("redirect_uri: {}", redirectUri);
-        LOGGER.info("client_id: {}", clientId);
 
         String accessToken = null;
 
@@ -286,7 +454,8 @@ public class LichessController {
             final ResponseEntity<String> response = restTemplate.exchange("https://lichess.org/api/token",
                     HttpMethod.POST, requestEntity, String.class);
 
-            if (response.getStatusCode().is2xxSuccessful()) {
+            // Use the encapsulated method to check the status
+            if (isResponseSuccessful(response)) {
                 final ObjectMapper objectMapper = new ObjectMapper();
                 final JsonNode root = objectMapper.readTree(response.getBody());
 
@@ -294,20 +463,16 @@ public class LichessController {
                 final String tokenType = root.path("token_type").asText();
                 final int expiresIn = root.path("expires_in").asInt();
 
-                LOGGER.info("Token Type: {}", tokenType);
-                LOGGER.info("Access Token: {}", accessToken);
-                LOGGER.info("Expires In: {} seconds", expiresIn);
-
                 // Calculate expiration date
                 final LocalDateTime expirationDate = LocalDateTime.now().plusSeconds(expiresIn);
 
                 // Save token information
                 lichessService.saveAuthToken(tokenType, accessToken, expirationDate, userEmail);
             } else {
-                LOGGER.error("Failed to retrieve access token. Status code: {}", response.getStatusCode());
+                logError(response);
             }
         } catch (IOException e) {
-            LOGGER.error("Error parsing the token response", e);
+            logException(e);
         }
 
         return accessToken;
@@ -318,25 +483,20 @@ public class LichessController {
      * This method verifies the authenticated user and saves the code verifier for
      * later use.
      *
-     * @param userEmail    the email of authenticated user
-     * @param codeVerifier the code verifier to be stored
+     * @param userEmail    The email of authenticated user
+     * @param codeVerifier The code verifier to be stored
      * @return an HTTP response indicating whether the operation was successful
      */
     @PostMapping("/{userEmail}/lichessAuth")
-    public ResponseEntity<HttpStatus> storeCodeVerifier(@PathVariable final String userEmail,
-            @RequestBody final String codeVerifier) {
+    public ResponseEntity<HttpStatus> storeCodeVerifier(@PathVariable @Email @NotBlank final String userEmail,
+            @RequestBody @NotBlank @Size(min = CODE_VERIFIER_MIN_SIZE, max = CODE_VERIFIER_MAX_SIZE) final String codeVerifier) {
 
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final String userName = authentication.getName();
-
-        LOGGER.info("RECIVIDO PARA GUARDAR EL CODE VERIFIER: {}", codeVerifier);
-        LOGGER.info("Request userEmail: {}", userEmail);
-        LOGGER.info("Authenticated user name (email) : {}", userName);
-
         try {
             lichessService.saveOAuthRequest(userName, codeVerifier.trim());
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
+        } catch (LichessServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }

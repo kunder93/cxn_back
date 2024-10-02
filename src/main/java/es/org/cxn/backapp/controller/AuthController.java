@@ -68,7 +68,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
     /**
      * Creates an address details object from the provided sign-up request form.
      *
@@ -181,7 +180,7 @@ public class AuthController {
      * @param signUpRequestForm the form containing user data for registration.
      * @return a {@link ResponseEntity} containing the response form with the
      *         created user data and HTTP status code {@code 201 Created}.
-     * @throws IOException
+     * @throws IOException             When cannot load message template.
      * @throws ResponseStatusException if there is a problem with user registration.
      */
     @CrossOrigin
@@ -208,9 +207,7 @@ public class AuthController {
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (MessagingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
         }
     }
 

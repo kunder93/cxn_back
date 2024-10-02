@@ -21,7 +21,7 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * The user's unique identifier (DNI), used as the primary key.
      */
     @Id
-    @Column(name = "user_dni", nullable = false, length = 10)
+    @Column(name = "user_dni", nullable = false)
     private String userDni;
 
     /**
@@ -198,6 +198,9 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Column(name = "puzzle_prov")
     private Boolean puzzleProv;
 
+    /**
+     * Date of the last update.
+     */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -646,7 +649,7 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * {inheritDoc}
      */
     @Override
-    public void setUpdatedAt(LocalDateTime value) {
+    public void setUpdatedAt(final LocalDateTime value) {
         updatedAt = value;
     }
 
@@ -654,7 +657,7 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * {@inheritDoc}
      */
     @Override
-    public void setUserDni(String value) {
+    public void setUserDni(final String value) {
         userDni = value;
     }
 
@@ -662,7 +665,7 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * {@inheritDoc}
      */
     @Override
-    public void setUsername(String value) {
+    public void setUsername(final String value) {
         username = value;
     }
 

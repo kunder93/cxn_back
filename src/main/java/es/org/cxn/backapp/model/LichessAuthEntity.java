@@ -23,6 +23,8 @@ public interface LichessAuthEntity extends Serializable {
     String getAccessToken();
 
     /**
+     * Gets date when auth was created.
+     *
      * @return The time when token has been created.
      */
     LocalDateTime getCreatedAt();

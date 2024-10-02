@@ -25,9 +25,11 @@ public interface LichessService {
     String getCodeVerifier(String userEmail) throws LichessServiceException;
 
     /**
+     * Get data from stored Lichess profile.
+     *
      * @param userEmail The user email.
      * @return The lichess profile associated to userEmail.
-     * @throws LichessServiceException When cannot no lichess profile for userEmail.
+     * @throws LichessServiceException When user with given email not found.
      */
     LichessProfileDto getLichessProfile(String userEmail) throws LichessServiceException;
 
@@ -60,6 +62,8 @@ public interface LichessService {
     PersistentLichessAuthEntity saveLichessAuth(PersistentLichessAuthEntity lichessAuth);
 
     /**
+     * Save Lichess linked profile.
+     *
      * @param lichessProfileDto The dto with Lichess profile data.
      * @return The Lichess profile entity stored.
      * @throws LichessServiceException When user not found.
