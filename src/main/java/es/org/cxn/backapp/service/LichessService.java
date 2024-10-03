@@ -16,6 +16,16 @@ import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 public interface LichessService {
 
     /**
+     * Retrieves the authentication token for a user based on their email address.
+     *
+     * @param userEmail the email address of the user whose token is to be retrieved
+     * @return the authentication token of the user
+     * @throws LichessServiceException if there is an error retrieving the token or
+     *                                 is expired
+     */
+    String getAuthToken(String userEmail) throws LichessServiceException;
+
+    /**
      * Get user code verifier.
      *
      * @param userEmail The user email, user identifier.

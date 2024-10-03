@@ -63,6 +63,34 @@ public class DefaultLichessService implements LichessService {
     }
 
     /**
+     * Retrieves the authentication token for a user based on their email address.
+     *
+     * This method first checks if the user's authentication token has expired. If
+     * the token is expired, it throws a {@link LichessServiceException} with the
+     * message "Token is expired." If the token is valid, it returns the access
+     * token associated with the user.
+     *
+     * @param userEmail the email address of the user whose token is to be retrieved
+     * @return the authentication token of the user
+     * @throws LichessServiceException if the token is expired or if there is an
+     *                                 error retrieving the token
+     */
+    @Override
+    public String getAuthToken(final String userEmail) throws LichessServiceException {
+        final var userEntity = getUserByEmail(userEmail);
+        final var userAuth = userEntity.getLichessAuth();
+        if (userAuth == null) {
+            throw new LichessServiceException("User with email: " + userEmail + " no have lichess auth.");
+        }
+        if (userAuth.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new LichessServiceException(
+                    "Token is expired. Tooken date is: " + userAuth.getExpirationDate().toString());
+        } else {
+            return userAuth.getAccessToken();
+        }
+    }
+
+    /**
      * Get user code verifier.
      *
      * @param userEmail The user email, user identifier.

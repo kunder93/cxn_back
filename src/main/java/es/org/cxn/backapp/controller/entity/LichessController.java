@@ -501,4 +501,43 @@ public class LichessController {
         }
     }
 
+    /**
+     * Updates the Lichess profile of the authenticated user by retrieving profile
+     * data from Lichess API and saving it in the application.
+     *
+     * <p>
+     * This endpoint requires the user to be authenticated. It retrieves the user's
+     * email from the security context, fetches an access token, and then uses that
+     * token to get the user's profile data from Lichess. The profile data is then
+     * saved, and the updated profile information is returned in the response.
+     * </p>
+     *
+     * @return {@link ResponseEntity} containing the updated Lichess profile data in
+     *         the form of a {@link LichessProfileResponse}
+     * @throws ResponseStatusException if the token is expired or any other error
+     *                                 occurs while retrieving or saving the profile
+     *                                 data
+     */
+    @PostMapping("/updateLichessProfile")
+    public ResponseEntity<LichessProfileResponse> updateLichessProfile() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final String userEmail = authentication.getName();
+
+        String accessToken;
+        try {
+            accessToken = lichessService.getAuthToken(userEmail);
+        } catch (LichessServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+        try {
+            LichessSaveProfileDto dto = getLichessProfileAsDto(accessToken, userEmail);
+            lichessService.saveLichessProfile(dto);
+            final LichessProfileDto lichessProfile = lichessService.getLichessProfile(userEmail);
+            final LichessProfileResponse response = fromLichessProfileServiceDtoToControllerResponse(lichessProfile);
+            return ResponseEntity.ok(response);
+        } catch (LichessServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
 }
