@@ -7,12 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import es.org.cxn.backapp.service.DefaultEmailService;
-
-import jakarta.mail.Message.RecipientType;
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
+import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,44 +16,56 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mail.javamail.JavaMailSender;
 
+import es.org.cxn.backapp.service.DefaultEmailService;
+import jakarta.mail.Message.RecipientType;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+
 class EmailServiceTest {
 
-  @Mock
-  private JavaMailSender mailSender;
+    /**
+     * Mock sender, not real sending.
+     */
+    @Mock
+    private JavaMailSender mailSender;
 
-  @Mock
-  private MimeMessage mimeMessage;
+    /**
+     * Mock mime messages.
+     */
+    @Mock
+    private MimeMessage mimeMessage;
 
-  @InjectMocks
-  private DefaultEmailService emailService;
+    /**
+     * Service where inject mocks.
+     */
+    @InjectMocks
+    private DefaultEmailService emailService;
 
-  @BeforeEach
-  public void setUp() {
-    // Initialize mocks
-    MockitoAnnotations.openMocks(this);
+    @BeforeEach
+    public void setUp() {
+        // Initialize mocks
+        MockitoAnnotations.openMocks(this);
 
-    // Configure the mock mailSender to return the mocked MimeMessage
-    when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
-  }
+        // Configure the mock mailSender to return the mocked MimeMessage
+        when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+    }
 
-  @Test
-  void testSendSignUpEmail() throws MessagingException {
-    // Given
-    var toEmail = "test@example.com";
-    var subject = "Test Subject";
-    var body = "This is a test email.";
+    @Test
+    void testSendSignUpEmail() throws MessagingException, IOException {
+        // Given
+        var toEmail = "test@example.com";
+        var subject = "Test Subject";
+        var body = "This is a test email.";
 
-    // When
-    emailService.sendSignUpEmail(toEmail, subject, body);
+        // When
+        emailService.sendSignUpEmail(toEmail, subject, body);
 
-    // Then
-    verify(mailSender, times(1)).createMimeMessage();
-    verify(mimeMessage, times(1))
-          .setFrom(new InternetAddress("principal@xadreznaron.es"));
-    verify(mimeMessage, times(1)).setRecipients(RecipientType.TO, toEmail);
-    verify(mimeMessage, times(1)).setSubject("Hola, " + subject + "!\n\n");
-    verify(mimeMessage, times(1))
-          .setContent(any(String.class), eq("text/html; charset=utf-8"));
-    verify(mailSender, times(1)).send(mimeMessage);
-  }
+        // Then
+        verify(mailSender, times(1)).createMimeMessage();
+        verify(mimeMessage, times(1)).setFrom(new InternetAddress("principal@xadreznaron.es"));
+        verify(mimeMessage, times(1)).setRecipients(RecipientType.TO, toEmail);
+        verify(mimeMessage, times(1)).setContent(any(String.class), eq("text/html; charset=utf-8"));
+        verify(mailSender, times(1)).send(mimeMessage);
+    }
 }

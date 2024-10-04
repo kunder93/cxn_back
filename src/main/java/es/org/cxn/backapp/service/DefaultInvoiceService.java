@@ -86,7 +86,7 @@ public final class DefaultInvoiceService implements InvoiceService {
   ) throws InvoiceServiceException {
     final var invoices =
           invoiceRepository.findByNumberAndSeries(numberValue, seriesValue);
-    if (!invoices.isEmpty()) {
+    if (invoices.isPresent()) {
       throw new InvoiceServiceException(INVOICE_EXISTS_MESSAGE);
     }
 

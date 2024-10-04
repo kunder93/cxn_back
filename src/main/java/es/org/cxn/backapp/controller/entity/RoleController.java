@@ -26,20 +26,19 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
-import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
-import es.org.cxn.backapp.service.UserService;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+
+import es.org.cxn.backapp.exceptions.UserServiceException;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
+import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
+import es.org.cxn.backapp.service.UserService;
 
 /**
  * Rest controller for the example entities.
@@ -50,55 +49,45 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/user/role")
 public class RoleController {
 
-  /**
-   * The admin role.
-   */
-  public static final String ADMIN_ROLE = "ADMIN";
+    /**
+     * The admin role.
+     */
+    public static final String ADMIN_ROLE = "ADMIN";
 
-  /**
-   * The user service.
-   */
-  private final UserService userService;
+    /**
+     * The user service.
+     */
+    private final UserService userService;
 
-  /**
-   * Create a a controller with the specified dependencies.
-   *
-   * @param serv user service
-   */
-  public RoleController(final UserService serv) {
-    super();
+    /**
+     * Create a a controller with the specified dependencies.
+     *
+     * @param serv user service
+     */
+    public RoleController(final UserService serv) {
+        super();
 
-    userService = checkNotNull(serv, "Received a null pointer as user service");
-  }
-
-  /**
-   * Changes role to user.
-   *
-   * @param userChangeRoleRequestForm form with data to change user role.
-   * @return form with the deleted user data.
-   */
-  @CrossOrigin(origins = "*")
-  @PatchMapping()
-  @PreAuthorize(
-    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
-          + " hasRole('SECRETARIO')"
-  )
-  public ResponseEntity<UserChangeRoleResponseForm> changeUserRoles(@RequestBody
-  final UserChangeRoleRequest userChangeRoleRequestForm) {
-
-    final var roles = userChangeRoleRequestForm.userRoles();
-    try {
-      userService.changeUserRoles(userChangeRoleRequestForm.email(), roles);
-    } catch (UserServiceException e) {
-      throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, e.getMessage(), e
-      );
+        userService = checkNotNull(serv, "Received a null pointer as user service");
     }
-    return new ResponseEntity<>(
-          new UserChangeRoleResponseForm(
-                userChangeRoleRequestForm.email(),
-                userChangeRoleRequestForm.userRoles()
-          ), HttpStatus.OK
-    );
-  }
+
+    /**
+     * Changes role to user.
+     *
+     * @param userChangeRoleRequestForm form with data to change user role.
+     * @return form with the deleted user data.
+     */
+    @PatchMapping()
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
+    public ResponseEntity<UserChangeRoleResponseForm> changeUserRoles(
+            @RequestBody final UserChangeRoleRequest userChangeRoleRequestForm) {
+
+        final var roles = userChangeRoleRequestForm.userRoles();
+        try {
+            userService.changeUserRoles(userChangeRoleRequestForm.email(), roles);
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+        return new ResponseEntity<>(new UserChangeRoleResponseForm(userChangeRoleRequestForm.email(),
+                userChangeRoleRequestForm.userRoles()), HttpStatus.OK);
+    }
 }

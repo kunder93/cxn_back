@@ -305,7 +305,7 @@ public final class DefaultUserService implements UserService {
 
     final var result = userRepository.findByEmail(email);
 
-    if (!result.isPresent()) {
+    if (result.isEmpty()) {
       throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
     }
     return result.get();

@@ -46,13 +46,13 @@ public class TestSecurityConfiguration {
   @Bean
   public SecurityFilterChain securityFilterChain(final HttpSecurity http)
         throws Exception {
-    http.csrf().disable()
-          .authorizeHttpRequests(
-                authorizeRequests -> authorizeRequests
-                      // Allow all requests to pass without authentication
-                      .requestMatchers("/**").permitAll()
-          ).sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+      http.csrf(csrf -> csrf.disable())
+              .authorizeHttpRequests(
+                      authorizeRequests -> authorizeRequests
+                              // Allow all requests to pass without authentication
+                              .requestMatchers("/**").permitAll()
+              ).sessionManagement(management -> management
+                      .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
     return http.build();
   }

@@ -24,24 +24,7 @@
 
 package es.org.cxn.backapp.controller;
 
-import com.google.common.base.Preconditions;
-
-import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
-import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
-import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.service.DefaultEmailService;
-import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.MyPrincipalUser;
-import es.org.cxn.backapp.service.UserService;
-import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
-import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
-
-import jakarta.mail.MessagingException;
-import jakarta.validation.Valid;
-
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -60,6 +43,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.common.base.Preconditions;
+
+import es.org.cxn.backapp.exceptions.UserServiceException;
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
+import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.service.DefaultEmailService;
+import es.org.cxn.backapp.service.DefaultJwtUtils;
+import es.org.cxn.backapp.service.MyPrincipalUser;
+import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
+
 /**
  * Controller for authentication operations.
  *
@@ -68,184 +68,147 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
-  /**
-   * The user service for handling user-related operations.
-   */
-  private final UserService userService;
-
-  /**
-   * The authentication manager for handling authentication requests.
-   */
-  private final AuthenticationManager authManager;
-
-  /**
-   * The user details service for loading user-specific details.
-   */
-  private final UserDetailsService usrDtlsSrv;
-
-  /**
-   * The email service for sending emails.
-   */
-  private final DefaultEmailService emailService;
-
-  /**
-   * Constructs a controller with the specified dependencies.
-   *
-   * @param serviceUser     the user service to manage user operations.
-   * @param authManag       the authentication manager to handle authentication.
-   * @param userDetailsServ the user details service to load user-specific
-   * details.
-   * @param emailServ       the email service for send email messages.
-   * @param jwtUtil         the JWT utility for generating and validating
-   * tokens.
-   */
-  public AuthController(
-        final UserService serviceUser, final AuthenticationManager authManag,
-        final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtil,
-        final DefaultEmailService emailServ
-  ) {
-    super();
-    this.userService = Preconditions
-          .checkNotNull(serviceUser, "Received a null pointer as userService");
-    this.authManager = Preconditions.checkNotNull(
-          authManag, "Received a null pointer as authenticationManager"
-    );
-    this.usrDtlsSrv = Preconditions.checkNotNull(
-          userDetailsServ, "Received a null pointer as userDetailsService"
-    );
-    this.emailService = Preconditions
-          .checkNotNull(emailServ, "Received a null pointer as email service.");
-    Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
-  }
-
-  /**
-   * Creates an address details object from the provided sign-up request form.
-   *
-   * @param signUpRequestForm the sign-up request form containing address
-   * information.
-   * @return an {@link AddressRegistrationDetailsDto} containing address
-   * details.
-   */
-  private static AddressRegistrationDetailsDto
-        createAddressDetails(final SignUpRequestForm signUpRequestForm) {
-    return new AddressRegistrationDetailsDto(
-          signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
-          signUpRequestForm.city(), signUpRequestForm.postalCode(),
-          signUpRequestForm.street(), signUpRequestForm.countryNumericCode(),
-          signUpRequestForm.countrySubdivisionName()
-    );
-  }
-
-  /**
-   * Creates a user details object from the provided sign-up request form and
-   * address details.
-   *
-   * @param signUpRequestForm the sign-up request form containing user
-   * information.
-   * @param addressDetails    the address details for the user.
-   * @return a {@link UserRegistrationDetailsDto} containing user and address
-   * details.
-   */
-  private static UserRegistrationDetailsDto createUserDetails(
-        final SignUpRequestForm signUpRequestForm,
-        final AddressRegistrationDetailsDto addressDetails
-  ) {
-    return new UserRegistrationDetailsDto(
-          signUpRequestForm.dni(), signUpRequestForm.name(),
-          signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(),
-          signUpRequestForm.birthDate(), signUpRequestForm.gender(),
-          signUpRequestForm.password(), signUpRequestForm.email(),
-          addressDetails, signUpRequestForm.kindMember()
-    );
-  }
-
-  /**
-   * Registers a new user and assigns a default role.
-   *
-   * @param signUpRequestForm the form containing user data for registration.
-   * @return a {@link ResponseEntity} containing the response form with the
-   * created user data and HTTP status code {@code 201 Created}.
-   * @throws ResponseStatusException if there is a problem with user
-   * registration.
-   */
-  @CrossOrigin
-  @PostMapping("/signup")
-  public ResponseEntity<SignUpResponseForm> registerUser(@Valid @RequestBody
-  final SignUpRequestForm signUpRequestForm) {
-
-    final var defaultUserRole = UserRoleName.ROLE_CANDIDATO_SOCIO;
-    final var initialUserRolesSet = new ArrayList<UserRoleName>();
-    initialUserRolesSet.add(defaultUserRole);
-
-    final var addressDetails = createAddressDetails(signUpRequestForm);
-    final var userDetails =
-          createUserDetails(signUpRequestForm, addressDetails);
-
-    try {
-      userService.add(userDetails);
-      final var createdUser = userService
-            .changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
-      final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
-
-      emailService.sendSignUpEmail(
-            signUpRequestForm.email(), signUpRequestForm.name(),
-            "Te damos la bienvenida a Círculo Xadrez Narón."
-      );
-
-      return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
-    } catch (UserServiceException e) {
-      throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, e.getMessage(), e
-      );
-    } catch (MessagingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      throw new ResponseStatusException(
-            HttpStatus.BAD_REQUEST, e.getMessage(), e
-      );
+    /**
+     * Creates an address details object from the provided sign-up request form.
+     *
+     * @param signUpRequestForm the sign-up request form containing address
+     *                          information.
+     * @return an {@link AddressRegistrationDetailsDto} containing address details.
+     */
+    private static AddressRegistrationDetailsDto createAddressDetails(final SignUpRequestForm signUpRequestForm) {
+        return new AddressRegistrationDetailsDto(signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
+                signUpRequestForm.city(), signUpRequestForm.postalCode(), signUpRequestForm.street(),
+                signUpRequestForm.countryNumericCode(), signUpRequestForm.countrySubdivisionName());
     }
-  }
 
-  /**
-   * Authenticates a user and generates a JWT token.
-   *
-   * @param loginRequest the form containing user email and password for
-   * authentication.
-   * @return a {@link ResponseEntity} containing the authentication response
-   * with JWT token
-   *         and HTTP status code {@code 200 OK}.
-   * @throws ResponseStatusException if authentication fails due to incorrect
-   * credentials, disabled account, or account locked.
-   */
-  @CrossOrigin
-  @PostMapping("/signinn")
-  public ResponseEntity<AuthenticationResponse>
-        authenticateUser(final @Valid @RequestBody
-  AuthenticationRequest loginRequest) {
-    final var email = loginRequest.email();
-    final var password = loginRequest.password();
-    try {
-      authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(email, password)
-      );
-    } catch (BadCredentialsException | DisabledException e) {
-      throw new ResponseStatusException(
-            HttpStatus.UNAUTHORIZED, e.getMessage(), e
-      );
-    } catch (LockedException e) {
-      throw new ResponseStatusException(HttpStatus.LOCKED, e.getMessage(), e);
+    /**
+     * Creates a user details object from the provided sign-up request form and
+     * address details.
+     *
+     * @param signUpRequestForm the sign-up request form containing user
+     *                          information.
+     * @param addressDetails    the address details for the user.
+     * @return a {@link UserRegistrationDetailsDto} containing user and address
+     *         details.
+     */
+    private static UserRegistrationDetailsDto createUserDetails(final SignUpRequestForm signUpRequestForm,
+            final AddressRegistrationDetailsDto addressDetails) {
+        return new UserRegistrationDetailsDto(signUpRequestForm.dni(), signUpRequestForm.name(),
+                signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
+                signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
+                signUpRequestForm.kindMember());
     }
-    final MyPrincipalUser userDetails;
-    try {
-      userDetails = (MyPrincipalUser) usrDtlsSrv.loadUserByUsername(email);
-    } catch (UsernameNotFoundException e) {
-      throw new ResponseStatusException(
-            HttpStatus.UNAUTHORIZED, e.getMessage(), e
-      );
+
+    /**
+     * The user service for handling user-related operations.
+     */
+    private final UserService userService;
+
+    /**
+     * The authentication manager for handling authentication requests.
+     */
+    private final AuthenticationManager authManager;
+
+    /**
+     * The user details service for loading user-specific details.
+     */
+    private final UserDetailsService usrDtlsSrv;
+
+    /**
+     * The email service for sending emails.
+     */
+    private final DefaultEmailService emailService;
+
+    /**
+     * Constructs a controller with the specified dependencies.
+     *
+     * @param serviceUser     the user service to manage user operations.
+     * @param authManag       the authentication manager to handle authentication.
+     * @param userDetailsServ the user details service to load user-specific
+     *                        details.
+     * @param emailServ       the email service for send email messages.
+     * @param jwtUtil         the JWT utility for generating and validating tokens.
+     */
+    public AuthController(final UserService serviceUser, final AuthenticationManager authManag,
+            final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtil,
+            final DefaultEmailService emailServ) {
+        super();
+        this.userService = Preconditions.checkNotNull(serviceUser, "Received a null pointer as userService");
+        this.authManager = Preconditions.checkNotNull(authManag, "Received a null pointer as authenticationManager");
+        this.usrDtlsSrv = Preconditions.checkNotNull(userDetailsServ, "Received a null pointer as userDetailsService");
+        this.emailService = Preconditions.checkNotNull(emailServ, "Received a null pointer as email service.");
+        Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
     }
-    final var jwt = DefaultJwtUtils.generateToken(userDetails);
-    return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
-  }
+
+    /**
+     * Authenticates a user and generates a JWT token.
+     *
+     * @param loginRequest the form containing user email and password for
+     *                     authentication.
+     * @return a {@link ResponseEntity} containing the authentication response with
+     *         JWT token and HTTP status code {@code 200 OK}.
+     * @throws ResponseStatusException if authentication fails due to incorrect
+     *                                 credentials, disabled account, or account
+     *                                 locked.
+     */
+    @CrossOrigin
+    @PostMapping("/signinn")
+    public ResponseEntity<AuthenticationResponse> authenticateUser(
+            final @Valid @RequestBody AuthenticationRequest loginRequest) {
+        final var email = loginRequest.email();
+        final var password = loginRequest.password();
+        try {
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+        } catch (BadCredentialsException | DisabledException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
+        } catch (LockedException e) {
+            throw new ResponseStatusException(HttpStatus.LOCKED, e.getMessage(), e);
+        }
+        final MyPrincipalUser userDetails;
+        try {
+            userDetails = (MyPrincipalUser) usrDtlsSrv.loadUserByUsername(email);
+        } catch (UsernameNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
+        }
+        final var jwt = DefaultJwtUtils.generateToken(userDetails);
+        return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
+    }
+
+    /**
+     * Registers a new user and assigns a default role.
+     *
+     * @param signUpRequestForm the form containing user data for registration.
+     * @return a {@link ResponseEntity} containing the response form with the
+     *         created user data and HTTP status code {@code 201 Created}.
+     * @throws IOException             When cannot load message template.
+     * @throws ResponseStatusException if there is a problem with user registration.
+     */
+    @CrossOrigin
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponseForm> registerUser(
+            @Valid @RequestBody final SignUpRequestForm signUpRequestForm) throws IOException {
+
+        final var defaultUserRole = UserRoleName.ROLE_CANDIDATO_SOCIO;
+        final var initialUserRolesSet = new ArrayList<UserRoleName>();
+        initialUserRolesSet.add(defaultUserRole);
+
+        final var addressDetails = createAddressDetails(signUpRequestForm);
+        final var userDetails = createUserDetails(signUpRequestForm, addressDetails);
+
+        try {
+            userService.add(userDetails);
+            final var createdUser = userService.changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
+            final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
+
+            emailService.sendSignUpEmail(signUpRequestForm.email(), signUpRequestForm.name(),
+                    "Te damos la bienvenida a Círculo Xadrez Narón.");
+
+            return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (MessagingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+    }
 
 }
