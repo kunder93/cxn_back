@@ -7,6 +7,7 @@ import java.util.Set;
 
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
+import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import lombok.NonNull;
@@ -91,6 +92,8 @@ public interface UserEntity extends Serializable {
      * @return The user's password.
      */
     String getPassword();
+
+    PersistentProfileImageEntity getProfileImage();
 
     /**
      * Retrieves the roles assigned to the user.
@@ -198,6 +201,8 @@ public interface UserEntity extends Serializable {
      * @param password The new password.
      */
     void setPassword(String password);
+
+    void setProfileImage(PersistentProfileImageEntity profileImage);
 
     /**
      * Sets the roles assigned to the user.
