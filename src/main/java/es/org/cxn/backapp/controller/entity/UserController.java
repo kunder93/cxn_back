@@ -26,6 +26,9 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,7 +39,9 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
@@ -46,6 +51,7 @@ import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
 import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
+import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
@@ -85,6 +91,19 @@ import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
+
+    public class ProfileImageUpdateRequest {
+        private String profileImageUrl;
+
+        // Getter and Setter
+        public String getProfileImageUrl() {
+            return profileImageUrl;
+        }
+
+        public void setProfileImageUrl(String profileImageUrl) {
+            this.profileImageUrl = profileImageUrl;
+        }
+    }
 
     /**
      * The user service to handle business logic related to user operations.
@@ -214,6 +233,19 @@ public class UserController {
         }
     }
 
+    @GetMapping("/obtainProfileImage")
+    public ResponseEntity<ProfileImageResponse> obtainProfileImage() {
+        final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            final var user = userService.findByEmail(userName);
+            final var imageProfile = userService.getProfileImage(user.getDni());
+
+            return new ResponseEntity<>(imageProfile, HttpStatus.OK);
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
     /**
      * Unsubscribes the user from the system.
      *
@@ -257,10 +289,68 @@ public class UserController {
                 userUpdateRequestForm.birthDate(), userUpdateRequestForm.gender());
         try {
             final var userUpdated = userService.update(userServiceUpdateForm, userName);
+
             return new ResponseEntity<>(new UserUpdateResponseForm(userUpdated), HttpStatus.OK);
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
+    /**
+     * Endpoint para subir y actualizar la imagen de perfil.
+     *
+     * @param file el archivo de imagen a subir.
+     * @return una respuesta con los datos del usuario actualizado.
+     */
+    @PatchMapping("/uploadProfileImageFile")
+    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam MultipartFile file) {
+        final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        try {
+            final var userEntity = userService.findByEmail(userName);
+
+            // Validar el archivo si es necesario (tipo, tamaño, etc.)
+            if (file.isEmpty()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El archivo no debe estar vacío");
+            }
+
+            // Puedes agregar más validaciones aquí (por ejemplo, tipos MIME permitidos)
+
+            // Llama al servicio para guardar la URL o archivo en tu sistema
+            var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), file);
+
+            return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
+
+        } catch (IOException | UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Updates the profile image URL for the authenticated user.
+     *
+     * This method handles PATCH requests to update the profile image URL. It
+     * retrieves the authenticated user's name from the security context and invokes
+     * the service to change the profile image URL. If successful, it returns a
+     * response containing the updated user information.
+     *
+     * @param imageUrl the new profile image URL to be set
+     * @return a ResponseEntity containing a UserUpdateResponseForm with the updated
+     *         user information
+     * @throws ResponseStatusException if the update fails due to a
+     *                                 UserServiceException, resulting in a 400 Bad
+     *                                 Request response
+     */
+    @PatchMapping("/uploadProfileImage")
+    public ResponseEntity<ProfileImageResponse> uploadProfileImageUrl(
+            @RequestBody final Map<String, String> requestBody) {
+        final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            String profileImageUrl = requestBody.get("profileImageUrl"); // Extract the value from the map
+            final var userUpdated = userService.saveProfileImage(userName, profileImageUrl);
+            return new ResponseEntity<>(new ProfileImageResponse(userUpdated.getProfileImage()), HttpStatus.OK);
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
 }

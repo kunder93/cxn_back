@@ -216,6 +216,14 @@ public class PersistentUserEntity implements UserEntity {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private PersistentOAuthAuthorizationRequestEntity oauthAuthorizationRequest;
 
+
+    /**
+     * The associated profile image entity. This establishes a one-to-one
+     * relationship between the user and their profile image.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PersistentProfileImageEntity profileImage;
+
     /**
      * Add new role.
      */
@@ -270,8 +278,5 @@ public class PersistentUserEntity implements UserEntity {
         final var result = this.roles.remove(role);
         role.getUsers().remove(this);
         return result;
-
     }
-
-
 }

@@ -134,5 +134,38 @@ databaseChangeLog:
                   name: enabled
                   type: boolean
                   defaultValueBoolean: true   # Set the default value
-              
-  
+- changeSet:
+    id: addProfileImageTable
+    author: Santiago
+    changes:
+      - createTable:
+          tableName: user_profile_image
+          columns:
+            - column:
+                name: user_dni
+                type: varchar(10)
+                constraints:
+                  nullable: false
+                  unique: true
+            - column:
+                name: url
+                type: varchar(150)
+                constraints:
+                  nullable: false
+            - column:
+                name: extension
+                type: varchar(15)
+                constraints:
+                  nullable: false
+            - column:
+                name: stored
+                type: boolean
+                constraints:
+                  nullable: false
+      - addForeignKeyConstraint:
+          baseTableName: user_profile_image
+          baseColumnNames: user_dni
+          constraintName: fk_user_profile_image_to_user
+          referencedTableName: users
+          referencedColumnNames: dni
+          onDelete: CASCADE
