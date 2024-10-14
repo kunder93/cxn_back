@@ -1,3 +1,4 @@
+
 package es.org.cxn.backapp.model.persistence;
 
 /**
@@ -14,7 +15,6 @@ package es.org.cxn.backapp.model.persistence;
  * <li>{@link #PROVIDED} - A placeholder for images provided by the
  * application</li>
  * </ul>
- * </p>
  */
 public enum ImageExtension {
 
@@ -54,7 +54,7 @@ public enum ImageExtension {
      * @param extension the extension string to convert.
      * @return the corresponding ImageExtension, or null if invalid.
      */
-    public static ImageExtension fromString(String extension) {
+    public static ImageExtension fromString(final String extension) {
         for (ImageExtension imgExt : values()) {
             if (imgExt.getExtension().equalsIgnoreCase(extension)) {
                 return imgExt;
@@ -69,7 +69,7 @@ public enum ImageExtension {
      * @param extension the extension to check.
      * @return true if the extension is valid, false otherwise.
      */
-    public static boolean isValidExtension(String extension) {
+    public static boolean isValidExtension(final String extension) {
         for (ImageExtension imgExt : values()) {
             if (imgExt.getExtension().equalsIgnoreCase(extension)) {
                 return true;
@@ -78,6 +78,14 @@ public enum ImageExtension {
         return false;
     }
 
+    /**
+     * The string representation of the image extension.
+     * <p>
+     * This field stores the specific file extension associated with each image
+     * format in the enum. It is used to provide a standardized way to refer to
+     * image types across the application.
+     * </p>
+     */
     private final String extension;
 
     /**
@@ -85,7 +93,7 @@ public enum ImageExtension {
      *
      * @param extension the string representation of the image extension.
      */
-    ImageExtension(String extension) {
+    ImageExtension(final String extension) {
         this.extension = extension;
     }
 

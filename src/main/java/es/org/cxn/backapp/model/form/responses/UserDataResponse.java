@@ -25,21 +25,20 @@ import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
  * also includes a nested {@link AddressResponse} record for the user's address.
  * </p>
  *
- * @param dni             The user's DNI (identification number).
- * @param name            The user's first name.
- * @param firstSurname    The user's first surname.
- * @param secondSurname   The user's second surname.
- * @param gender          The user's gender.
- * @param birthDate       The user's birth date.
- * @param email           The user's email address.
- * @param kindMember      The type of membership the user holds, represented by
- *                        {@link UserType}.
- * @param userAddress     The user's address, represented by
- *                        {@link AddressResponse}.
- * @param userRoles       The set of role names associated with the user,
- *                        represented by {@link UserRoleName}.
+ * @param dni           The user's DNI (identification number).
+ * @param name          The user's first name.
+ * @param firstSurname  The user's first surname.
+ * @param secondSurname The user's second surname.
+ * @param gender        The user's gender.
+ * @param birthDate     The user's birth date.
+ * @param email         The user's email address.
+ * @param kindMember    The type of membership the user holds, represented by
+ *                      {@link UserType}.
+ * @param userAddress   The user's address, represented by
+ *                      {@link AddressResponse}.
+ * @param userRoles     The set of role names associated with the user,
+ *                      represented by {@link UserRoleName}.
  *
- * @param profileImageUrl THe url of profile image selected.
  * @author Santiago Paz Perez
  */
 public record UserDataResponse(String dni, String name, String firstSurname, String secondSurname, String gender,

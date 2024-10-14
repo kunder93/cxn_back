@@ -93,6 +93,11 @@ public interface UserEntity extends Serializable {
      */
     String getPassword();
 
+    /**
+     * User profile image.
+     *
+     * @return The user profile image entity.
+     */
     PersistentProfileImageEntity getProfileImage();
 
     /**
@@ -202,6 +207,11 @@ public interface UserEntity extends Serializable {
      */
     void setPassword(String password);
 
+    /**
+     * Sets the user profile image entity.
+     *
+     * @param profileImage The new profile image entity associated to user.
+     */
     void setProfileImage(PersistentProfileImageEntity profileImage);
 
     /**

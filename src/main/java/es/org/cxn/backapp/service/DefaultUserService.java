@@ -46,11 +46,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
@@ -144,17 +146,29 @@ public final class DefaultUserService implements UserService {
      */
     private final CountrySubdivisionEntityRepository countrySubdivisionRepo;
 
+    /**
+     * Repository for image profile user data.
+     */
     private final ImageProfileEntityRepository imageProfileEntityRepository;
 
     /**
-     * Constructs an entities service with the specified repository.
+     * Constructs a DefaultUserService with the specified repositories.
      *
-     * @param userRepo          The user repository{@link UserEntityRepository}
-     * @param roleRepo          The role repository{@link RoleEntityRepository}
-     * @param countryRepo       The country
-     *                          repository{@link CountryEntityRepository}
+     * @param userRepo          The user repository {@link UserEntityRepository}
+     *                          used for user-related operations.
+     * @param roleRepo          The role repository {@link RoleEntityRepository}
+     *                          used for role-related operations.
+     * @param countryRepo       The country repository
+     *                          {@link CountryEntityRepository} used for
+     *                          country-related operations.
      * @param countrySubdivRepo The country subdivisions repository
-     *                          {@link CountrySubdivisionEntityRepository}
+     *                          {@link CountrySubdivisionEntityRepository} used for
+     *                          country subdivision-related operations.
+     * @param imgRepo           The image profile repository
+     *                          {@link ImageProfileEntityRepository} used for
+     *                          managing user profile images.
+     *
+     * @throws NullPointerException if any of the provided repositories are null.
      */
     public DefaultUserService(final UserEntityRepository userRepo, final RoleEntityRepository roleRepo,
             final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo,
@@ -182,24 +196,12 @@ public final class DefaultUserService implements UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
         } else {
-            final PersistentUserEntity save;
-            save = new PersistentUserEntity();
-            save.setDni(dni);
-            final var name = userDetails.name();
-            save.setName(name);
-            final var firstSurname = userDetails.firstSurname();
-            save.setFirstSurname(firstSurname);
-            final var secondSurname = userDetails.secondSurname();
-            save.setSecondSurname(secondSurname);
-            final var gender = userDetails.gender();
-            save.setGender(gender);
-            final var birthDate = userDetails.birthDate();
-            save.setBirthDate(birthDate);
-            final var password = userDetails.password();
-            save.setPassword(new BCryptPasswordEncoder().encode(password));
-            save.setEmail(email);
-            final var kindMember = PersistentUserEntity.UserType.SOCIO_NUMERO;
-            save.setKindMember(kindMember);
+            PersistentUserEntity save = PersistentUserEntity.builder().dni(dni).name(userDetails.name())
+                    .firstSurname(userDetails.firstSurname()).secondSurname(userDetails.secondSurname())
+                    .gender(userDetails.gender()).birthDate(userDetails.birthDate())
+                    .password(new BCryptPasswordEncoder().encode(userDetails.password())) // Encrypt the password
+                    .email(email).kindMember(PersistentUserEntity.UserType.SOCIO_NUMERO) // Set kindMember directly
+                    .build(); // Build the instance
 
             final var addressDetails = userDetails.addressDetails();
             final var apartmentNumber = addressDetails.apartmentNumber();
@@ -230,7 +232,18 @@ public final class DefaultUserService implements UserService {
             }
             address.setCountrySubdivision(countryDivisionOptional.get());
             address.setUser(save);
+
             save.setAddress(address);
+
+            PersistentFederateStateEntity federateState = new PersistentFederateStateEntity();
+            federateState.setUserDni(dni);
+            federateState.setState(FederateState.NO_FEDERATE);
+            federateState.setDniBackImageUrl("");
+            federateState.setDniFrontImageUrl("");
+            federateState.setAutomaticRenewal(false);
+            federateState.setDniLastUpdate(LocalDate.of(1900, 2, 2));
+
+            save.setFederateState(federateState);
 
             return userRepository.save(save);
         }
@@ -345,7 +358,7 @@ public final class DefaultUserService implements UserService {
     }
 
     @Override
-    public ProfileImageResponse getProfileImage(String dni) throws UserServiceException {
+    public ProfileImageResponse getProfileImage(final String dni) throws UserServiceException {
         final var user = findByDni(dni);
         final var profileImage = user.getProfileImage();
 
@@ -417,10 +430,10 @@ public final class DefaultUserService implements UserService {
      * profile image is stored for the user, it will be deleted from the filesystem
      * before saving the new URL.
      *
-     * @param userDni the DNI (Document Number of Identification) of the user for
-     *                whom the profile image is being saved.
-     * @param url     the URL where the profile image is located. This can be a
-     *                direct URL or a relative path to the image file.
+     * @param userEmail the email of the user for whom the profile image is being
+     *                  saved.
+     * @param url       the URL where the profile image is located. This can be a
+     *                  direct URL or a relative path to the image file.
      * @return the saved {@link PersistentProfileImageEntity} object containing the
      *         profile image information.
      * @throws UserServiceException if there is an error while saving the profile
@@ -428,7 +441,7 @@ public final class DefaultUserService implements UserService {
      *                              deleting the existing image file.
      */
     @Override
-    public PersistentUserEntity saveProfileImage(String userEmail, String url) throws UserServiceException {
+    public PersistentUserEntity saveProfileImage(final String userEmail, final String url) throws UserServiceException {
         PersistentUserEntity userEntity = (PersistentUserEntity) findByEmail(userEmail);
         final var userDni = userEntity.getDni();
         var imageProfileOptional = imageProfileEntityRepository.findById(userDni);
@@ -482,7 +495,7 @@ public final class DefaultUserService implements UserService {
      *                               extensions or file handling issues.
      */
     @Override
-    public PersistentUserEntity saveProfileImageFile(String userDni, MultipartFile file)
+    public PersistentUserEntity saveProfileImageFile(final String userDni, final MultipartFile file)
             throws IllegalStateException, IOException, UserServiceException {
 
         // Fetch the user entity by DNI

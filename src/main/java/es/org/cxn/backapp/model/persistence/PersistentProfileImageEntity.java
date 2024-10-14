@@ -48,7 +48,6 @@ import jakarta.persistence.Transient;
  * profileImage.setExtension(".jpg");
  * profileImage.setStored(true);
  * }</pre>
- * </p>
  *
  * @author Santiago
  */

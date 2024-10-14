@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,7 +48,6 @@ import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 /**
@@ -60,7 +60,6 @@ import lombok.NonNull;
 @Entity(name = "UserEntity")
 @Table(name = "users")
 @AllArgsConstructor
-@NoArgsConstructor
 @Data
 @Builder
 public class PersistentUserEntity implements UserEntity {
@@ -225,6 +224,77 @@ public class PersistentUserEntity implements UserEntity {
     private PersistentProfileImageEntity profileImage;
 
     /**
+     * The associated profile image entity. This establishes a one-to-one
+     * relationship between the user and their profile image.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional=false)
+    private PersistentFederateStateEntity federateState;
+
+    /**
+     * No-args constructor. If use remember change values of federateState cause it needs valid user dni.
+     */
+    public PersistentUserEntity() {
+        this.federateState = new PersistentFederateStateEntity(
+                "", // Initial value for dni (can be set later)
+                "", // Initial value for dniFrontImageUrl
+                "", // Initial value for dniBackImageUrl
+                false, // Initial value for automaticRenewal
+                LocalDate.now(), // Set dniLastUpdate to current date
+                FederateState.NO_FEDERATE // Default state
+            );
+    }
+
+    /**
+     * Custom constructor for Lombok's {@code @Builder} to initialize a user entity.
+     *
+     * <p>This constructor ensures that the {@code federateState} is initialized based on the provided
+     * {@code dni}. If the {@code dni} is non-null and non-empty, a new {@link PersistentFederateStateEntity}
+     * is created with initial values.</p>
+     *
+     * @param dni             the user's DNI (identification number). Must not be null or empty if
+     *                        {@code federateState} is to be initialized.
+     * @param name            the user's name. Must not be null.
+     * @param firstSurname    the user's first surname. Must not be null.
+     * @param secondSurname   the user's second surname. Must not be null.
+     * @param birthDate       the user's birth date. Must not be null.
+     * @param gender          the user's gender. Must not be null.
+     * @param password        the user's password. Must not be null.
+     * @param email           the user's email. Must not be null.
+     * @param kindMember      the user's membership type. Can be null; defaults to {@code UserType.SOCIO_NUMERO}.
+     * @param enabled         indicates whether the user account is enabled. Must not be null.
+     * @param rolesEntity           a set of roles associated with the user. Can be null; defaults to an empty set.
+     */
+    @Builder
+    public PersistentUserEntity(final String dni, final String name,final String firstSurname,final String secondSurname,
+            final LocalDate birthDate,final String gender,final String password,final String email,
+            final UserType kindMember,final boolean enabled, final Set<PersistentRoleEntity> rolesEntity) {
+        this.dni = dni;
+        this.name = name;
+        this.firstSurname = firstSurname;
+        this.secondSurname = secondSurname;
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.password = password;
+        this.email = email;
+        this.kindMember = kindMember != null ? kindMember : UserType.SOCIO_NUMERO;
+        this.enabled = enabled;
+        this.roles = rolesEntity != null ? rolesEntity : new HashSet<>();
+
+        // Now dni is already assigned, initialize federateState
+        if (dni != null && !dni.isEmpty()) {
+            this.federateState = new PersistentFederateStateEntity(
+                this.dni,
+                "", // Initial value for dniFrontImageUrl
+                "", // Initial value for dniBackImageUrl
+                false, // Initial value for automaticRenewal
+                LocalDate.now(), // Set dniLastUpdate to current date
+                FederateState.NO_FEDERATE
+            );
+        }
+    }
+
+
+    /**
      * Add new role.
      */
     @Override
@@ -261,7 +331,6 @@ public class PersistentUserEntity implements UserEntity {
     public String getCompleteName() {
         return (name + " " +  firstSurname +  " " + secondSurname);
     }
-
     /**
      * Hash code with dni and email fields.
      */
@@ -278,5 +347,21 @@ public class PersistentUserEntity implements UserEntity {
         final var result = this.roles.remove(role);
         role.getUsers().remove(this);
         return result;
+    }
+
+    /**
+     * Sets the initial federate state for the current entity based on the provided DNI.
+     */
+    public void setInitialFederateState() {
+        if (this.dni != null && !this.dni.isEmpty()) {
+            this.federateState = new PersistentFederateStateEntity(
+                this.dni,
+                "", // Initial value for dniFrontImageUrl
+                "", // Initial value for dniBackImageUrl
+                false, // Initial value for automaticRenewal
+                LocalDate.now(), // Set dniLastUpdate to current date
+                FederateState.NO_FEDERATE
+            );
+        }
     }
 }
