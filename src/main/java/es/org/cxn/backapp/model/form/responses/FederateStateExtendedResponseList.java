@@ -33,7 +33,7 @@ public record FederateStateExtendedResponseList(List<FederateStateExtendedRespon
      *                      auto-renew
      * @param dniLastUpdate the last update date for the user's DNI
      */
-    private record FederateStateExtendedResponse(String dni, FederateState state, Boolean autoRenew,
+    public record FederateStateExtendedResponse(String dni, FederateState state, Boolean autoRenew,
             LocalDate dniLastUpdate) {
 
         /**
@@ -42,7 +42,7 @@ public record FederateStateExtendedResponseList(List<FederateStateExtendedRespon
          *
          * @param entity the persistent federate state entity containing user data
          */
-        FederateStateExtendedResponse(final PersistentFederateStateEntity entity) {
+        public FederateStateExtendedResponse(final PersistentFederateStateEntity entity) {
             this(entity.getUserDni(), entity.getState(), entity.isAutomaticRenewal(), entity.getDniLastUpdate());
         }
     }

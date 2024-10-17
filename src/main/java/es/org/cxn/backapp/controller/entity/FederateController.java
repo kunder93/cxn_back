@@ -33,6 +33,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,6 +43,7 @@ import org.springframework.web.server.ResponseStatusException;
 import es.org.cxn.backapp.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList;
+import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList.FederateStateExtendedResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateResponse;
 import es.org.cxn.backapp.service.FederateStateService;
 
@@ -67,6 +69,9 @@ import es.org.cxn.backapp.service.FederateStateService;
 @RequestMapping("/api/user/federate")
 public class FederateController {
 
+    private record ConfirmCancelFederateRequest(String userDni) {
+    }
+
     private final FederateStateService federateStateService;
 
     /**
@@ -80,6 +85,17 @@ public class FederateController {
         federateStateService = checkNotNull(federateStateServ, "Received a null pointer as federate state service");
     }
 
+    @PatchMapping("/changeAutoRenew")
+    public ResponseEntity<FederateStateResponse> changeAutoRenew() {
+        final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            final var entity = federateStateService.changeAutoRenew(userEmail);
+            return new ResponseEntity<>(new FederateStateResponse(entity), HttpStatus.OK);
+        } catch (UserServiceException | FederateStateServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
     /**
      * Confirms the federate status of a user.
      *
@@ -87,18 +103,18 @@ public class FederateController {
      * This endpoint is restricted to users with roles 'ADMIN', 'PRESIDENTE', or
      * 'SECRETARIO'.
      *
-     * @param userEmail the email of the user to confirm federate status for
+     * @param userDni the dni of the user to confirm federate status for
      * @return a ResponseEntity containing the federate state response
      * @throws ResponseStatusException if there is an error confirming the federate
      *                                 state
      */
     @PatchMapping()
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
-    public ResponseEntity<FederateStateResponse> confirmFederate(@RequestParam final String userEmail) {
-
+    public ResponseEntity<FederateStateExtendedResponse> confirmCancelFederate(
+            @RequestBody final ConfirmCancelFederateRequest request) {
         try {
-            final var result = federateStateService.confirmFederate(userEmail);
-            return new ResponseEntity<>(new FederateStateResponse(result), HttpStatus.OK);
+            final var result = federateStateService.confirmCancelFederate(request.userDni);
+            return new ResponseEntity<>(new FederateStateExtendedResponse(result), HttpStatus.OK);
         } catch (FederateStateServiceException | UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
@@ -159,6 +175,18 @@ public class FederateController {
         final var result = FederateStateExtendedResponseList.fromEntities(entitiesList);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @PatchMapping("/updateDni")
+    public ResponseEntity<FederateStateResponse> updateDni(@RequestParam final MultipartFile frontDni,
+            @RequestParam final MultipartFile backDni) {
+        final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            final var entity = federateStateService.updateDni(userEmail, frontDni, backDni);
+            return new ResponseEntity<>(new FederateStateResponse(entity), HttpStatus.OK);
+        } catch (UserServiceException | FederateStateServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
     }
 
 }

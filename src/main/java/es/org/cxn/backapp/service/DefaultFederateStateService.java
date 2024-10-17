@@ -110,10 +110,31 @@ public final class DefaultFederateStateService implements FederateStateService {
         userService = checkNotNull(userServ, "Received a null pointer as user service");
     }
 
+    @Override
+    public PersistentFederateStateEntity changeAutoRenew(String userEmail)
+            throws UserServiceException, FederateStateServiceException {
+        final var user = userService.findByEmail(userEmail);
+        final var userDni = user.getDni();
+        var federateStateOptional = federateStateRepository.findById(userDni);
+        if (federateStateOptional.isEmpty()) {
+            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
+        } else {
+            var federateState = federateStateOptional.get();
+            if (federateState.getState() != FederateState.FEDERATE) {
+                throw new FederateStateServiceException(
+                        "Federate state is not : FEDERATE for user with dni: " + userDni);
+            } else {
+                federateState.setAutomaticRenewal(!federateState.isAutomaticRenewal());
+                return federateStateRepository.save(federateState);
+            }
+        }
+    }
+
     /**
-     * Confirms the federate status for the user identified by the given email.
+     * Confirms or cancel the federate status for the user identified by the given
+     * email.
      *
-     * @param userEmail the email of the user
+     * @param userDni the dni of the user
      * @return the updated {@link PersistentFederateStateEntity} for the user
      * @throws FederateStateServiceException if the federate state cannot be
      *                                       confirmed
@@ -121,21 +142,26 @@ public final class DefaultFederateStateService implements FederateStateService {
      *                                       user
      */
     @Override
-    public PersistentFederateStateEntity confirmFederate(final String userEmail)
+    public PersistentFederateStateEntity confirmCancelFederate(final String userDni)
             throws FederateStateServiceException, UserServiceException {
-        final var user = userService.findByEmail(userEmail);
-        final var userDni = user.getDni();
         final var federateStateOptional = federateStateRepository.findById(userDni);
         if (federateStateOptional.isEmpty()) {
             throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
         } else {
             var federateStateEntity = federateStateOptional.get();
-            if (federateStateEntity.getState() != FederateState.IN_PROGRESS) {
-                throw new FederateStateServiceException("User state is not IN PROGRESS. User dni: " + userDni);
-            } else {
+            final var entityState = federateStateEntity.getState();
+            if (entityState == FederateState.IN_PROGRESS) {
                 federateStateEntity.setState(FederateState.FEDERATE);
-                return federateStateRepository.save(federateStateEntity);
             }
+            if (entityState == FederateState.FEDERATE) {
+                federateStateEntity.setState(FederateState.NO_FEDERATE);
+            }
+            if (entityState == FederateState.NO_FEDERATE) {
+                throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
+            }
+
+            return federateStateRepository.save(federateStateEntity);
+
         }
     }
 
@@ -315,6 +341,43 @@ public final class DefaultFederateStateService implements FederateStateService {
 
         // Return the absolute file path
         return filePath.toString();
+    }
+
+    @Override
+    public PersistentFederateStateEntity updateDni(String userEmail, MultipartFile frontDniFile,
+            MultipartFile backDniFile) throws UserServiceException, FederateStateServiceException {
+        final var userEntity = userService.findByEmail(userEmail);
+        final var userDni = userEntity.getDni();
+
+        final var federateStateOptional = federateStateRepository.findById(userDni);
+
+        if (federateStateOptional.isPresent()) {
+            var federateStateEntity = federateStateOptional.get();
+            if (federateStateEntity.getState() != FederateState.FEDERATE) {
+                throw new FederateStateServiceException(
+                        "Federate state found for user with dni: " + userDni + "is not FEDERATE.");
+            }
+            // Base directory to store DNI files
+            final var baseDirectory = "C:\\Users\\Santi\\Desktop\\AlmacenDnis\\";
+            // Define user-specific directory based on their DNI
+            String userDirectory = baseDirectory + userDni + "\\";
+
+            federateStateEntity.setDniLastUpdate(LocalDate.now());
+            // Save the front and back DNI images with new filenames
+            try {
+                String frontUrl = saveFile(frontDniFile, userDni, "frontal");
+                String backUrl = saveFile(backDniFile, userDni, "trasera");
+
+                // Update the federate entity with the new file paths
+                federateStateEntity.setDniFrontImageUrl(frontUrl);
+                federateStateEntity.setDniBackImageUrl(backUrl);
+            } catch (IOException e) {
+                throw new FederateStateServiceException("Cannot save dni files for user with dni: " + userDni);
+            }
+            return federateStateRepository.save(federateStateEntity);
+        } else {
+            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
+        }
     }
 
 }

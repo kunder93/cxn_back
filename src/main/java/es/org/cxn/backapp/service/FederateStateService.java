@@ -67,10 +67,21 @@ import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 public interface FederateStateService {
 
     /**
+     * Change auto renew property value, from true to false and from false to true.
+     *
+     * @param userEmail The user email used as identifier.
+     * @return The user entity with auto renew value changed.
+     * @throws UserServiceException          When no user with email found.
+     * @throws FederateStateServiceException When no federate state for user found.
+     */
+    PersistentFederateStateEntity changeAutoRenew(String userEmail)
+            throws UserServiceException, FederateStateServiceException;
+
+    /**
      * Confirms the federate status of a user identified by the given email.
      *
-     * @param userEmail the email of the user whose federate status is to be
-     *                  confirmed
+     * @param userDni the dni identifier of the user whose federate status is to be
+     *                confirmed
      * @return the updated {@link PersistentFederateStateEntity} representing the
      *         user's federate state
      * @throws FederateStateServiceException if there is an error during the
@@ -78,7 +89,7 @@ public interface FederateStateService {
      * @throws UserServiceException          if there is an error related to the
      *                                       user service
      */
-    PersistentFederateStateEntity confirmFederate(String userEmail)
+    PersistentFederateStateEntity confirmCancelFederate(String userDni)
             throws FederateStateServiceException, UserServiceException;
 
     /**
@@ -122,6 +133,9 @@ public interface FederateStateService {
      *                                       federate state
      */
     PersistentFederateStateEntity getFederateData(String userEmail)
+            throws UserServiceException, FederateStateServiceException;
+
+    PersistentFederateStateEntity updateDni(String userEmail, MultipartFile frontDni, MultipartFile backDni)
             throws UserServiceException, FederateStateServiceException;
 
 }

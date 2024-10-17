@@ -6,8 +6,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,12 +22,16 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
@@ -106,6 +113,12 @@ class UserControllerIntegrationTest {
         gson = UsersControllerFactory.GSON;
 
     }
+
+    @MockBean
+    private SecurityContext securityContext;
+
+    @MockBean
+    private Authentication authentication;
 
     /**
      * Provides the ability to perform HTTP requests and receive responses for
@@ -596,6 +609,27 @@ class UserControllerIntegrationTest {
         mockMvc.perform(get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON).header("Authorization",
                 "Bearer " + jwtToken));
         /* .andExpect(MockMvcResultMatchers.status().isUnauthorized()); */
+    }
+
+    @Transactional
+    @Test
+    void testUploadProfileImageNoExistingUserBadRequest() throws Exception {
+        final String UPLOAD_IMAGE_URL = "/api/user/uploadProfileImage";
+        final String nonExistingUserName = "nonExistingUser"; // User that doesn't exist in the DB
+        final String newProfileImageUrl = "http://example.com/profile.jpg";
+
+        // Create the requestBody map as JSON
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("profileImageUrl", newProfileImageUrl);
+
+        // Convert the map to JSON string using Jackson ObjectMapper
+        String jsonRequestBody = new ObjectMapper().writeValueAsString(requestBody);
+
+        // Perform the PATCH request simulating the non-existing user in the security
+        // context
+        mockMvc.perform(patch(UPLOAD_IMAGE_URL).contentType(MediaType.APPLICATION_JSON).content(jsonRequestBody)
+                .with(SecurityMockMvcRequestPostProcessors.user(nonExistingUserName)) // Simulate non-existing user
+        ).andExpect(status().isBadRequest());
     }
 
 }
