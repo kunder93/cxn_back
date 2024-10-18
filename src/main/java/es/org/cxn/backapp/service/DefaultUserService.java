@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +79,7 @@ public final class DefaultUserService implements UserService {
      * Age limit for be SOCIO_ASPIRANTE.
      */
     public static final int AGE_LIMIT = 18;
+
     /**
      * User not found message for exception.
      */
@@ -94,7 +96,6 @@ public final class DefaultUserService implements UserService {
      * User with this dni exists message for exception.
      */
     public static final String USER_DNI_EXISTS_MESSAGE = "User dni already exists.";
-
     /**
      * User password not match with provided message for exception.
      */
@@ -125,6 +126,9 @@ public final class DefaultUserService implements UserService {
         default -> false;
         };
     }
+
+    @Value("${image.location.profiles}")
+    private String imageLocationProfiles;
 
     /**
      * Repository for the user entities handled by the service.
@@ -501,9 +505,14 @@ public final class DefaultUserService implements UserService {
         // Fetch the user entity by DNI
         PersistentUserEntity userEntity = (PersistentUserEntity) findByDni(userDni);
 
-        // Directory path for saving images
-        String uploadDir = "C:\\Users\\Santi\\Desktop\\AlmacenDni\\";
+        // Directory path for saving images (already loaded from properties file)
+        String uploadDir = imageLocationProfiles; // Use the property loaded from application properties
+
+        // Get the original file name
         final String originalFileName = file.getOriginalFilename();
+        if (originalFileName == null || originalFileName.isEmpty()) {
+            throw new UserServiceException("Invalid file name");
+        }
 
         // Split the filename to get the extension
         String[] tokens = originalFileName.split("\\.");
@@ -515,27 +524,25 @@ public final class DefaultUserService implements UserService {
             throw new UserServiceException("Invalid image extension: " + fileExtension);
         }
 
-        // Set the file name as the user DNI
-        String fileName = userDni;
+        // Set the file name as the user DNI with the correct extension
+        String fileName = userDni + "." + fileExtension;
 
-        // Create the directory if it doesn't exist
-        Path path = Paths.get(uploadDir);
-        if (!Files.exists(path)) {
-            Files.createDirectories(path);
+        // Construct the path using Paths to ensure compatibility across OS
+        Path path = Paths.get(uploadDir, fileName);
+
+        // Ensure the directories exist
+        if (!Files.exists(path.getParent())) {
+            Files.createDirectories(path.getParent());
         }
 
-        // Full path to store the image
-        String filePath = uploadDir + fileName;
-
         // Save the file to the file system
-        File dest = new File(filePath);
-        file.transferTo(dest);
+        file.transferTo(path.toFile());
 
         // Create the profile image entity
         PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
         profileImageEntity.setExtension(imageExtension);
         profileImageEntity.setStored(true);
-        profileImageEntity.setUrl(filePath);
+        profileImageEntity.setUrl(path.toString()); // Store the full path
         profileImageEntity.setUserDni(userDni);
 
         // Save the profile image entity to the database
