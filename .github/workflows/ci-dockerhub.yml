@@ -32,7 +32,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and tag Docker image
-      run: docker build -t kunder9/cxn-app:latest .
+      run: docker build -t kunder9/cxn-api:latest .
 
     - name: Push Docker image
-      run: docker push kunder9/cxn-app:latest
+      run: docker push kunder9/cxn-api:latest
