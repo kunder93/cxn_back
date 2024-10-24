@@ -3,6 +3,8 @@ package es.org.cxn.backapp.model.persistence;
 import es.org.cxn.backapp.model.ProfileImageEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -48,7 +50,6 @@ import jakarta.persistence.Transient;
  * profileImage.setExtension(".jpg");
  * profileImage.setStored(true);
  * }</pre>
- * </p>
  *
  * @author Santiago
  */
@@ -79,6 +80,7 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
     /**
      * The file extension of the profile image (e.g., .jpg, .png).
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "extension", nullable = true, unique = false)
     private ImageExtension extension;
 

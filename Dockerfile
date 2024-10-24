@@ -33,25 +33,3 @@ RUN if [ "$COPY_CERTIFICATES" = "true" ]; then \
 
 # Comando de inicio para ejecutar la aplicación Spring Boot
 CMD ["java", "-Dspring.profiles.active=prod", "-jar", "/app/app.jar"]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# FROM eclipse-temurin:17.0.5_8-jdk-alpine
-# COPY app.jar app.jar
-# ENTRYPOINT ["java","-jar","/app.jar"]

@@ -130,6 +130,13 @@ public interface UserService {
      */
     List<UserEntity> getAll();
 
+    /**
+     * Get user profile image.
+     *
+     * @param dni The user identifier.
+     * @return The profile image response dto.
+     * @throws UserServiceException When user with dni not found.
+     */
     ProfileImageResponse getProfileImage(String dni) throws UserServiceException;
 
     /**

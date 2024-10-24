@@ -1,4 +1,3 @@
-
 package es.org.cxn.backapp.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -43,7 +42,7 @@ import es.org.cxn.backapp.filter.JwtRequestFilter;
  * method-level security with pre/post annotations.
  * </p>
  *
- * @author Santiago Paz.
+ * @author Santiago Paz
  */
 @Configuration
 @EnableWebSecurity
@@ -54,6 +53,14 @@ public class SecurityConfiguration {
      * The logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
+
+    /**
+     * Default constructor for SecurityConfiguration. This constructor is used to
+     * create an instance of the SecurityConfiguration class.
+     */
+    public SecurityConfiguration() {
+        // Default constructor
+    }
 
     /**
      * Provides an authentication manager bean for managing user authentication.
@@ -119,11 +126,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/getAllLichessProfiles").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/lichessAuth").authenticated()
                 .requestMatchers("/api/address/getCountries", "/api/address/country/**").permitAll().anyRequest()
-
                 .authenticated());
-        http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
-        // Permit all requests to /api/auth/signup, /api/auth/signin,
-        // and the AddressController endpoints
 
         // Disable anonymous access
         http.anonymous(withDefaults());

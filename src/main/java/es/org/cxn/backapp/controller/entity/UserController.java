@@ -92,14 +92,40 @@ import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 @RequestMapping("/api/user")
 public class UserController {
 
+    /**
+     * Represents a request to update the profile image URL for a user.
+     *
+     * <p>
+     * This class contains the profile image URL that will be used to update the
+     * user's profile image in the system.
+     * </p>
+     */
     public class ProfileImageUpdateRequest {
+
+        /** The URL of the new profile image. */
         private String profileImageUrl;
 
-        // Getter and Setter
+        /**
+         * Default constructor.
+         */
+        ProfileImageUpdateRequest() {
+            // Default public constructor.
+        }
+
+        /**
+         * Gets the profile image URL.
+         *
+         * @return the URL of the profile image.
+         */
         public String getProfileImageUrl() {
             return profileImageUrl;
         }
 
+        /**
+         * Sets the profile image URL.
+         *
+         * @param profileImageUrl the new URL of the profile image.
+         */
         public void setProfileImageUrl(String profileImageUrl) {
             this.profileImageUrl = profileImageUrl;
         }
@@ -117,7 +143,7 @@ public class UserController {
      */
     public UserController(final UserService service) {
         super();
-        userService = checkNotNull(service, "Received a null pointer as service");
+        userService = checkNotNull(service, "Received a null pointer as user service");
     }
 
     /**
@@ -233,6 +259,22 @@ public class UserController {
         }
     }
 
+    /**
+     * Retrieves the profile image of the authenticated user.
+     *
+     * <p>
+     * This endpoint allows authenticated users to obtain their profile image. It
+     * retrieves the user's information based on the authenticated email and returns
+     * the profile image as a response.
+     * </p>
+     *
+     * @return a {@link ResponseEntity} containing a {@link ProfileImageResponse}
+     *         with the user's profile image data, along with an HTTP status of 200
+     *         OK if successful.
+     * @throws ResponseStatusException if the user is not authenticated or if there
+     *                                 is an error retrieving the profile image,
+     *                                 resulting in a 400 Bad Request response.
+     */
     @GetMapping("/obtainProfileImage")
     public ResponseEntity<ProfileImageResponse> obtainProfileImage() {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -299,25 +341,25 @@ public class UserController {
     /**
      * Endpoint para subir y actualizar la imagen de perfil.
      *
-     * @param file el archivo de imagen a subir.
+     * @param profileImage el archivo de imagen a subir.
      * @return una respuesta con los datos del usuario actualizado.
      */
     @PatchMapping("/uploadProfileImageFile")
-    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam MultipartFile file) {
+    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam MultipartFile profileImage) {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         try {
             final var userEntity = userService.findByEmail(userName);
 
             // Validar el archivo si es necesario (tipo, tamaño, etc.)
-            if (file.isEmpty()) {
+            if (profileImage.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El archivo no debe estar vacío");
             }
 
             // Puedes agregar más validaciones aquí (por ejemplo, tipos MIME permitidos)
 
             // Llama al servicio para guardar la URL o archivo en tu sistema
-            var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), file);
+            var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
 
             return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
 
@@ -329,17 +371,21 @@ public class UserController {
     /**
      * Updates the profile image URL for the authenticated user.
      *
+     * <p>
      * This method handles PATCH requests to update the profile image URL. It
      * retrieves the authenticated user's name from the security context and invokes
-     * the service to change the profile image URL. If successful, it returns a
-     * response containing the updated user information.
+     * the user service to update the profile image URL. If successful, it returns a
+     * response containing the updated profile image information.
+     * </p>
      *
-     * @param imageUrl the new profile image URL to be set
-     * @return a ResponseEntity containing a UserUpdateResponseForm with the updated
-     *         user information
+     * @param requestBody a map containing the new profile image URL to be set under
+     *                    the key "profileImageUrl".
+     * @return a {@link ResponseEntity} containing a {@link ProfileImageResponse}
+     *         with the updated profile image data, along with an HTTP status of 200
+     *         OK if successful.
      * @throws ResponseStatusException if the update fails due to a
-     *                                 UserServiceException, resulting in a 400 Bad
-     *                                 Request response
+     *                                 {@link UserServiceException}, resulting in a
+     *                                 400 Bad Request response.
      */
     @PatchMapping("/uploadProfileImage")
     public ResponseEntity<ProfileImageResponse> uploadProfileImageUrl(
@@ -353,4 +399,5 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
+
 }
