@@ -341,25 +341,25 @@ public class UserController {
     /**
      * Endpoint para subir y actualizar la imagen de perfil.
      *
-     * @param file el archivo de imagen a subir.
+     * @param profileImage el archivo de imagen a subir.
      * @return una respuesta con los datos del usuario actualizado.
      */
     @PatchMapping("/uploadProfileImageFile")
-    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam MultipartFile file) {
+    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam MultipartFile profileImage) {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         try {
             final var userEntity = userService.findByEmail(userName);
 
             // Validar el archivo si es necesario (tipo, tamaño, etc.)
-            if (file.isEmpty()) {
+            if (profileImage.isEmpty()) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El archivo no debe estar vacío");
             }
 
             // Puedes agregar más validaciones aquí (por ejemplo, tipos MIME permitidos)
 
             // Llama al servicio para guardar la URL o archivo en tu sistema
-            var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), file);
+            var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
 
             return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
 

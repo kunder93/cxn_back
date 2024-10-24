@@ -200,7 +200,7 @@ public final class DefaultUserService implements UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
         } else {
-            PersistentUserEntity save = PersistentUserEntity.builder().dni(dni).name(userDetails.name())
+            final PersistentUserEntity save = PersistentUserEntity.builder().dni(dni).name(userDetails.name())
                     .firstSurname(userDetails.firstSurname()).secondSurname(userDetails.secondSurname())
                     .gender(userDetails.gender()).birthDate(userDetails.birthDate())
                     .password(new BCryptPasswordEncoder().encode(userDetails.password())) // Encrypt the password
@@ -239,7 +239,7 @@ public final class DefaultUserService implements UserService {
 
             save.setAddress(address);
 
-            PersistentFederateStateEntity federateState = new PersistentFederateStateEntity();
+            final PersistentFederateStateEntity federateState = new PersistentFederateStateEntity();
             federateState.setUserDni(dni);
             federateState.setState(FederateState.NO_FEDERATE);
             federateState.setDniBackImageUrl("");
@@ -372,7 +372,7 @@ public final class DefaultUserService implements UserService {
 
         if (profileImage.getStored()) {
             // Load the image file from the filesystem
-            File imageFile = new File(profileImage.getUrl());
+            final File imageFile = new File(profileImage.getUrl());
 
             if (!imageFile.exists()) {
                 throw new UserServiceException("Profile image file not found at path: " + profileImage.getUrl());
@@ -380,11 +380,11 @@ public final class DefaultUserService implements UserService {
 
             try {
                 // Read the image file and encode it in Base64
-                byte[] imageData = Files.readAllBytes(imageFile.toPath());
-                String base64Image = Base64.getEncoder().encodeToString(imageData);
+                final byte[] imageData = Files.readAllBytes(imageFile.toPath());
+                final String base64Image = Base64.getEncoder().encodeToString(imageData);
 
                 // Determine the MIME type based on the file extension
-                String mimeType;
+                final String mimeType;
                 switch (profileImage.getExtension()) {
                 case ImageExtension.PNG:
                     mimeType = "data:image/png;base64,";
@@ -401,10 +401,10 @@ public final class DefaultUserService implements UserService {
                 }
 
                 // Prepend the MIME type to the Base64 image data
-                String base64ImageWithPrefix = mimeType + base64Image;
+                final String base64ImageWithPrefix = mimeType + base64Image;
 
                 // Return the response with the Base64-encoded image
-                ProfileImageResponse profileImageResponse = new ProfileImageResponse(profileImage,
+                final ProfileImageResponse profileImageResponse = new ProfileImageResponse(profileImage,
                         base64ImageWithPrefix);
                 return profileImageResponse;
 
@@ -448,17 +448,17 @@ public final class DefaultUserService implements UserService {
     public PersistentUserEntity saveProfileImage(final String userEmail, final String url) throws UserServiceException {
         PersistentUserEntity userEntity = (PersistentUserEntity) findByEmail(userEmail);
         final var userDni = userEntity.getDni();
-        var imageProfileOptional = imageProfileEntityRepository.findById(userDni);
+        final var imageProfileOptional = imageProfileEntityRepository.findById(userDni);
         if (imageProfileOptional.isPresent()) {
-            var image = imageProfileOptional.get();
+            final var image = imageProfileOptional.get();
             if (image.getStored()) { // Borrar la imagen almacenada.
                 // Get the file path from the existing image entity
-                String existingImagePath = image.getUrl(); // Assuming getUrl() returns the complete path
+                final String existingImagePath = image.getUrl(); // Assuming getUrl() returns the complete path
                 // Create a File object
-                File existingFile = new File(existingImagePath);
+                final File existingFile = new File(existingImagePath);
                 // Check if the file exists and delete it
                 if (existingFile.exists()) {
-                    boolean deleted = existingFile.delete();
+                    final boolean deleted = existingFile.delete();
                     if (!deleted) {
                         // Handle the case where the file could not be deleted
                         throw new UserServiceException(
@@ -468,15 +468,14 @@ public final class DefaultUserService implements UserService {
             }
         }
         userEntity = (PersistentUserEntity) findByDni(userDni);
-        PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
+        final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
         profileImageEntity.setExtension(ImageExtension.PROVIDED);
         profileImageEntity.setStored(false);
         profileImageEntity.setUrl(url);
         profileImageEntity.setUserDni(userDni);
         final var savedImageEntity = imageProfileEntityRepository.save(profileImageEntity);
         userEntity.setProfileImage(savedImageEntity);
-        final var updatedUser = userRepository.save(userEntity);
-        return updatedUser;
+        return userRepository.save(userEntity);
     }
 
     /**
@@ -503,10 +502,10 @@ public final class DefaultUserService implements UserService {
             throws IllegalStateException, IOException, UserServiceException {
 
         // Fetch the user entity by DNI
-        PersistentUserEntity userEntity = (PersistentUserEntity) findByDni(userDni);
+        final PersistentUserEntity userEntity = (PersistentUserEntity) findByDni(userDni);
 
         // Directory path for saving images (already loaded from properties file)
-        String uploadDir = imageLocationProfiles; // Use the property loaded from application properties
+        final String uploadDir = imageLocationProfiles; // Use the property loaded from application properties
 
         // Get the original file name
         final String originalFileName = file.getOriginalFilename();
@@ -515,20 +514,20 @@ public final class DefaultUserService implements UserService {
         }
 
         // Split the filename to get the extension
-        String[] tokens = originalFileName.split("\\.");
-        String fileExtension = tokens[tokens.length - 1];
+        final String[] tokens = originalFileName.split("\\.");
+        final String fileExtension = tokens[tokens.length - 1];
 
         // Validate the file extension
-        ImageExtension imageExtension = ImageExtension.fromString(fileExtension);
+        final ImageExtension imageExtension = ImageExtension.fromString(fileExtension);
         if (imageExtension == null) {
             throw new UserServiceException("Invalid image extension: " + fileExtension);
         }
 
         // Set the file name as the user DNI with the correct extension
-        String fileName = userDni + "." + fileExtension;
+        final String fileName = userDni + "." + fileExtension;
 
         // Construct the path using Paths to ensure compatibility across OS
-        Path path = Paths.get(uploadDir, fileName);
+        final Path path = Paths.get(uploadDir, fileName);
 
         // Ensure the directories exist
         if (!Files.exists(path.getParent())) {
@@ -539,7 +538,7 @@ public final class DefaultUserService implements UserService {
         file.transferTo(path.toFile());
 
         // Create the profile image entity
-        PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
+        final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
         profileImageEntity.setExtension(imageExtension);
         profileImageEntity.setStored(true);
         profileImageEntity.setUrl(path.toString()); // Store the full path

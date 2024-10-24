@@ -109,8 +109,7 @@ public interface FederateStateService {
      *                                       federate process
      */
     PersistentFederateStateEntity federateMember(String userEmail, MultipartFile frontDniFile,
-            MultipartFile backDniFile, boolean autoRenewal)
-            throws IOException, UserServiceException, FederateStateServiceException;
+            MultipartFile backDniFile, boolean autoRenewal) throws UserServiceException, FederateStateServiceException;
 
     /**
      * Retrieves a list of all federate state entities.
@@ -135,6 +134,27 @@ public interface FederateStateService {
     PersistentFederateStateEntity getFederateData(String userEmail)
             throws UserServiceException, FederateStateServiceException;
 
+    /**
+     * Updates the user's DNI images (both front and back).
+     *
+     * <p>
+     * This method is responsible for updating the front and back DNI images of a
+     * user identified by their email. The user's federate state must be
+     * {@code FEDERATE} to perform the update. The method also updates the
+     * {@code dniLastUpdate} field with the current date.
+     * </p>
+     *
+     * @param userEmail the email of the user whose DNI is being updated
+     * @param frontDni  the front image of the new DNI document
+     * @param backDni   the back image of the new DNI document
+     * @return the updated {@link PersistentFederateStateEntity} representing the
+     *         user's federate state
+     * @throws UserServiceException          if there is an error related to the
+     *                                       user service, such as user not found
+     * @throws FederateStateServiceException if the user's federate state is not
+     *                                       {@code FEDERATE} or if an error occurs
+     *                                       while updating the DNI images
+     */
     PersistentFederateStateEntity updateDni(String userEmail, MultipartFile frontDni, MultipartFile backDni)
             throws UserServiceException, FederateStateServiceException;
 

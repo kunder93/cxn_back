@@ -30,6 +30,8 @@ import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.FederateStateEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
@@ -105,6 +107,7 @@ public class PersistentFederateStateEntity implements FederateStateEntity {
      * The current state of the user's federate status.
      *
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     private FederateState state;
 

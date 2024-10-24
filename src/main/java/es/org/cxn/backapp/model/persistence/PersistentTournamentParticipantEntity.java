@@ -7,6 +7,8 @@ import java.time.LocalDate;
 import es.org.cxn.backapp.model.TournamentParticipantEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -127,6 +129,7 @@ public class PersistentTournamentParticipantEntity implements TournamentParticip
      * participant's age.
      * </p>
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private TournamentCategory category;
 
