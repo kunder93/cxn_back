@@ -1,88 +1,88 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2020 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
 
 package es.org.cxn.backapp.logging.aspect;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
- * Logging aspect for controllers. Will log arguments and returned values.
+ * Aspect for logging execution of controller methods.
+ * <p>
+ * This aspect logs the entry and exit of methods in the
+ * {@code es.org.cxn.backapp.controller} package. It captures and logs method
+ * names, parameters, return values, and exceptions.
+ * </p>
  *
- * @author Santiago Paz.
+ * @author Santiago Paz
  */
 @Component
 @Aspect
 public class ControllerLoggingAspect {
 
     /**
-     * The logger.
+     * Logger instance for logging controller method executions.
      */
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(ControllerLoggingAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ControllerLoggingAspect.class);
+
+    /**
+     * Helper method to retrieve the name of the method being executed.
+     *
+     * @param joinPoint the join point providing reflective access to the method
+     * @return the name of the method being executed
+     */
+    private static String getMethodName(final JoinPoint joinPoint) {
+        final var joinPointSignature = joinPoint.getSignature();
+        return joinPointSignature.getName();
+    }
 
     /**
      * Default constructor.
      */
     public ControllerLoggingAspect() {
-        super();
+        // Default constructor.
     }
 
     /**
-     * Logs the returned value after the method is called.
+     * Logs the normal exit of a method in the controller.
+     * <p>
+     * This advice is executed after a method in the
+     * {@code es.org.cxn.backapp.controller} package returns successfully. It logs
+     * the name of the method and the return value, if any.
+     * </p>
      *
-     * @param joinPoint   point where the aspect is applied.
-     * @param returnValue returned value.
+     * @param joinPoint the join point providing reflective access to the method
+     *                  being executed
+     * @param result    the return value of the method
      */
-    @AfterReturning(
-            value = "execution(* com.bernardomg.example.spring_mvc_react_maven_archetype_example..*Controller*.*(..))", returning = "returnValue"
-    )
-    public void afterCall(final JoinPoint joinPoint, final Object returnValue) {
-        LOGGER.debug(
-                "Called {} and returning {}",
-                joinPoint.getSignature().toShortString(), returnValue
-        );
+    @AfterReturning(pointcut = "execution(* es.org.cxn.backapp.controller.*.*(..))", returning = "result")
+    public void logAfterReturning(final JoinPoint joinPoint, final Object result) {
+        if (LOGGER.isInfoEnabled()) {
+            final var methodName = getMethodName(joinPoint);
+            LOGGER.info("Exiting method: {} with return value: {}", methodName, result);
+        }
     }
 
     /**
-     * Logs the received arguments before the method is called.
+     * Logs the exit of a method in the controller when an exception is thrown.
+     * <p>
+     * This advice is executed after a method in the
+     * {@code es.org.cxn.backapp.controller} package throws an exception. It logs
+     * the name of the method and the exception's message.
+     * </p>
      *
-     * @param joinPoint point where the aspect is applied.
+     * @param joinPoint the join point providing reflective access to the method
+     *                  being executed
+     * @param error     the exception thrown by the method
      */
-    @Before(
-            value = "execution(* com.bernardomg.example.spring_mvc_react_maven_archetype_example..*Controller*.*(..))", argNames = "joinPoint"
-    )
-    public void beforeCall(final JoinPoint joinPoint) {
-        LOGGER.debug(
-                "Calling {} with arguments {}",
-                joinPoint.getSignature().toShortString(), joinPoint.getArgs()
-        );
+    @AfterThrowing(pointcut = "execution(* es.org.cxn.backapp.controller.*.*(..))", throwing = "error")
+    public void logAfterThrowing(final JoinPoint joinPoint, final Throwable error) {
+        if (LOGGER.isErrorEnabled()) {
+            final var methodName = getMethodName(joinPoint);
+            LOGGER.error("Exception in method: {} with message: {}", methodName, error.getMessage());
+        }
     }
-
 }

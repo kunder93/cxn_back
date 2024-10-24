@@ -1,7 +1,9 @@
+
 package es.org.cxn.backapp.service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,6 +12,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 
 /**
@@ -25,6 +28,11 @@ public final class MyPrincipalUser implements UserDetails {
      * Serial UID.
      */
     private static final long serialVersionUID = 2055653610418609601L;
+
+    /**
+     * User DNI.
+     */
+    private final String dni;
 
     /**
      * User password.
@@ -64,7 +72,12 @@ public final class MyPrincipalUser implements UserDetails {
     /**
      * User role Names.
      */
-    private Set<String> rolesNames = new HashSet<>();
+    private final Set<UserRoleName> rolesNames;
+
+    /**
+     * Indicador de estado de activacion/desactivacion de la cuenta.
+     */
+    private final boolean accountEnabled;
 
     /**
      * Constructor with provided UserEntity.
@@ -72,6 +85,7 @@ public final class MyPrincipalUser implements UserDetails {
      * @param userEntity User data to build MyPrincipalUser.
      */
     public MyPrincipalUser(final UserEntity userEntity) {
+        dni = userEntity.getDni();
         password = userEntity.getPassword();
         email = userEntity.getEmail();
         name = userEntity.getName();
@@ -79,55 +93,16 @@ public final class MyPrincipalUser implements UserDetails {
         secondSurname = userEntity.getSecondSurname();
         birthDate = userEntity.getBirthDate();
         gender = userEntity.getGender();
-        userEntity.getRoles().forEach(
-                (PersistentRoleEntity role) -> rolesNames.add(role.getName()));
-
+        accountEnabled = userEntity.isEnabled();
+        rolesNames = EnumSet.noneOf(UserRoleName.class);
+        userEntity.getRoles().forEach((PersistentRoleEntity role) -> rolesNames.add(role.getName()));
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        rolesNames.forEach(
-                role -> authorities.add(new SimpleGrantedAuthority(role)));
-
+        final Set<GrantedAuthority> authorities = new HashSet<>();
+        rolesNames.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.toString())));
         return authorities;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    /**
-     * Getter for user name.
-     *
-     * @return the user name.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Getter for user first surname.
-     *
-     * @return the first surname.
-     */
-    public String getFirstSurname() {
-        return firstSurname;
-    }
-
-    /**
-     * Getter for user second surname.
-     *
-     * @return the second surname.
-     */
-    public String getSecondSurname() {
-        return secondSurname;
     }
 
     /**
@@ -140,6 +115,24 @@ public final class MyPrincipalUser implements UserDetails {
     }
 
     /**
+     * Getter for user DNI.
+     *
+     * @return The user dni.
+     */
+    public String getDni() {
+        return dni;
+    }
+
+    /**
+     * Getter for user first surname.
+     *
+     * @return the first surname.
+     */
+    public String getFirstSurname() {
+        return firstSurname;
+    }
+
+    /**
      * Getter for user gender.
      *
      * @return the user gender.
@@ -149,14 +142,42 @@ public final class MyPrincipalUser implements UserDetails {
     }
 
     /**
+     * Getter for user name.
+     *
+     * @return the user name.
+     */
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    /**
      * Getter for user roles set.
      *
      * @see PersistentRoleEntity
      *
      * @return the user roles hashSet.
      */
-    public Set<String> getRoles() {
-        return new HashSet<>(rolesNames);
+    public Set<UserRoleName> getRoles() {
+        return EnumSet.copyOf(rolesNames);
+    }
+
+    /**
+     * Getter for user second surname.
+     *
+     * @return the second surname.
+     */
+    public String getSecondSurname() {
+        return secondSurname;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
     }
 
     @Override

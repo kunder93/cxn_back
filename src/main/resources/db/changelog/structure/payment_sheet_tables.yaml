@@ -1,0 +1,217 @@
+databaseChangeLog:
+- changeSet:
+    id: payment_sheet_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: paymentsheet
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: reason
+            type: varchar(60)
+            constraints:
+              nullable: false
+        - column:
+            name: place
+            type: varchar(50)
+            constraints:
+              nullable: false
+        - column:
+            name: start_date
+            type: date
+            constraints:
+              nullable: false
+        - column:
+            name: end_date
+            type: date
+            constraints:
+              nullable: false
+        - column:
+            name: user_dni
+            type: varchar(9)
+            constraints:
+              nullable: false                  
+- changeSet:
+    id: regular_transport_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: regulartransport
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: category
+            type: varchar(30)
+            constraints:
+              nullable: false
+        - column:
+            name: description
+            type: varchar(100)
+            constraints:
+              nullable: false
+        - column:
+            name: invoice_id
+            type: bigint
+            constraints:
+              nullable: false
+              unique: true
+        - column:
+            name: payment_sheet_id
+            type: bigint
+            constraints:
+              nullable: false
+- changeSet:
+    id: self_vehicle_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: selfvehicle
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: places
+            type: varchar(100)
+            constraints:
+              nullable: false
+        - column:
+            name: distance
+            type: double
+            constraints:
+              nullable: false
+        - column:
+            name: km_price
+            type: currency
+            constraints:
+              nullable: false
+        - column:
+            name: payment_sheet_id
+            type: bigint
+            constraints:
+              nullable: false
+              unique: true
+- changeSet:
+    id: food_housing_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: foodhousing
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: amountdays
+            type: int
+            constraints:
+              nullable: false
+        - column:
+            name: dayprice
+            type: currency
+            constraints:
+              nullable: false
+        - column:
+            name: overnight
+            type: boolean
+            constraints:
+              nullable: false
+        - column:
+            name: payment_sheet_id
+            type: bigint
+            constraints:
+              nullable: false
+              unique: true
+- changeSet:
+    id: payment_sheet_users_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: user_dni
+        baseTableName: paymentsheet
+        constraintName: fk_paymentsheet_users
+        referencedColumnNames: dni
+        referencedTableName: users
+- changeSet:
+    id: payment_sheet_regular_transport_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: payment_sheet_id
+        baseTableName: regulartransport
+        constraintName: fk_paymentsheet_regular_transport
+        referencedColumnNames: id
+        referencedTableName: paymentsheet
+- changeSet:
+    id: payment_sheet_self_vehicle_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: payment_sheet_id
+        baseTableName: selfvehicle
+        constraintName: fk_paymentsheet_self_vehicle
+        referencedColumnNames: id
+        referencedTableName: paymentsheet
+- changeSet:
+    id: payment_sheet_food_housing_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: payment_sheet_id
+        baseTableName: foodhousing
+        constraintName: fk_paymentsheet_food_housing
+        referencedColumnNames: id
+        referencedTableName: paymentsheet
+- changeSet:
+      id: addColumnFoodHousingToInvoiceEntity
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: invoices
+            columns:
+            - column:
+                name: food_housing_id
+                type: bigint
+                constraints:
+                  nullable: true
+- changeSet:
+    id: food_housing_invoice_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: food_housing_id
+        baseTableName: invoices
+        constraintName: fk_food_housing_invoice
+        referencedColumnNames: id
+        referencedTableName: foodhousing    
+- changeSet:
+    id: regular_transport_invoice_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: invoice_id
+        baseTableName: regulartransport
+        constraintName: fk_regular_transport_invoice
+        referencedColumnNames: id
+        referencedTableName: invoices     

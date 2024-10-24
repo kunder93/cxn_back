@@ -1,17 +1,58 @@
 databaseChangeLog:
-  - include:
+-  include:
       file: structure/example.yaml
       relativeToChangelogFile: true
-  - include:
+-  include:
       file: structure/user_tables.yaml
       relativeToChangelogFile: true
-  - changeSet:
+-  include:
+      file: structure/invoice_tables.yaml
+      relativeToChangelogFile: true
+-  include:
+      file: structure/payment_sheet_tables.yaml
+      relativeToChangelogFile: true
+-  include:
+      file: structure/user_address.yaml
+      relativeToChangelogFile: true
+-  include:
+      file: structure/library_tables.yaml
+      relativeToChangelogFile: true
+-  include:
+      file: structure/chess_questions_answers_tables.yaml
+      relativeToChangelogFile: true
+-  include:
+      file: structure/tournament_form_table.yaml
+      relativeToChangelogFile: true
+-  include:
+      file: structure/user_lichess_tables.yaml
+      relativeToChangelogFile: true
+-  changeSet:
       id: initial_data
       author: Santiago
       changes:
-        - sqlFile:
+      -  sqlFile:
             encoding: UTF-8
             path: data/initial.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+-  changeSet:
+      id: countries_data
+      author: Santiago
+      changes:
+      -  sqlFile:
+            encoding: UTF-8
+            path: data/insertCountries.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true
+-  changeSet:
+      id: countriesSubdivision_data
+      author: Santiago
+      changes:
+      -  sqlFile:
+            encoding: UTF-8
+            path: data/insertSubCountries.sql
             relativeToChangelogFile: true
             splitStatements: true
             stripComments: true

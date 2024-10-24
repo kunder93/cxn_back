@@ -1,33 +1,32 @@
 /**
  * The MIT License (MIT)
- * <p>
- * Copyright (c) 2020 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
+ *
+ * <p>Copyright (c) 2020 the original author or authors.
+ *
+ * <p>Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * <p>The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *
+ * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package es.org.cxn.backapp.controller;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.io.IOException;
+import java.util.ArrayList;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,23 +36,28 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
-import es.org.cxn.backapp.exceptions.UserEmailExistsExeption;
-import es.org.cxn.backapp.exceptions.UserEmailNotFoundException;
-import es.org.cxn.backapp.model.form.AuthenticationRequest;
-import es.org.cxn.backapp.model.form.AuthenticationResponse;
-import es.org.cxn.backapp.model.form.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.SignUpResponseForm;
+import com.google.common.base.Preconditions;
+
+import es.org.cxn.backapp.exceptions.UserServiceException;
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
+import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.service.DefaultEmailService;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
 /**
@@ -61,163 +65,150 @@ import jakarta.validation.Valid;
  *
  * @author Santiago Paz Perez.
  */
-@Controller
+@RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(AuthController.class);
     /**
-     * The user Service.
+     * Creates an address details object from the provided sign-up request form.
+     *
+     * @param signUpRequestForm the sign-up request form containing address
+     *                          information.
+     * @return an {@link AddressRegistrationDetailsDto} containing address details.
+     */
+    private static AddressRegistrationDetailsDto createAddressDetails(final SignUpRequestForm signUpRequestForm) {
+        return new AddressRegistrationDetailsDto(signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
+                signUpRequestForm.city(), signUpRequestForm.postalCode(), signUpRequestForm.street(),
+                signUpRequestForm.countryNumericCode(), signUpRequestForm.countrySubdivisionName());
+    }
+
+    /**
+     * Creates a user details object from the provided sign-up request form and
+     * address details.
+     *
+     * @param signUpRequestForm the sign-up request form containing user
+     *                          information.
+     * @param addressDetails    the address details for the user.
+     * @return a {@link UserRegistrationDetailsDto} containing user and address
+     *         details.
+     */
+    private static UserRegistrationDetailsDto createUserDetails(final SignUpRequestForm signUpRequestForm,
+            final AddressRegistrationDetailsDto addressDetails) {
+        return new UserRegistrationDetailsDto(signUpRequestForm.dni(), signUpRequestForm.name(),
+                signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
+                signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
+                signUpRequestForm.kindMember());
+    }
+
+    /**
+     * The user service for handling user-related operations.
      */
     private final UserService userService;
 
     /**
-     * The authentication manager.
+     * The authentication manager for handling authentication requests.
      */
     private final AuthenticationManager authManager;
 
     /**
-     * The user details service.
+     * The user details service for loading user-specific details.
      */
-    private final UserDetailsService userDetailsService;
+    private final UserDetailsService usrDtlsSrv;
 
     /**
-     * The jwt utilities.
+     * The email service for sending emails.
      */
-    private final DefaultJwtUtils jwtUtils;
+    private final DefaultEmailService emailService;
 
     /**
      * Constructs a controller with the specified dependencies.
      *
-     * @param serviceUser     the user service.
-     * @param authManag       the authenticationManager.
-     * @param userDetailsServ the userDetailsService.
-     * @param jwtUtil         the jwtUtils.
+     * @param serviceUser     the user service to manage user operations.
+     * @param authManag       the authentication manager to handle authentication.
+     * @param userDetailsServ the user details service to load user-specific
+     *                        details.
+     * @param emailServ       the email service for send email messages.
+     * @param jwtUtil         the JWT utility for generating and validating tokens.
      */
-    public AuthController(
-            final UserService serviceUser,
-            final AuthenticationManager authManag,
-            final UserDetailsService userDetailsServ,
-            final DefaultJwtUtils jwtUtil
-    ) {
+    public AuthController(final UserService serviceUser, final AuthenticationManager authManag,
+            final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtil,
+            final DefaultEmailService emailServ) {
         super();
-        this.userService = checkNotNull(
-                serviceUser, "Received a null pointer as userService"
-        );
-        this.authManager = checkNotNull(
-                authManag, "Received a null pointer as authenticationManager"
-        );
-        this.userDetailsService = checkNotNull(
-                userDetailsServ,
-                "Received a null pointer as authenticationManager"
-        );
-        this.jwtUtils = checkNotNull(
-                jwtUtil, "Received a null pointer as jwtUtils"
-        );
-
+        this.userService = Preconditions.checkNotNull(serviceUser, "Received a null pointer as userService");
+        this.authManager = Preconditions.checkNotNull(authManag, "Received a null pointer as authenticationManager");
+        this.usrDtlsSrv = Preconditions.checkNotNull(userDetailsServ, "Received a null pointer as userDetailsService");
+        this.emailService = Preconditions.checkNotNull(emailServ, "Received a null pointer as email service.");
+        Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
     }
 
     /**
-     * Creates an user with default user Role.
+     * Authenticates a user and generates a JWT token.
      *
-     * @param signUpRequestForm user data to create user profile.
-     * @return the created user data @link{SignUpResponseForm}.
-     */
-    @CrossOrigin
-    @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseForm> registerUser(
-            final @Valid @RequestBody SignUpRequestForm signUpRequestForm
-    ) {
-        var defaultUserRole = "USER";
-        try {
-            userService.add(
-                    signUpRequestForm.getName(),
-                    signUpRequestForm.getFirstSurname(),
-                    signUpRequestForm.getSecondSurname(),
-                    signUpRequestForm.getBirthDate(),
-                    signUpRequestForm.getGender(),
-                    signUpRequestForm.getPassword(),
-                    signUpRequestForm.getEmail()
-            );
-            final var createdUser = userService
-                    .addRole(signUpRequestForm.getEmail(), defaultUserRole);
-            final var signUpResponseForm = new SignUpResponseForm(
-                    createdUser.getName(), createdUser.getFirstSurname(),
-                    createdUser.getSecondSurname(), createdUser.getBirthDate(),
-                    createdUser.getGender(), createdUser.getEmail(),
-                    createdUser.getRoles()
-            );
-            final var logMessage = String
-                    .format("USER: %s  CREATED", createdUser.toString());
-            LOGGER.info(logMessage);
-            return new ResponseEntity<>(signUpResponseForm, HttpStatus.CREATED);
-
-            /*
-             * User email not found setting default role to user or roleName not
-             * found, this should not happen
-             */
-        } catch (UserEmailNotFoundException | RoleNameNotFoundException e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new ResponseStatusException(
-                    HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage()
-            );
-        } catch (UserEmailExistsExeption e) {
-            LOGGER.error(e.getMessage(), e);
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, e.getMessage()
-            );
-        }
-
-    }
-
-    /**
-     * Authenticate user with loginRequest and give a jwt Token.
-     *
-     * @param loginRequest request form with user data email and password.
-     * @return ResponseEntity with result of authenticate, ACCEPTED or failed
-     *         with error description.
+     * @param loginRequest the form containing user email and password for
+     *                     authentication.
+     * @return a {@link ResponseEntity} containing the authentication response with
+     *         JWT token and HTTP status code {@code 200 OK}.
+     * @throws ResponseStatusException if authentication fails due to incorrect
+     *                                 credentials, disabled account, or account
+     *                                 locked.
      */
     @CrossOrigin
     @PostMapping("/signinn")
     public ResponseEntity<AuthenticationResponse> authenticateUser(
-            final @Valid @RequestBody AuthenticationRequest loginRequest
-    ) {
+            final @Valid @RequestBody AuthenticationRequest loginRequest) {
+        final var email = loginRequest.email();
+        final var password = loginRequest.password();
         try {
-            authManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getEmail(), loginRequest.getPassword()
-                    )
-            );
+            authManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         } catch (BadCredentialsException | DisabledException e) {
-            LOGGER.debug(e.getMessage(), e);
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
         } catch (LockedException e) {
-            LOGGER.debug(e.getMessage(), e);
-            throw new ResponseStatusException(
-                    HttpStatus.LOCKED, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.LOCKED, e.getMessage(), e);
         }
         final MyPrincipalUser userDetails;
         try {
-            userDetails = (MyPrincipalUser) userDetailsService
-                    .loadUserByUsername(loginRequest.getEmail());
+            userDetails = (MyPrincipalUser) usrDtlsSrv.loadUserByUsername(email);
         } catch (UsernameNotFoundException e) {
-            LOGGER.debug(e.getMessage(), e);
-            throw new ResponseStatusException(
-                    HttpStatus.UNAUTHORIZED, e.getMessage()
-            );
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
         }
-        var jwt = jwtUtils.generateToken(userDetails);
-        final var logMessage = String.format(
-                "USER EMAIL: %s  AUTHENTICATED", userDetails.getUsername()
-        );
-        LOGGER.info(logMessage);
-        return new ResponseEntity<>(
-                new AuthenticationResponse(jwt), HttpStatus.OK
-        );
+        final var jwt = DefaultJwtUtils.generateToken(userDetails);
+        return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
+    }
+
+    /**
+     * Registers a new user and assigns a default role.
+     *
+     * @param signUpRequestForm the form containing user data for registration.
+     * @return a {@link ResponseEntity} containing the response form with the
+     *         created user data and HTTP status code {@code 201 Created}.
+     * @throws IOException             When cannot load message template.
+     * @throws ResponseStatusException if there is a problem with user registration.
+     */
+    @CrossOrigin
+    @PostMapping("/signup")
+    public ResponseEntity<SignUpResponseForm> registerUser(
+            @Valid @RequestBody final SignUpRequestForm signUpRequestForm) throws IOException {
+
+        final var defaultUserRole = UserRoleName.ROLE_CANDIDATO_SOCIO;
+        final var initialUserRolesSet = new ArrayList<UserRoleName>();
+        initialUserRolesSet.add(defaultUserRole);
+
+        final var addressDetails = createAddressDetails(signUpRequestForm);
+        final var userDetails = createUserDetails(signUpRequestForm, addressDetails);
+
+        try {
+            userService.add(userDetails);
+            final var createdUser = userService.changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
+            final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
+
+            emailService.sendSignUpEmail(signUpRequestForm.email(), signUpRequestForm.name(),
+                    "Te damos la bienvenida a Círculo Xadrez Narón.");
+
+            return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        } catch (MessagingException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
     }
 
 }
