@@ -3,7 +3,7 @@ name: Build and Push Docker Image
 on:
   push:
     branches:
-      - release  # Se ejecuta cuando se hace un push o merge a la rama release
+      - master  # Se ejecuta cuando se hace un push o merge a la rama master
 
 jobs:
   build:
