@@ -14,7 +14,7 @@ RUN mvn clean install -Pprod
 FROM eclipse-temurin:21
 
 # Copia el archivo JAR generado por Maven
-COPY --from=builder /usr/src/app/target/back-app-1.0.1-SNAPSHOT.jar /app/app.jar
+COPY --from=builder /usr/src/app/target/back-app-2.0.0.jar /app/app.jar
 
 # Expone el puerto 8080
 EXPOSE 8080
