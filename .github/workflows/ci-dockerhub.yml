@@ -20,7 +20,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'temurin'
-        java-version: '17'  # Cambia a la versión de Java que estés usando
+        java-version: '21'  # Cambia a la versión de Java que estés usando
 
     - name: Build Maven project
       run: mvn clean package -DskipTests  # Compila tu proyecto sin ejecutar los tests
