@@ -4,10 +4,10 @@
  * Copyright (c) 2021 the original author or authors.
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  * <p>
  * The above copyright notice and this permission notice shall be included in
@@ -17,35 +17,40 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package es.org.cxn.backapp.model.persistence;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NonNull;
 
 /**
  * User Entity.
@@ -56,7 +61,35 @@ import jakarta.persistence.Transient;
  */
 @Entity(name = "UserEntity")
 @Table(name = "users")
+@AllArgsConstructor
+@Data
+@Builder
 public class PersistentUserEntity implements UserEntity {
+
+    /**
+     * kind of member that users can be.
+     *
+     * @author Santi
+     *
+     */
+    public enum UserType {
+        /**
+         * Socio numerario, cuota de 30, mayor de 18 independiente economicamente.
+         */
+        SOCIO_NUMERO,
+        /**
+         * Socio aspirante, menor de 18, sin voto en junta.
+         */
+        SOCIO_ASPIRANTE,
+        /**
+         * Socio honorario, cuota de 0, sin voto en junta.
+         */
+        SOCIO_HONORARIO,
+        /**
+         * Depende economicamente de socio de numero, cuota 0, sin voto en junta.
+         */
+        SOCIO_FAMILIAR
+    }
 
     /**
      * Serialization ID.
@@ -65,354 +98,273 @@ public class PersistentUserEntity implements UserEntity {
     private static final long serialVersionUID = 1328773339450853291L;
 
     /**
-     * Entity's ID.
+     * Entity's dni aka Identifier.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    private Integer id = -1;
+    @Column(name = "dni", nullable = false, unique = true)
+    @NonNull
+    private String dni;
 
     /**
      * Name of the user.
      * <p>
-     * This is to have additional data apart from the id, to be used on the
-     * tests.
+     * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "name", nullable = false, unique = false)
-    private String name = "";
+    @NonNull
+    private String name;
 
     /**
      * First surname of the user.
      * <p>
-     * This is to have additional data apart from the id, to be used on the
-     * tests.
+     * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "first_surname", nullable = false, unique = false)
-    private String firstSurname = "";
+    @NonNull
+    private String firstSurname;
 
     /**
      * Second surname of the user.
      * <p>
-     * This is to have additional data apart from the id, to be used on the
-     * tests.
+     * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "second_surname", nullable = false, unique = false)
-    private String secondSurname = "";
+    @NonNull
+    private String secondSurname;
 
     /**
      * Birth date of the user.
      * <p>
-     * This is to have additional data apart from the id, to be used on the
-     * tests.
+     * This is to have additional data apart from the id, to be used on the tests.
      */
-    @Temporal(TemporalType.DATE)
     @Column(name = "birth_date", nullable = false, unique = false)
+    @NonNull
     private LocalDate birthDate;
 
     /**
      * Gender of the user.
      * <p>
-     * This is to have additional data apart from the id, to be used on the
-     * tests.
+     * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "gender", nullable = false, unique = false)
-    private String gender = "";
+    @NonNull
+    private String gender;
 
     /**
      * Password of the user.
      *
      */
     @Column(name = "password", nullable = false, unique = false)
-    private String password = "";
+    @NonNull
+    private String password;
 
     /**
      * Email of the user.
      *
      */
     @Column(name = "email", nullable = false, unique = true)
-    private String email = "";
+    @NonNull
+    private String email;
+
+    /**
+     * Kind of user member.
+     *
+     */
+    @Column(name = "kind_member", nullable = false, unique = false)
+    @Builder.Default
+    @NonNull
+    @Enumerated(EnumType.STRING)
+    private UserType kindMember = UserType.SOCIO_NUMERO;
+
+    /**
+     * User status boolean, enabled or disiabled, true or false.
+     */
+    @Column(name = "enabled", nullable = false, unique = false)
+    @Builder.Default
+    private boolean enabled = true;
 
     /**
      * Roles associated with this user.
      */
-    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
-    @JoinTable(
-            name = "role_users", joinColumns = @JoinColumn(
-                    name = "user_id"
-            ), inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    // @formatter:off
+    @JoinTable(name = "role_users", joinColumns = @JoinColumn(name = "user_dni"),
+    inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Builder.Default
     private Set<PersistentRoleEntity> roles = new HashSet<>();
 
     /**
-     * Constructs an example entity.
+     * The payment sheet user owner.
+     */
+    @OneToMany(mappedBy = "userOwner")
+    @Builder.Default
+    private List<PersistentPaymentSheetEntity> paymentSheets = new ArrayList<>();
+
+    /**
+     * The user address.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private PersistentAddressEntity address;
+
+    /**
+     * The user lichess auth for lichess API usage.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PersistentLichessAuthEntity lichessAuth;
+
+    /**
+     * The user OAuth authorization request for OAuth API usage.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PersistentOAuthAuthorizationRequestEntity oauthAuthorizationRequest;
+
+
+    /**
+     * The associated profile image entity. This establishes a one-to-one
+     * relationship between the user and their profile image.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private PersistentProfileImageEntity profileImage;
+
+    /**
+     * The associated profile image entity. This establishes a one-to-one
+     * relationship between the user and their profile image.
+     */
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional=false)
+    private PersistentFederateStateEntity federateState;
+
+    /**
+     * No-args constructor. If use remember change values of federateState cause it needs valid user dni.
      */
     public PersistentUserEntity() {
-        super();
+        this.federateState = new PersistentFederateStateEntity(
+                "", // Initial value for dni (can be set later)
+                "", // Initial value for dniFrontImageUrl
+                "", // Initial value for dniBackImageUrl
+                false, // Initial value for automaticRenewal
+                LocalDate.now(), // Set dniLastUpdate to current date
+                FederateState.NO_FEDERATE // Default state
+            );
     }
 
     /**
-     * Constructs an example entity with provided params.
+     * Custom constructor for Lombok's {@code @Builder} to initialize a user entity.
      *
-     * @param nameValue          the user name.
-     * @param firstSurnameValue  the user first surname.
-     * @param secondSurnameValue the user second surname.
-     * @param birthDateValue     the user birth date.
-     * @param genderValue        the user gender.
-     * @param passwordValue      the user password.
-     * @param emailValue         the user email.
-     */
-    public PersistentUserEntity(
-            final String nameValue, final String firstSurnameValue,
-            final String secondSurnameValue, final LocalDate birthDateValue,
-            final String genderValue, final String passwordValue,
-            final String emailValue
-    ) {
-        super();
-        this.name = checkNotNull(nameValue, "Received a null pointer as name");
-        this.firstSurname = checkNotNull(
-                firstSurnameValue, "Received a null pointer as first surname"
-        );
-        this.secondSurname = checkNotNull(
-                secondSurnameValue, "Received a null pointer as second surname"
-        );
-        this.birthDate = checkNotNull(
-                birthDateValue, "Received a null pointer as birth date"
-        );
-        this.gender = checkNotNull(
-                genderValue, "Received a null pointer as gender"
-        );
-        this.password = checkNotNull(
-                passwordValue, "Received a null pointer as password"
-        );
-        this.email = checkNotNull(
-                emailValue, "Received a null pointer as email"
-        );
-    }
-
-    /**
-     * Returns the identifier assigned to this user entity.
-     * <p>
-     * If no identifier has been assigned yet, then the value will be lower than
-     * zero.
+     * <p>This constructor ensures that the {@code federateState} is initialized based on the provided
+     * {@code dni}. If the {@code dni} is non-null and non-empty, a new {@link PersistentFederateStateEntity}
+     * is created with initial values.</p>
      *
-     * @return the user's identifier
+     * @param dni             the user's DNI (identification number). Must not be null or empty if
+     *                        {@code federateState} is to be initialized.
+     * @param name            the user's name. Must not be null.
+     * @param firstSurname    the user's first surname. Must not be null.
+     * @param secondSurname   the user's second surname. Must not be null.
+     * @param birthDate       the user's birth date. Must not be null.
+     * @param gender          the user's gender. Must not be null.
+     * @param password        the user's password. Must not be null.
+     * @param email           the user's email. Must not be null.
+     * @param kindMember      the user's membership type. Can be null; defaults to {@code UserType.SOCIO_NUMERO}.
+     * @param enabled         indicates whether the user account is enabled. Must not be null.
+     * @param rolesEntity           a set of roles associated with the user. Can be null; defaults to an empty set.
      */
-    @Override
-    public Integer getId() {
-        return id;
+    @Builder
+    public PersistentUserEntity(final String dni, final String name,final String firstSurname,final String secondSurname,
+            final LocalDate birthDate,final String gender,final String password,final String email,
+            final UserType kindMember,final boolean enabled, final Set<PersistentRoleEntity> rolesEntity) {
+        this.dni = dni;
+        this.name = name;
+        this.firstSurname = firstSurname;
+        this.secondSurname = secondSurname;
+        this.birthDate = birthDate;
+        this.gender = gender;
+        this.password = password;
+        this.email = email;
+        this.kindMember = kindMember != null ? kindMember : UserType.SOCIO_NUMERO;
+        this.enabled = enabled;
+        this.roles = rolesEntity != null ? rolesEntity : new HashSet<>();
+
+        // Now dni is already assigned, initialize federateState
+        if (dni != null && !dni.isEmpty()) {
+            this.federateState = new PersistentFederateStateEntity(
+                this.dni,
+                "", // Initial value for dniFrontImageUrl
+                "", // Initial value for dniBackImageUrl
+                false, // Initial value for automaticRenewal
+                LocalDate.now(), // Set dniLastUpdate to current date
+                FederateState.NO_FEDERATE
+            );
+        }
     }
 
-    /**
-     * Get user name.
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Get user first surname.
-     */
-    @Override
-    public String getFirstSurname() {
-        return firstSurname;
-    }
-
-    /**
-     * Get user second surname.
-     */
-    @Override
-    public String getSecondSurname() {
-        return secondSurname;
-    }
-
-    /**
-     * Get user birth date.
-     */
-    @Override
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    /**
-     * Get user gender.
-     */
-    @Override
-    public String getGender() {
-        return gender;
-    }
-
-    /**
-     * Get user password.
-     */
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    /**
-     * Get user email.
-     */
-    @Override
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * Get user set of roles.
-     */
-    @Override
-    public Set<PersistentRoleEntity> getRoles() {
-        return new HashSet<>(roles);
-    }
-
-    /**
-     * Set user id.
-     */
-    @Override
-    public void setId(final Integer identifier) {
-        id = checkNotNull(identifier, "Received a null pointer as id");
-    }
-
-    /**
-     * Set user name.
-     */
-    @Override
-    public void setName(final String value) {
-        this.name = checkNotNull(value, "Received a null pointer as name");
-    }
-
-    /**
-     * Set first surname.
-     */
-    @Override
-    public void setFirstSurname(final String value) {
-        this.firstSurname = checkNotNull(
-                value, "Received a null pointer as first surname"
-        );
-    }
-
-    /**
-     * Set second surname.
-     */
-    @Override
-    public void setSecondSurname(final String value) {
-        this.secondSurname = checkNotNull(
-                value, "Received a null pointer as second surname"
-        );
-    }
-
-    /**
-     * Set birth date.
-     */
-    @Override
-    public void setBirthDate(final LocalDate value) {
-        this.birthDate = checkNotNull(
-                value, "Received a null pointer as birth date"
-        );
-    }
-
-    /**
-     * Set gender.
-     */
-    @Override
-    public void setGender(final String value) {
-        this.gender = checkNotNull(value, "Received a null pointer as gender");
-    }
-
-    /**
-     * Set password.
-     */
-    @Override
-    public void setPassword(final String value) {
-        this.password = checkNotNull(
-                value, "Received a null pointer as password"
-        );
-
-    }
-
-    /**
-     * Set email.
-     */
-    @Override
-    public void setEmail(final String value) {
-        this.email = checkNotNull(value, "Received a null pointer as email");
-
-    }
-
-    /**
-     * Put a Set of Roles.
-     */
-    @Override
-    public void setRoles(final Set<PersistentRoleEntity> roles) {
-        this.roles = new HashSet<>(roles);
-    }
 
     /**
      * Add new role.
      */
     @Override
-    public boolean addRole(final PersistentRoleEntity role) {
+    public boolean addRole(@NonNull final PersistentRoleEntity role) {
         final var result = this.roles.add(role);
         role.getUsers().add(this);
         return result;
     }
 
     /**
+     * Equals with dni and email field.
+     */
+    @Override
+    public boolean equals(final Object obj) {
+        final boolean isEqual;
+
+        if (this == obj) {
+            isEqual = true;
+        } else if (obj == null || this.getClass() != obj.getClass()) {
+            isEqual = false;
+        } else {
+            final var other = (PersistentUserEntity) obj;
+            isEqual = Objects.equals(dni, other.dni) && Objects.equals(email, other.email);
+        }
+
+        return isEqual;
+    }
+
+    /**
+     * Generate complete name with user name, first name and second surname.
+     *
+     * @return The complete user name, name, first surname and second surname.
+     */
+    public String getCompleteName() {
+        return (name + " " +  firstSurname +  " " + secondSurname);
+    }
+    /**
+     * Hash code with dni and email fields.
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(dni, email);
+    }
+
+    /**
      * Remove role.
      */
     @Override
-    public boolean removeRole(final PersistentRoleEntity role) {
+    public boolean removeRole(@NonNull final PersistentRoleEntity role) {
         final var result = this.roles.remove(role);
         role.getUsers().remove(this);
         return result;
     }
 
     /**
-     * Hash code method.
+     * Sets the initial federate state for the current entity based on the provided DNI.
      */
-    @Override
-    public int hashCode() {
-        return Objects.hash(
-                birthDate, email, firstSurname, gender, id, name, password,
-                secondSurname
-        );
-    }
-
-    /**
-     * Equals method.
-     */
-    @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
+    public void setInitialFederateState() {
+        if (this.dni != null && !this.dni.isEmpty()) {
+            this.federateState = new PersistentFederateStateEntity(
+                this.dni,
+                "", // Initial value for dniFrontImageUrl
+                "", // Initial value for dniBackImageUrl
+                false, // Initial value for automaticRenewal
+                LocalDate.now(), // Set dniLastUpdate to current date
+                FederateState.NO_FEDERATE
+            );
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final var other = (PersistentUserEntity) obj;
-        return Objects.equals(birthDate, other.birthDate)
-                && Objects.equals(email, other.email)
-                && Objects.equals(firstSurname, other.firstSurname)
-                && Objects.equals(gender, other.gender)
-                && Objects.equals(id, other.id)
-                && Objects.equals(name, other.name)
-                && Objects.equals(password, other.password)
-                && Objects.equals(secondSurname, other.secondSurname);
     }
-
-    /**
-     * To string method.
-     */
-    @Override
-    public String toString() {
-        return "PersistentUserEntity [id=" + id + ", name=" + name
-                + ", first_surname=" + firstSurname + ", second_surname="
-                + secondSurname + ", birth_date=" + birthDate + ", gender="
-                + gender + ", password=" + password + ", email=" + email + "]";
-    }
-
 }

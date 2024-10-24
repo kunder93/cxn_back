@@ -4,10 +4,10 @@
  * Copyright (c) 2021 the original author or authors.
  * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
  * <p>
  * The above copyright notice and this permission notice shall be included in
@@ -17,21 +17,26 @@
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package es.org.cxn.backapp.service;
 
-import java.time.LocalDate;
+import java.io.IOException;
+import java.util.List;
 
-import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
-import es.org.cxn.backapp.exceptions.UserEmailExistsExeption;
-import es.org.cxn.backapp.exceptions.UserEmailNotFoundException;
-import es.org.cxn.backapp.exceptions.UserIdNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
+
+import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.UserServiceUpdateForm;
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
 /**
  * Service for the User entity domain.
@@ -44,55 +49,146 @@ import es.org.cxn.backapp.model.UserServiceUpdateForm;
 public interface UserService {
 
     /**
-     * Creates a new entity.
+     * Creates new user entity.
      *
-     * @param nameValue          The user name.
-     * @param firstSurnameValue  The user first surname.
-     * @param secondSurnameValue The user second surname.
-     * @param birthDateValue     The user birth date.
-     * @param genderValue        The user gender.
-     * @param passwordValue      The user password.
-     * @param emailValue         The user email.
-     * @return The User entity persisted.
-     * @throws UserEmailExistsExeption when user with provided email already
-     *                                 exists.
+     * @param userDetails The dto with user and address data.
+     * @return The user entity created.
+     * @throws UserServiceException If fails.
      */
-    UserEntity add(
-            String nameValue, String firstSurnameValue,
-            String secondSurnameValue, LocalDate birthDateValue,
-            String genderValue, String passwordValue, String emailValue
-    ) throws UserEmailExistsExeption;
+    UserEntity add(UserRegistrationDetailsDto userDetails) throws UserServiceException;
 
     /**
-     * Returns an entity with the given identifier (id).
+     * Change the user kind member.
+     *
+     * @param userEmail     The user email aka identifier.
+     * @param newKindMember The new user kind member.
+     * @return User entity with change.
+     * @throws UserServiceException When cannot change the user kind member.
+     */
+    UserEntity changeKindMember(String userEmail, UserType newKindMember) throws UserServiceException;
+
+    /**
+     * Change the user email.
+     *
+     * @param email    The current user email.
+     * @param newEmail The new user email.
+     * @return The user entity with new email.
+     * @throws UserServiceException When user with email not found.
+     */
+    UserEntity changeUserEmail(String email, String newEmail) throws UserServiceException;
+
+    /**
+     * Change the current user password.
+     *
+     * @param email           The user email.
+     * @param newPassword     The user new password.
+     * @param currentPassword The user current password.
+     * @return The user entity with new password and user data.
+     * @throws UserServiceException When user with email not found or password dont
+     *                              match.
+     */
+    UserEntity changeUserPassword(String email, String currentPassword, String newPassword) throws UserServiceException;
+
+    /**
+     * Add role to an existing user.
+     *
+     * @param email        user unique email acting as identifier.
+     * @param roleNameList List with role names that user want to add.
+     * @return UserEntity with role added.
+     * @throws UserServiceException When an role with given name no exists or When
+     *                              user with given email that no exist.
+     */
+    UserEntity changeUserRoles(String email, List<UserRoleName> roleNameList) throws UserServiceException;
+
+    /**
+     * Returns an entity with the given identifier (dni).
+     *
      * <p>
      * If no instance exists with that id then an exception is thrown.
      *
-     * @param identifier The user identifier or id.
-     * @return the user entity for the given id.
-     * @throws UserIdNotFoundException when user with provided identifier not
-     *                                 found {@link UserIdNotFoundException}.
+     * @param value The user identifier aka dni.
+     * @return the user entity for the given dni.
+     * @throws UserServiceException when user with provided identifier not found
+     *                              {@link UserServiceException}.
      */
-    UserEntity findById(Integer identifier) throws UserIdNotFoundException;
+    UserEntity findByDni(String value) throws UserServiceException;
 
     /**
      * Returns an entity with the given email.
      *
      * @param email email of the user to find.
      * @return the user for the given email.
-     * @throws UserEmailNotFoundException when user with email no exists.
+     * @throws UserServiceException when user with email no exists.
      */
-    UserEntity findByEmail(String email) throws UserEmailNotFoundException;
+    UserEntity findByEmail(String email) throws UserServiceException;
+
+    /**
+     * Retrieves a list of all users in the system.
+     *
+     * @return A list containing all {@link UserEntity} objects representing the
+     *         users.
+     */
+    List<UserEntity> getAll();
+
+    /**
+     * Get user profile image.
+     *
+     * @param dni The user identifier.
+     * @return The profile image response dto.
+     * @throws UserServiceException When user with dni not found.
+     */
+    ProfileImageResponse getProfileImage(String dni) throws UserServiceException;
 
     /**
      * Removes an user from persistence.
      *
      * @param email email of the user to remove.
      *
-     * @throws UserEmailNotFoundException when user with provided email not
-     *                                    found.
+     * @throws UserServiceException when user with provided email not found.
      */
-    void remove(String email) throws UserEmailNotFoundException;
+    void remove(String email) throws UserServiceException;
+
+    /**
+     * Saves the profile image for a user based on the provided URL.
+     *
+     * @param userDni the DNI (Document Number of Identification) of the user for
+     *                whom the profile image is being saved.
+     * @param url     the URL where the profile image is located. This can be a
+     *                direct URL or a relative path to the image file.
+     * @return the saved {@link PersistentUserEntity} object containing the profile
+     *         image information.
+     * @throws UserServiceException if there is an error while saving the profile
+     *                              image for the user.
+     */
+    PersistentUserEntity saveProfileImage(String userDni, String url) throws UserServiceException;
+
+    /**
+     * Saves the profile image for a user based on the uploaded file.
+     *
+     * @param userDni the DNI (Document Number of Identification) of the user for
+     *                whom the profile image is being saved.
+     * @param file    the uploaded {@link MultipartFile} representing the profile
+     *                image.
+     * @return the saved {@link PersistentUserEntity} object containing the profile
+     *         image information.
+     * @throws IllegalStateException if the method is invoked when the application
+     *                               is in an invalid state for this operation.
+     * @throws IOException           if an I/O error occurs while saving the file to
+     *                               the filesystem.
+     * @throws UserServiceException  if there is an error while saving the profile
+     *                               image for the user.
+     */
+    PersistentUserEntity saveProfileImageFile(String userDni, MultipartFile file)
+            throws IllegalStateException, IOException, UserServiceException;
+
+    /**
+     * Unsubscribe an user.
+     *
+     * @param email    The user email
+     * @param password The user password.
+     * @throws UserServiceException When user with provided email not found.
+     */
+    void unsubscribe(String email, String password) throws UserServiceException;
 
     /**
      * Updates an existing user.
@@ -101,38 +197,8 @@ public interface UserService {
      * @param userEmail User unique email for locate it into database.
      *
      * @return the persisted user entity.
-     * @throws UserEmailNotFoundException when user with provided email not
-     *                                    found.
+     * @throws UserServiceException when user with provided email not found.
      */
-    UserEntity update(UserServiceUpdateForm userForm, String userEmail)
-            throws UserEmailNotFoundException;
-
-    /**
-     * Add role to an existing user.
-     *
-     * @param email    user unique email acting as identifier.
-     * @param roleName Name of the role which add to user, must exists.
-     * @return UserEntity with role added.
-     * @throws UserEmailNotFoundException when an user with given email no
-     *                                    exists.
-     * @throws RoleNameNotFoundException  when an role with given name no
-     *                                    exists.
-     */
-    UserEntity addRole(String email, String roleName)
-            throws UserEmailNotFoundException, RoleNameNotFoundException;
-
-    /**
-     * Remove role from user.
-     *
-     * @param userEmail The email for locate user.
-     * @param roleName  The role name for locate role entity.
-     * @return User entity with role removed from role list @see UserEntity.
-     * @throws UserEmailNotFoundException When user with provided email not
-     *                                    found.
-     * @throws RoleNameNotFoundException  When role with provided name not found
-     *                                    or user not have role.
-     */
-    UserEntity removeRole(String userEmail, String roleName)
-            throws UserEmailNotFoundException, RoleNameNotFoundException;
+    UserEntity update(UserServiceUpdateDto userForm, String userEmail) throws UserServiceException;
 
 }

@@ -1,0 +1,44 @@
+databaseChangeLog:
+- changeSet:
+    id: TournamentParticipant
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: tournamentparticipant
+        columns:
+        - column:
+            name: FIDE_ID
+            type: bigint
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: name
+            type: varchar(70)
+            constraints:
+              nullable: false
+        - column:
+            name: club
+            type: varchar(30)
+            constraints:
+              nullable: false
+        - column:
+            name: birth_date
+            type: date
+            constraints:
+              nullable: false
+        - column:
+            name: category
+            type: varchar(25)
+            constraints:
+              nullable: false
+- changeSet:
+    id: addByesColumnToTournamentParticipant
+    author: Santiago
+    changes:
+    - addColumn:
+        tableName: tournamentparticipant
+        columns:
+        - column:
+            name: byes
+            type: varchar(50)

@@ -1,174 +1,204 @@
+
 package es.org.cxn.backapp.test.integration.controller;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.model.form.Constants;
-import es.org.cxn.backapp.service.JwtUtils;
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
+import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
+import es.org.cxn.backapp.service.DefaultEmailService;
+import es.org.cxn.backapp.test.utils.LocalDateAdapter;
+import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
 /**
  * @author Santiago Paz. Authentication controller integration tests.
  */
 @SpringBootTest
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
 @TestPropertySource("/application.properties")
 class RoleControllerIntegrationTest {
 
-    private final static String SIGN_UP_URL = "/api/auth/signup";
-    private final static String SIGN_IN_URL = "/api/auth/signinn";
+    /**
+     * URL endpoint for user signup.
+     */
+    private static final String SIGN_UP_URL = "/api/auth/signup";
 
-    private final static String USER_A_VALID_DATA_SIGN_UP = "{ \"name\": \"Santiago\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
-            + " \"birthDate\": \"1993-05-08\", " + " \"gender\": \"male\", "
-            + " \"password\": \"123123\"," + " \"email\": Santi@santi.es }";
+    /**
+     * URL endpoint for role management.
+     */
+    private static final String ROLES_URL = "/api/user/role";
 
-    private final static String USER_A_VALID_DATA_SIGN_UP_RESPONSE = "{ \"name\": \"Santiago\","
-            + " \"firstSurname\": \"Paz\", " + " \"secondSurname\": \"Perez\", "
-            + " \"birthDate\": \"1993-05-08\", " + " \"gender\": \"male\", "
-            + " \"email\": \"Santi@santi.es\"," + " \"userRoles\": [USER] }";
+    /**
+     * Gson instance for JSON serialization and deserialization.
+     */
+    private static Gson gson;
 
-    private final static String USER_A_VALID_CREDENTIALS = "{ \"email\": \"Santi@santi.es\","
-            + " \"password\": 123123 }";
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    UserDetailsService myUserDetailsService;
-    @Autowired
-    JwtUtils jwtUtils;
-
-    @BeforeEach
-    void setup() {
-
+    @BeforeAll
+    static void setup() {
+        gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
     }
 
     /**
-     * Main class constructor
+     * MockMvc instance used for performing HTTP requests in tests.
      */
-    public RoleControllerIntegrationTest() {
+    @Autowired
+    private MockMvc mockMvc;
+
+    /**
+     * Mocked email service.
+     */
+    @MockBean
+    private DefaultEmailService emailService;
+
+    /**
+     * Main class constructor.
+     */
+    RoleControllerIntegrationTest() {
         super();
     }
 
+    /**
+     * Add role to not existing user returns bad request.
+     *
+     * @throws Exception When fails.
+     */
+    @DisplayName("Add role to not existing user is bad request.")
     @Test
     @Transactional
-    void testCreateUsersWithSameEmailReturnError() throws Exception {
-        final var jSonUserDataRequest = JsonParser
-                .parseString(USER_A_VALID_DATA_SIGN_UP).getAsJsonObject()
-                .toString();
-        // First user created
-        // Response CREATED 201 with user data with Role
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-        // Second user with same email already exists CONFLICT 409
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest))
-                .andExpect(MockMvcResultMatchers.status().isConflict());
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testAddRoleToNotExistingUserBadRequest() throws Exception {
+        var userRolesList = new ArrayList<UserRoleName>();
+        userRolesList.add(UserRoleName.ROLE_TESORERO);
+
+        var notExisitngUserEmail = "NotExistingEmail@Email.com";
+        var userChangeRoleRequest = new UserChangeRoleRequest(notExisitngUserEmail, userRolesList);
+        var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
+        mockMvc.perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
 
+    /**
+     * Put a list of roles with less roles. Check result.
+     *
+     * @throws Exception When fails.
+     */
+    @DisplayName("Change user roles to less roles")
     @Test
     @Transactional
-    void testCreateUserWithDataReturnUserDataWithRole() throws Exception {
-        final var jSonUserDataRequest = JsonParser
-                .parseString(USER_A_VALID_DATA_SIGN_UP).getAsJsonObject()
-                .toString();
-        final var userDataResponse = JsonParser
-                .parseString(USER_A_VALID_DATA_SIGN_UP_RESPONSE)
-                .getAsJsonObject().toString();
-
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(jSonUserDataRequest))
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(
-                        MockMvcResultMatchers.content().json(userDataResponse));
-
-    }
-
-    @Test
-    @Transactional
-    void testRequestFormValidationNovalidName() throws Exception {
-        final var noValidLongName = "FakeNameTooLongForUseInTest"; // Max 25
-        var userAData = JsonParser.parseString(USER_A_VALID_DATA_SIGN_UP)
-                .getAsJsonObject();
-        userAData.remove("name");
-        userAData.addProperty("name", noValidLongName);
-        // No valid name, name length max is 25.
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userAData.toString()))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"content\":[\""
-                                + Constants.NAME_MAX_LENGTH_MESSAGE + "\"],"
-                                + "\"status\":\"warning\"}"));
-
-        // Remove name key and add name key with empty string
-        userAData.remove("name");
-        userAData.addProperty("name", "");
-        // Empty values are no valid.
-        mockMvc.perform(
-                post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userAData.toString()))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"content\":[\""
-                                + Constants.NAME_NOT_BLANK_MESSAGE + "\"],"
-                                + "\"status\":\"warning\"}"));
-    }
-
-    @Test
-    @Transactional
-    void testSignInValidateJwtToken() throws Exception {
-        final var userCredentials = JsonParser
-                .parseString(USER_A_VALID_CREDENTIALS).getAsJsonObject()
-                .toString();
-
-        final var userData = JsonParser.parseString(USER_A_VALID_DATA_SIGN_UP)
-                .getAsJsonObject().toString();
-
-        // User not registered, unauthorized
-        mockMvc.perform(
-                post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON)
-                        .content(userCredentials))
-                .andExpect(MockMvcResultMatchers.status().isUnauthorized());
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testChangeRolesToLessRolesCheckRoles() throws Exception {
+        var userRolesList = new ArrayList<UserRoleName>();
+        userRolesList.add(UserRoleName.ROLE_SOCIO);
+        userRolesList.add(UserRoleName.ROLE_TESORERO);
+        var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var userARequestJson = gson.toJson(userARequest);
         // Register user correctly
-        mockMvc.perform(post(SIGN_UP_URL)
-                .contentType(MediaType.APPLICATION_JSON).content(userData))
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
                 .andExpect(MockMvcResultMatchers.status().isCreated());
 
-        // Login return jwt for registered user
-        final var responseContent = mockMvc
-                .perform(post(SIGN_IN_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(userCredentials))
-                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-                .getResponse().getContentAsString();
-        final var jwtToken = responseContent.substring(8,
-                responseContent.length() - 2);
-        // Validate jwt token
-        Assertions.assertTrue(
-                jwtUtils.validateToken(jwtToken,
-                        myUserDetailsService
-                                .loadUserByUsername("Santi@santi.es")),
-                "jwt response token is valid");
+        var userChangeRoleRequestForm = new UserChangeRoleRequest(UsersControllerFactory.USER_A_EMAIL, userRolesList);
+        var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequestForm);
+        mockMvc.perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+        userRolesList = new ArrayList<UserRoleName>();
+        userRolesList.add(UserRoleName.ROLE_SOCIO);
+
+        userChangeRoleRequestForm = new UserChangeRoleRequest(UsersControllerFactory.USER_A_EMAIL, userRolesList);
+        userChangeRoleRequestJson = gson.toJson(userChangeRoleRequestForm);
+        var rolesFinalResponseJson = mockMvc
+                .perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+
+        var rolesFinalResponse = gson.fromJson(rolesFinalResponseJson, UserChangeRoleResponseForm.class);
+
+        Assertions.assertEquals(UsersControllerFactory.USER_A_EMAIL, rolesFinalResponse.userName(),
+                "userName with roles is user A email.");
+        Assertions.assertEquals(1, rolesFinalResponse.userRoles().size(), "Only 1 role in roles list");
+        Assertions.assertTrue(rolesFinalResponse.userRoles().contains(UserRoleName.ROLE_SOCIO),
+                "the only one role is ROLE_SOCIO");
     }
 
+    /**
+     * Register user and expect user role default user role.
+     *
+     * @throws Exception When fails.
+     */
+    @DisplayName("Create user and expect only default user role.")
+    @Test
+    @Transactional
+    void testCreateUserExpectDefaultUserRole() throws Exception {
+        var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var userARequestJson = gson.toJson(userARequest);
+
+        // Register user correctly
+        var responseJson = mockMvc
+                .perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated()).andReturn().getResponse().getContentAsString();
+
+        var response = gson.fromJson(responseJson, SignUpResponseForm.class);
+        Assertions.assertEquals(response.userRoles().size(), Integer.valueOf(1), "Only have one role.");
+        Assertions.assertTrue(response.userRoles().contains(UserRoleName.ROLE_CANDIDATO_SOCIO),
+                "Default user role is CANDIDATO_SOCIO.");
+    }
+
+    /**
+     * Add role to created user and expect it in user data.
+     *
+     * @throws Exception When fails.
+     */
+    @DisplayName("Add role to created user expect user data with role added.")
+    @Test
+    @Transactional
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testUserChangeRolesToMoreRolesCheckRoles() throws Exception {
+        List<UserRoleName> userRoleListToSet = new ArrayList<>();
+        userRoleListToSet.add(UserRoleName.ROLE_TESORERO);
+        userRoleListToSet.add(UserRoleName.ROLE_SOCIO);
+        var userARequest = UsersControllerFactory.getSignUpRequestFormUserA();
+        var userARequestJson = gson.toJson(userARequest);
+        // Register user correctly
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        var userChangeRoleRequest = new UserChangeRoleRequest(UsersControllerFactory.USER_A_EMAIL, userRoleListToSet);
+        var userChangeRoleRequestJson = gson.toJson(userChangeRoleRequest);
+        var addRoleResponseJson = mockMvc
+                .perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+        var addRoleResponse = gson.fromJson(addRoleResponseJson, UserChangeRoleResponseForm.class);
+
+        Assertions.assertEquals(addRoleResponse.userRoles().size(), Integer.valueOf(2), "User have 2 roles.");
+        Assertions.assertTrue(addRoleResponse.userRoles().contains(UserRoleName.ROLE_TESORERO),
+                "response have userRoles list and contains role_tesorero");
+        Assertions.assertTrue(addRoleResponse.userRoles().contains(UserRoleName.ROLE_SOCIO),
+                "response have userRoles list and contains role_socio");
+        Assertions.assertEquals(UsersControllerFactory.USER_A_EMAIL, addRoleResponse.userName(),
+                "user name is expected created user email");
+    }
 }

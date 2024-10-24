@@ -1,26 +1,3 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to
- * deal in the Software without restriction, including without limitation the
- * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
- * sell copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- * <p>
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- * <p>
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
 
 package es.org.cxn.backapp.model;
 
@@ -28,158 +5,227 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Set;
 
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
+import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import lombok.NonNull;
 
 /**
- * A User entity interface.
+ * Represents a user entity with various personal and account details. This
+ * interface defines the methods to access and modify user information such as
+ * identifiers, names, roles, and associated address.
  *
  * @author Santiago Paz Perez
  */
 public interface UserEntity extends Serializable {
 
     /**
-     * Returns the identifier assigned to this user entity.
-     * <p>
-     * If no identifier has been assigned yet, then the value is expected to be
-     * {@code null} or lower than zero.
+     * Adds a role to the user.
      *
-     * @return the user entity's identifier
+     * @param role The role to add.
+     * @return {@code true} if the role was added successfully, {@code false}
+     *         otherwise.
      */
-    Integer getId();
+    boolean addRole(@NonNull PersistentRoleEntity role);
 
     /**
-     * Returns the name of the user entity.
+     * Retrieves the address entity associated with the user.
      *
-     * @return the user entity's name
+     * @return The user's address entity, or {@code null} if not set.
      */
-    String getName();
+    PersistentAddressEntity getAddress();
 
     /**
-     * Get the user first surname.
+     * Retrieves the user's birth date.
      *
-     * @return first surname
-     */
-    String getFirstSurname();
-
-    /**
-     * Get the user second surname.
-     *
-     * @return second surname
-     */
-    String getSecondSurname();
-
-    /**
-     * Get the user birth date.
-     *
-     * @return the user birth date
+     * @return The user's birth date.
      */
     LocalDate getBirthDate();
 
     /**
-     * Get the user gender.
+     * Retrieves the identifier assigned to this user entity (DNI).
      *
-     * @return the user gender.
+     * @return The user's identifier (DNI).
      */
-    String getGender();
+    String getDni();
 
     /**
-     * Get the user password.
+     * Retrieves the user's email address.
      *
-     * @return the user password.
-     */
-    String getPassword();
-
-    /**
-     * Get the user email.
-     *
-     * @return the user email.
+     * @return The user's email address.
      */
     String getEmail();
 
     /**
-     * Return user roles.
+     * Retrieves the user's first surname.
      *
-     * @return the user roles.
+     * @return The user's first surname.
+     */
+    String getFirstSurname();
+
+    /**
+     * Retrieves the user's gender.
+     *
+     * @return The user's gender.
+     */
+    String getGender();
+
+    /**
+     * Retrieves the type of user (e.g., admin, regular).
+     *
+     * @return The user's type.
+     */
+    UserType getKindMember();
+
+    /**
+     * Retrieves the full name of the user.
+     *
+     * @return The user's full name.
+     */
+    String getName();
+
+    /**
+     * Retrieves the user's password.
+     *
+     * @return The user's password.
+     */
+    String getPassword();
+
+    /**
+     * User profile image.
+     *
+     * @return The user profile image entity.
+     */
+    PersistentProfileImageEntity getProfileImage();
+
+    /**
+     * Retrieves the roles assigned to the user.
+     *
+     * @return A set of roles assigned to the user.
      */
     Set<PersistentRoleEntity> getRoles();
 
     /**
-     * Sets the identifier assigned to this user entity.
+     * Retrieves the user's second surname.
      *
-     * @param identifier the identifier for the user entity.
+     * @return The user's second surname.
      */
-    void setId(Integer identifier);
+    String getSecondSurname();
 
     /**
-     * Changes the name of the user entity.
+     * Checks if the user's account is enabled.
      *
-     * @param name the name to set on the user entity.
+     * @return {@code true} if the account is enabled, {@code false} otherwise.
      */
-    void setName(String name);
+    boolean isEnabled();
 
     /**
-     * Set user first surname.
+     * Removes a role from the user.
      *
-     * @param firstSurname the first surname.
+     * @param role The role to remove.
+     * @return {@code true} if the role was removed successfully, {@code false}
+     *         otherwise.
      */
-    void setFirstSurname(String firstSurname);
+    boolean removeRole(@NonNull PersistentRoleEntity role);
 
     /**
-     * Set user Second surname.
+     * Sets the address entity associated with the user.
      *
-     * @param secondSurname the second surname.
+     * @param address The new address entity.
      */
-    void setSecondSurname(String secondSurname);
+    void setAddress(PersistentAddressEntity address);
 
     /**
-     * Set the user birth date.
+     * Sets the user's birth date.
      *
-     * @param birthDate the birth date.
+     * @param birthDate The new birth date.
      */
     void setBirthDate(LocalDate birthDate);
 
     /**
-     * Set the user gender.
+     * Sets the identifier (DNI) for this user entity.
      *
-     * @param gender the user gender.
+     * @param value The new identifier for the user.
      */
-    void setGender(String gender);
+    void setDni(String value);
 
     /**
-     * Set the user password.
+     * Sets the user's email address.
      *
-     * @param password the user password.
-     */
-    void setPassword(String password);
-
-    /**
-     * Set the user email.
-     *
-     * @param email the user email.
+     * @param email The new email address.
      */
     void setEmail(String email);
 
     /**
-     * Changes the roles of the user.
+     * Enables or disables the user's account.
      *
-     * @param roles the roles to set on user.
+     * @param value {@code true} to enable the account, {@code false} to disable.
+     */
+    void setEnabled(boolean value);
+
+    /**
+     * Sets the user's first surname.
+     *
+     * @param firstSurname The new first surname.
+     */
+    void setFirstSurname(String firstSurname);
+
+    /**
+     * Sets the user's gender.
+     *
+     * @param gender The new gender.
+     */
+    void setGender(String gender);
+
+    /**
+     * Sets the type of user (e.g., admin, regular).
+     *
+     * @param kindMember The new user type.
+     */
+    void setKindMember(UserType kindMember);
+
+    /**
+     * Sets the full name of the user.
+     *
+     * @param name The new full name of the user.
+     */
+    void setName(String name);
+
+    /**
+     * Sets oAuthAuthorizationRequest.
+     *
+     * @param savedOAuth the OAuthAuthorizationRequest entity.
+     */
+    void setOauthAuthorizationRequest(PersistentOAuthAuthorizationRequestEntity savedOAuth);
+
+    /**
+     * Sets the user's password.
+     *
+     * @param password The new password.
+     */
+    void setPassword(String password);
+
+    /**
+     * Sets the user profile image entity.
+     *
+     * @param profileImage The new profile image entity associated to user.
+     */
+    void setProfileImage(PersistentProfileImageEntity profileImage);
+
+    /**
+     * Sets the roles assigned to the user.
+     *
+     * @param roles The new set of roles.
      */
     void setRoles(Set<PersistentRoleEntity> roles);
 
     /**
-     * Add existing role to user.
+     * Sets the user's second surname.
      *
-     * @param role the role entity to add.
-     * @return true if added false if not.
+     * @param secondSurname The new second surname.
      */
-    boolean addRole(PersistentRoleEntity role);
-
-    /**
-     * Remove existing role from user.
-     *
-     * @param role the role entity to remove.
-     * @return true if deleted false if not.
-     */
-    boolean removeRole(PersistentRoleEntity role);
+    void setSecondSurname(String secondSurname);
 
 }
