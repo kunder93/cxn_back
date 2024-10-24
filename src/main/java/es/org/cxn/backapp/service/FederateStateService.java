@@ -24,7 +24,6 @@
 
 package es.org.cxn.backapp.service;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -101,8 +100,6 @@ public interface FederateStateService {
      * @param autoRenewal  flag indicating whether automatic renewal is enabled
      * @return the {@link PersistentFederateStateEntity} representing the newly
      *         federated user
-     * @throws IOException                   if there is an error handling the
-     *                                       uploaded files
      * @throws UserServiceException          if there is an error related to the
      *                                       user service
      * @throws FederateStateServiceException if there is an error during the

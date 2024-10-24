@@ -151,8 +151,6 @@ public final class DefaultFederateStateService implements FederateStateService {
      * @param autoRenewal  Whether the user opts for auto-renewal of their federate
      *                     status.
      * @return The updated federate state entity.
-     * @throws IOException                   If there is an error while saving the
-     *                                       DNI images.
      * @throws UserServiceException          If the user is not found or the image
      *                                       extension is invalid.
      * @throws FederateStateServiceException If the federate state is invalid or the
