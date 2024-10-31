@@ -1,0 +1,46 @@
+databaseChangeLog:
+- changeSet:
+    id: invoice_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: activities
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: title
+            type: varchar(80)
+            constraints:
+              nullable: false
+        - column:
+            name: description
+            type: text
+            constraints:
+              nullable: false
+        - column:
+            name: start_date
+            type: datetime
+            constraints:
+              nullable: false
+        - column:
+            name: end_date
+            type: datetime
+            constraints:
+              nullable: false
+        - column:
+            name: created_at
+            type: datetime
+            constraints:
+              nullable: false
+        - column:
+            name: category  
+            type: varchar(20)
+            constraints:
+              nullable: false
+            
