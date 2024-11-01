@@ -19,18 +19,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.DefaultActivitiesService;
+import es.org.cxn.backapp.service.DefaultImageStorageService;
 
 @ExtendWith(MockitoExtension.class)
 class ActivityServiceTest {
 
     @Mock
     private ActivityEntityRepository mockRepository;
+
+    @Mock
+    private DefaultImageStorageService imageStorageService;
 
     @InjectMocks
     private DefaultActivitiesService activitiesService;
@@ -39,7 +45,7 @@ class ActivityServiceTest {
 
     @BeforeEach
     void setUp() {
-        activitiesService = new DefaultActivitiesService(mockRepository);
+        activitiesService = new DefaultActivitiesService(mockRepository, imageStorageService);
 
         // Create a sample activity entity for reuse in tests
         sampleActivity = new PersistentActivityEntity();
@@ -53,16 +59,18 @@ class ActivityServiceTest {
     /**
      * Test for the addActivity method to verify a new activity is saved and
      * returned correctly.
+     *
+     * @throws ActivityServiceException
      */
     @Test
-    void testAddActivity() {
+    void testAddActivity() throws ActivityServiceException {
         // Arrange
         when(mockRepository.save(sampleActivity)).thenReturn(sampleActivity);
-
+        final MultipartFile imageFile = Mockito.mock(MultipartFile.class);
         // Act
         PersistentActivityEntity result = activitiesService.addActivity(sampleActivity.getTitle(),
                 sampleActivity.getDescription(), sampleActivity.getStartDate(), sampleActivity.getEndDate(),
-                sampleActivity.getCategory());
+                sampleActivity.getCategory(), imageFile);
 
         // Assert
         assertNotNull(result);

@@ -27,6 +27,8 @@ package es.org.cxn.backapp.service;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 
@@ -56,11 +58,13 @@ public interface ActivitiesService {
      * @param endDate     the end date and time of the activity
      * @param category    the category of the activity (e.g., "TORNEO",
      *                    "ENTRENAMIENTO")
+     * @param imageFile   the image multipart file.
      * @return the created PersistentActivityEntity instance representing the new
      *         activity
+     * @throws ActivityServiceException when cannot store image.
      */
     PersistentActivityEntity addActivity(String title, String description, LocalDateTime startDate,
-            LocalDateTime endDate, String category);
+            LocalDateTime endDate, String category, MultipartFile imageFile) throws ActivityServiceException;
 
     /**
      * Retrieves an activity by its unique identifier.

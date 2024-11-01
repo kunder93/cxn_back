@@ -132,25 +132,25 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
     }
 
     @Override
-    public void setExtension(ImageExtension value) {
+    public void setExtension(final ImageExtension value) {
         extension = value;
 
     }
 
     @Override
-    public void setStored(Boolean value) {
+    public void setStored(final Boolean value) {
         stored = value;
 
     }
 
     @Override
-    public void setUrl(String value) {
+    public void setUrl(final String value) {
         url = value;
 
     }
 
     @Override
-    public void setUserDni(String value) {
+    public void setUserDni(final String value) {
         userDni = value;
 
     }

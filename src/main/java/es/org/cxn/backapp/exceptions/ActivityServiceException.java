@@ -25,4 +25,15 @@ public final class ActivityServiceException extends Exception {
     public ActivityServiceException(final String value) {
         super(value);
     }
+
+    /**
+     * Constructs a new ActivityServiceException with a specified error message and
+     * a cause.
+     *
+     * @param value the detailed message for the exception
+     * @param cause the underlying cause of the exception
+     */
+    public ActivityServiceException(final String value, final Throwable cause) {
+        super(value, cause);
+    }
 }

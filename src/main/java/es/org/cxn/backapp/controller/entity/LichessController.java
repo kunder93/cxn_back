@@ -291,9 +291,15 @@ public class LichessController {
      *                                 process or while saving the profile.
      */
     @GetMapping("/{userEmail}/lichessAuth")
-    public ResponseEntity<String> handleLichessCallback(@PathVariable @Email @NotBlank final String userEmail,
-            @RequestParam("code") @NotBlank @Size(max = MAX_LENGTH_AUTH_CODE, message = "MAX SIZE OF AUTH_CODE NOT VALID") final String authorizationCode,
-            @RequestParam @Size(max = MAX_LENGTH_STATE, message = "MAX SIZE OF STATE NOT VALID") final String state)
+    public ResponseEntity<String> handleLichessCallback(@PathVariable
+    @Email
+    @NotBlank final String userEmail,
+            @RequestParam("code")
+            @NotBlank
+            @Size(max = MAX_LENGTH_AUTH_CODE,
+                    message = "MAX SIZE OF AUTH_CODE NOT VALID") final String authorizationCode,
+            @RequestParam
+            @Size(max = MAX_LENGTH_STATE, message = "MAX SIZE OF STATE NOT VALID") final String state)
             throws LichessServiceException {
 
         final ResponseEntity<String> responseEntity;
@@ -488,8 +494,12 @@ public class LichessController {
      * @return an HTTP response indicating whether the operation was successful
      */
     @PostMapping("/{userEmail}/lichessAuth")
-    public ResponseEntity<HttpStatus> storeCodeVerifier(@PathVariable @Email @NotBlank final String userEmail,
-            @RequestBody @NotBlank @Size(min = CODE_VERIFIER_MIN_SIZE, max = CODE_VERIFIER_MAX_SIZE) final String codeVerifier) {
+    public ResponseEntity<HttpStatus> storeCodeVerifier(@PathVariable
+    @Email
+    @NotBlank final String userEmail,
+            @RequestBody
+            @NotBlank
+            @Size(min = CODE_VERIFIER_MIN_SIZE, max = CODE_VERIFIER_MAX_SIZE) final String codeVerifier) {
 
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final String userName = authentication.getName();
@@ -523,14 +533,14 @@ public class LichessController {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final String userEmail = authentication.getName();
 
-        String accessToken;
+        final String accessToken;
         try {
             accessToken = lichessService.getAuthToken(userEmail);
         } catch (LichessServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         try {
-            LichessSaveProfileDto dto = getLichessProfileAsDto(accessToken, userEmail);
+            final LichessSaveProfileDto dto = getLichessProfileAsDto(accessToken, userEmail);
             lichessService.saveLichessProfile(dto);
             final LichessProfileDto lichessProfile = lichessService.getLichessProfile(userEmail);
             final LichessProfileResponse response = fromLichessProfileServiceDtoToControllerResponse(lichessProfile);

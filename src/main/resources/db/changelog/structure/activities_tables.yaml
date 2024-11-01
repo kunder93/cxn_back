@@ -18,6 +18,7 @@ databaseChangeLog:
             type: varchar(80)
             constraints:
               nullable: false
+              unique: true
         - column:
             name: description
             type: text
@@ -43,4 +44,11 @@ databaseChangeLog:
             type: varchar(20)
             constraints:
               nullable: false
+        - column:
+            name: image_src  
+            type: varchar(120)
+            constraints:
+              nullable: true
+           
+              
             

@@ -29,8 +29,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -155,28 +153,35 @@ public final class DefaultUserService implements UserService {
      */
     private final ImageProfileEntityRepository imageProfileEntityRepository;
 
+    private final DefaultImageStorageService imageStorageService;
+
     /**
-     * Constructs a DefaultUserService with the specified repositories.
+     * Constructs a DefaultUserService with the specified repositories and image
+     * storage service.
      *
-     * @param userRepo          The user repository {@link UserEntityRepository}
-     *                          used for user-related operations.
-     * @param roleRepo          The role repository {@link RoleEntityRepository}
-     *                          used for role-related operations.
-     * @param countryRepo       The country repository
-     *                          {@link CountryEntityRepository} used for
-     *                          country-related operations.
-     * @param countrySubdivRepo The country subdivisions repository
-     *                          {@link CountrySubdivisionEntityRepository} used for
-     *                          country subdivision-related operations.
-     * @param imgRepo           The image profile repository
-     *                          {@link ImageProfileEntityRepository} used for
-     *                          managing user profile images.
+     * @param userRepo            The user repository {@link UserEntityRepository}
+     *                            used for user-related operations.
+     * @param roleRepo            The role repository {@link RoleEntityRepository}
+     *                            used for role-related operations.
+     * @param countryRepo         The country repository
+     *                            {@link CountryEntityRepository} used for
+     *                            country-related operations.
+     * @param countrySubdivRepo   The country subdivisions repository
+     *                            {@link CountrySubdivisionEntityRepository} used
+     *                            for country subdivision-related operations.
+     * @param imgRepo             The image profile repository
+     *                            {@link ImageProfileEntityRepository} used for
+     *                            managing user profile images.
+     * @param imageStorageService The image storage service
+     *                            {@link DefaultImageStorageService} used for saving
+     *                            and loading images.
      *
-     * @throws NullPointerException if any of the provided repositories are null.
+     * @throws NullPointerException if any of the provided repositories or services
+     *                              are null.
      */
     public DefaultUserService(final UserEntityRepository userRepo, final RoleEntityRepository roleRepo,
             final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo,
-            final ImageProfileEntityRepository imgRepo) {
+            final ImageProfileEntityRepository imgRepo, final DefaultImageStorageService imageStorageService) {
         super();
 
         this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
@@ -186,7 +191,8 @@ public final class DefaultUserService implements UserService {
                 "Received a null pointer as image profile repository");
         this.countrySubdivisionRepo = checkNotNull(countrySubdivRepo,
                 "Received a null pointer as country subdivision repository");
-
+        this.imageStorageService = checkNotNull(imageStorageService,
+                "Received a null pointer as image storage service");
     }
 
     @Override
@@ -526,22 +532,19 @@ public final class DefaultUserService implements UserService {
         // Set the file name as the user DNI with the correct extension
         final String fileName = userDni + "." + fileExtension;
 
-        // Construct the path using Paths to ensure compatibility across OS
-        final Path path = Paths.get(uploadDir, fileName);
-
-        // Ensure the directories exist
-        if (!Files.exists(path.getParent())) {
-            Files.createDirectories(path.getParent());
+        // Use the image storage service to save the image
+        final String savedImagePath;
+        try {
+            savedImagePath = imageStorageService.saveImage(file, uploadDir, "profile", userDni);
+        } catch (IOException e) {
+            throw new UserServiceException("Error saving profile image: " + e.getMessage(), e);
         }
-
-        // Save the file to the file system
-        file.transferTo(path.toFile());
 
         // Create the profile image entity
         final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
         profileImageEntity.setExtension(imageExtension);
         profileImageEntity.setStored(true);
-        profileImageEntity.setUrl(path.toString()); // Store the full path
+        profileImageEntity.setUrl(savedImagePath); // Store the full path
         profileImageEntity.setUserDni(userDni);
 
         // Save the profile image entity to the database

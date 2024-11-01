@@ -53,7 +53,7 @@ public class PersistentActivityEntity implements ActivityEntity {
     /**
      * Title of the activity. Cannot be null and is not unique.
      */
-    @Column(name = "title", nullable = false, unique = false)
+    @Column(name = "title", nullable = false, unique = true)
     private String title = "";
 
     /**
@@ -86,6 +86,12 @@ public class PersistentActivityEntity implements ActivityEntity {
      */
     @Column(name = "category", nullable = false, unique = false)
     private String category = "";
+
+    /**
+     * Image sourace path where is stored.
+     */
+    @Column(name = "image_src", nullable = true, unique = false)
+    private String imageSrc;
 
     /**
      * Default constructor for PersistentActivityEntity.

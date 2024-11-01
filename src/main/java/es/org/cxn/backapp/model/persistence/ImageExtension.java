@@ -55,7 +55,7 @@ public enum ImageExtension {
      * @return the corresponding ImageExtension, or null if invalid.
      */
     public static ImageExtension fromString(final String extension) {
-        for (ImageExtension imgExt : values()) {
+        for (final ImageExtension imgExt : values()) {
             if (imgExt.getExtension().equalsIgnoreCase(extension)) {
                 return imgExt;
             }
@@ -70,7 +70,7 @@ public enum ImageExtension {
      * @return true if the extension is valid, false otherwise.
      */
     public static boolean isValidExtension(final String extension) {
-        for (ImageExtension imgExt : values()) {
+        for (final ImageExtension imgExt : values()) {
             if (imgExt.getExtension().equalsIgnoreCase(extension)) {
                 return true;
             }

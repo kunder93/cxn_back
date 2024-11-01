@@ -26,11 +26,14 @@ package es.org.cxn.backapp.service;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
@@ -54,16 +57,28 @@ import es.org.cxn.backapp.repository.ActivityEntityRepository;
 public final class DefaultActivitiesService implements ActivitiesService {
 
     private final ActivityEntityRepository activityRepository;
+    private final DefaultImageStorageService imageStorageService;
+
+    @Value("${image.location.activity}")
+    private String imageLocationActivity;
 
     /**
-     * Constructs a new DefaultActivitiesService with the specified repository.
+     * Constructs a new DefaultActivitiesService with the specified repository and
+     * image storage service.
      *
-     * @param repoActivity the activity repository used for database operations
-     * @throws NullPointerException if {@code repoActivity} is null
+     * @param repoActivity        the activity repository used for database
+     *                            operations
+     * @param imageStorageService the image storage service used to save activity
+     *                            images
+     * @throws NullPointerException if {@code repoActivity} or
+     *                              {@code imageStorageService} is null
      */
-    public DefaultActivitiesService(final ActivityEntityRepository repoActivity) {
+    public DefaultActivitiesService(final ActivityEntityRepository repoActivity,
+            final DefaultImageStorageService imageStorageService) {
         super();
-        activityRepository = checkNotNull(repoActivity, "Received a null pointer as activity repository");
+        this.activityRepository = checkNotNull(repoActivity, "Received a null pointer as activity repository");
+        this.imageStorageService = checkNotNull(imageStorageService,
+                "Received a null pointer as image storage service");
     }
 
     /**
@@ -74,18 +89,41 @@ public final class DefaultActivitiesService implements ActivitiesService {
      * @param startDate   the start date and time of the activity
      * @param endDate     the end date and time of the activity
      * @param category    the category of the activity
+     * @param imageFile   the image multipart file of the activity.
      * @return the saved {@link PersistentActivityEntity} instance
      */
     @Override
-    public PersistentActivityEntity addActivity(String title, String description, LocalDateTime startDate,
-            LocalDateTime endDate, String category) {
-        PersistentActivityEntity activityEntity = new PersistentActivityEntity();
+    public PersistentActivityEntity addActivity(final String title, final String description,
+            final LocalDateTime startDate, final LocalDateTime endDate, final String category,
+            final MultipartFile imageFile) throws ActivityServiceException {
+        final PersistentActivityEntity activityEntity = new PersistentActivityEntity();
         activityEntity.setTitle(title);
         activityEntity.setDescription(description);
         activityEntity.setStartDate(startDate);
         activityEntity.setEndDate(endDate);
         activityEntity.setCategory(category);
 
+        if (imageFile.isEmpty()) {
+            activityEntity.setImageSrc(null);
+
+        } else {
+            try {
+                // Use activity title like a unique ID.
+                final String entityIdForImage = title;
+                final String entityType = "activity"; // Specify "activity" as the entity type
+
+                // Save the image file using the image storage service with specified parameters
+                final String imagePath = imageStorageService.saveImage(imageFile, imageLocationActivity, entityType,
+                        entityIdForImage);
+
+                // Store the image path or URL in the activity entity
+                activityEntity.setImageSrc(imagePath);
+
+            } catch (IOException e) {
+                throw new ActivityServiceException("Error saving activity image: " + e.getMessage(), e);
+            }
+        }
+        // Save the activity entity to the database
         return activityRepository.save(activityEntity);
     }
 
@@ -98,8 +136,8 @@ public final class DefaultActivitiesService implements ActivitiesService {
      *                                  identifier
      */
     @Override
-    public PersistentActivityEntity getActivity(Integer identifier) throws ActivityServiceException {
-        var optionalActivity = activityRepository.findById(identifier);
+    public PersistentActivityEntity getActivity(final Integer identifier) throws ActivityServiceException {
+        final var optionalActivity = activityRepository.findById(identifier);
         if (optionalActivity.isEmpty()) {
             throw new ActivityServiceException("Activity with identifier: " + identifier + " not found.");
         } else {
@@ -114,7 +152,7 @@ public final class DefaultActivitiesService implements ActivitiesService {
      */
     @Override
     public Stream<PersistentActivityEntity> getAllActivities() {
-        List<PersistentActivityEntity> activitiesList = activityRepository.findAll();
+        final List<PersistentActivityEntity> activitiesList = activityRepository.findAll();
         return activitiesList.stream();
     }
 

@@ -45,6 +45,13 @@ public interface ActivityEntity extends java.io.Serializable {
     Integer getId();
 
     /**
+     * Gets the image source of the activity.
+     *
+     * @return The image source as String.
+     */
+    String getImageSrc();
+
+    /**
      * Gets the start date and time of the activity.
      *
      * @return the LocalDateTime when the activity starts.
@@ -92,6 +99,13 @@ public interface ActivityEntity extends java.io.Serializable {
      * @param value the ID to set for this activity.
      */
     void setId(Integer value);
+
+    /**
+     * Sets the image source of the activity.
+     *
+     * @param value the image source to set for this activity.
+     */
+    void setImageSrc(String value);
 
     /**
      * Sets the start date and time of the activity.
