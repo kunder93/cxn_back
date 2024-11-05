@@ -34,7 +34,7 @@
                 <role>Developer</role>
             </roles>
             <timezone>+1</timezone>
-            <properties />
+            <properties/>
         </developer>
     </developers>
     <scm>
@@ -52,7 +52,7 @@
         <spring.boot.version>3.3.4</spring.boot.version>
         <spring.framework.version>6.3.3</spring.framework.version>
         <spring.version>6.1.13</spring.version>
-        <spring.security.version>6.3.3</spring.security.version>
+        <spring.security.version>6.3.4</spring.security.version>
         <spring.web.version>6.1.13</spring.web.version>
         <springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
         <spring.tx.version>6.1.13</spring.tx.version>
