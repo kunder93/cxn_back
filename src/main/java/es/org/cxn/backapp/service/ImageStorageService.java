@@ -47,14 +47,11 @@ public interface ImageStorageService {
     /**
      * Loads an image file from the storage based on its path.
      *
-     * @param baseDirectory the root directory for storing images, specified by the
-     *                      calling service.
-     * @param imagePath     the {@link String} representing the path to the image
-     *                      file.
+     * @param imagePath the {@link String} representing the path to the image file.
      * @return a byte array containing the image data.
      * @throws IOException if an error occurs during file reading.
      */
-    byte[] loadImage(String baseDirectory, String imagePath) throws IOException;
+    byte[] loadImage(String imagePath) throws IOException;
 
     /**
      * Saves an image file associated with a specific entity.

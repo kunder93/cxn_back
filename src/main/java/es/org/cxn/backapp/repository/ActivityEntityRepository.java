@@ -46,6 +46,6 @@ import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
  * @see PersistentActivityEntity
  */
 @Repository
-public interface ActivityEntityRepository extends JpaRepository<PersistentActivityEntity, Integer> {
+public interface ActivityEntityRepository extends JpaRepository<PersistentActivityEntity, String> {
 
 }

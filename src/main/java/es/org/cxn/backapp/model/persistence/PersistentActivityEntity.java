@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import es.org.cxn.backapp.model.ActivityEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -44,15 +42,9 @@ public class PersistentActivityEntity implements ActivityEntity {
     private static final long serialVersionUID = -6081730398931758455L;
 
     /**
-     * Unique identifier for the activity.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-
-    /**
      * Title of the activity. Cannot be null and is not unique.
      */
+    @Id
     @Column(name = "title", nullable = false, unique = true)
     private String title = "";
 

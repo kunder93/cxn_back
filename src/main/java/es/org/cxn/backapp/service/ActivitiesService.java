@@ -31,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
+import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
 
 /**
  * ActivitiesService defines the contract for operations related to managing
@@ -69,17 +70,31 @@ public interface ActivitiesService {
     /**
      * Retrieves an activity by its unique identifier.
      *
-     * @param identifier the unique identifier of the activity to retrieve
+     * @param title the activity title, unique identifier of the activity to
+     *              retrieve
      * @return the PersistentActivityEntity instance representing the found activity
      * @throws ActivityServiceException When no activity found.
      */
-    PersistentActivityEntity getActivity(Integer identifier) throws ActivityServiceException;
+    PersistentActivityEntity getActivity(String title) throws ActivityServiceException;
+
+    /**
+     * Retrieves the image associated with a specified activity.
+     *
+     * @param title the unique title of the activity whose image is to be retrieved
+     * @return a byte array representing the image data
+     * @throws ActivityServiceException if no image is found for the specified
+     *                                  activity, or if an error occurs while
+     *                                  loading the image
+     */
+    public byte[] getActivityImage(final String title) throws ActivityServiceException;
 
     /**
      * Retrieves all activities available in the system as a Stream.
      *
      * @return a Stream of PersistentActivityEntity instances representing all
      *         activities
+     * @throws ActivityServiceException When cannot load activities images.
      */
-    Stream<PersistentActivityEntity> getAllActivities();
+    Stream<ActivityWithImageDto> getAllActivities() throws ActivityServiceException;
+
 }

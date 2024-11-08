@@ -7,16 +7,10 @@ databaseChangeLog:
         tableName: activities
         columns:
         - column:
-            name: id
-            type: bigint
-            autoIncrement: true
-            constraints:
-              primaryKey: true
-              nullable: false
-        - column:
             name: title
             type: varchar(80)
             constraints:
+              primaryKey: true
               nullable: false
               unique: true
         - column:

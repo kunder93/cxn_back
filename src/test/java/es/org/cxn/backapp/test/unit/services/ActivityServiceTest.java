@@ -10,9 +10,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.DefaultActivitiesService;
 import es.org.cxn.backapp.service.DefaultImageStorageService;
+import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
 
 @ExtendWith(MockitoExtension.class)
 class ActivityServiceTest {
@@ -86,15 +88,15 @@ class ActivityServiceTest {
     @Test
     void testGetActivityNotFound() {
         // Arrange
-        when(mockRepository.findById(1)).thenReturn(Optional.empty());
+        when(mockRepository.findById("Sample Activity")).thenReturn(Optional.empty());
 
         // Act & Assert
         Exception exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.getActivity(1);
+            activitiesService.getActivity("Sample Activity");
         });
 
-        assertEquals("Activity with identifier: 1 not found.", exception.getMessage());
-        verify(mockRepository, times(1)).findById(1);
+        assertEquals("Activity with title: Sample Activity not found.", exception.getMessage());
+        verify(mockRepository, times(1)).findById("Sample Activity");
     }
 
     /**
@@ -104,35 +106,32 @@ class ActivityServiceTest {
     @Test
     void testGetActivitySuccess() throws ActivityServiceException {
         // Arrange
-        when(mockRepository.findById(1)).thenReturn(Optional.of(sampleActivity));
+        when(mockRepository.findById("Sample Activity")).thenReturn(Optional.of(sampleActivity));
 
         // Act
-        PersistentActivityEntity result = activitiesService.getActivity(1);
+        PersistentActivityEntity result = activitiesService.getActivity("Sample Activity");
 
         // Assert
         assertNotNull(result);
-        assertEquals(sampleActivity.getId(), result.getId());
         assertEquals(sampleActivity.getTitle(), result.getTitle());
-        verify(mockRepository, times(1)).findById(1);
+        verify(mockRepository, times(1)).findById("Sample Activity");
     }
 
     /**
-     * Test for the getAllActivities method to verify all activities are returned as
-     * a Stream.
+     * Test for the getAllActivities method to verify behavior when no activities
+     * are found.
      */
     @Test
-    void testGetAllActivities() {
+    void testGetAllActivities_NoActivities() throws ActivityServiceException {
         // Arrange
-        List<PersistentActivityEntity> activityList = Arrays.asList(sampleActivity);
-        when(mockRepository.findAll()).thenReturn(activityList);
+        when(mockRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Act
-        List<PersistentActivityEntity> result = activitiesService.getAllActivities().toList();
+        List<ActivityWithImageDto> result = activitiesService.getAllActivities().collect(Collectors.toList());
 
         // Assert
         assertNotNull(result);
-        assertEquals(1, result.size());
-        assertTrue(result.contains(sampleActivity));
+        assertTrue(result.isEmpty());
         verify(mockRepository, times(1)).findAll();
     }
 }

@@ -38,13 +38,6 @@ public interface ActivityEntity extends java.io.Serializable {
     LocalDateTime getEndDate();
 
     /**
-     * Gets the unique identifier for the activity.
-     *
-     * @return the activity ID as an Integer.
-     */
-    Integer getId();
-
-    /**
      * Gets the image source of the activity.
      *
      * @return The image source as String.
@@ -92,13 +85,6 @@ public interface ActivityEntity extends java.io.Serializable {
      * @param value the LocalDateTime when the activity ends.
      */
     void setEndDate(LocalDateTime value);
-
-    /**
-     * Sets the unique identifier for the activity.
-     *
-     * @param value the ID to set for this activity.
-     */
-    void setId(Integer value);
 
     /**
      * Sets the image source of the activity.

@@ -28,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -38,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
+import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
 
 /**
  * DefaultActivitiesService is the default implementation of the
@@ -56,7 +58,18 @@ import es.org.cxn.backapp.repository.ActivityEntityRepository;
 @Service
 public final class DefaultActivitiesService implements ActivitiesService {
 
+    /**
+     * The repository for performing CRUD operations on activity entities. This
+     * repository interface provides methods for interacting with the
+     * {@link PersistentActivityEntity} data in the database.
+     */
     private final ActivityEntityRepository activityRepository;
+
+    /**
+     * The image storage service for handling activity image uploads. This service
+     * is responsible for saving images associated with activities to the specified
+     * storage location.
+     */
     private final DefaultImageStorageService imageStorageService;
 
     @Value("${image.location.activity}")
@@ -96,12 +109,17 @@ public final class DefaultActivitiesService implements ActivitiesService {
     public PersistentActivityEntity addActivity(final String title, final String description,
             final LocalDateTime startDate, final LocalDateTime endDate, final String category,
             final MultipartFile imageFile) throws ActivityServiceException {
+
+        if (activityRepository.existsById(title)) {
+            throw new ActivityServiceException("Activity with title: " + title + " already exists.");
+        }
         final PersistentActivityEntity activityEntity = new PersistentActivityEntity();
         activityEntity.setTitle(title);
         activityEntity.setDescription(description);
         activityEntity.setStartDate(startDate);
         activityEntity.setEndDate(endDate);
         activityEntity.setCategory(category);
+        activityEntity.setCreatedAt(LocalDateTime.now());
 
         if (imageFile.isEmpty()) {
             activityEntity.setImageSrc(null);
@@ -130,30 +148,65 @@ public final class DefaultActivitiesService implements ActivitiesService {
     /**
      * Retrieves an activity by its identifier.
      *
-     * @param identifier the unique identifier of the activity
+     * @param title the activity title, unique identifier of the activity
      * @return the found {@link PersistentActivityEntity} instance
      * @throws ActivityServiceException if no activity is found with the specified
      *                                  identifier
      */
     @Override
-    public PersistentActivityEntity getActivity(final Integer identifier) throws ActivityServiceException {
-        final var optionalActivity = activityRepository.findById(identifier);
+    public PersistentActivityEntity getActivity(final String title) throws ActivityServiceException {
+        final var optionalActivity = activityRepository.findById(title);
         if (optionalActivity.isEmpty()) {
-            throw new ActivityServiceException("Activity with identifier: " + identifier + " not found.");
+            throw new ActivityServiceException("Activity with title: " + title + " not found.");
         } else {
             return optionalActivity.get();
         }
     }
 
     /**
-     * Retrieves all activities from the database.
+     * Retrieves an activity's image by its title.
      *
-     * @return a {@link Stream} of all {@link PersistentActivityEntity} instances
+     * @param title the activity title, used to locate the associated image file.
+     * @return the {@link MultipartFile} representing the image file.
+     * @throws ActivityServiceException if the image cannot be found or loaded.
      */
     @Override
-    public Stream<PersistentActivityEntity> getAllActivities() {
+    public byte[] getActivityImage(final String title) throws ActivityServiceException {
+        final PersistentActivityEntity activity = getActivity(title);
+
+        if (activity.getImageSrc() == null || activity.getImageSrc().isEmpty()) {
+            throw new ActivityServiceException("No image associated with activity: " + title);
+        }
+
+        try {
+            // Load the image bytes using the image storage service
+            return imageStorageService.loadImage(activity.getImageSrc());
+
+        } catch (IOException e) {
+            throw new ActivityServiceException("Error loading activity image: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Retrieves all activities from the database along with their associated
+     * images.
+     *
+     * @return a {@link Stream} of all {@link ActivityWithImageDto} instances
+     */
+    @Override
+    public Stream<ActivityWithImageDto> getAllActivities() throws ActivityServiceException {
         final List<PersistentActivityEntity> activitiesList = activityRepository.findAll();
-        return activitiesList.stream();
+
+        return activitiesList.stream().map(activity -> {
+            try {
+                byte[] image = getActivityImage(activity.getTitle());
+                return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(), activity.getStartDate(),
+                        activity.getEndDate(), activity.getCategory(), Base64.getEncoder().encodeToString(image));
+            } catch (ActivityServiceException e) {
+                // Handle exception (e.g., log it, or return a default ActivityWithImageDto)
+                throw new RuntimeException(e); // Wrap in unchecked exception
+            }
+        });
     }
 
 }

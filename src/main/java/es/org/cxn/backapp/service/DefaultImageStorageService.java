@@ -64,15 +64,13 @@ public final class DefaultImageStorageService implements ImageStorageService {
      * Loads an image file as a byte array from the specified path within a base
      * directory.
      *
-     * @param baseDirectory the root directory for storing images, specified by the
-     *                      calling service
-     * @param imagePath     the relative path of the image to load
+     * @param imagePath the relative path of the image to load
      * @return a byte array containing the image data
      * @throws IOException if an error occurs while reading the file
      */
     @Override
-    public byte[] loadImage(final String baseDirectory, final String imagePath) throws IOException {
-        final Path path = Paths.get(baseDirectory, imagePath);
+    public byte[] loadImage(final String imagePath) throws IOException {
+        final Path path = Paths.get(imagePath);
         return Files.readAllBytes(path);
     }
 

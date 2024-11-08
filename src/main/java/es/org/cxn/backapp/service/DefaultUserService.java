@@ -99,7 +99,7 @@ public final class DefaultUserService implements UserService {
      */
     public static final String USER_PASSWORD_NOT_MATCH = "User current password dont match.";
 
-    private static boolean checkAgeUnder18(final PersistentUserEntity user) {
+    private static boolean checkAgeUnder18(final UserEntity user) {
 
         final var birthDate = user.getBirthDate();
         final var today = LocalDate.now();
@@ -115,7 +115,7 @@ public final class DefaultUserService implements UserService {
      * @param user     The user entity.
      * @return true if can change false if not.
      */
-    private static boolean validateKindMemberChange(final UserType userType, final PersistentUserEntity user) {
+    private static boolean validateKindMemberChange(final UserType userType, final UserEntity user) {
         return switch (userType) {
         case SOCIO_NUMERO -> true;
         case SOCIO_ASPIRANTE -> checkAgeUnder18(user);
@@ -262,31 +262,31 @@ public final class DefaultUserService implements UserService {
     @Override
     public UserEntity changeKindMember(final String userEmail, final UserType newKindMember)
             throws UserServiceException {
-        final var userOptional = userRepository.findByEmail(userEmail);
-        if (userOptional.isEmpty()) {
-            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
-        } else {
-            final var userEntity = userOptional.get();
+        final var userEntity = findByEmail(userEmail);
 
-            if (!validateKindMemberChange(newKindMember, userEntity)) {
-                throw new UserServiceException("Cannot change the kind of member");
-            }
-            userEntity.setKindMember(newKindMember);
-            userRepository.save(userEntity);
-            return userEntity;
+        if (!validateKindMemberChange(newKindMember, userEntity)) {
+            throw new UserServiceException("Cannot change the kind of member");
+        }
+        userEntity.setKindMember(newKindMember);
+        // Guardar la entidad de usuario actualizada en la base de datos
+        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
+            return userRepository.save(persistentUserEntity);
+        } else {
+            throw new UserServiceException("User entity is not of expected type.");
         }
     }
 
     @Override
     @Transactional
     public UserEntity changeUserEmail(final String email, final String newEmail) throws UserServiceException {
-        final var user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
-        }
-        final var userEntity = user.get();
+        final var userEntity = findByEmail(email);
         userEntity.setEmail(newEmail);
-        return userRepository.save(userEntity);
+        // Guardar la entidad de usuario actualizada en la base de datos
+        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
+            return userRepository.save(persistentUserEntity);
+        } else {
+            throw new UserServiceException("User entity is not of expected type.");
+        }
     }
 
     @Override
@@ -295,12 +295,8 @@ public final class DefaultUserService implements UserService {
             throws UserServiceException {
 
         // Buscar al usuario por su correo electrónico en la base de datos
-        final var userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
-        }
-        // Obtener la entidad de usuario desde el Optional
-        final var userEntity = userOptional.get();
+        final var userEntity = findByEmail(email);
+
         // Verificar la contraseña proporcionada coincide con la almacenada
         final var passwordEncoder = new BCryptPasswordEncoder();
         final String storedPassword = userEntity.getPassword();
@@ -312,17 +308,19 @@ public final class DefaultUserService implements UserService {
         // Actualizar la contraseña del usuario con la nueva contraseña hash
         userEntity.setPassword(hashedNewPassword);
         // Guardar la entidad de usuario actualizada en la base de datos
-        return userRepository.save(userEntity);
+        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
+            return userRepository.save(persistentUserEntity);
+        } else {
+            throw new UserServiceException("User entity is not of expected type.");
+        }
     }
 
     @Override
     @Transactional
     public UserEntity changeUserRoles(final String email, final List<UserRoleName> roleNameList)
             throws UserServiceException {
-        final var user = userRepository.findByEmail(email);
-        if (user.isEmpty()) {
-            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
-        }
+        final var userEntity = findByEmail(email);
+
         final Set<PersistentRoleEntity> rolesSet = new HashSet<>();
         for (final UserRoleName roleName : roleNameList) {
 
@@ -333,9 +331,12 @@ public final class DefaultUserService implements UserService {
             rolesSet.add(role.get());
 
         }
-        final var userEntity = user.get();
-        userEntity.setRoles(rolesSet);
-        return userRepository.save(userEntity);
+        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
+            persistentUserEntity.setRoles(rolesSet);
+            return userRepository.save(persistentUserEntity);
+        } else {
+            throw new UserServiceException("User entity is not of expected type.");
+        }
     }
 
     @Override
@@ -427,12 +428,13 @@ public final class DefaultUserService implements UserService {
     @Transactional
     @Override
     public void remove(final String email) throws UserServiceException {
-        final Optional<PersistentUserEntity> userOptional;
-        userOptional = userRepository.findByEmail(email);
-        if (userOptional.isEmpty()) {
-            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
+        final var userEntity = findByEmail(email);
+        // Guardar la entidad de usuario actualizada en la base de datos
+        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
+            userRepository.delete(persistentUserEntity);
+        } else {
+            throw new UserServiceException("User entity is not of expected type.");
         }
-        userRepository.delete(userOptional.get());
     }
 
     /**
