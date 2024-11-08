@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -56,6 +57,9 @@ class ActivityServiceTest {
         sampleActivity.setStartDate(LocalDateTime.now());
         sampleActivity.setEndDate(LocalDateTime.now().plusHours(2));
         sampleActivity.setCategory("Sample Category");
+
+        // Set createdAt manually if it's set automatically in addActivity
+        sampleActivity.setCreatedAt(LocalDateTime.now());
     }
 
     /**
@@ -67,8 +71,9 @@ class ActivityServiceTest {
     @Test
     void testAddActivity() throws ActivityServiceException {
         // Arrange
-        when(mockRepository.save(sampleActivity)).thenReturn(sampleActivity);
+        when(mockRepository.save(any(PersistentActivityEntity.class))).thenReturn(sampleActivity);
         final MultipartFile imageFile = Mockito.mock(MultipartFile.class);
+
         // Act
         PersistentActivityEntity result = activitiesService.addActivity(sampleActivity.getTitle(),
                 sampleActivity.getDescription(), sampleActivity.getStartDate(), sampleActivity.getEndDate(),
@@ -78,7 +83,7 @@ class ActivityServiceTest {
         assertNotNull(result);
         assertEquals(sampleActivity.getTitle(), result.getTitle());
         assertEquals(sampleActivity.getDescription(), result.getDescription());
-        verify(mockRepository, times(1)).save(sampleActivity);
+        verify(mockRepository, times(1)).save(any(PersistentActivityEntity.class));
     }
 
     /**

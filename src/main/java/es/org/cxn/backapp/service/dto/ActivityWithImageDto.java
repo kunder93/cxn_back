@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @param description A brief description of the activity. Must not be null.
  * @param startDate   The start date and time of the activity. Must not be null.
  * @param endDate     The end date and time of the activity. Must not be null.
- * @param category    The category or type of the activity. Must not be null.
+ * @param category    category or type of the activity. Must not be null.
  * @param image       A byte array representing the image associated with the
  *                    activity. This field is optional and can be null if there
  *                    is no image provided.
