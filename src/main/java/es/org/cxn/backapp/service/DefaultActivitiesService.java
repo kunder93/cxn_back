@@ -72,6 +72,9 @@ public final class DefaultActivitiesService implements ActivitiesService {
      */
     private final DefaultImageStorageService imageStorageService;
 
+    /**
+     * Path for storing activities images.
+     */
     @Value("${image.location.activity}")
     private String imageLocationActivity;
 
@@ -79,19 +82,17 @@ public final class DefaultActivitiesService implements ActivitiesService {
      * Constructs a new DefaultActivitiesService with the specified repository and
      * image storage service.
      *
-     * @param repoActivity        the activity repository used for database
-     *                            operations
-     * @param imageStorageService the image storage service used to save activity
-     *                            images
+     * @param repoActivity      the activity repository used for database operations
+     * @param imgStorageService the image storage service used to save activity
+     *                          images
      * @throws NullPointerException if {@code repoActivity} or
      *                              {@code imageStorageService} is null
      */
     public DefaultActivitiesService(final ActivityEntityRepository repoActivity,
-            final DefaultImageStorageService imageStorageService) {
+            final DefaultImageStorageService imgStorageService) {
         super();
         this.activityRepository = checkNotNull(repoActivity, "Received a null pointer as activity repository");
-        this.imageStorageService = checkNotNull(imageStorageService,
-                "Received a null pointer as image storage service");
+        this.imageStorageService = checkNotNull(imgStorageService, "Received a null pointer as image storage service");
     }
 
     /**

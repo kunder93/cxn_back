@@ -86,7 +86,7 @@ public interface ActivitiesService {
      *                                  activity, or if an error occurs while
      *                                  loading the image
      */
-    public byte[] getActivityImage(final String title) throws ActivityServiceException;
+    byte[] getActivityImage(String title) throws ActivityServiceException;
 
     /**
      * Retrieves all activities available in the system as a Stream.

@@ -1,3 +1,4 @@
+
 /**
  * The MIT License (MIT)
  *
@@ -124,10 +125,10 @@ public class UserController {
         /**
          * Sets the profile image URL.
          *
-         * @param profileImageUrl the new URL of the profile image.
+         * @param value the new URL of the profile image.
          */
-        public void setProfileImageUrl(final String profileImageUrl) {
-            this.profileImageUrl = profileImageUrl;
+        public void setProfileImageUrl(final String value) {
+            this.profileImageUrl = value;
         }
     }
 

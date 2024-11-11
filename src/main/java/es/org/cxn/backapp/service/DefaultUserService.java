@@ -125,6 +125,9 @@ public final class DefaultUserService implements UserService {
         };
     }
 
+    /**
+     * Path for profile's image.
+     */
     @Value("${image.location.profiles}")
     private String imageLocationProfiles;
 
@@ -153,35 +156,38 @@ public final class DefaultUserService implements UserService {
      */
     private final ImageProfileEntityRepository imageProfileEntityRepository;
 
+    /**
+     * The image storage service implementation.
+     */
     private final DefaultImageStorageService imageStorageService;
 
     /**
      * Constructs a DefaultUserService with the specified repositories and image
      * storage service.
      *
-     * @param userRepo            The user repository {@link UserEntityRepository}
-     *                            used for user-related operations.
-     * @param roleRepo            The role repository {@link RoleEntityRepository}
-     *                            used for role-related operations.
-     * @param countryRepo         The country repository
-     *                            {@link CountryEntityRepository} used for
-     *                            country-related operations.
-     * @param countrySubdivRepo   The country subdivisions repository
-     *                            {@link CountrySubdivisionEntityRepository} used
-     *                            for country subdivision-related operations.
-     * @param imgRepo             The image profile repository
-     *                            {@link ImageProfileEntityRepository} used for
-     *                            managing user profile images.
-     * @param imageStorageService The image storage service
-     *                            {@link DefaultImageStorageService} used for saving
-     *                            and loading images.
+     * @param userRepo          The user repository {@link UserEntityRepository}
+     *                          used for user-related operations.
+     * @param roleRepo          The role repository {@link RoleEntityRepository}
+     *                          used for role-related operations.
+     * @param countryRepo       The country repository
+     *                          {@link CountryEntityRepository} used for
+     *                          country-related operations.
+     * @param countrySubdivRepo The country subdivisions repository
+     *                          {@link CountrySubdivisionEntityRepository} used for
+     *                          country subdivision-related operations.
+     * @param imgRepo           The image profile repository
+     *                          {@link ImageProfileEntityRepository} used for
+     *                          managing user profile images.
+     * @param imgStorageService The image storage service
+     *                          {@link DefaultImageStorageService} used for saving
+     *                          and loading images.
      *
      * @throws NullPointerException if any of the provided repositories or services
      *                              are null.
      */
     public DefaultUserService(final UserEntityRepository userRepo, final RoleEntityRepository roleRepo,
             final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo,
-            final ImageProfileEntityRepository imgRepo, final DefaultImageStorageService imageStorageService) {
+            final ImageProfileEntityRepository imgRepo, final DefaultImageStorageService imgStorageService) {
         super();
 
         this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
@@ -191,13 +197,13 @@ public final class DefaultUserService implements UserService {
                 "Received a null pointer as image profile repository");
         this.countrySubdivisionRepo = checkNotNull(countrySubdivRepo,
                 "Received a null pointer as country subdivision repository");
-        this.imageStorageService = checkNotNull(imageStorageService,
-                "Received a null pointer as image storage service");
+        this.imageStorageService = checkNotNull(imgStorageService, "Received a null pointer as image storage service");
     }
 
     @Override
     public UserEntity add(final UserRegistrationDetailsDto userDetails) throws UserServiceException {
         final var dni = userDetails.dni();
+        final var noVeridicDniDate = LocalDate.of(1900, 2, 2);
 
         if (userRepository.findByDni(dni).isPresent()) {
             throw new UserServiceException(USER_DNI_EXISTS_MESSAGE);
@@ -251,7 +257,7 @@ public final class DefaultUserService implements UserService {
             federateState.setDniBackImageUrl("");
             federateState.setDniFrontImageUrl("");
             federateState.setAutomaticRenewal(false);
-            federateState.setDniLastUpdate(LocalDate.of(1900, 2, 2));
+            federateState.setDniLastUpdate(noVeridicDniDate);
 
             save.setFederateState(federateState);
 
@@ -397,6 +403,8 @@ public final class DefaultUserService implements UserService {
                     mimeType = "data:image/png;base64,";
                     break;
                 case ImageExtension.JPG:
+                    mimeType = "data:image/jpeg;base64,";
+                    break;
                 case ImageExtension.JPEG:
                     mimeType = "data:image/jpeg;base64,";
                     break;

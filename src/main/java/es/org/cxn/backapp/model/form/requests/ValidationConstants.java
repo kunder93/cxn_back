@@ -483,7 +483,8 @@ public final class ValidationConstants {
      * Validation message indicating that the end date must be on or after the start
      * date.
      */
-    public static final String PAYMENT_SHEET_END_DATE_BEFORE_START_DATE_MESSAGE = "End date must be on or after the start date.";
+    public static final String PAYMENT_SHEET_END_DATE_BEFORE_START_DATE_MESSAGE = "End date must be on or"
+            + " after the start date.";
 
     /**
      * The message used when the ID is not positive.

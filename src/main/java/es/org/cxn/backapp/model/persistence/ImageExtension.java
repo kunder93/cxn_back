@@ -91,10 +91,10 @@ public enum ImageExtension {
     /**
      * Constructor for the enum to set the extension value.
      *
-     * @param extension the string representation of the image extension.
+     * @param value the string representation of the image extension.
      */
-    ImageExtension(final String extension) {
-        this.extension = extension;
+    ImageExtension(final String value) {
+        this.extension = value;
     }
 
     /**

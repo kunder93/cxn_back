@@ -120,7 +120,8 @@ public final class ValidationMessages {
      * image file. Acceptable formats include JPEG, PNG, WebP, and AVIF with a
      * maximum size of 10 MB.
      */
-    public static final String ACTIVITY_IMAGE_FILE_VALID = "Image must be a JPEG, PNG, WebP, or AVIF file and no larger than 10 MB.";
+    public static final String ACTIVITY_IMAGE_FILE_VALID = "Image must be a JPEG, PNG, WebP, or AVIF file and no"
+            + " larger than 10 MB.";
 
     /**
      * Private no args constructor.

@@ -1,3 +1,4 @@
+
 /**
  * The MIT License (MIT)
  *
@@ -75,19 +76,34 @@ public class ActivitiesController {
     }
 
     /**
-     * Handles the HTTP POST request to add a new activity.
+     * Handles the HTTP POST request to add a new activity. This endpoint expects a
+     * multipart request with activity data and an optional image file. The activity
+     * data includes the title, description, start date, end date, and category.
+     * Only users with roles of 'ADMIN', 'PRESIDENTE', 'TESORERO', or 'SECRETARIO'
+     * are authorized to add new activities.
      *
-     * @return A {@link ResponseEntity} containing the created activity response and
-     *         HTTP status 201 (Created).
+     * @param activityData An {@link AddActivityRequestData} object containing the
+     *                     activity details, such as title, description, start date,
+     *                     end date, and category.
+     * @param imageFile    An optional {@link MultipartFile} representing the
+     *                     activity's image. If provided, the image is stored
+     *                     alongside the activity data. Can be null if no image is
+     *                     uploaded.
+     *
+     * @return A {@link ResponseEntity} containing a {@link CreatedActivityResponse}
+     *         object with the created activity's details and an HTTP status of 201
+     *         (Created) if the activity was successfully added.
+     *
      * @throws ResponseStatusException if there is an error while adding the
      *                                 activity, resulting in a HTTP 400 (Bad
-     *                                 Request) response.
+     *                                 Request) response. The exception message
+     *                                 provides additional details about the error.
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or hasRole('SECRETARIO')")
     public ResponseEntity<CreatedActivityResponse> addActivity(@RequestPart("data")
-    @Valid AddActivityRequestData activityData, @RequestPart(value = "imageFile", required = false)
-    /* @ValidImageFile */ MultipartFile imageFile) {
+    @Valid final AddActivityRequestData activityData, @RequestPart(value = "imageFile", required = false)
+    /* @ValidImageFile */ final MultipartFile imageFile) {
 
         try {
             // Call the service with file and other parameters
@@ -148,5 +164,4 @@ public class ActivitiesController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
-
 }

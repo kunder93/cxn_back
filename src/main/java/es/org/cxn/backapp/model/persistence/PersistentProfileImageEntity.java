@@ -106,49 +106,76 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
         // Default constructor
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ImageExtension getExtension() {
         return extension;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean getStored() {
         return stored;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getUrl() {
         return url;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public PersistentUserEntity getUser() {
         return user;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getUserDni() {
         return userDni;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setExtension(final ImageExtension value) {
         extension = value;
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setStored(final Boolean value) {
         stored = value;
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setUrl(final String value) {
         url = value;
 
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void setUserDni(final String value) {
         userDni = value;

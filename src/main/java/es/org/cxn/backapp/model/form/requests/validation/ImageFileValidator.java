@@ -37,7 +37,28 @@ import jakarta.validation.ConstraintValidatorContext;
  */
 public class ImageFileValidator implements ConstraintValidator<ValidImageFile, MultipartFile> {
 
+    /**
+     * The maximum allowed file size for the image file in bytes.
+     * <p>
+     * This value is initialized from the {@link ValidImageFile#filesize()}
+     * annotation attribute, and is used to validate that the uploaded image does
+     * not exceed the specified size.
+     * </p>
+     */
     private long maxFileSize;
+
+    /**
+     * An array of allowed image formats (MIME types).
+     * <p>
+     * This value is initialized from the {@link ValidImageFile#allowedFormats()}
+     * annotation attribute, and is used to validate that the uploaded image file
+     * matches one of the allowed MIME types.
+     * </p>
+     * <p>
+     * For example, valid formats could include "image/jpeg", "image/png",
+     * "image/webp", "image/avif".
+     * </p>
+     */
     private String[] allowedFormats;
 
     /**

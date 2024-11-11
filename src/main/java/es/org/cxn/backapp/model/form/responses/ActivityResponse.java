@@ -23,22 +23,27 @@ public record ActivityResponse(String title, String description, LocalDateTime s
         String category, byte[] image) {
 
     /**
+     * Hash multiplier used to generate hashCode.
+     */
+    private static final int HASH_MULTIPLIER = 31;
+
+    /**
      * Constructs an {@code ActivityResponse} from an {@code ActivityEntity} and an
      * optional {@code MultipartFile} image.
      *
      * @param entity The {@code ActivityEntity} providing details of the activity.
      *               Must not be null.
-     * @param image  The image file associated with the activity. This is optional
+     * @param img    The image file associated with the activity. This is optional
      *               and can be null.
      * @throws NullPointerException if the provided {@code ActivityEntity} is null.
      */
-    public ActivityResponse(final ActivityEntity entity, final byte[] image) {
+    public ActivityResponse(final ActivityEntity entity, final byte[] img) {
         this(entity.getTitle(), entity.getDescription(), entity.getStartDate(), entity.getEndDate(),
-                entity.getCategory(), image);
+                entity.getCategory(), img);
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true; // Check if the same reference
         }
@@ -55,11 +60,11 @@ public record ActivityResponse(String title, String description, LocalDateTime s
     @Override
     public int hashCode() {
         int result = title.hashCode();
-        result = 31 * result + description.hashCode();
-        result = 31 * result + startDate.hashCode();
-        result = 31 * result + endDate.hashCode();
-        result = 31 * result + category.hashCode();
-        result = 31 * result + Arrays.hashCode(image);
+        result = HASH_MULTIPLIER * result + description.hashCode();
+        result = HASH_MULTIPLIER * result + startDate.hashCode();
+        result = HASH_MULTIPLIER * result + endDate.hashCode();
+        result = HASH_MULTIPLIER * result + category.hashCode();
+        result = HASH_MULTIPLIER * result + Arrays.hashCode(image);
         return result;
     }
 

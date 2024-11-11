@@ -25,8 +25,8 @@ import jakarta.validation.Payload;
  *
  * <pre>
  * {@code
- * @ValidImageFile(message = "Image must be a JPEG, PNG, WebP, or AVIF file and no larger than 8 MB.", filesize = 8
- *         * 1024 * 1024)
+ * @ValidImageFile(message = "Image must be a JPEG, PNG, WebP, or AVIF file and no larger than 8 MB.",
+ *         filesize = 8 * 1024 * 1024)
  * private MultipartFile imageFile;
  * }
  * </pre>

@@ -90,9 +90,34 @@ import es.org.cxn.backapp.service.FederateStateService;
 @RequestMapping("/api/user/federate")
 public class FederateController {
 
+    /**
+     * Represents a request to confirm or cancel a federate status, containing the
+     * user's DNI.
+     *
+     * <p>
+     * This record is used as a request body in the confirmCancelFederate endpoint
+     * to specify the DNI of the user whose federate status is to be confirmed or
+     * canceled.
+     * </p>
+     *
+     * @param userDni The user DNI.
+     */
     private record ConfirmCancelFederateRequest(String userDni) {
     }
 
+    /**
+     * A service that handles federate state-related operations for users, including
+     * actions such as toggling auto-renewal, confirming or canceling federate
+     * status, federating members with document uploads, and retrieving federate
+     * state information.
+     *
+     * <p>
+     * FederateStateService provides the main business logic for managing federate
+     * state data in conjunction with this controller.
+     * </p>
+     *
+     * @see FederateStateService
+     */
     private final FederateStateService federateStateService;
 
     /**
