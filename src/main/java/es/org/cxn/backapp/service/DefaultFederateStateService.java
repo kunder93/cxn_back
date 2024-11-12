@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import es.org.cxn.backapp.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.FederateState;
+import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
@@ -79,7 +81,8 @@ public final class DefaultFederateStateService implements FederateStateService {
     }
 
     /**
-     * Toggles the auto-renewal status of a federate state for a given user.
+     * Toggles the auto-renewal status for federate member. If member is not
+     * federated yet, throw exception.
      *
      * @param userEmail The email of the user whose auto-renewal status is to be
      *                  changed.
@@ -90,14 +93,14 @@ public final class DefaultFederateStateService implements FederateStateService {
     @Override
     public PersistentFederateStateEntity changeAutoRenew(final String userEmail)
             throws UserServiceException, FederateStateServiceException {
-        final var user = userService.findByEmail(userEmail);
-        final var userDni = user.getDni();
-        final var federateStateOptional = federateStateRepository.findById(userDni);
+        final UserEntity user = userService.findByEmail(userEmail);
+        final String userDni = user.getDni();
+        final Optional<PersistentFederateStateEntity> federateStateOptional = federateStateRepository.findById(userDni);
         if (federateStateOptional.isEmpty()) {
             throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
         } else {
-            final var federateState = federateStateOptional.get();
-            final var state = federateState.getState();
+            final PersistentFederateStateEntity federateState = federateStateOptional.get();
+            final FederateState state = federateState.getState();
             if (state.equals(FederateState.FEDERATE)) {
                 federateState.setAutomaticRenewal(!federateState.isAutomaticRenewal());
                 return federateStateRepository.save(federateState);

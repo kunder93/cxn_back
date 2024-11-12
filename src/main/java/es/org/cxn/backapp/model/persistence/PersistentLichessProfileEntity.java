@@ -646,7 +646,7 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     }
 
     /**
-     * {inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void setUpdatedAt(final LocalDateTime value) {

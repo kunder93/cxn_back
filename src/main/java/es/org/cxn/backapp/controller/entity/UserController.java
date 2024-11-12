@@ -1,3 +1,4 @@
+
 /**
  * The MIT License (MIT)
  *
@@ -124,10 +125,10 @@ public class UserController {
         /**
          * Sets the profile image URL.
          *
-         * @param profileImageUrl the new URL of the profile image.
+         * @param value the new URL of the profile image.
          */
-        public void setProfileImageUrl(String profileImageUrl) {
-            this.profileImageUrl = profileImageUrl;
+        public void setProfileImageUrl(final String value) {
+            this.profileImageUrl = value;
         }
     }
 
@@ -345,7 +346,7 @@ public class UserController {
      * @return una respuesta con los datos del usuario actualizado.
      */
     @PatchMapping("/uploadProfileImageFile")
-    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam MultipartFile profileImage) {
+    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam final MultipartFile profileImage) {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         try {
@@ -359,7 +360,7 @@ public class UserController {
             // Puedes agregar más validaciones aquí (por ejemplo, tipos MIME permitidos)
 
             // Llama al servicio para guardar la URL o archivo en tu sistema
-            var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
+            final var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
 
             return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
 
@@ -392,7 +393,7 @@ public class UserController {
             @RequestBody final Map<String, String> requestBody) {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
-            String profileImageUrl = requestBody.get("profileImageUrl"); // Extract the value from the map
+            final String profileImageUrl = requestBody.get("profileImageUrl"); // Extract the value from the map
             final var userUpdated = userService.saveProfileImage(userName, profileImageUrl);
             return new ResponseEntity<>(new ProfileImageResponse(userUpdated.getProfileImage()), HttpStatus.OK);
         } catch (UserServiceException e) {

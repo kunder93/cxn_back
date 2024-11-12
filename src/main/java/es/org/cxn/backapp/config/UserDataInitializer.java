@@ -60,12 +60,12 @@ public class UserDataInitializer {
     /**
      * The user service.
      */
-    private UserService userService;
+    private final UserService userService;
 
     /**
      * The user repository.
      */
-    private UserEntityRepository userRepository;
+    private final UserEntityRepository userRepository;
 
     /**
      * Default public constructor.

@@ -46,16 +46,18 @@
 
     <properties>
         <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
 
         <!-- Spring  Versions -->
-        <spring.test.version>6.1.13</spring.test.version>
+        <spring.test.version>6.1.14</spring.test.version>
         <spring.boot.version>3.3.4</spring.boot.version>
         <spring.framework.version>6.3.3</spring.framework.version>
-        <spring.version>6.1.13</spring.version>
+        <spring.version>6.1.14</spring.version>
         <spring.security.version>6.3.3</spring.security.version>
-        <spring.web.version>6.1.13</spring.web.version>
+        <spring.web.version>6.1.14</spring.web.version>
         <springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
-        <spring.tx.version>6.1.13</spring.tx.version>
+        <spring.tx.version>6.1.14</spring.tx.version>
         <spring.data.version>3.3.4</spring.data.version>
         <therapi.runtime.version>0.15.0</therapi.runtime.version>
         <jackson.version>2.17.2</jackson.version>
@@ -88,7 +90,7 @@
         <maven.site.plugin.version>3.20.0</maven.site.plugin.version>
         <maven.surefire.plugin.version>3.5.0</maven.surefire.plugin.version>
         <maven.jxr.plugin.version>3.5.0</maven.jxr.plugin.version>
-        <maven.checkstyle.plugin.version>3.5.0</maven.checkstyle.plugin.version>
+        <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.release.plugin.version>3.1.1</maven.release.plugin.version>
         <maven.info.reports.plugin.version>3.7.0</maven.info.reports.plugin.version>
@@ -96,6 +98,7 @@
         <json.path.version>2.9.0</json.path.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
     </properties>
     <repositories>
         <repository>
@@ -121,7 +124,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>6.1.13</version>
+            <version>6.1.14</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
