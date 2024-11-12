@@ -102,7 +102,7 @@ public class FederateController {
      *
      * @param userDni The user DNI.
      */
-    private record ConfirmCancelFederateRequest(String userDni) {
+    public record ConfirmCancelFederateRequest(String userDni) {
     }
 
     /**
@@ -209,7 +209,7 @@ public class FederateController {
                     autoRenewal);
             return new ResponseEntity<>(new FederateStateResponse(federateStateEntity), HttpStatus.OK);
 
-        } catch (Exception e) {
+        } catch (UserServiceException | FederateStateServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }

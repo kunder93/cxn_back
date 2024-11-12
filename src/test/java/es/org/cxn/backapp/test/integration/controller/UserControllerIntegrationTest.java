@@ -114,9 +114,19 @@ class UserControllerIntegrationTest {
 
     }
 
+    /**
+     * Mocked {@link SecurityContext} used in the test to simulate the security
+     * context for authentication. It represents the context for a specific user's
+     * security information, such as authentication and authorization details.
+     */
     @MockBean
     private SecurityContext securityContext;
 
+    /**
+     * Mocked {@link Authentication} used in the test to simulate the authenticated
+     * user information. This object contains details about the currently
+     * authenticated user, such as the username, roles, and credentials.
+     */
     @MockBean
     private Authentication authentication;
 
@@ -608,13 +618,12 @@ class UserControllerIntegrationTest {
         // Check that user was unsubscribed succesfully.
         mockMvc.perform(get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON).header("Authorization",
                 "Bearer " + jwtToken));
-        /* .andExpect(MockMvcResultMatchers.status().isUnauthorized()); */
     }
 
     @Transactional
     @Test
     void testUploadProfileImageNoExistingUserBadRequest() throws Exception {
-        final String UPLOAD_IMAGE_URL = "/api/user/uploadProfileImage";
+        final String uploadImageUrl = "/api/user/uploadProfileImage"; // Renamed to camelCase
         final String nonExistingUserName = "nonExistingUser"; // User that doesn't exist in the DB
         final String newProfileImageUrl = "http://example.com/profile.jpg";
 
@@ -627,7 +636,7 @@ class UserControllerIntegrationTest {
 
         // Perform the PATCH request simulating the non-existing user in the security
         // context
-        mockMvc.perform(patch(UPLOAD_IMAGE_URL).contentType(MediaType.APPLICATION_JSON).content(jsonRequestBody)
+        mockMvc.perform(patch(uploadImageUrl).contentType(MediaType.APPLICATION_JSON).content(jsonRequestBody)
                 .with(SecurityMockMvcRequestPostProcessors.user(nonExistingUserName)) // Simulate non-existing user
         ).andExpect(status().isBadRequest());
     }

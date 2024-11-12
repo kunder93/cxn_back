@@ -40,21 +40,50 @@ import es.org.cxn.backapp.service.UserService;
 @ExtendWith(MockitoExtension.class)
 class FederateStateServiceTest {
 
+    /**
+     * Mock repository for {@link FederateStateEntityRepository}. This mock is used
+     * to simulate interactions with the federate state repository, allowing the
+     * test to verify service logic without interacting with the actual database.
+     */
     @Mock
     private FederateStateEntityRepository federateStateRepository;
 
+    /**
+     * Mock service for {@link UserService}. This mock is used to simulate
+     * interactions with the user service, enabling the test to focus on the
+     * federate state service without invoking actual user service logic.
+     */
     @Mock
     private UserService userService;
 
+    /**
+     * Mock MultipartFile representing the front side of a DNI (Documento Nacional
+     * de Identidad) image. This mock is used to simulate uploading of a DNI front
+     * image during testing.
+     */
     @Mock
     private MultipartFile frontDniFile;
 
+    /**
+     * Mock MultipartFile representing the back side of a DNI image. This mock is
+     * used to simulate uploading of a DNI back image during testing.
+     */
     @Mock
     private MultipartFile backDniFile;
 
+    /**
+     * Instance of the {@link DefaultFederateStateService} class, which is the
+     * service under test. The service is injected with the mocked dependencies to
+     * test its behavior.
+     */
     @InjectMocks
     private DefaultFederateStateService federateStateService;
 
+    /**
+     * Path for storing DNI images, injected from the application properties. This
+     * is used by the service to determine the location for saving the uploaded DNI
+     * images.
+     */
     @Value("${image.location.dnis}")
     private String imageLocationDnis;
 

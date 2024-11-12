@@ -16,6 +16,13 @@ import jakarta.validation.ValidatorFactory;
 
 class TestAddActivityRequest {
 
+    /**
+     * Validator instance used to perform validation on the
+     * {@link AddActivityRequestData} objects. This validator is configured using
+     * Jakarta Bean Validation (JSR 303/380) and is used to ensure that the fields
+     * of the {@link AddActivityRequestData} class meet the validation constraints
+     * defined on them.
+     */
     private Validator validator;
 
     @BeforeEach

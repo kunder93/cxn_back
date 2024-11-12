@@ -212,7 +212,7 @@ class ActivityServiceTest {
     }
 
     @Test
-    void testGetActivityImage_IOExceptionWhileLoadingImage() throws Exception {
+    void testGetActivityImageIOExceptionWhileLoadingImage() throws Exception {
         // Arrange
         String title = "Sample Activity with Image";
         String imagePath = "path/to/image.jpg";
@@ -227,26 +227,6 @@ class ActivityServiceTest {
         });
 
         assertEquals("Error loading activity image: Image loading error", exception.getMessage());
-        verify(imageStorageService, times(1)).loadImage(imagePath);
-    }
-
-    @Test
-    void testGetActivityImage_Success() throws Exception {
-        // Arrange
-        String title = "Sample Activity";
-        String imagePath = "path/to/image.jpg";
-        byte[] imageData = "sample image data".getBytes();
-
-        PersistentActivityEntity mockActivity = mock(PersistentActivityEntity.class);
-        when(mockActivity.getImageSrc()).thenReturn(imagePath);
-        when(mockRepository.findById(title)).thenReturn(Optional.of(mockActivity));
-        when(imageStorageService.loadImage(imagePath)).thenReturn(imageData);
-
-        // Act
-        byte[] result = activitiesService.getActivityImage(title);
-
-        // Assert
-        assertArrayEquals(imageData, result);
         verify(imageStorageService, times(1)).loadImage(imagePath);
     }
 
@@ -299,6 +279,26 @@ class ActivityServiceTest {
 
         assertEquals("No image associated with activity: " + title, exception.getMessage());
         verify(imageStorageService, never()).loadImage(anyString());
+    }
+
+    @Test
+    void testGetActivityImageSuccess() throws Exception {
+        // Arrange
+        String title = "Sample Activity";
+        String imagePath = "path/to/image.jpg";
+        byte[] imageData = "sample image data".getBytes();
+
+        PersistentActivityEntity mockActivity = mock(PersistentActivityEntity.class);
+        when(mockActivity.getImageSrc()).thenReturn(imagePath);
+        when(mockRepository.findById(title)).thenReturn(Optional.of(mockActivity));
+        when(imageStorageService.loadImage(imagePath)).thenReturn(imageData);
+
+        // Act
+        byte[] result = activitiesService.getActivityImage(title);
+
+        // Assert
+        assertArrayEquals(imageData, result);
+        verify(imageStorageService, times(1)).loadImage(imagePath);
     }
 
     /**

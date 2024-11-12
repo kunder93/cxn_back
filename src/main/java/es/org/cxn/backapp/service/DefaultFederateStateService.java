@@ -81,7 +81,8 @@ public final class DefaultFederateStateService implements FederateStateService {
     }
 
     /**
-     * Toggles the auto-renewal status of a federate state for a given user.
+     * Toggles the auto-renewal status for federate member. If member is not
+     * federated yet, throw exception.
      *
      * @param userEmail The email of the user whose auto-renewal status is to be
      *                  changed.
