@@ -52,9 +52,8 @@
         <!-- Spring  Versions -->
         <spring.test.version>6.1.14</spring.test.version>
         <spring.boot.version>3.3.4</spring.boot.version>
-        <spring.framework.version>6.3.3</spring.framework.version>
         <spring.version>6.1.14</spring.version>
-        <spring.security.version>6.3.3</spring.security.version>
+        <spring.security.version>6.3.4</spring.security.version>
         <spring.web.version>6.1.14</spring.web.version>
         <springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
         <spring.tx.version>6.1.14</spring.tx.version>
@@ -203,7 +202,7 @@
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
-            <version>${spring.framework.version}</version>
+            <version>${spring.security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
