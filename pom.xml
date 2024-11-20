@@ -50,49 +50,47 @@
         <maven.compiler.target>21</maven.compiler.target>
 
         <!-- Spring  Versions -->
-        <spring.test.version>6.1.14</spring.test.version>
-        <spring.boot.version>3.3.4</spring.boot.version>
-        <spring.version>6.1.14</spring.version>
-        <spring.security.version>6.3.4</spring.security.version>
-        <spring.web.version>6.1.14</spring.web.version>
+        <spring.test.version>6.1.15</spring.test.version>
+        <spring.boot.version>3.3.5</spring.boot.version>
+        <spring.version>6.1.15</spring.version>
+        <spring.security.version>6.3.5</spring.security.version>
+        <spring.web.version>6.1.15</spring.web.version>
         <springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
-        <spring.tx.version>6.1.14</spring.tx.version>
-        <spring.data.version>3.3.4</spring.data.version>
+        <spring.tx.version>6.1.15</spring.tx.version>
+        <spring.data.version>3.3.6</spring.data.version>
         <therapi.runtime.version>0.15.0</therapi.runtime.version>
-        <jackson.version>2.17.2</jackson.version>
+        <jackson.version>2.18.1</jackson.version>
         <jjwt.version>0.12.6</jjwt.version>
-        <hikariCP.version>5.1.0</hikariCP.version>
-        <tomcat.version>10.1.30</tomcat.version>
-        <mockito.version>5.13.0</mockito.version>
+        <hikariCP.version>6.2.1</hikariCP.version>
+        <mockito.version>5.14.2</mockito.version>
         <jakarta.validation.version>3.1.0</jakarta.validation.version>
         <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
         <log4j.version>2.24.0</log4j.version>
         <hamcrest.version>3.0</hamcrest.version>
-        <junit.jupiter.version>5.11.0</junit.jupiter.version>
+        <junit.jupiter.version>5.11.3</junit.jupiter.version>
         <slf4j.version>2.0.16</slf4j.version>
         <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-        <hibernate.version>6.3.2.Final</hibernate.version>
+        <hibernate.version>6.6.2.Final</hibernate.version>
         <h2.version>2.3.232</h2.version>
-        <lombok.version>1.18.34</lombok.version>
+        <lombok.version>1.18.36</lombok.version>
         <postgresql.version>42.7.4</postgresql.version>
-        <logback.version>1.5.8</logback.version>
-        <pmd.plugin.version>3.25.0</pmd.plugin.version>
+        <logback.version>1.5.12</logback.version>
+        <pmd.plugin.version>3.26.0</pmd.plugin.version>
         <assertj.version>3.26.3</assertj.version>
         <gson.version>2.11.0</gson.version>
-        <guava.version>33.3.0-jre</guava.version>
-        <glassfish.jakarta.el.version>4.0.2</glassfish.jakarta.el.version>
-        <liquibase.version>4.29.2</liquibase.version>
-        <maven.dependency.plugin.version>3.8.0</maven.dependency.plugin.version>
+        <guava.version>33.3.1-jre</guava.version>
+        <liquibase.version>4.30.0</liquibase.version>
+        <maven.dependency.plugin.version>3.8.1</maven.dependency.plugin.version>
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.jacoco.plugin.version>0.8.12</maven.jacoco.plugin.version>
-        <maven.javadoc.plugin.version>3.10.0</maven.javadoc.plugin.version>
-        <maven.site.plugin.version>3.20.0</maven.site.plugin.version>
-        <maven.surefire.plugin.version>3.5.0</maven.surefire.plugin.version>
-        <maven.jxr.plugin.version>3.5.0</maven.jxr.plugin.version>
+        <maven.javadoc.plugin.version>3.11.1</maven.javadoc.plugin.version>
+        <maven.site.plugin.version>3.21.0</maven.site.plugin.version>
+        <maven.surefire.plugin.version>3.5.2</maven.surefire.plugin.version>
+        <maven.jxr.plugin.version>3.6.0</maven.jxr.plugin.version>
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.release.plugin.version>3.1.1</maven.release.plugin.version>
-        <maven.info.reports.plugin.version>3.7.0</maven.info.reports.plugin.version>
+        <maven.info.reports.plugin.version>3.8.0</maven.info.reports.plugin.version>
         <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
         <json.path.version>2.9.0</json.path.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -257,11 +255,6 @@
             <artifactId>HikariCP</artifactId>
             <version>${hikariCP.version}
             </version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-core</artifactId>
-            <version>${tomcat.version}</version>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
