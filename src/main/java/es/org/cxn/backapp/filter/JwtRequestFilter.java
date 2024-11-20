@@ -41,7 +41,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      * The user details service.
      */
-    final private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     /**
      * Constructor for JwtRequestFilter.

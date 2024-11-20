@@ -184,11 +184,10 @@ public interface UserService {
     /**
      * Unsubscribe an user.
      *
-     * @param email    The user email
-     * @param password The user password.
+     * @param email The user email
      * @throws UserServiceException When user with provided email not found.
      */
-    void unsubscribe(String email, String password) throws UserServiceException;
+    void unsubscribe(String email) throws UserServiceException;
 
     /**
      * Updates an existing user.

@@ -197,7 +197,7 @@ public final class MyPrincipalUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return accountEnabled;
     }
 
 }

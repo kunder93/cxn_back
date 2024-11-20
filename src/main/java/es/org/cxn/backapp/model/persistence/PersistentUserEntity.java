@@ -181,7 +181,7 @@ public class PersistentUserEntity implements UserEntity {
      */
     @Column(name = "enabled", nullable = false, unique = false)
     @Builder.Default
-    private boolean enabled = true;
+    private boolean enabled = Boolean.TRUE;
 
     /**
      * Roles associated with this user.

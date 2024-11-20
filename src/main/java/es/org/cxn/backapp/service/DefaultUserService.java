@@ -214,7 +214,7 @@ public final class DefaultUserService implements UserService {
         } else {
             final PersistentUserEntity save = PersistentUserEntity.builder().dni(dni).name(userDetails.name())
                     .firstSurname(userDetails.firstSurname()).secondSurname(userDetails.secondSurname())
-                    .gender(userDetails.gender()).birthDate(userDetails.birthDate())
+                    .gender(userDetails.gender()).birthDate(userDetails.birthDate()).enabled(true)
                     .password(new BCryptPasswordEncoder().encode(userDetails.password())) // Encrypt the password
                     .email(email).kindMember(PersistentUserEntity.UserType.SOCIO_NUMERO) // Set kindMember directly
                     .build(); // Build the instance
@@ -568,7 +568,7 @@ public final class DefaultUserService implements UserService {
 
     @Transactional
     @Override
-    public void unsubscribe(final String email, final String password) throws UserServiceException {
+    public void unsubscribe(final String email) throws UserServiceException {
         final Optional<PersistentUserEntity> userOptional;
         userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty()) {
