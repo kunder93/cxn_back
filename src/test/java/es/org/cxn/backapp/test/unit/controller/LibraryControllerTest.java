@@ -8,6 +8,28 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.controller.entity.LibraryController;
@@ -22,35 +44,13 @@ import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.DefaultLibraryService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.server.ResponseStatusException;
-
 /**
  * Unit tests for the {@link LibraryController} class.
  * <p>
  * This test class contains unit tests for the methods in the
- * {@link LibraryController} class.
- * It uses MockMvc to perform requests and verify responses, and Mockito to
- * mock dependencies like {@link DefaultLibraryService} and
- * {@link DefaultJwtUtils}.
+ * {@link LibraryController} class. It uses MockMvc to perform requests and
+ * verify responses, and Mockito to mock dependencies like
+ * {@link DefaultLibraryService} and {@link DefaultJwtUtils}.
  * </p>
  * <p>
  * The tests cover various scenarios for managing books, including retrieving,
@@ -59,266 +59,236 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @WebMvcTest(LibraryController.class)
 @Import(TestSecurityConfiguration.class)
+@AutoConfigureMockMvc(addFilters = false)
 class LibraryControllerTest {
 
-  /**
-   * MockMvc instance used for performing HTTP requests in the tests.
-   * <p>
-   * This is used to simulate HTTP requests and validate responses in the
-   * context of integration testing.
-   * </p>
-   */
-  @Autowired
-  private MockMvc mockMvc;
+    /**
+     * The URL for library-related API endpoints.
+     */
+    private static final String LIBRARY_URL = "/api/library";
 
-  /**
-   * Mock of the {@link DefaultLibraryService} used to simulate interactions
-   * with the library service layer.
-   * <p>
-   * This mock is used to stub and verify interactions with the library service
-   * during testing, without invoking the actual service layer logic.
-   * </p>
-   */
-  @MockBean
-  private DefaultLibraryService libraryService;
+    /**
+     * ISBN for test book 1.
+     */
+    private static final long TEST_ISBN_1 = 123456967050L;
 
-  /**
-   * Mock of the {@link DefaultJwtUtils} used to simulate interactions with JWT
-   * utilities.
-   * <p>
-   * This mock is used to stub and verify interactions with JWT utilities,
-   * which may be required for security-related operations in the controller.
-   * </p>
-   */
-  @MockBean
-  private DefaultJwtUtils jwtUtils;
+    /**
+     * ISBN for test book 2.
+     */
+    private static final long TEST_ISBN_2 = 24214244L;
 
-  /**
-   * The URL for library-related API endpoints.
-   */
-  private static final String LIBRARY_URL = "/api/library";
+    /**
+     * ISBN for test book 3.
+     */
+    private static final long TEST_ISBN_3 = 5555532432L;
 
-  /**
-   * ISBN for test book 1.
-   */
-  private static final long TEST_ISBN_1 = 123456967050L;
+    /**
+     * ISBN for test book add/remove operations.
+     */
+    private static final long TEST_ISBN = 1234567890L;
 
-  /**
-   * ISBN for test book 2.
-   */
-  private static final long TEST_ISBN_2 = 24214244L;
+    /**
+     * Book publish year for test.
+     */
+    private static final LocalDate PUBLISH_YEAR = LocalDate.of(2024, 1, 1);
 
-  /**
-   * ISBN for test book 3.
-   */
-  private static final long TEST_ISBN_3 = 5555532432L;
+    /**
+     * MockMvc instance used for performing HTTP requests in the tests.
+     * <p>
+     * This is used to simulate HTTP requests and validate responses in the context
+     * of integration testing.
+     * </p>
+     */
+    @Autowired
+    private MockMvc mockMvc;
 
-  /**
-   * ISBN for test book add/remove operations.
-   */
-  private static final long TEST_ISBN = 1234567890L;
+    /**
+     * Mock of the {@link DefaultLibraryService} used to simulate interactions with
+     * the library service layer.
+     * <p>
+     * This mock is used to stub and verify interactions with the library service
+     * during testing, without invoking the actual service layer logic.
+     * </p>
+     */
+    @MockBean
+    private DefaultLibraryService libraryService;
 
-  /**
-   * Book publish year for test.
-   */
-  private static final LocalDate PUBLISH_YEAR = LocalDate.of(2024, 1, 1);
+    /**
+     * Mock of the {@link DefaultJwtUtils} used to simulate interactions with JWT
+     * utilities.
+     * <p>
+     * This mock is used to stub and verify interactions with JWT utilities, which
+     * may be required for security-related operations in the controller.
+     * </p>
+     */
+    @MockBean
+    private DefaultJwtUtils jwtUtils;
 
-  @BeforeEach
-  public void setUp() {
-    MockitoAnnotations.openMocks(this);
-  }
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-  /**
-   * Tests that the controller returns a list of books ordered alphabetically
-   * by title.
-   * <p>
-   * This test performs a GET request to the library endpoint, verifies that
-   * the status is OK (200), and checks that the books are returned in
-   * alphabetical order by title.
-   * </p>
-   *
-   * @throws Exception if the test fails
-   */
-  @Test
-  void testGetAllBooksReturnBooksOrderedAnd200OK() throws Exception {
-    var gson = new GsonBuilder().setPrettyPrinting()
-          .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-          .create();
+    /**
+     * Tests that adding a book fails and returns a BAD REQUEST status.
+     * <p>
+     * This test simulates an error during the book addition process and verifies
+     * that the response status is BAD REQUEST (400).
+     * </p>
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
+    void testAddBookFailure() throws Exception {
+        // Arrange
+        var bookRequest = new AddBookRequestDto(TEST_ISBN, "Test Book", // title
+                "Fiction", // gender
+                PUBLISH_YEAR, "English", // language
+                List.of() // authorsList
+        );
 
-    // Arrange
-    var bookBuilder =
-          PersistentBookEntity.builder().isbn(TEST_ISBN_1).title("t1");
-    var book1 = bookBuilder.build();
-    bookBuilder.isbn(TEST_ISBN_2).title("t2");
-    var book2 = bookBuilder.build();
-    bookBuilder.isbn(TEST_ISBN_3).title("t3");
-    var book3 = bookBuilder.build();
-    List<BookEntity> books = new ArrayList<>();
-    books.add(book1);
-    books.add(book2);
-    books.add(book3);
+        var serviceException = new LibraryServiceException("Failed to add book");
 
-    when(libraryService.getAllBooks()).thenReturn(books);
+        // Mock the libraryService to throw an exception when addBook is called
+        doThrow(serviceException).when(libraryService).addBook(any(AddBookRequestDto.class));
 
-    var responseJson = mockMvc
-          .perform(
-                MockMvcRequestBuilders.get(LIBRARY_URL)
-                      .contentType(MediaType.APPLICATION_JSON)
-          ).andExpect(MockMvcResultMatchers.status().isOk()).andReturn()
-          .getResponse().getContentAsString();
+        var gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
 
-    var response = gson.fromJson(responseJson, BookListResponse.class);
-    Assertions.assertEquals(
-          books.size(), response.bookList().size(), "Return list of books."
-    );
+        var bookRequestJson = gson.toJson(bookRequest);
 
-    // Extract book titles from the response
-    Set<String> responseTitles = response.bookList().stream()
-          .map(BookResponse::title).collect(Collectors.toSet());
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/library").contentType(MediaType.APPLICATION_JSON)
+                .content(bookRequestJson).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
+    }
 
-    // Verify that the response titles match the expected titles
-    Assertions.assertTrue(
-          responseTitles.contains("t1") && responseTitles.contains("t2")
-                && responseTitles.contains("t3"),
-          "Response contains the expected book titles."
-    );
+    /**
+     * Tests that a book is successfully added to the library.
+     * <p>
+     * This test performs a POST request to add a new book and verifies that the
+     * response status is CREATED (201).
+     * </p>
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
+    void testAddBookSuccess() throws Exception {
+        // Arrange
+        var bookRequest = new AddBookRequestDto(TEST_ISBN, "Test Book", // title
+                "Fiction", // gender
+                PUBLISH_YEAR, "English", // language
+                List.of(new AuthorRequest("Test Author", "A", "Spain")));
 
-    // Verify that the titles are sorted in alphabetical order
-    var sortedTitles = new ArrayList<>(responseTitles);
-    Collections.sort(sortedTitles);
-    Assertions.assertIterableEquals(
-          sortedTitles, new ArrayList<>(responseTitles),
-          "Response titles are sorted in alphabetical order."
-    );
-  }
+        var addedBook = PersistentBookEntity.builder().isbn(TEST_ISBN).title("Test Book").build();
 
-  /**
-   * Tests that a book is successfully added to the library.
-   * <p>
-   * This test performs a POST request to add a new book and verifies that
-   * the response status is CREATED (201).
-   * </p>
-   *
-   * @throws Exception if the test fails
-   */
-  @Test
-  void testAddBookSuccess() throws Exception {
-    // Arrange
-    var bookRequest = new AddBookRequestDto(
-          TEST_ISBN, "Test Book", // title
-          "Fiction", // gender
-          PUBLISH_YEAR, "English", // language
-          List.of(new AuthorRequest("Test Author", "A", "Spain"))
-    );
+        var gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
 
-    var addedBook = PersistentBookEntity.builder().isbn(TEST_ISBN)
-          .title("Test Book").build();
+        var bookRequestJson = gson.toJson(bookRequest);
+        when(libraryService.addBook(any(AddBookRequestDto.class))).thenReturn(addedBook);
 
-    var gson = new GsonBuilder().setPrettyPrinting()
-          .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-          .create();
+        // Act and Assert
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/library").contentType(MediaType.APPLICATION_JSON)
+                .content(bookRequestJson).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated())
+                .andExpect(jsonPath("$.isbn").value(TEST_ISBN)).andExpect(jsonPath("$.title").value("Test Book"));
+    }
 
-    var bookRequestJson = gson.toJson(bookRequest);
-    when(libraryService.addBook(any(AddBookRequestDto.class)))
-          .thenReturn(addedBook);
+    /**
+     * Tests that the controller returns a list of books ordered alphabetically by
+     * title.
+     * <p>
+     * This test performs a GET request to the library endpoint, verifies that the
+     * status is OK (200), and checks that the books are returned in alphabetical
+     * order by title.
+     * </p>
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
+    void testGetAllBooksReturnBooksOrderedAnd200OK() throws Exception {
+        var gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
+                .create();
 
-    // Act and Assert
-    mockMvc.perform(
-          MockMvcRequestBuilders.post("/api/library")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(bookRequestJson).accept(MediaType.APPLICATION_JSON)
-    ).andExpect(status().isCreated())
-          .andExpect(jsonPath("$.isbn").value(TEST_ISBN))
-          .andExpect(jsonPath("$.title").value("Test Book"));
-  }
+        // Arrange
+        var bookBuilder = PersistentBookEntity.builder().isbn(TEST_ISBN_1).title("t1");
+        var book1 = bookBuilder.build();
+        bookBuilder.isbn(TEST_ISBN_2).title("t2");
+        var book2 = bookBuilder.build();
+        bookBuilder.isbn(TEST_ISBN_3).title("t3");
+        var book3 = bookBuilder.build();
+        List<BookEntity> books = new ArrayList<>();
+        books.add(book1);
+        books.add(book2);
+        books.add(book3);
 
-  /**
-   * Tests that adding a book fails and returns a BAD REQUEST status.
-   * <p>
-   * This test simulates an error during the book addition process and verifies
-   * that the response status is BAD REQUEST (400).
-   * </p>
-   *
-   * @throws Exception if the test fails
-   */
-  @Test
-  void testAddBookFailure() throws Exception {
-    // Arrange
-    var bookRequest = new AddBookRequestDto(
-          TEST_ISBN, "Test Book", // title
-          "Fiction", // gender
-          PUBLISH_YEAR, "English", // language
-          List.of() // authorsList
-    );
+        when(libraryService.getAllBooks()).thenReturn(books);
 
-    var serviceException = new LibraryServiceException("Failed to add book");
+        var responseJson = mockMvc
+                .perform(MockMvcRequestBuilders.get(LIBRARY_URL).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
 
-    // Mock the libraryService to throw an exception when addBook is called
-    doThrow(serviceException).when(libraryService)
-          .addBook(any(AddBookRequestDto.class));
+        var response = gson.fromJson(responseJson, BookListResponse.class);
+        Assertions.assertEquals(books.size(), response.bookList().size(), "Return list of books.");
 
-    var gson = new GsonBuilder().setPrettyPrinting()
-          .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-          .create();
+        // Extract book titles from the response
+        Set<String> responseTitles = response.bookList().stream().map(BookResponse::title).collect(Collectors.toSet());
 
-    var bookRequestJson = gson.toJson(bookRequest);
+        // Verify that the response titles match the expected titles
+        Assertions.assertTrue(
+                responseTitles.contains("t1") && responseTitles.contains("t2") && responseTitles.contains("t3"),
+                "Response contains the expected book titles.");
 
-    // Act and Assert
-    mockMvc.perform(
-          MockMvcRequestBuilders.post("/api/library")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(bookRequestJson).accept(MediaType.APPLICATION_JSON)
-    ).andExpect(status().isBadRequest());
-  }
+        // Verify that the titles are sorted in alphabetical order
+        var sortedTitles = new ArrayList<>(responseTitles);
+        Collections.sort(sortedTitles);
+        Assertions.assertIterableEquals(sortedTitles, new ArrayList<>(responseTitles),
+                "Response titles are sorted in alphabetical order.");
+    }
 
-  /**
-   * Tests that a book is successfully removed from the library.
-   * <p>
-   * This test performs a DELETE request to remove a book and verifies that
-   * the response status is OK (200).
-   * </p>
-   *
-   * @throws Exception if the test fails
-   */
-  @Test
-  void testRemoveBookSuccess() throws Exception {
-    // Arrange
-    doNothing().when(libraryService).removeBookByIsbn(TEST_ISBN);
+    /**
+     * Tests that removing a book fails and returns a BAD REQUEST status.
+     * <p>
+     * This test simulates an error during the book removal process and verifies
+     * that the response status is BAD REQUEST (400).
+     * </p>
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
+    void testRemoveBookFailure() throws Exception {
+        // Arrange
+        var serviceException = new LibraryServiceException("Failed to remove book");
 
-    // Act and Assert
-    mockMvc.perform(
-          MockMvcRequestBuilders.delete(LIBRARY_URL + "/{isbn}", TEST_ISBN)
-                .accept(MediaType.APPLICATION_JSON)
-    ).andExpect(MockMvcResultMatchers.status().isOk());
-  }
+        doThrow(serviceException).when(libraryService).removeBookByIsbn(TEST_ISBN);
 
-  /**
-   * Tests that removing a book fails and returns a BAD REQUEST status.
-   * <p>
-   * This test simulates an error during the book removal process and verifies
-   * that the response status is BAD REQUEST (400).
-   * </p>
-   *
-   * @throws Exception if the test fails
-   */
-  @Test
-  void testRemoveBookFailure() throws Exception {
-    // Arrange
-    var serviceException = new LibraryServiceException("Failed to remove book");
+        // Act and Assert
+        final var mockedRequest = mockMvc.perform(
+                MockMvcRequestBuilders.delete(LIBRARY_URL + "/{isbn}", TEST_ISBN).accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+        mockedRequest.andExpect(result -> {
+            // Verify the response body contains the expected exception message
+            Assertions.assertTrue(result.getResolvedException() instanceof ResponseStatusException,
+                    "The exception is expected as Response Status");
+        });
+    }
 
-    doThrow(serviceException).when(libraryService).removeBookByIsbn(TEST_ISBN);
+    /**
+     * Tests that a book is successfully removed from the library.
+     * <p>
+     * This test performs a DELETE request to remove a book and verifies that the
+     * response status is OK (200).
+     * </p>
+     *
+     * @throws Exception if the test fails
+     */
+    @Test
+    void testRemoveBookSuccess() throws Exception {
+        // Arrange
+        doNothing().when(libraryService).removeBookByIsbn(TEST_ISBN);
 
-    // Act and Assert
-    final var mockedRequest = mockMvc.perform(
-          MockMvcRequestBuilders.delete(LIBRARY_URL + "/{isbn}", TEST_ISBN)
-                .accept(MediaType.APPLICATION_JSON)
-    ).andExpect(MockMvcResultMatchers.status().isBadRequest());
-    mockedRequest.andExpect(result -> {
-      // Verify the response body contains the expected exception message
-      Assertions.assertTrue(
-            result.getResolvedException() instanceof ResponseStatusException,
-            "The exception is expected as Response Status"
-      );
-    });
-  }
+        // Act and Assert
+        mockMvc.perform(
+                MockMvcRequestBuilders.delete(LIBRARY_URL + "/{isbn}", TEST_ISBN).accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
 }

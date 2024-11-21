@@ -1,7 +1,6 @@
 
 package es.org.cxn.backapp.service;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -45,37 +44,12 @@ public final class MyPrincipalUser implements UserDetails {
     private final String email;
 
     /**
-     * User name.
-     */
-    private final String name;
-
-    /**
-     * User first surname.
-     */
-    private final String firstSurname;
-
-    /**
-     * User second surname.
-     */
-    private final String secondSurname;
-
-    /**
-     * User birth date.
-     */
-    private final LocalDate birthDate;
-
-    /**
-     * User gender.
-     */
-    private final String gender;
-
-    /**
      * User role Names.
      */
     private final Set<UserRoleName> rolesNames;
 
     /**
-     * Indicador de estado de activacion/desactivacion de la cuenta.
+     * User state enabled or disabled.
      */
     private final boolean accountEnabled;
 
@@ -88,11 +62,6 @@ public final class MyPrincipalUser implements UserDetails {
         dni = userEntity.getDni();
         password = userEntity.getPassword();
         email = userEntity.getEmail();
-        name = userEntity.getName();
-        firstSurname = userEntity.getFirstSurname();
-        secondSurname = userEntity.getSecondSurname();
-        birthDate = userEntity.getBirthDate();
-        gender = userEntity.getGender();
         accountEnabled = userEntity.isEnabled();
         rolesNames = EnumSet.noneOf(UserRoleName.class);
         userEntity.getRoles().forEach((PersistentRoleEntity role) -> rolesNames.add(role.getName()));
@@ -106,48 +75,12 @@ public final class MyPrincipalUser implements UserDetails {
     }
 
     /**
-     * Getter for user birth date.
-     *
-     * @return the user birth date.
-     */
-    public LocalDate getBirthDate() {
-        return birthDate;
-    }
-
-    /**
      * Getter for user DNI.
      *
      * @return The user dni.
      */
     public String getDni() {
         return dni;
-    }
-
-    /**
-     * Getter for user first surname.
-     *
-     * @return the first surname.
-     */
-    public String getFirstSurname() {
-        return firstSurname;
-    }
-
-    /**
-     * Getter for user gender.
-     *
-     * @return the user gender.
-     */
-    public String getGender() {
-        return gender;
-    }
-
-    /**
-     * Getter for user name.
-     *
-     * @return the user name.
-     */
-    public String getName() {
-        return name;
     }
 
     @Override
@@ -164,15 +97,6 @@ public final class MyPrincipalUser implements UserDetails {
      */
     public Set<UserRoleName> getRoles() {
         return EnumSet.copyOf(rolesNames);
-    }
-
-    /**
-     * Getter for user second surname.
-     *
-     * @return the second surname.
-     */
-    public String getSecondSurname() {
-        return secondSurname;
     }
 
     @Override
@@ -197,7 +121,7 @@ public final class MyPrincipalUser implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return accountEnabled;
     }
 
 }

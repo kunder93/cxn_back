@@ -34,7 +34,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -287,29 +286,6 @@ public class UserController {
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-    }
-
-    /**
-     * Unsubscribes the user from the system.
-     *
-     * <p>
-     * The user must be authenticated to access this endpoint.
-     *
-     * @param userUnsubscribeRequest the request containing the user's email and
-     *                               password.
-     * @return a {@link ResponseEntity} indicating the result of the operation.
-     * @throws ResponseStatusException if the unsubscription fails.
-     */
-    @DeleteMapping("/unsubscribe")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<HttpStatus> unsubscribeUser(
-            @RequestBody final UserUnsubscribeRequest userUnsubscribeRequest) {
-        try {
-            userService.unsubscribe(userUnsubscribeRequest.email(), userUnsubscribeRequest.password());
-        } catch (UserServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**

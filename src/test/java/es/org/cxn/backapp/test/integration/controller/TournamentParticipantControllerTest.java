@@ -23,18 +23,17 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.controller.entity.TournamentParticipantController;
 import es.org.cxn.backapp.model.form.requests.AddTournamentParticipantRequest;
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity;
 import es.org.cxn.backapp.service.TournamentParticipantService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 /**
- * Integration tests for {@link TournamentParticipantController}.
+ * Integration tests for TournamentParticipantController.
  */
 @SpringBootTest
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
 class TournamentParticipantControllerTest {
 
