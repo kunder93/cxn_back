@@ -11,93 +11,102 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import es.org.cxn.backapp.AppURL;
-import es.org.cxn.backapp.repository.UserEntityRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * A custom filter to validate the user's enabled status for each request.
- * <p>
- * This filter ensures that any authenticated user making a request has their
- * "enabled" status checked in the database. If the user is not enabled or if
- * they do not exist in the database, the authentication context is cleared, and
- * an exception is thrown. This filter acts as an additional security measure to
- * restrict access to disabled users.
- * </p>
+ * A custom filter that checks if the authenticated user is enabled before
+ * processing the request. This filter extends {@link OncePerRequestFilter} to
+ * ensure it is executed once per request.
+ *
+ * The filter performs the following: - Validates if the authenticated user is
+ * enabled. - Clears the security context and throws an exception if the user is
+ * disabled. - Skips filtering for specific URLs such as `/h2-console` or
+ * authentication-related endpoints.
+ *
+ * Dependencies: - {@link UserDetailsService} to load user details and verify if
+ * the user is enabled. - {@link SecurityContextHolder} to manage the security
+ * context.
+ *
+ * Exclusions: - Certain endpoints are excluded from this filter via the
+ * {@link #shouldNotFilter(HttpServletRequest)} method.
  */
 @Component
 public class EnableUserRequestFilter extends OncePerRequestFilter {
 
+    /**
+     * The Logger for this class.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(EnableUserRequestFilter.class);
 
     /**
-     * The user details service.
+     * The {@link UserDetailsService} used to load user details.
      */
     private final UserDetailsService userDetailsService;
 
     /**
-     * Constructs the filter with the required {@link UserEntityRepository}.
+     * Constructs an instance of {@code EnableUserRequestFilter}.
      *
-     * @param userDetailsService the user details service
+     * @param usrDetailsService the {@link UserDetailsService} to use for user
+     *                          validation.
      */
-    public EnableUserRequestFilter(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public EnableUserRequestFilter(final UserDetailsService usrDetailsService) {
+        super();
+        this.userDetailsService = usrDetailsService;
     }
 
     /**
-     * Performs the filtering logic for each request.
-     * <p>
-     * This method checks if the current user is authenticated. If authenticated, it
-     * fetches the user's details from the repository and ensures they are enabled.
-     * If the user is not enabled or does not exist, an exception is thrown, and the
-     * authentication context is cleared.
-     * </p>
+     * Filters requests to check if the authenticated user is enabled. If the user
+     * is disabled, clears the security context and throws an
+     * {@link IllegalStateException}.
      *
-     * @param request     the {@link ServletRequest} to process.
-     * @param response    the {@link ServletResponse} to populate.
-     * @param filterChain the {@link FilterChain} for delegating to the next filter.
+     * @param request     the HTTP request.
+     * @param response    the HTTP response.
+     * @param filterChain the filter chain to pass the request to the next filter.
      *
-     * @throws IOException      if an input or output error occurs during the
-     *                          filtering process.
-     * @throws ServletException if an error occurs during the filtering process.
+     * @throws ServletException if a servlet-related error occurs.
+     * @throws IOException      if an I/O error occurs.
      */
     @Override
-    public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
+            final FilterChain filterChain) throws ServletException, IOException {
         LOGGER.info("EnableUserRequestFilter: Processing request.");
-        String email;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated()) {
-            email = authentication.getName();
+            final String email = authentication.getName();
             LOGGER.info("Authentication detected for user: {}", email);
-            if (!userDetailsService.loadUserByUsername(email).isEnabled()) {
+            // Check if the user is enabled
+            final boolean isUserEnabled = userDetailsService.loadUserByUsername(email).isEnabled();
+            if (!isUserEnabled) {
                 LOGGER.warn("User '{}' is disabled. Clearing security context.", email);
                 SecurityContextHolder.clearContext();
                 throw new IllegalStateException("User is disabled.");
-            } else {
-                LOGGER.info("User '{}' is enabled. Proceeding with request.", email);
             }
+            LOGGER.info("User '{}' is enabled. Proceeding with request.", email);
         } else {
             LOGGER.info("No authentication found. Proceeding without user validation.");
         }
-        // Proceed with the next filter in the chain
         LOGGER.info("Request processing completed. Passing to the next filter.");
         filterChain.doFilter(request, response);
     }
 
     /**
-     * Request that should not be filtered by jwt filter.
+     * Determines whether this filter should not apply to a given request. Excludes
+     * requests to specific endpoints such as `/h2-console`, `/sign-up`, and others.
+     *
+     * @param request the current HTTP request.
+     * @return {@code true} if the request should not be filtered; {@code false}
+     *         otherwise.
+     *
+     * @throws ServletException if a servlet-related error occurs.
      */
     @Override
     protected boolean shouldNotFilter(final HttpServletRequest request) throws ServletException {
         final var requestURI = request.getRequestURI();
         final var httpMethod = request.getMethod();
         LOGGER.info("La URI en shouldNotFilter de ENABLE USER es: {}", requestURI);
-        // Excluir la ruta /h2-console y otras rutas que no necesitan autenticación
         final var value = requestURI.startsWith("/h2-console") || requestURI.startsWith(AppURL.SIGN_UP_URL)
                 || requestURI.startsWith(AppURL.SIGN_IN_URL) || requestURI.startsWith("/api/address/getCountries")
                 || requestURI.startsWith("/getAllLichessProfiles")
@@ -109,5 +118,4 @@ public class EnableUserRequestFilter extends OncePerRequestFilter {
 
         return value;
     }
-
 }
