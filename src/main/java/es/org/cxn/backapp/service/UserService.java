@@ -101,6 +101,19 @@ public interface UserService {
     UserEntity changeUserRoles(String email, List<UserRoleName> roleNameList) throws UserServiceException;
 
     /**
+     * Permanently deletes all data associated with a user identified by their
+     * email. This operation is irreversible and ensures that the user's data is
+     * fully removed from the system.
+     *
+     * @param userEmail the email address of the user whose data is to be deleted
+     *                  (must not be null or empty)
+     * @throws IllegalArgumentException if the provided email is invalid or null
+     * @throws UserServiceException     if no user exists with the given email
+     *                                  address
+     */
+    void delete(String userEmail) throws UserServiceException;
+
+    /**
      * Returns an entity with the given identifier (dni).
      *
      * <p>

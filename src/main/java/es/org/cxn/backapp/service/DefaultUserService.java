@@ -345,6 +345,16 @@ public final class DefaultUserService implements UserService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Transactional
+    @Override
+    public void delete(final String userEmail) throws UserServiceException {
+        final var userEntity = findByEmail(userEmail);
+        userRepository.delete((PersistentUserEntity) userEntity);
+    }
+
     @Override
     public UserEntity findByDni(final String value) throws UserServiceException {
         final Optional<PersistentUserEntity> entity;
@@ -383,7 +393,7 @@ public final class DefaultUserService implements UserService {
             throw new UserServiceException("No profile image found for user with DNI: " + dni);
         }
 
-        if (profileImage.getStored()) {
+        if (profileImage.getStored().equals(Boolean.TRUE)) {
             // Load the image file from the filesystem
             final File imageFile = new File(profileImage.getUrl());
 
@@ -419,9 +429,7 @@ public final class DefaultUserService implements UserService {
                 final String base64ImageWithPrefix = mimeType + base64Image;
 
                 // Return the response with the Base64-encoded image
-                final ProfileImageResponse profileImageResponse = new ProfileImageResponse(profileImage,
-                        base64ImageWithPrefix);
-                return profileImageResponse;
+                return new ProfileImageResponse(profileImage, base64ImageWithPrefix);
 
             } catch (IOException e) {
                 throw new UserServiceException("Error reading profile image file: " + e.getMessage(), e);
@@ -467,7 +475,7 @@ public final class DefaultUserService implements UserService {
         final var imageProfileOptional = imageProfileEntityRepository.findById(userDni);
         if (imageProfileOptional.isPresent()) {
             final var image = imageProfileOptional.get();
-            if (image.getStored()) { // Borrar la imagen almacenada.
+            if (image.getStored().equals(Boolean.TRUE)) { // Borrar la imagen almacenada.
                 // Get the file path from the existing image entity
                 final String existingImagePath = image.getUrl(); // Assuming getUrl() returns the complete path
                 // Create a File object
@@ -538,9 +546,6 @@ public final class DefaultUserService implements UserService {
         if (imageExtension == null) {
             throw new UserServiceException("Invalid image extension: " + fileExtension);
         }
-
-        // Set the file name as the user DNI with the correct extension
-        final String fileName = userDni + "." + fileExtension;
 
         // Use the image storage service to save the image
         final String savedImagePath;
