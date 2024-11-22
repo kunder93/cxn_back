@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -114,11 +115,11 @@ public class SecurityConfiguration {
                 .cors(withDefaults());
 
         // Allow H2 console access by modifying frame options
-        http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
+        http.headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin));
 
         // Add JWT filter before UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(enableUserRequestFilter, JwtRequestFilter.class);
+                .addFilterAfter(enableUserRequestFilter, UsernamePasswordAuthenticationFilter.class);
         // Permit all requests to /api/auth/signup and /api/auth/signin
         http.authorizeHttpRequests(requests -> requests.requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()

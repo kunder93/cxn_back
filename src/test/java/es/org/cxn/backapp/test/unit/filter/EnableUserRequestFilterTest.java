@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import es.org.cxn.backapp.exceptions.DisabledUserException;
 import es.org.cxn.backapp.filter.EnableUserRequestFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -305,7 +306,7 @@ class EnableUserRequestFilterTest {
             // Extract the cause of the InvocationTargetException and assert it
             Throwable cause = exception.getCause();
             assertNotNull(cause, "Expected a cause for InvocationTargetException");
-            assertEquals(IllegalStateException.class, cause.getClass());
+            assertEquals(DisabledUserException.class, cause.getClass());
             assertEquals("User is disabled.", cause.getMessage());
 
             // Verify that SecurityContextHolder.clearContext() is called

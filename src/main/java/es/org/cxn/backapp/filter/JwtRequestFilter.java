@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import es.org.cxn.backapp.AppURL;
 import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.service.MyPrincipalUser;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -71,11 +72,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     /**
      * Constructs a new JwtRequestFilter.
      *
-     * @param userDetailsService the service used to load user details by username.
+     * @param usrDetailsService the service used to load user details by username.
      */
-    public JwtRequestFilter(final UserDetailsService userDetailsService) {
+    public JwtRequestFilter(final UserDetailsService usrDetailsService) {
         super();
-        this.userDetailsService = userDetailsService;
+        this.userDetailsService = usrDetailsService;
     }
 
     /**
@@ -95,11 +96,20 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
             final FilterChain filterChain) throws ServletException, IOException {
         final String requestURI = request.getRequestURI();
-        LOGGER.debug("Request URI: {}", requestURI);
 
-        extractJwtFromRequest(request).flatMap(this::getUsernameFromJwt)
-                .flatMap(username -> validateAndLoadUser(username, request))
-                .ifPresent(user -> setAuthentication(user, request));
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Request URI: {}", requestURI);
+        }
+
+        try {
+            extractJwtFromRequest(request).flatMap(this::getUsernameFromJwt)
+                    .flatMap(username -> validateAndLoadUser(username, request))
+                    .ifPresent(user -> setAuthentication(user, request));
+        } catch (JwtException e) {
+            LOGGER.warn("JWT validation failed: {}", e.getMessage());
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
 
         filterChain.doFilter(request, response);
     }

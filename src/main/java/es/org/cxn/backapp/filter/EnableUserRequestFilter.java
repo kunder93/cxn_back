@@ -4,13 +4,16 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import es.org.cxn.backapp.AppURL;
+import es.org.cxn.backapp.exceptions.DisabledUserException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,19 +77,29 @@ public class EnableUserRequestFilter extends OncePerRequestFilter {
             final FilterChain filterChain) throws ServletException, IOException {
         LOGGER.info("EnableUserRequestFilter: Processing request.");
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated()) {
+        if (authentication != null && authentication.isAuthenticated()
+                && !(authentication instanceof AnonymousAuthenticationToken)) {
             final String email = authentication.getName();
             LOGGER.info("Authentication detected for user: {}", email);
-            // Check if the user is enabled
-            final boolean isUserEnabled = userDetailsService.loadUserByUsername(email).isEnabled();
-            if (!isUserEnabled) {
-                LOGGER.warn("User '{}' is disabled. Clearing security context.", email);
-                SecurityContextHolder.clearContext();
-                throw new IllegalStateException("User is disabled.");
+
+            if (authentication.getPrincipal() instanceof UserDetails userDetails) {
+                if (!userDetails.isEnabled()) {
+                    LOGGER.warn("User '{}' is disabled. Clearing security context.", email);
+                    SecurityContextHolder.clearContext();
+                    throw new DisabledUserException("User is disabled.");
+                }
+            } else {
+                // Fallback to loading from UserDetailsService if not available
+                final boolean isUserEnabled = userDetailsService.loadUserByUsername(email).isEnabled();
+                if (!isUserEnabled) {
+                    LOGGER.warn("User '{}' is disabled. Clearing security context.", email);
+                    SecurityContextHolder.clearContext();
+                    throw new DisabledUserException("User is disabled.");
+                }
             }
             LOGGER.info("User '{}' is enabled. Proceeding with request.", email);
         } else {
-            LOGGER.info("No authentication found. Proceeding without user validation.");
+            LOGGER.info("No valid authentication found. Proceeding without user validation.");
         }
         LOGGER.info("Request processing completed. Passing to the next filter.");
         filterChain.doFilter(request, response);
