@@ -3,15 +3,6 @@ package es.org.cxn.backapp.test.integration.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
-import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
-import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
-import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
-import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,294 +23,235 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
+import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
+import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
+import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
+import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
+
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
 @ActiveProfiles("test")
 class ChessQuestionsControllerTest {
 
-  /**
-   * Mocked mail sender.
-   */
-  @MockBean
-  private JavaMailSender javaMailSender;
+    /**
+     * Gson instance for serializing and deserializing JSON objects during tests.
+     *
+     * <p>
+     * This is particularly useful for converting Java objects to their JSON
+     * representation when sending HTTP requests, and for parsing JSON responses
+     * received from the controllers back into Java objects.
+     * </p>
+     *
+     */
+    private static Gson gson;
 
-  /**
-   * Used to simulate HTTP requests and perform assertions on the results
-   * within the test cases.
-   *
-   * <p>It allows the tests to be run in a way that simulates sending requests
-   * to the application's controllers without needing to start a full
-   *  HTTP server.</p>
-   */
-  @Autowired
-  private MockMvc mockMvc;
+    @BeforeAll
+    static void initializeTest() {
+        gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 
-  /**
-   * Gson instance for serializing and deserializing JSON objects during tests.
-   *
-   * <p>This is particularly useful for converting Java objects to their JSON
-   * representation when sending HTTP requests, and for parsing JSON responses
-   * received from the controllers back into Java objects.</p>
-   *
-   */
-  private static Gson gson;
+    }
 
-  @BeforeAll
-  static void initializeTest() {
-    gson = new GsonBuilder()
-          .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-          .create();
+    /**
+     * Mocked mail sender.
+     */
+    @MockBean
+    private JavaMailSender javaMailSender;
 
-  }
+    /**
+     * Used to simulate HTTP requests and perform assertions on the results within
+     * the test cases.
+     *
+     * <p>
+     * It allows the tests to be run in a way that simulates sending requests to the
+     * application's controllers without needing to start a full HTTP server.
+     * </p>
+     */
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Test
-  @Transactional
-  void testCreateChessQuestionReturnDataMatch() throws Exception {
-    var questionEmail = "test@example.com";
-    var questionCategory = "Test Category";
-    var questionTopic = "Test Topic";
-    var questionMessage = "Test Message";
+    @Test
+    @Transactional
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testChangeQuestionHasSeen() throws Exception {
+        var questionEmail = "test@example.com";
+        var questionCategory = "Test Category";
+        var questionTopic = "Test Topic";
+        var questionMessage = "Test Message";
 
-    // Prepare request data
-    var requestForm = new CreateChessQuestionRequest(
-          questionEmail, questionCategory, questionTopic, questionMessage
-    );
+        // Prepare request data
+        var requestForm = new CreateChessQuestionRequest(questionEmail, questionCategory, questionTopic,
+                questionMessage);
 
-    var requestJson = gson.toJson(requestForm);
-    // Perform POST request
-    var mvcResult = mockMvc.perform(
-          MockMvcRequestBuilders.post("/api/chessQuestion")
-                .contentType(MediaType.APPLICATION_JSON).content(requestJson)
-                .accept(MediaType.APPLICATION_JSON)
-    ).andExpect(status().isCreated()).andReturn();
+        var requestJson = gson.toJson(requestForm);
+        // Perform POST request
+        var responseJson = mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/chessQuestion").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
 
-    // Verify response
-    var responseContent = mvcResult.getResponse().getContentAsString();
-    // Add assertions for response content
+        var response = gson.fromJson(responseJson, ChessQuestionResponse.class);
 
-    // deserialize the response body into an object
-    var deserializedResponse =
-          gson.fromJson(responseContent, ChessQuestionResponse.class);
+        Assertions.assertEquals(Boolean.FALSE, response.seen(), "QUestion has seen is false when is created.");
 
-    Assertions.assertEquals(
-          questionEmail, deserializedResponse.email(),
-          "The response deserialized object is the same as created."
-    );
-    Assertions.assertEquals(
-          questionCategory, deserializedResponse.category(),
-          "The response deserialized object is the same as created."
-    );
-    Assertions.assertEquals(
-          questionTopic, deserializedResponse.topic(),
-          "The response deserialized object is the same as created."
-    );
-    Assertions.assertEquals(
-          questionMessage, deserializedResponse.message(),
-          "The response deserialized object is the same as created."
-    );
-    Assertions.assertNotNull(
-          deserializedResponse.date(), "Date is added and not null"
-    );
-  }
+        var changeChessQuestionHasSeenRequestForm = new ChangeChessQuestionHasSeenRequest(response.id());
 
-  @Test
-  @Transactional
-  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
-  void testCreateSeveralChessQuestionsRetrieveAll() throws Exception {
-    var numberOfChessQuestions = 2;
-    final var email = "email@email.es";
-    final var category = "Category1";
-    final var topic = "topic";
-    final var message = "custom message";
+        var changeChessQuestionHasSeenRequestFormJson = gson.toJson(changeChessQuestionHasSeenRequestForm);
 
-    final var secondEmail = "other@other.es";
-    final var secondMessage = "other message";
-    var firstRequestForm =
-          new CreateChessQuestionRequest(email, category, topic, message);
+        responseJson = mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/chessQuestion/changeChessQuestionHasSeen")
+                        .contentType(MediaType.APPLICATION_JSON).content(changeChessQuestionHasSeenRequestFormJson)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
 
-    var firstRequestJson = gson.toJson(firstRequestForm);
+        response = gson.fromJson(responseJson, ChessQuestionResponse.class);
 
-    mockMvc.perform(
-          MockMvcRequestBuilders.post("/api/chessQuestion")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(firstRequestJson)
-    );
+        Assertions.assertEquals(Boolean.TRUE, response.seen(), "Has seen has been changed.");
 
-    var secondRequestForm = new CreateChessQuestionRequest(
-          secondEmail, category, topic, secondMessage
-    );
-    var secondRequestJson = gson.toJson(secondRequestForm);
-    mockMvc.perform(
-          MockMvcRequestBuilders.post("/api/chessQuestion")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(secondRequestJson)
-    );
+    }
 
-    // Get all Chess Questions
-    var mvcResult =
-          mockMvc.perform(MockMvcRequestBuilders.get("/api/chessQuestion"))
-                .andExpect(status().isOk()).andReturn();
-    var responseContent = mvcResult.getResponse().getContentAsString();
-    var responseObject =
-          gson.fromJson(responseContent, ChessQuestionsListResponse.class);
-    Assertions.assertEquals(
-          responseObject.chessQuestionList().size(), numberOfChessQuestions,
-          "The amount of Chess questions is 2"
-    );
+    @Test
+    @Transactional
+    void testCreateChessQuestionReturnDataMatch() throws Exception {
+        var questionEmail = "test@example.com";
+        var questionCategory = "Test Category";
+        var questionTopic = "Test Topic";
+        var questionMessage = "Test Message";
 
-  }
+        // Prepare request data
+        var requestForm = new CreateChessQuestionRequest(questionEmail, questionCategory, questionTopic,
+                questionMessage);
 
-  @Test
-  @Transactional
-  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
-  void testDeleteChessQuestionsCheckDeleted() throws Exception {
-    // Create 2 Chess questions.
-    var firstQuestionEmail = "firstTest@example.com";
-    var firstQuestionCategory = "firstTest Category";
-    var firstQuestionTopic = "firstTest Topic";
-    var firstQuestionMessage = "firstTest Message";
+        var requestJson = gson.toJson(requestForm);
+        // Perform POST request
+        var mvcResult = mockMvc
+                .perform(MockMvcRequestBuilders.post("/api/chessQuestion").contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson).accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated()).andReturn();
 
-    var firstRequest = new CreateChessQuestionRequest(
-          firstQuestionEmail, firstQuestionCategory, firstQuestionTopic,
-          firstQuestionMessage
-    );
+        // Verify response
+        var responseContent = mvcResult.getResponse().getContentAsString();
+        // Add assertions for response content
 
-    var firstRequestJson = gson.toJson(firstRequest);
+        // deserialize the response body into an object
+        var deserializedResponse = gson.fromJson(responseContent, ChessQuestionResponse.class);
 
-    mockMvc.perform(
-          MockMvcRequestBuilders.post("/api/chessQuestion")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(firstRequestJson).accept(MediaType.APPLICATION_JSON)
-    ).andExpect(status().isCreated());
+        Assertions.assertEquals(questionEmail, deserializedResponse.email(),
+                "The response deserialized object is the same as created.");
+        Assertions.assertEquals(questionCategory, deserializedResponse.category(),
+                "The response deserialized object is the same as created.");
+        Assertions.assertEquals(questionTopic, deserializedResponse.topic(),
+                "The response deserialized object is the same as created.");
+        Assertions.assertEquals(questionMessage, deserializedResponse.message(),
+                "The response deserialized object is the same as created.");
+        Assertions.assertNotNull(deserializedResponse.date(), "Date is added and not null");
+    }
 
-    var secondQuestionEmail = "secondTest@example.com";
-    var secondQuestionCategory = "secondTest Category";
-    var secondQuestionTopic = "secondTest Topic";
-    var secondQuestionMessage = "secondTest Message";
+    @Test
+    @Transactional
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testCreateSeveralChessQuestionsRetrieveAll() throws Exception {
+        var numberOfChessQuestions = 2;
+        final var email = "email@email.es";
+        final var category = "Category1";
+        final var topic = "topic";
+        final var message = "custom message";
 
-    var secondRequest = new CreateChessQuestionRequest(
-          secondQuestionEmail, secondQuestionCategory, secondQuestionTopic,
-          secondQuestionMessage
-    );
+        final var secondEmail = "other@other.es";
+        final var secondMessage = "other message";
+        var firstRequestForm = new CreateChessQuestionRequest(email, category, topic, message);
 
-    var secondRequestJson = gson.toJson(secondRequest);
+        var firstRequestJson = gson.toJson(firstRequestForm);
 
-    mockMvc.perform(
-          MockMvcRequestBuilders.post("/api/chessQuestion")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(secondRequestJson).accept(MediaType.APPLICATION_JSON)
-    ).andExpect(status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/chessQuestion").contentType(MediaType.APPLICATION_JSON)
+                .content(firstRequestJson));
 
-    // Get all chess questions.
-    var responseAsString = mockMvc
-          .perform(
-                MockMvcRequestBuilders.get("/api/chessQuestion")
-                      .accept(MediaType.APPLICATION_JSON)
-          ).andExpect(status().isOk()).andReturn().getResponse()
-          .getContentAsString();
+        var secondRequestForm = new CreateChessQuestionRequest(secondEmail, category, topic, secondMessage);
+        var secondRequestJson = gson.toJson(secondRequestForm);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/chessQuestion").contentType(MediaType.APPLICATION_JSON)
+                .content(secondRequestJson));
 
-    var response =
-          gson.fromJson(responseAsString, ChessQuestionsListResponse.class);
+        // Get all Chess Questions
+        var mvcResult = mockMvc.perform(MockMvcRequestBuilders.get("/api/chessQuestion")).andExpect(status().isOk())
+                .andReturn();
+        var responseContent = mvcResult.getResponse().getContentAsString();
+        var responseObject = gson.fromJson(responseContent, ChessQuestionsListResponse.class);
+        Assertions.assertEquals(responseObject.chessQuestionList().size(), numberOfChessQuestions,
+                "The amount of Chess questions is 2");
 
-    Assertions.assertEquals(
-          2, response.chessQuestionList().size(),
-          "The questions list has 2 questions."
-    );
+    }
 
-    // Convert collection to list for indexing
-    List<ChessQuestionResponse> chessQuestionsList =
-          new ArrayList<>(response.chessQuestionList());
+    @Test
+    @Transactional
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testDeleteChessQuestionsCheckDeleted() throws Exception {
+        // Create 2 Chess questions.
+        var firstQuestionEmail = "firstTest@example.com";
+        var firstQuestionCategory = "firstTest Category";
+        var firstQuestionTopic = "firstTest Topic";
+        var firstQuestionMessage = "firstTest Message";
 
-    // Perform delete of first question
-    mockMvc.perform(
-          MockMvcRequestBuilders
-                .delete("/api/chessQuestion/" + chessQuestionsList.get(0).id())
-    ).andExpect(status().isNoContent());
+        var firstRequest = new CreateChessQuestionRequest(firstQuestionEmail, firstQuestionCategory, firstQuestionTopic,
+                firstQuestionMessage);
 
-    // Get all chess questions after deletion
-    responseAsString = mockMvc
-          .perform(
-                MockMvcRequestBuilders.get("/api/chessQuestion")
-                      .accept(MediaType.APPLICATION_JSON)
-          ).andExpect(status().isOk()).andReturn().getResponse()
-          .getContentAsString();
+        var firstRequestJson = gson.toJson(firstRequest);
 
-    response =
-          gson.fromJson(responseAsString, ChessQuestionsListResponse.class);
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/chessQuestion").contentType(MediaType.APPLICATION_JSON)
+                .content(firstRequestJson).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
 
-    Assertions.assertEquals(
-          1, response.chessQuestionList().size(),
-          "The questions list has 1 question after deletion."
-    );
-  }
+        var secondQuestionEmail = "secondTest@example.com";
+        var secondQuestionCategory = "secondTest Category";
+        var secondQuestionTopic = "secondTest Topic";
+        var secondQuestionMessage = "secondTest Message";
 
-  @Test
-  @Transactional
-  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
-  void testDeleteNotExistingQuestionReturnBadRequest() throws Exception {
-    final var notExistingQuestionId = 88;
-    // Perform delete of first question
-    mockMvc.perform(
-          MockMvcRequestBuilders
-                .delete("/api/chessQuestion/" + notExistingQuestionId)
-    ).andExpect(status().isBadRequest());
+        var secondRequest = new CreateChessQuestionRequest(secondQuestionEmail, secondQuestionCategory,
+                secondQuestionTopic, secondQuestionMessage);
 
-  }
+        var secondRequestJson = gson.toJson(secondRequest);
 
-  @Test
-  @Transactional
-  @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
-  void testChangeQuestionHasSeen() throws Exception {
-    var questionEmail = "test@example.com";
-    var questionCategory = "Test Category";
-    var questionTopic = "Test Topic";
-    var questionMessage = "Test Message";
+        mockMvc.perform(MockMvcRequestBuilders.post("/api/chessQuestion").contentType(MediaType.APPLICATION_JSON)
+                .content(secondRequestJson).accept(MediaType.APPLICATION_JSON)).andExpect(status().isCreated());
 
-    // Prepare request data
-    var requestForm = new CreateChessQuestionRequest(
-          questionEmail, questionCategory, questionTopic, questionMessage
-    );
+        // Get all chess questions.
+        var responseAsString = mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/chessQuestion").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-    var requestJson = gson.toJson(requestForm);
-    // Perform POST request
-    var responseJson = mockMvc
-          .perform(
-                MockMvcRequestBuilders.post("/api/chessQuestion")
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .content(requestJson).accept(MediaType.APPLICATION_JSON)
-          ).andExpect(status().isCreated()).andReturn().getResponse()
-          .getContentAsString();
+        var response = gson.fromJson(responseAsString, ChessQuestionsListResponse.class);
 
-    var response = gson.fromJson(responseJson, ChessQuestionResponse.class);
+        Assertions.assertEquals(2, response.chessQuestionList().size(), "The questions list has 2 questions.");
 
-    Assertions.assertEquals(
-          Boolean.FALSE, response.seen(),
-          "QUestion has seen is false when is created."
-    );
+        // Convert collection to list for indexing
+        List<ChessQuestionResponse> chessQuestionsList = new ArrayList<>(response.chessQuestionList());
 
-    var changeChessQuestionHasSeenRequestForm =
-          new ChangeChessQuestionHasSeenRequest(response.id());
+        // Perform delete of first question
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/chessQuestion/" + chessQuestionsList.get(0).id()))
+                .andExpect(status().isNoContent());
 
-    var changeChessQuestionHasSeenRequestFormJson =
-          gson.toJson(changeChessQuestionHasSeenRequestForm);
+        // Get all chess questions after deletion
+        responseAsString = mockMvc
+                .perform(MockMvcRequestBuilders.get("/api/chessQuestion").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-    responseJson = mockMvc
-          .perform(
-                MockMvcRequestBuilders
-                      .post("/api/chessQuestion/changeChessQuestionHasSeen")
-                      .contentType(MediaType.APPLICATION_JSON)
-                      .content(changeChessQuestionHasSeenRequestFormJson)
-                      .accept(MediaType.APPLICATION_JSON)
-          ).andExpect(status().isCreated()).andReturn().getResponse()
-          .getContentAsString();
+        response = gson.fromJson(responseAsString, ChessQuestionsListResponse.class);
 
-    response = gson.fromJson(responseJson, ChessQuestionResponse.class);
+        Assertions.assertEquals(1, response.chessQuestionList().size(),
+                "The questions list has 1 question after deletion.");
+    }
 
-    Assertions.assertEquals(
-          Boolean.TRUE, response.seen(), "Has seen has been changed."
-    );
+    @Test
+    @Transactional
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testDeleteNotExistingQuestionReturnBadRequest() throws Exception {
+        final var notExistingQuestionId = 88;
+        // Perform delete of first question
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/chessQuestion/" + notExistingQuestionId))
+                .andExpect(status().isBadRequest());
 
-  }
+    }
 
 }

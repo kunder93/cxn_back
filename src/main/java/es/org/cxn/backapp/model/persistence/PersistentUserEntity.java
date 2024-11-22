@@ -181,7 +181,7 @@ public class PersistentUserEntity implements UserEntity {
      */
     @Column(name = "enabled", nullable = false, unique = false)
     @Builder.Default
-    private boolean enabled = true;
+    private boolean enabled = Boolean.TRUE;
 
     /**
      * Roles associated with this user.
@@ -230,7 +230,7 @@ public class PersistentUserEntity implements UserEntity {
      * The associated profile image entity. This establishes a one-to-one
      * relationship between the user and their profile image.
      */
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional=false)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private PersistentFederateStateEntity federateState;
 
     /**
@@ -268,9 +268,10 @@ public class PersistentUserEntity implements UserEntity {
      * @param rolesEntity           a set of roles associated with the user. Can be null; defaults to an empty set.
      */
     @Builder
-    public PersistentUserEntity(final String dni, final String name,final String firstSurname,final String secondSurname,
-            final LocalDate birthDate,final String gender,final String password,final String email,
-            final UserType kindMember,final boolean enabled, final Set<PersistentRoleEntity> rolesEntity) {
+    public PersistentUserEntity(final String dni, final String name, final String firstSurname,
+            final String secondSurname, final LocalDate birthDate, final String gender, final String password,
+            final String email, final UserType kindMember, final boolean enabled,
+            final Set<PersistentRoleEntity> rolesEntity) {
         this.dni = dni;
         this.name = name;
         this.firstSurname = firstSurname;

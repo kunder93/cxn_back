@@ -58,8 +58,8 @@ public record FederateStateExtendedResponseList(List<FederateStateExtendedRespon
      */
     public static FederateStateExtendedResponseList fromEntities(final List<PersistentFederateStateEntity> entities) {
         // Convert the list of entities to a list of FederateStateExtendedResponse
-        List<FederateStateExtendedResponse> responseList = entities.stream().map(FederateStateExtendedResponse::new)
-                .toList();
+        final List<FederateStateExtendedResponse> responseList = entities.stream()
+                .map(FederateStateExtendedResponse::new).toList();
         // Return a new FederateStateExtendedResponseList using the canonical
         // constructor
         return new FederateStateExtendedResponseList(responseList);

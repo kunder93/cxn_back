@@ -34,9 +34,11 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -153,8 +155,8 @@ public class AuthController {
      */
     @CrossOrigin
     @PostMapping("/signinn")
-    public ResponseEntity<AuthenticationResponse> authenticateUser(
-            final @Valid @RequestBody AuthenticationRequest loginRequest) {
+    public ResponseEntity<AuthenticationResponse> authenticateUser(final @Valid
+    @RequestBody AuthenticationRequest loginRequest) {
         final var email = loginRequest.email();
         final var password = loginRequest.password();
         try {
@@ -185,8 +187,8 @@ public class AuthController {
      */
     @CrossOrigin
     @PostMapping("/signup")
-    public ResponseEntity<SignUpResponseForm> registerUser(
-            @Valid @RequestBody final SignUpRequestForm signUpRequestForm) throws IOException {
+    public ResponseEntity<SignUpResponseForm> registerUser(@Valid
+    @RequestBody final SignUpRequestForm signUpRequestForm) throws IOException {
 
         final var defaultUserRole = UserRoleName.ROLE_CANDIDATO_SOCIO;
         final var initialUserRolesSet = new ArrayList<UserRoleName>();
@@ -208,6 +210,28 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         } catch (MessagingException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Unsubscribe existent user.
+     * <p>
+     * This endpoint allows an authenticated user to unsubscribe. It retrieves the
+     * user's email or username from the authentication context and invokes the user
+     * service to handle the unsubscription logic.
+     * </p>
+     *
+     * @return ResponseEntity indicating the result of the operation.
+     */
+    @CrossOrigin
+    @PatchMapping("/unsubscribe")
+    public ResponseEntity<String> unsubscribe() {
+        final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            userService.unsubscribe(authName);
+            return ResponseEntity.ok("Successfully unsubscribed");
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 

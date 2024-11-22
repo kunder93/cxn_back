@@ -51,7 +51,7 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
 class PaymentSheetControllerIntegrationTest {
 

@@ -62,6 +62,21 @@ import lombok.Data;
 public class PersistentFederateStateEntity implements FederateStateEntity {
 
     /**
+     * The length of the user's DNI (Documento Nacional de Identidad). This constant
+     * is used to define the maximum allowed length for the user's DNI field in the
+     * database and throughout the application. The standard length for a DNI in
+     * this system is 10 characters.
+     */
+    private static final int USER_DNI_LENGTH = 10;
+    /**
+     * The maximum length allowed for the URL of the DNI images. This constant
+     * defines the maximum allowed length for the URLs of the front and back images
+     * of the user's DNI. These URLs are stored in the database and must conform to
+     * a standard length, which is set to 150 characters for this system.
+     */
+    private static final int IMAGE_URL_LENGTH = 150;
+
+    /**
      * Serial uid for serialization.
      */
     private static final long serialVersionUID = 1L;
@@ -72,21 +87,21 @@ public class PersistentFederateStateEntity implements FederateStateEntity {
      *
      */
     @Id
-    @Column(name = "user_dni", nullable = false, unique = true, length = 10)
+    @Column(name = "user_dni", nullable = false, unique = true, length = USER_DNI_LENGTH)
     private String userDni;
 
     /**
      * URL of the front side image of the user's DNI.
      *
      */
-    @Column(name = "dni_front_image_url", nullable = false, length = 150)
+    @Column(name = "dni_front_image_url", nullable = false, length = IMAGE_URL_LENGTH)
     private String dniFrontImageUrl;
 
     /**
      * URL of the back side image of the user's DNI.
      *
      */
-    @Column(name = "dni_back_image_url", nullable = false, length = 150)
+    @Column(name = "dni_back_image_url", nullable = false, length = IMAGE_URL_LENGTH)
     private String dniBackImageUrl;
 
     /**
@@ -130,22 +145,21 @@ public class PersistentFederateStateEntity implements FederateStateEntity {
      * Constructs a {@link PersistentFederateStateEntity} with the specified
      * parameters.
      *
-     * @param userDni          the unique identifier (DNI) for the user
-     * @param dniFrontImageUrl the URL of the front side image of the user's DNI
-     * @param dniBackImageUrl  the URL of the back side image of the user's DNI
-     * @param automaticRenewal whether the user's membership is automatically
-     *                         renewed
-     * @param dniLastUpdate    the date when the user's DNI data was last updated
-     * @param federateState    the current state of the user's federate status
+     * @param usrDni             the unique identifier (DNI) for the user
+     * @param frontImageUrl      the URL of the front side image of the user's DNI
+     * @param backImageUrl       the URL of the back side image of the user's DNI
+     * @param isAutomaticRenewal whether the user's membership is automatically
+     *                           renewed
+     * @param lastUpdate         the date when the user's DNI data was last updated
+     * @param federateStatus     the current state of the user's federate status
      */
-    public PersistentFederateStateEntity(final String userDni, final String dniFrontImageUrl,
-            final String dniBackImageUrl, final boolean automaticRenewal, final LocalDate dniLastUpdate,
-            final FederateState federateState) {
-        this.userDni = userDni;
-        this.dniFrontImageUrl = dniFrontImageUrl;
-        this.dniBackImageUrl = dniBackImageUrl;
-        this.automaticRenewal = automaticRenewal;
-        this.dniLastUpdate = dniLastUpdate;
-        this.state = federateState;
+    public PersistentFederateStateEntity(final String usrDni, final String frontImageUrl, final String backImageUrl,
+            final boolean isAutomaticRenewal, final LocalDate lastUpdate, final FederateState federateStatus) {
+        this.userDni = usrDni;
+        this.dniFrontImageUrl = frontImageUrl;
+        this.dniBackImageUrl = backImageUrl;
+        this.automaticRenewal = isAutomaticRenewal;
+        this.dniLastUpdate = lastUpdate;
+        this.state = federateStatus;
     }
 }
