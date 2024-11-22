@@ -5,7 +5,7 @@ FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
 WORKDIR /usr/src/app
 
 # Define an argument to specify the Maven profile
-ARG BUILD_PROFILE
+ARG BUILD_PROFILE=dev
 
 # Copy only the necessary files to download dependencies
 COPY pom.xml ./
@@ -21,7 +21,7 @@ RUN mvn clean install -P${BUILD_PROFILE}
 FROM eclipse-temurin:21-jre-alpine
 
 # Copy the generated JAR file from the builder stage
-COPY --from=builder /usr/src/app/target/back-app-2.0.1-SNAPSHOT.jar /app/app.jar
+COPY --from=builder /usr/src/app/target/back-app-3.0.0.jar /app/app.jar
 
 # Expose ports
 EXPOSE 8080
