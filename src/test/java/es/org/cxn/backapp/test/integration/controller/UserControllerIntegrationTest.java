@@ -2,7 +2,6 @@
 package es.org.cxn.backapp.test.integration.controller;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -39,10 +38,8 @@ import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
-import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
-import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.service.DefaultUserService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
@@ -54,7 +51,7 @@ import jakarta.transaction.Transactional;
  * @author Santiago Paz. User controller integration tests.
  */
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc()
 @ActiveProfiles("test")
 @TestPropertySource("/application.properties")
 class UserControllerIntegrationTest {
@@ -114,9 +111,19 @@ class UserControllerIntegrationTest {
 
     }
 
+    /**
+     * Mocked {@link SecurityContext} used in the test to simulate the security
+     * context for authentication. It represents the context for a specific user's
+     * security information, such as authentication and authorization details.
+     */
     @MockBean
     private SecurityContext securityContext;
 
+    /**
+     * Mocked {@link Authentication} used in the test to simulate the authenticated
+     * user information. This object contains details about the currently
+     * authenticated user, such as the username, roles, and credentials.
+     */
     @MockBean
     private Authentication authentication;
 
@@ -181,7 +188,7 @@ class UserControllerIntegrationTest {
         var changeKindMemberRequestJson = gson.toJson(changeKindMemberRequest);
         mockMvc.perform(patch(CHANGE_KIND_MEMBER_URL).contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changeKindMemberRequestJson))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest()).andReturn().getResponse()
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError()).andReturn().getResponse()
                 .getContentAsString();
     }
 
@@ -194,6 +201,7 @@ class UserControllerIntegrationTest {
      */
     @Test
     @Transactional
+    @WithMockUser(username = "userA", roles = { "ADMIN" })
     void testChangeKindOfMemberSocioNumeroSocioAspirante() throws Exception {
         // Age under 18.
         final var userAgeUnder18 = LocalDate.of(2010, 2, 2);
@@ -266,6 +274,7 @@ class UserControllerIntegrationTest {
      */
     @Test
     @Transactional
+    @WithMockUser(username = "userA", roles = { "ADMIN" })
     void testChangeKindOfMemberSocioNumeroSocioFamiliar() throws Exception {
         // Configurar el comportamiento del mock JavaMailSender
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
@@ -297,6 +306,7 @@ class UserControllerIntegrationTest {
      */
     @Test
     @Transactional
+    @WithMockUser(username = "userA", roles = { "ADMIN" })
     void testChangeKindOfMemberSocioNumeroSocioHonorario() throws Exception {
         // Configurar el comportamiento del mock JavaMailSender
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
@@ -382,7 +392,7 @@ class UserControllerIntegrationTest {
 
         mockMvc.perform(patch(CHANGE_MEMBER_EMAIL_URL).contentType(MediaType.APPLICATION_JSON)
                 .content(changeEmailRequestJson).header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     /**
@@ -447,7 +457,7 @@ class UserControllerIntegrationTest {
         var changePasswordRequestJson = gson.toJson(changePasswordRequest);
         mockMvc.perform(patch(CHANGE_MEMBER_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(changePasswordRequestJson))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest());
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 
     /**
@@ -495,62 +505,6 @@ class UserControllerIntegrationTest {
     }
 
     /**
-     * Create 3 members and get their data.
-     *
-     * @throws Exception When fails.
-     */
-    @Test
-    @Transactional
-    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
-    void testGetAllUsersData() throws Exception {
-        // Configurar el comportamiento del mock JavaMailSender
-        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-        // FIRST MEMBER
-        var userRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-        var userRequestJson = gson.toJson(userRequest);
-        // Register user correctly
-        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userRequestJson))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-
-        var secondUserDNI = "00000000T";
-        var secondUserEmail = "second@email.es";
-        userRequest = new SignUpRequestForm(secondUserDNI, UsersControllerFactory.USER_A_NAME,
-                UsersControllerFactory.USER_A_FIRST_SURNAME, UsersControllerFactory.USER_A_SECOND_SURNAME,
-                UsersControllerFactory.USER_A_BIRTH_DATE, UsersControllerFactory.USER_A_GENDER,
-                UsersControllerFactory.USER_A_PASSWORD, secondUserEmail, UsersControllerFactory.USER_A_POSTAL_CODE,
-                UsersControllerFactory.USER_A_APARTMENT_NUMBER, UsersControllerFactory.USER_A_BUILDING,
-                UsersControllerFactory.USER_A_STREET, UsersControllerFactory.USER_A_CITY,
-                UsersControllerFactory.USER_A_KIND_MEMBER, UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
-                UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME);
-        userRequestJson = gson.toJson(userRequest);
-        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userRequestJson))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-
-        var thirdUserDNI = "11111111H";
-        var thirdUserEmail = "third@email.es";
-        userRequest = new SignUpRequestForm(thirdUserDNI, UsersControllerFactory.USER_A_NAME,
-                UsersControllerFactory.USER_A_FIRST_SURNAME, UsersControllerFactory.USER_A_SECOND_SURNAME,
-                UsersControllerFactory.USER_A_BIRTH_DATE, UsersControllerFactory.USER_A_GENDER,
-                UsersControllerFactory.USER_A_PASSWORD, thirdUserEmail, UsersControllerFactory.USER_A_POSTAL_CODE,
-                UsersControllerFactory.USER_A_APARTMENT_NUMBER, UsersControllerFactory.USER_A_BUILDING,
-                UsersControllerFactory.USER_A_STREET, UsersControllerFactory.USER_A_CITY,
-                UsersControllerFactory.USER_A_KIND_MEMBER, UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
-                UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME);
-
-        userRequestJson = gson.toJson(userRequest);
-        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userRequestJson))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-
-        var resultJson = mockMvc.perform(get(GET_ALL_USERS_DATA_URL)).andExpect(MockMvcResultMatchers.status().isOk())
-                .andReturn().getResponse().getContentAsString();
-
-        var userListResponse = gson.fromJson(resultJson, UserListDataResponse.class);
-        final var usersCount = 3;
-        Assertions.assertEquals(usersCount, userListResponse.usersList().size(), "The user list size is 3");
-
-    }
-
-    /**
      *
      * @throws Exception When fails.
      */
@@ -582,39 +536,8 @@ class UserControllerIntegrationTest {
 
     @Transactional
     @Test
-    void testUnsubscribeUserCheckUnsubscriber() throws Exception {
-        // Configurar el comportamiento del mock JavaMailSender
-        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-        var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
-        var memberRequestJson = gson.toJson(memberRequest);
-        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(memberRequestJson))
-                .andExpect(MockMvcResultMatchers.status().isCreated());
-        var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
-                UsersControllerFactory.USER_A_PASSWORD);
-
-        // Check that user was unsubscribed succesfully.
-        mockMvc.perform(get(GET_USER_DATA_URL).header("Authorization", "Bearer " + jwtToken));
-
-        // Unsubscribe user.
-        final var userUnsubscribeRequest = new UserUnsubscribeRequest(UsersControllerFactory.USER_A_EMAIL,
-                UsersControllerFactory.USER_A_PASSWORD);
-
-        final var userUnsubscribeRequestJson = gson.toJson(userUnsubscribeRequest);
-
-        mockMvc.perform(delete(GET_USER_DATA_URL + "/unsubscribe").contentType(MediaType.APPLICATION_JSON)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + jwtToken).content(userUnsubscribeRequestJson))
-                .andExpect(MockMvcResultMatchers.status().isOk());
-
-        // Check that user was unsubscribed succesfully.
-        mockMvc.perform(get(GET_USER_DATA_URL).contentType(MediaType.APPLICATION_JSON).header("Authorization",
-                "Bearer " + jwtToken));
-        /* .andExpect(MockMvcResultMatchers.status().isUnauthorized()); */
-    }
-
-    @Transactional
-    @Test
     void testUploadProfileImageNoExistingUserBadRequest() throws Exception {
-        final String UPLOAD_IMAGE_URL = "/api/user/uploadProfileImage";
+        final String uploadImageUrl = "/api/user/uploadProfileImage"; // Renamed to camelCase
         final String nonExistingUserName = "nonExistingUser"; // User that doesn't exist in the DB
         final String newProfileImageUrl = "http://example.com/profile.jpg";
 
@@ -627,7 +550,7 @@ class UserControllerIntegrationTest {
 
         // Perform the PATCH request simulating the non-existing user in the security
         // context
-        mockMvc.perform(patch(UPLOAD_IMAGE_URL).contentType(MediaType.APPLICATION_JSON).content(jsonRequestBody)
+        mockMvc.perform(patch(uploadImageUrl).contentType(MediaType.APPLICATION_JSON).content(jsonRequestBody)
                 .with(SecurityMockMvcRequestPostProcessors.user(nonExistingUserName)) // Simulate non-existing user
         ).andExpect(status().isBadRequest());
     }

@@ -33,26 +33,315 @@ import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto.SaveGameStatistics;
 
+/**
+ * Unit test class for {@link DefaultLichessService}. This class verifies the
+ * behavior of the {@link DefaultLichessService} class, including interaction
+ * with its repositories and service methods. It covers different scenarios for
+ * Lichess profile management and OAuth authorization requests.
+ *
+ * The tests are focused on ensuring proper exception handling, data retrieval
+ * and transformation, and repository interactions.
+ *
+ * @author Santiago Paz
+ */
 @ExtendWith(MockitoExtension.class)
 class DefaultLichessServiceTest {
 
+    /**
+     * Minimum number of Blitz games required for a certain rating level.
+     */
+    private static final int BLITZ_GAMES_1 = 50;
+
+    /**
+     * Minimum number of Blitz games required for a higher rating level.
+     */
+    private static final int BLITZ_GAMES_2 = 70;
+
+    /**
+     * Minimum number of Bullet games required for a certain rating level.
+     */
+    private static final int BULLET_GAMES_1 = 30;
+
+    /**
+     * Minimum number of Bullet games required for a higher rating level.
+     */
+    private static final int BULLET_GAMES_2 = 40;
+
+    /**
+     * Minimum number of Classical games required for a certain rating level.
+     */
+    private static final int CLASSICAL_GAMES_1 = 10;
+
+    /**
+     * Minimum number of Classical games required for a higher rating level.
+     */
+    private static final int CLASSICAL_GAMES_2 = 20;
+
+    /**
+     * Minimum number of Rapid games required for a certain rating level.
+     */
+    private static final int RAPID_GAMES_1 = 25;
+
+    /**
+     * Minimum number of Rapid games required for a higher rating level.
+     */
+    private static final int RAPID_GAMES_2 = 30;
+
+    /**
+     * Minimum number of Puzzle games required for a certain rating level.
+     */
+    private static final int PUZZLE_GAMES_1 = 100;
+
+    /**
+     * Minimum number of Puzzle games required for a higher rating level.
+     */
+    private static final int PUZZLE_GAMES_2 = 150;
+
+    /**
+     * Rating threshold for Blitz games at level 1.
+     */
+    private static final int BLITZ_RATING_1 = 1500;
+
+    /**
+     * Rating threshold for Blitz games at level 2.
+     */
+    private static final int BLITZ_RATING_2 = 1550;
+
+    /**
+     * Rating threshold for Bullet games at level 1.
+     */
+    private static final int BULLET_RATING_1 = 1450;
+
+    /**
+     * Rating threshold for Bullet games at level 2.
+     */
+    private static final int BULLET_RATING_2 = 1480;
+
+    /**
+     * Rating threshold for Classical games at level 1.
+     */
+    private static final int CLASSICAL_RATING_1 = 1600;
+
+    /**
+     * Rating threshold for Classical games at level 2.
+     */
+    private static final int CLASSICAL_RATING_2 = 1650;
+
+    /**
+     * Rating threshold for Rapid games at level 1.
+     */
+    private static final int RAPID_RATING_1 = 1550;
+
+    /**
+     * Rating threshold for Rapid games at level 2.
+     */
+    private static final int RAPID_RATING_2 = 1600;
+
+    /**
+     * Rating threshold for Puzzle games at level 1.
+     */
+    private static final int PUZZLE_RATING_1 = 1200;
+
+    /**
+     * Rating threshold for Puzzle games at level 2.
+     */
+    private static final int PUZZLE_RATING_2 = 1250;
+
+    /**
+     * Rating deviation for Blitz games at level 1.
+     */
+    private static final int BLITZ_RD_1 = 30;
+
+    /**
+     * Rating deviation for Blitz games at level 2.
+     */
+    private static final int BLITZ_RD_2 = 20;
+
+    /**
+     * Rating deviation for Bullet games at level 1.
+     */
+    private static final int BULLET_RD_1 = 25;
+
+    /**
+     * Rating deviation for Bullet games at level 2.
+     */
+    private static final int BULLET_RD_2 = 22;
+
+    /**
+     * Rating deviation for Classical games at level 1.
+     */
+    private static final int CLASSICAL_RD_1 = 15;
+
+    /**
+     * Rating deviation for Classical games at level 2.
+     */
+    private static final int CLASSICAL_RD_2 = 12;
+
+    /**
+     * Rating deviation for Rapid games at level 1.
+     */
+    private static final int RAPID_RD_1 = 20;
+
+    /**
+     * Rating deviation for Rapid games at level 2.
+     */
+    private static final int RAPID_RD_2 = 18;
+
+    /**
+     * Rating deviation for Puzzle games at level 1.
+     */
+    private static final int PUZZLE_RD_1 = 10;
+
+    /**
+     * Rating deviation for Puzzle games at level 2.
+     */
+    private static final int PUZZLE_RD_2 = 15;
+
+    /**
+     * Progress percentage for Blitz games at level 1.
+     */
+    private static final int BLITZ_PROG_1 = 20;
+
+    /**
+     * Progress percentage for Blitz games at level 2.
+     */
+    private static final int BLITZ_PROG_2 = 30;
+
+    /**
+     * Progress percentage for Bullet games at level 1.
+     */
+    private static final int BULLET_PROG_1 = 10;
+
+    /**
+     * Progress percentage for Bullet games at level 2.
+     */
+    private static final int BULLET_PROG_2 = 15;
+
+    /**
+     * Progress percentage for Classical games at level 1.
+     */
+    private static final int CLASSICAL_PROG_1 = 5;
+
+    /**
+     * Progress percentage for Classical games at level 2.
+     */
+    private static final int CLASSICAL_PROG_2 = 10;
+
+    /**
+     * Progress percentage for Rapid games at level 1.
+     */
+    private static final int RAPID_PROG_1 = 15;
+
+    /**
+     * Progress percentage for Rapid games at level 2.
+     */
+    private static final int RAPID_PROG_2 = 20;
+
+    /**
+     * Progress percentage for Puzzle games at level 1.
+     */
+    private static final int PUZZLE_PROG_1 = 50;
+
+    /**
+     * Progress percentage for Puzzle games at level 2.
+     */
+    private static final int PUZZLE_PROG_2 = 70;
+
+    /**
+     * Blitz games at level 1 are not provisional.
+     */
+    private static final boolean BLITZ_PROV_1 = false;
+
+    /**
+     * Blitz games at level 2 are not provisional.
+     */
+    private static final boolean BLITZ_PROV_2 = false;
+
+    /**
+     * Bullet games at level 1 are provisional.
+     */
+    private static final boolean BULLET_PROV_1 = true;
+
+    /**
+     * Bullet games at level 2 are provisional.
+     */
+    private static final boolean BULLET_PROV_2 = true;
+
+    /**
+     * Classical games at level 1 are not provisional.
+     */
+    private static final boolean CLASSICAL_PROV_1 = false;
+
+    /**
+     * Classical games at level 2 are not provisional.
+     */
+    private static final boolean CLASSICAL_PROV_2 = false;
+
+    /**
+     * Rapid games at level 1 are provisional.
+     */
+    private static final boolean RAPID_PROV_1 = true;
+
+    /**
+     * Rapid games at level 2 are provisional.
+     */
+    private static final boolean RAPID_PROV_2 = true;
+
+    /**
+     * Puzzle games at level 1 are not provisional.
+     */
+    private static final boolean PUZZLE_PROV_1 = false;
+
+    /**
+     * Puzzle games at level 2 are not provisional.
+     */
+    private static final boolean PUZZLE_PROV_2 = false;
+    /**
+     * The {@link DefaultLichessService} instance to be tested. This service
+     * provides methods to interact with Lichess data and handle authorization.
+     */
     @InjectMocks
     private DefaultLichessService lichessService;
 
+    /**
+     * Mocked repository for handling Lichess authentication data.
+     */
     @Mock
     private LichessAuthRepository lichessAuthRepository;
 
+    /**
+     * Mocked repository for handling OAuth authorization request data.
+     */
     @Mock
     private OAuthAuthorizationRequestRepository oAuthAuthorizationRequestRepository;
 
+    /**
+     * Mocked repository for handling user entity data.
+     */
     @Mock
     private UserEntityRepository userEntityRepository;
 
+    /**
+     * Mocked repository for handling Lichess entity data.
+     */
     @Mock
     private LichessEntityRepository lichessEntityRepository;
 
+    /**
+     * Test instance of {@link PersistentUserEntity} to simulate a user entity.
+     */
     private PersistentUserEntity userEntity;
+
+    /**
+     * Test instance of {@link PersistentLichessAuthEntity} to simulate Lichess
+     * authorization data.
+     */
     private PersistentLichessAuthEntity authEntity;
+
+    /**
+     * Test instance of {@link PersistentOAuthAuthorizationRequestEntity} to
+     * simulate OAuth authorization request.
+     */
     private PersistentOAuthAuthorizationRequestEntity authRequestEntity;
 
     @BeforeEach
@@ -75,7 +364,7 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testGetCodeVerifier_Success() throws LichessServiceException {
+    void testGetCodeVerifierSuccess() throws LichessServiceException {
         when(userEntityRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.of(userEntity));
         when(oAuthAuthorizationRequestRepository.findById(userEntity.getDni()))
                 .thenReturn(Optional.of(authRequestEntity));
@@ -88,29 +377,19 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testGetCodeVerifier_UserNotFound() {
-        when(userEntityRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.empty());
-
-        LichessServiceException thrown = assertThrows(LichessServiceException.class,
-                () -> lichessService.getCodeVerifier(userEntity.getEmail()));
-
-        assertEquals("User with email: test@example.com not found.", thrown.getMessage());
-    }
-
-    @Test
     void testGetCodeVerifierThrowsExceptionWhenOAuthRequestNotFound() {
         String userEmail = "email1@email.es";
 
         // Mocking a user entity
-        PersistentUserEntity userEntity = new PersistentUserEntity();
-        userEntity.setDni("123456");
-        userEntity.setEmail(userEmail);
+        PersistentUserEntity usrEntity = new PersistentUserEntity();
+        usrEntity.setDni("123456");
+        usrEntity.setEmail(userEmail);
 
         // Mocking the repository to return a valid user
-        when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(userEntity));
+        when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(usrEntity));
 
         // Mocking the oAuthAuthorizationRequestRepository to return an empty Optional
-        when(oAuthAuthorizationRequestRepository.findById(userEntity.getDni())).thenReturn(Optional.empty());
+        when(oAuthAuthorizationRequestRepository.findById(usrEntity.getDni())).thenReturn(Optional.empty());
 
         // Act & Assert
         LichessServiceException exception = assertThrows(LichessServiceException.class, () -> {
@@ -122,7 +401,17 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testGetLichessProfile_ProfileDoesNotExist() throws LichessServiceException {
+    void testGetCodeVerifierUserNotFound() {
+        when(userEntityRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.empty());
+
+        LichessServiceException thrown = assertThrows(LichessServiceException.class,
+                () -> lichessService.getCodeVerifier(userEntity.getEmail()));
+
+        assertEquals("User with email: test@example.com not found.", thrown.getMessage());
+    }
+
+    @Test
+    void testGetLichessProfileProfileDoesNotExist() throws LichessServiceException {
         // Arrange
         String userEmail = "test@example.com";
         String userDni = userEntity.getDni();
@@ -150,21 +439,30 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testGetLichessProfile_ProfileExists() throws LichessServiceException {
+    void testGetLichessProfileProfileExists() throws LichessServiceException {
         // Arrange
         String userEmail = "test@example.com";
         String userDni = userEntity.getDni();
 
+        // Constants for test values
+        final String profileId = "profileId";
+        final String username = "testUser";
+        final int blitzGames = 10;
+        final int blitzRating = 1500;
+        final int blitzRd = 30;
+        final int blitzProg = 0;
+        final boolean blitzProv = false;
+
         // Create a mock Lichess profile entity
         PersistentLichessProfileEntity lichessProfileEntity = new PersistentLichessProfileEntity();
-        lichessProfileEntity.setId("profileId");
-        lichessProfileEntity.setUsername("testUser");
+        lichessProfileEntity.setId(profileId);
+        lichessProfileEntity.setUsername(username);
         lichessProfileEntity.setUpdatedAt(LocalDateTime.now());
-        lichessProfileEntity.setBlitzGames(10);
-        lichessProfileEntity.setBlitzRating(1500);
-        lichessProfileEntity.setBlitzRd(30);
-        lichessProfileEntity.setBlitzProg(0);
-        lichessProfileEntity.setBlitzProv(false);
+        lichessProfileEntity.setBlitzGames(blitzGames);
+        lichessProfileEntity.setBlitzRating(blitzRating);
+        lichessProfileEntity.setBlitzRd(blitzRd);
+        lichessProfileEntity.setBlitzProg(blitzProg);
+        lichessProfileEntity.setBlitzProv(blitzProv);
 
         // Mocking
         when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(userEntity));
@@ -177,12 +475,99 @@ class DefaultLichessServiceTest {
         assertNotNull(result);
         assertEquals(lichessProfileEntity.getUsername(), result.username());
         assertEquals(lichessProfileEntity.getUpdatedAt(), result.updatedAt());
-        assertEquals(10, result.blitz().games());
-        assertEquals(1500, result.blitz().rating());
+        assertEquals(blitzGames, result.blitz().games());
+        assertEquals(blitzRating, result.blitz().rating());
     }
 
     @Test
-    void testGetLichessProfile_UserNotFound() {
+    void testGetLichessProfiles() {
+        // Sample Lichess profile entities
+        List<PersistentLichessProfileEntity> lichessProfilesEntitiesList = new ArrayList<>();
+
+        // Creating the first Lichess profile entity
+        PersistentLichessProfileEntity profile1 = new PersistentLichessProfileEntity();
+        profile1.setUserDni("123456");
+        profile1.setId("lichessId1");
+        profile1.setUsername("user1");
+        profile1.setBlitzGames(BLITZ_GAMES_1);
+        profile1.setBlitzRating(BLITZ_RATING_1);
+        profile1.setBlitzRd(BLITZ_RD_1);
+        profile1.setBlitzProg(BLITZ_PROG_1);
+        profile1.setBlitzProv(BLITZ_PROV_1);
+        profile1.setBulletGames(BULLET_GAMES_1);
+        profile1.setBulletRating(BULLET_RATING_1);
+        profile1.setBulletRd(BULLET_RD_1);
+        profile1.setBulletProg(BULLET_PROG_1);
+        profile1.setBulletProv(BULLET_PROV_1);
+        profile1.setClassicalGames(CLASSICAL_GAMES_1);
+        profile1.setClassicalRating(CLASSICAL_RATING_1);
+        profile1.setClassicalRd(CLASSICAL_RD_1);
+        profile1.setClassicalProg(CLASSICAL_PROG_1);
+        profile1.setClassicalProv(CLASSICAL_PROV_1);
+        profile1.setRapidGames(RAPID_GAMES_1);
+        profile1.setRapidRating(RAPID_RATING_1);
+        profile1.setRapidRd(RAPID_RD_1);
+        profile1.setRapidProg(RAPID_PROG_1);
+        profile1.setRapidProv(RAPID_PROV_1);
+        profile1.setPuzzleGames(PUZZLE_GAMES_1);
+        profile1.setPuzzleRating(PUZZLE_RATING_1);
+        profile1.setPuzzleRd(PUZZLE_RD_1);
+        profile1.setPuzzleProg(PUZZLE_PROG_1);
+        profile1.setPuzzleProv(PUZZLE_PROV_1);
+        profile1.setUpdatedAt(LocalDateTime.now());
+
+        // Creating the second Lichess profile entity
+        PersistentLichessProfileEntity profile2 = new PersistentLichessProfileEntity();
+        profile2.setUserDni("654321");
+        profile2.setId("lichessId2");
+        profile2.setUsername("user2");
+        profile2.setBlitzGames(BLITZ_GAMES_2);
+        profile2.setBlitzRating(BLITZ_RATING_2);
+        profile2.setBlitzRd(BLITZ_RD_2);
+        profile2.setBlitzProg(BLITZ_PROG_2);
+        profile2.setBlitzProv(BLITZ_PROV_2);
+        profile2.setBulletGames(BULLET_GAMES_2);
+        profile2.setBulletRating(BULLET_RATING_2);
+        profile2.setBulletRd(BULLET_RD_2);
+        profile2.setBulletProg(BULLET_PROG_2);
+        profile2.setBulletProv(BULLET_PROV_2);
+        profile2.setClassicalGames(CLASSICAL_GAMES_2);
+        profile2.setClassicalRating(CLASSICAL_RATING_2);
+        profile2.setClassicalRd(CLASSICAL_RD_2);
+        profile2.setClassicalProg(CLASSICAL_PROG_2);
+        profile2.setClassicalProv(CLASSICAL_PROV_2);
+        profile2.setRapidGames(RAPID_GAMES_2);
+        profile2.setRapidRating(RAPID_RATING_2);
+        profile2.setRapidRd(RAPID_RD_2);
+        profile2.setRapidProg(RAPID_PROG_2);
+        profile2.setRapidProv(RAPID_PROV_2);
+        profile2.setPuzzleGames(PUZZLE_GAMES_2);
+        profile2.setPuzzleRating(PUZZLE_RATING_2);
+        profile2.setPuzzleRd(PUZZLE_RD_2);
+        profile2.setPuzzleProg(PUZZLE_PROG_2);
+        profile2.setPuzzleProv(PUZZLE_PROV_2);
+        profile2.setUpdatedAt(LocalDateTime.now());
+
+        lichessProfilesEntitiesList.add(profile1);
+        lichessProfilesEntitiesList.add(profile2);
+
+        // Mocking the repository methods
+        when(lichessEntityRepository.findAll()).thenReturn(lichessProfilesEntitiesList);
+
+        // Mock the userEntityRepository responses
+        when(userEntityRepository.findByDni("123456")).thenReturn(Optional.of(new PersistentUserEntity()));
+        when(userEntityRepository.findByDni("654321")).thenReturn(Optional.of(new PersistentUserEntity()));
+
+        // Act
+        List<LichessProfileDto> result = lichessService.getLichessProfiles();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size()); // Check that we got 2 profiles in the result
+    }
+
+    @Test
+    void testGetLichessProfileUserNotFound() {
         when(userEntityRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.empty());
 
         LichessServiceException thrown = assertThrows(LichessServiceException.class,
@@ -192,111 +577,7 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testGetLichessProfiles() {
-
-        // Sample Lichess profile entities
-        List<PersistentLichessProfileEntity> lichessProfilesEntitiesList = new ArrayList<>();
-
-        // Creating the first Lichess profile entity
-        PersistentLichessProfileEntity profile1 = new PersistentLichessProfileEntity();
-        profile1.setUserDni("123456"); // User's unique identifier
-        profile1.setId("lichessId1"); // Lichess profile ID
-        profile1.setUsername("user1"); // Username
-        profile1.setBlitzGames(50); // Number of blitz games
-        profile1.setBlitzRating(1500); // Blitz rating
-        profile1.setBlitzRd(30); // Blitz rating deviation
-        profile1.setBlitzProg(20); // Blitz progress
-        profile1.setBlitzProv(false); // Is blitz rating provisional?
-        profile1.setBulletGames(30); // Number of bullet games
-        profile1.setBulletRating(1450); // Bullet rating
-        profile1.setBulletRd(25); // Bullet rating deviation
-        profile1.setBulletProg(10); // Bullet progress
-        profile1.setBulletProv(true); // Is bullet rating provisional?
-        profile1.setClassicalGames(10); // Number of classical games
-        profile1.setClassicalRating(1600); // Classical rating
-        profile1.setClassicalRd(15); // Classical rating deviation
-        profile1.setClassicalProg(5); // Classical progress
-        profile1.setClassicalProv(false); // Is classical rating provisional?
-        profile1.setRapidGames(25); // Number of rapid games
-        profile1.setRapidRating(1550); // Rapid rating
-        profile1.setRapidRd(20); // Rapid rating deviation
-        profile1.setRapidProg(15); // Rapid progress
-        profile1.setRapidProv(true); // Is rapid rating provisional?
-        profile1.setPuzzleGames(100); // Number of puzzle games
-        profile1.setPuzzleRating(1200); // Puzzle rating
-        profile1.setPuzzleRd(10); // Puzzle rating deviation
-        profile1.setPuzzleProg(50); // Puzzle progress
-        profile1.setPuzzleProv(false); // Is puzzle rating provisional?
-        profile1.setUpdatedAt(LocalDateTime.now()); // Last updated date
-
-        // Creating the second Lichess profile entity
-        PersistentLichessProfileEntity profile2 = new PersistentLichessProfileEntity();
-        profile2.setUserDni("654321"); // User's unique identifier
-        profile2.setId("lichessId2"); // Lichess profile ID
-        profile2.setUsername("user2"); // Username
-        profile2.setBlitzGames(70); // Number of blitz games
-        profile2.setBlitzRating(1550); // Blitz rating
-        profile2.setBlitzRd(20); // Blitz rating deviation
-        profile2.setBlitzProg(30); // Blitz progress
-        profile2.setBlitzProv(false); // Is blitz rating provisional?
-        profile2.setBulletGames(40); // Number of bullet games
-        profile2.setBulletRating(1480); // Bullet rating
-        profile2.setBulletRd(22); // Bullet rating deviation
-        profile2.setBulletProg(15); // Bullet progress
-        profile2.setBulletProv(true); // Is bullet rating provisional?
-        profile2.setClassicalGames(20); // Number of classical games
-        profile2.setClassicalRating(1650); // Classical rating
-        profile2.setClassicalRd(12); // Classical rating deviation
-        profile2.setClassicalProg(10); // Classical progress
-        profile2.setClassicalProv(false); // Is classical rating provisional?
-        profile2.setRapidGames(30); // Number of rapid games
-        profile2.setRapidRating(1600); // Rapid rating
-        profile2.setRapidRd(18); // Rapid rating deviation
-        profile2.setRapidProg(20); // Rapid progress
-        profile2.setRapidProv(true); // Is rapid rating provisional?
-        profile2.setPuzzleGames(150); // Number of puzzle games
-        profile2.setPuzzleRating(1250); // Puzzle rating
-        profile2.setPuzzleRd(15); // Puzzle rating deviation
-        profile2.setPuzzleProg(70); // Puzzle progress
-        profile2.setPuzzleProv(false); // Is puzzle rating provisional?
-        profile2.setUpdatedAt(LocalDateTime.now()); // Last updated date
-        // Mocking the repository methods
-
-        lichessProfilesEntitiesList.add(profile1);
-        lichessProfilesEntitiesList.add(profile2);
-
-        when(lichessEntityRepository.findAll()).thenReturn(lichessProfilesEntitiesList);
-
-        // Creating user entities to mock the userEntityRepository
-        PersistentUserEntity userEntity1 = new PersistentUserEntity();
-        userEntity1.setDni("123456");
-        userEntity1.setEmail("email1@email.es");
-        userEntity1.setName("user1");
-        userEntity1.setFirstSurname("Doe");
-        userEntity1.setSecondSurname("Doa");
-
-        PersistentUserEntity userEntity2 = new PersistentUserEntity();
-        userEntity2.setDni("654321");
-        userEntity2.setEmail("email2@email.es");
-        userEntity2.setName("user2");
-        userEntity2.setFirstSurname("Doe2");
-        userEntity2.setSecondSurname("Doa2");
-
-        // Mock the userEntityRepository responses
-        when(userEntityRepository.findByDni("123456")).thenReturn(Optional.of(userEntity1));
-        when(userEntityRepository.findByDni("654321")).thenReturn(Optional.of(userEntity2));
-
-        // Act
-        List<LichessProfileDto> result = lichessService.getLichessProfiles();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(2, result.size()); // Check that we got 2 profiles in the result
-
-    }
-
-    @Test
-    void testSaveAuthToken_Success() throws LichessServiceException {
+    void testSaveAuthTokenSuccess() throws LichessServiceException {
         when(userEntityRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.of(userEntity));
 
         lichessService.saveAuthToken("Bearer", "token123", LocalDateTime.now().plusHours(1), userEntity.getEmail());
@@ -306,7 +587,7 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testSaveAuthToken_UserNotFound() {
+    void testSaveAuthTokenUserNotFound() {
         when(userEntityRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.empty());
 
         LichessServiceException thrown = assertThrows(LichessServiceException.class, () -> lichessService
@@ -316,13 +597,48 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testSaveLichessProfile_Success() throws LichessServiceException {
-        // Create an instance of SaveGameStatistics for each game type
-        SaveGameStatistics blitzStats = new SaveGameStatistics(10, 1500, 30, 0, false);
-        SaveGameStatistics bulletStats = new SaveGameStatistics(20, 1400, 40, 0, false);
-        SaveGameStatistics classicalStats = new SaveGameStatistics(30, 1600, 50, 0, false);
-        SaveGameStatistics rapidStats = new SaveGameStatistics(40, 1300, 60, 0, false);
-        SaveGameStatistics puzzleStats = new SaveGameStatistics(50, 1200, 70, 0, false);
+    void testSaveLichessProfileSuccess() throws LichessServiceException {
+        // Declare variables to avoid magic numbers
+        final int blitzGames = 10;
+        final int blitzRating = 1500;
+        final int blitzRd = 30;
+        final int blitzProg = 0;
+        final boolean blitzProv = false;
+
+        final int bulletGames = 20;
+        final int bulletRating = 1400;
+        final int bulletRd = 40;
+        final int bulletProg = 0;
+        final boolean bulletProv = false;
+
+        final int classicalGames = 30;
+        final int classicalRating = 1600;
+        final int classicalRd = 50;
+        final int classicalProg = 0;
+        final boolean classicalProv = false;
+
+        final int rapidGames = 40;
+        final int rapidRating = 1300;
+        final int rapidRd = 60;
+        final int rapidProg = 0;
+        final boolean rapidProv = false;
+
+        final int puzzleGames = 50;
+        final int puzzleRating = 1200;
+        final int puzzleRd = 70;
+        final int puzzleProg = 0;
+        final boolean puzzleProv = false;
+
+        // Create an instance of SaveGameStatistics for each game type using the
+        // declared variables
+        SaveGameStatistics blitzStats = new SaveGameStatistics(blitzGames, blitzRating, blitzRd, blitzProg, blitzProv);
+        SaveGameStatistics bulletStats = new SaveGameStatistics(bulletGames, bulletRating, bulletRd, bulletProg,
+                bulletProv);
+        SaveGameStatistics classicalStats = new SaveGameStatistics(classicalGames, classicalRating, classicalRd,
+                classicalProg, classicalProv);
+        SaveGameStatistics rapidStats = new SaveGameStatistics(rapidGames, rapidRating, rapidRd, rapidProg, rapidProv);
+        SaveGameStatistics puzzleStats = new SaveGameStatistics(puzzleGames, puzzleRating, puzzleRd, puzzleProg,
+                puzzleProv);
 
         // Create the DTO with proper statistics
         LichessSaveProfileDto dto = new LichessSaveProfileDto("test@example.com", "profileId", "testUser",
@@ -374,7 +690,7 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testSaveLichessProfile_UserNotFound() {
+    void testSaveLichessProfileUserNotFound() {
         LichessSaveProfileDto dto = new LichessSaveProfileDto("test@example.com", "profileId", "testUser",
                 LocalDateTime.now(), null, null, null, null, null);
 
@@ -387,7 +703,7 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testSaveOAuthRequest_Success() throws LichessServiceException {
+    void testSaveOAuthRequestSuccess() throws LichessServiceException {
         // Create a sample PersistentOAuthAuthorizationRequestEntity
         final var oAuthAuthorizationRequestEntity = new PersistentOAuthAuthorizationRequestEntity();
         oAuthAuthorizationRequestEntity.setUserDni(userEntity.getDni());
@@ -419,7 +735,7 @@ class DefaultLichessServiceTest {
     }
 
     @Test
-    void testSaveOAuthRequest_UserNotFound() {
+    void testSaveOAuthRequestUserNotFound() {
         when(userEntityRepository.findByEmail(userEntity.getEmail())).thenReturn(Optional.empty());
 
         LichessServiceException thrown = assertThrows(LichessServiceException.class,

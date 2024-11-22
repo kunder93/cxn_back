@@ -11,6 +11,149 @@ import org.junit.jupiter.api.Test;
 import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 
 class PersistentLichessProfileEntityTest {
+    /**
+     * The number of games played in the Blitz category.
+     */
+    private static final int BLITZ_GAMES = 100;
+
+    /**
+     * The progress value for Blitz games.
+     */
+    private static final int BLITZ_PROG = 20;
+
+    /**
+     * Indicates if Blitz games are provisional.
+     */
+    private static final boolean BLITZ_PROV = true;
+
+    /**
+     * The rating of the user in Blitz games.
+     */
+    private static final int BLITZ_RATING = 1800;
+
+    /**
+     * The rating deviation (RD) for Blitz games.
+     */
+    private static final int BLITZ_RD = 50;
+
+    /**
+     * The number of games played in the Bullet category.
+     */
+    private static final int BULLET_GAMES = 200;
+
+    /**
+     * The progress value for Bullet games.
+     */
+    private static final int BULLET_PROG = 15;
+
+    /**
+     * Indicates if Bullet games are provisional.
+     */
+    private static final boolean BULLET_PROV = false;
+
+    /**
+     * The rating of the user in Bullet games.
+     */
+    private static final int BULLET_RATING = 2000;
+
+    /**
+     * The rating deviation (RD) for Bullet games.
+     */
+    private static final int BULLET_RD = 30;
+
+    /**
+     * The number of games played in the Classical category.
+     */
+    private static final int CLASSICAL_GAMES = 150;
+
+    /**
+     * The progress value for Classical games.
+     */
+    private static final int CLASSICAL_PROG = 25;
+
+    /**
+     * Indicates if Classical games are provisional.
+     */
+    private static final boolean CLASSICAL_PROV = true;
+
+    /**
+     * The rating of the user in Classical games.
+     */
+    private static final int CLASSICAL_RATING = 1500;
+
+    /**
+     * The rating deviation (RD) for Classical games.
+     */
+    private static final int CLASSICAL_RD = 40;
+
+    /**
+     * The number of games played in the Puzzle category.
+     */
+    private static final int PUZZLE_GAMES = 120;
+
+    /**
+     * The progress value for Puzzle games.
+     */
+    private static final int PUZZLE_PROG = 30;
+
+    /**
+     * Indicates if Puzzle games are provisional.
+     */
+    private static final boolean PUZZLE_PROV = true;
+
+    /**
+     * The rating of the user in Puzzle games.
+     */
+    private static final int PUZZLE_RATING = 2000;
+
+    /**
+     * The rating deviation (RD) for Puzzle games.
+     */
+    private static final int PUZZLE_RD = 55;
+
+    /**
+     * The number of games played in the Rapid category.
+     */
+    private static final int RAPID_GAMES = 80;
+
+    /**
+     * The progress value for Rapid games.
+     */
+    private static final int RAPID_PROG = 10;
+
+    /**
+     * Indicates if Rapid games are provisional.
+     */
+    private static final boolean RAPID_PROV = false;
+
+    /**
+     * The rating of the user in Rapid games.
+     */
+    private static final int RAPID_RATING = 1700;
+
+    /**
+     * The rating deviation (RD) for Rapid games.
+     */
+    private static final int RAPID_RD = 60;
+
+    /**
+     * The test identifier for the Lichess profile.
+     */
+    private static final String TEST_ID = "lichess123";
+
+    /**
+     * The user's DNI (document number) for testing purposes.
+     */
+    private static final String USER_DNI = "12345678A";
+
+    /**
+     * The username of the user for testing purposes.
+     */
+    private static final String USERNAME = "chessMaster";
+
+    /**
+     * The Lichess profile entity.
+     */
     private PersistentLichessProfileEntity profile;
 
     @BeforeEach
@@ -30,170 +173,163 @@ class PersistentLichessProfileEntityTest {
     // Blitz statistics tests
     @Test
     void testSetAndGetBlitzGames() {
-        profile.setBlitzGames(100);
-        assertEquals(100, profile.getBlitzGames());
+        profile.setBlitzGames(BLITZ_GAMES);
+        assertEquals(BLITZ_GAMES, profile.getBlitzGames());
     }
 
     @Test
     void testSetAndGetBlitzProg() {
-        profile.setBlitzProg(20);
-        assertEquals(20, profile.getBlitzProg());
+        profile.setBlitzProg(BLITZ_PROG);
+        assertEquals(BLITZ_PROG, profile.getBlitzProg());
     }
 
     @Test
     void testSetAndGetBlitzProv() {
-        profile.setBlitzProv(true);
-        assertEquals(true, profile.getBlitzProv());
+        profile.setBlitzProv(BLITZ_PROV);
+        assertEquals(BLITZ_PROV, profile.getBlitzProv());
     }
 
     @Test
     void testSetAndGetBlitzRating() {
-        profile.setBlitzRating(1800);
-        assertEquals(1800, profile.getBlitzRating());
+        profile.setBlitzRating(BLITZ_RATING);
+        assertEquals(BLITZ_RATING, profile.getBlitzRating());
     }
 
     @Test
     void testSetAndGetBlitzRd() {
-        profile.setBlitzRd(50);
-        assertEquals(50, profile.getBlitzRd());
+        profile.setBlitzRd(BLITZ_RD);
+        assertEquals(BLITZ_RD, profile.getBlitzRd());
     }
 
     // Bullet statistics tests
     @Test
     void testSetAndGetBulletGames() {
-        profile.setBulletGames(200);
-        assertEquals(200, profile.getBulletGames());
+        profile.setBulletGames(BULLET_GAMES);
+        assertEquals(BULLET_GAMES, profile.getBulletGames());
     }
 
     @Test
     void testSetAndGetBulletProg() {
-        profile.setBulletProg(15);
-        assertEquals(15, profile.getBulletProg());
+        profile.setBulletProg(BULLET_PROG);
+        assertEquals(BULLET_PROG, profile.getBulletProg());
     }
 
     @Test
     void testSetAndGetBulletProv() {
-        profile.setBulletProv(false);
-        assertEquals(false, profile.getBulletProv());
+        profile.setBulletProv(BULLET_PROV);
+        assertEquals(BULLET_PROV, profile.getBulletProv());
     }
 
     @Test
     void testSetAndGetBulletRating() {
-        profile.setBulletRating(2000);
-        assertEquals(2000, profile.getBulletRating());
+        profile.setBulletRating(BULLET_RATING);
+        assertEquals(BULLET_RATING, profile.getBulletRating());
     }
 
     @Test
     void testSetAndGetBulletRd() {
-        profile.setBulletRd(30);
-        assertEquals(30, profile.getBulletRd());
+        profile.setBulletRd(BULLET_RD);
+        assertEquals(BULLET_RD, profile.getBulletRd());
     }
 
     // Classical statistics tests
     @Test
     void testSetAndGetClassicalGames() {
-        profile.setClassicalGames(150);
-        assertEquals(150, profile.getClassicalGames());
+        profile.setClassicalGames(CLASSICAL_GAMES);
+        assertEquals(CLASSICAL_GAMES, profile.getClassicalGames());
     }
 
     @Test
     void testSetAndGetClassicalProg() {
-        profile.setClassicalProg(25);
-        assertEquals(25, profile.getClassicalProg());
+        profile.setClassicalProg(CLASSICAL_PROG);
+        assertEquals(CLASSICAL_PROG, profile.getClassicalProg());
     }
 
     @Test
     void testSetAndGetClassicalProv() {
-        profile.setClassicalProv(true);
-        assertEquals(true, profile.getClassicalProv());
+        profile.setClassicalProv(CLASSICAL_PROV);
+        assertEquals(CLASSICAL_PROV, profile.getClassicalProv());
     }
 
     @Test
     void testSetAndGetClassicalRating() {
-        profile.setClassicalRating(1500);
-        assertEquals(1500, profile.getClassicalRating());
+        profile.setClassicalRating(CLASSICAL_RATING);
+        assertEquals(CLASSICAL_RATING, profile.getClassicalRating());
     }
 
     @Test
     void testSetAndGetClassicalRd() {
-        profile.setClassicalRd(40);
-        assertEquals(40, profile.getClassicalRd());
+        profile.setClassicalRd(CLASSICAL_RD);
+        assertEquals(CLASSICAL_RD, profile.getClassicalRd());
     }
 
     // Test the setId() and getId() methods
     @Test
     public void testSetAndGetId() {
-        // Arrange
-        String testId = "lichess123";
-
-        // Act
-        profile.setId(testId);
-        String retrievedId = profile.getId();
-
-        // Assert
-        assertEquals(testId, retrievedId, "The retrieved ID should match the set ID.");
+        profile.setId(TEST_ID);
+        assertEquals(TEST_ID, profile.getId(), "The retrieved ID should match the set ID.");
     }
 
     // Puzzle statistics tests
     @Test
     void testSetAndGetPuzzleGames() {
-        profile.setPuzzleGames(120);
-        assertEquals(120, profile.getPuzzleGames());
+        profile.setPuzzleGames(PUZZLE_GAMES);
+        assertEquals(PUZZLE_GAMES, profile.getPuzzleGames());
     }
 
     @Test
     void testSetAndGetPuzzleProg() {
-        profile.setPuzzleProg(30);
-        assertEquals(30, profile.getPuzzleProg());
+        profile.setPuzzleProg(PUZZLE_PROG);
+        assertEquals(PUZZLE_PROG, profile.getPuzzleProg());
     }
 
     @Test
     void testSetAndGetPuzzleProv() {
-        profile.setPuzzleProv(true);
-        assertEquals(true, profile.getPuzzleProv());
+        profile.setPuzzleProv(PUZZLE_PROV);
+        assertEquals(PUZZLE_PROV, profile.getPuzzleProv());
     }
 
     @Test
     void testSetAndGetPuzzleRating() {
-        profile.setPuzzleRating(2000);
-        assertEquals(2000, profile.getPuzzleRating());
+        profile.setPuzzleRating(PUZZLE_RATING);
+        assertEquals(PUZZLE_RATING, profile.getPuzzleRating());
     }
 
     @Test
     void testSetAndGetPuzzleRd() {
-        profile.setPuzzleRd(55);
-        assertEquals(55, profile.getPuzzleRd());
+        profile.setPuzzleRd(PUZZLE_RD);
+        assertEquals(PUZZLE_RD, profile.getPuzzleRd());
     }
 
     // Rapid statistics tests
     @Test
     void testSetAndGetRapidGames() {
-        profile.setRapidGames(80);
-        assertEquals(80, profile.getRapidGames());
+        profile.setRapidGames(RAPID_GAMES);
+        assertEquals(RAPID_GAMES, profile.getRapidGames());
     }
 
     @Test
     void testSetAndGetRapidProg() {
-        profile.setRapidProg(10);
-        assertEquals(10, profile.getRapidProg());
+        profile.setRapidProg(RAPID_PROG);
+        assertEquals(RAPID_PROG, profile.getRapidProg());
     }
 
     @Test
     void testSetAndGetRapidProv() {
-        profile.setRapidProv(false);
-        assertEquals(false, profile.getRapidProv());
+        profile.setRapidProv(RAPID_PROV);
+        assertEquals(RAPID_PROV, profile.getRapidProv());
     }
 
     @Test
     void testSetAndGetRapidRating() {
-        profile.setRapidRating(1700);
-        assertEquals(1700, profile.getRapidRating());
+        profile.setRapidRating(RAPID_RATING);
+        assertEquals(RAPID_RATING, profile.getRapidRating());
     }
 
     @Test
     void testSetAndGetRapidRd() {
-        profile.setRapidRd(60);
-        assertEquals(60, profile.getRapidRd());
+        profile.setRapidRd(RAPID_RD);
+        assertEquals(RAPID_RD, profile.getRapidRd());
     }
 
     @Test
@@ -205,14 +341,14 @@ class PersistentLichessProfileEntityTest {
 
     @Test
     void testSetAndGetUserDni() {
-        profile.setUserDni("12345678A");
-        assertEquals("12345678A", profile.getUserDni());
+        profile.setUserDni(USER_DNI);
+        assertEquals(USER_DNI, profile.getUserDni());
     }
 
     @Test
     void testSetAndGetUsername() {
-        profile.setUsername("chessMaster");
-        assertEquals("chessMaster", profile.getUsername());
+        profile.setUsername(USERNAME);
+        assertEquals(USERNAME, profile.getUsername());
     }
 
     // Test setting fields to null (if applicable)
@@ -239,5 +375,4 @@ class PersistentLichessProfileEntityTest {
         profile.setUserDni(null);
         assertNull(profile.getUserDni());
     }
-
 }

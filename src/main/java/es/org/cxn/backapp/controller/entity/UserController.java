@@ -1,3 +1,4 @@
+
 /**
  * The MIT License (MIT)
  *
@@ -36,6 +37,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -124,10 +126,10 @@ public class UserController {
         /**
          * Sets the profile image URL.
          *
-         * @param profileImageUrl the new URL of the profile image.
+         * @param value the new URL of the profile image.
          */
-        public void setProfileImageUrl(String profileImageUrl) {
-            this.profileImageUrl = profileImageUrl;
+        public void setProfileImageUrl(final String value) {
+            this.profileImageUrl = value;
         }
     }
 
@@ -158,7 +160,6 @@ public class UserController {
      * @throws ResponseStatusException if the update fails.
      */
     @PatchMapping("/changeEmail")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDataResponse> changeUserEmail(
             @RequestBody final UserChangeEmailRequest userChangeEmailRequest) {
         final UserEntity result;
@@ -182,7 +183,6 @@ public class UserController {
      * @throws ResponseStatusException if the update fails.
      */
     @PatchMapping("/changeKindOfMember")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDataResponse> changeUserKindOfMember(
             @RequestBody final UserChangeKindMemberRequest userChangeKindMemberReq) {
         final UserEntity result;
@@ -207,7 +207,6 @@ public class UserController {
      * @throws ResponseStatusException if the update fails.
      */
     @PatchMapping("/changePassword")
-    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<UserDataResponse> changeUserPassword(
             @RequestBody final UserChangePasswordRequest userChangePasswordRequest) {
         final UserEntity result;
@@ -218,6 +217,31 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
         return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+    }
+
+    /**
+     * Permanently deletes a user from the system based on their email.
+     * <p>
+     * This endpoint is restricted to users with the roles "ADMIN" or "PRESIDENTE".
+     * If the specified user cannot be found, a 404 status is returned with an
+     * appropriate message.
+     *
+     * @param userEmail the email of the user to be permanently deleted; this is
+     *                  extracted from the path variable in the request.
+     * @return a {@link ResponseEntity} containing: - a success message with HTTP
+     *         status 200 if the user is deleted successfully, - an error message
+     *         with HTTP status 404 if the user cannot be found, - or an appropriate
+     *         HTTP error status for unexpected errors.
+     */
+    @DeleteMapping("/{userEmail}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE')")
+    public ResponseEntity<String> deleteUserPermantly(final @PathVariable String userEmail) {
+        try {
+            userService.delete(userEmail);
+            return ResponseEntity.ok("User with email " + userEmail + " has been permanently deleted.");
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
+        }
     }
 
     /**
@@ -289,29 +313,6 @@ public class UserController {
     }
 
     /**
-     * Unsubscribes the user from the system.
-     *
-     * <p>
-     * The user must be authenticated to access this endpoint.
-     *
-     * @param userUnsubscribeRequest the request containing the user's email and
-     *                               password.
-     * @return a {@link ResponseEntity} indicating the result of the operation.
-     * @throws ResponseStatusException if the unsubscription fails.
-     */
-    @DeleteMapping("/unsubscribe")
-    @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<HttpStatus> unsubscribeUser(
-            @RequestBody final UserUnsubscribeRequest userUnsubscribeRequest) {
-        try {
-            userService.unsubscribe(userUnsubscribeRequest.email(), userUnsubscribeRequest.password());
-        } catch (UserServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    /**
      * Updates the authenticated user's data.
      *
      * <p>
@@ -345,7 +346,7 @@ public class UserController {
      * @return una respuesta con los datos del usuario actualizado.
      */
     @PatchMapping("/uploadProfileImageFile")
-    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam MultipartFile profileImage) {
+    public ResponseEntity<ProfileImageResponse> uploadProfileImage(@RequestParam final MultipartFile profileImage) {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
 
         try {
@@ -359,7 +360,7 @@ public class UserController {
             // Puedes agregar más validaciones aquí (por ejemplo, tipos MIME permitidos)
 
             // Llama al servicio para guardar la URL o archivo en tu sistema
-            var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
+            final var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
 
             return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
 
@@ -392,12 +393,11 @@ public class UserController {
             @RequestBody final Map<String, String> requestBody) {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
-            String profileImageUrl = requestBody.get("profileImageUrl"); // Extract the value from the map
+            final String profileImageUrl = requestBody.get("profileImageUrl"); // Extract the value from the map
             final var userUpdated = userService.saveProfileImage(userName, profileImageUrl);
             return new ResponseEntity<>(new ProfileImageResponse(userUpdated.getProfileImage()), HttpStatus.OK);
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
-
 }

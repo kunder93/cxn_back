@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,6 +28,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import es.org.cxn.backapp.AppURL;
+import es.org.cxn.backapp.filter.EnableUserRequestFilter;
 import es.org.cxn.backapp.filter.JwtRequestFilter;
 
 /**
@@ -96,14 +98,16 @@ public class SecurityConfiguration {
     /**
      * Configures the security filter chain applied to HTTP requests.
      *
-     * @param http             the HTTP security configuration.
-     * @param jwtRequestFilter the JWT filter.
+     * @param http                    the HTTP security configuration.
+     * @param jwtRequestFilter        the JWT filter.
+     * @param enableUserRequestFilter The filter that check if user is or not
+     *                                enabled.
      * @return the configured SecurityFilterChain.
      * @throws Exception The exception when fails.
      */
     @Bean
-    SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired JwtRequestFilter jwtRequestFilter)
-            throws Exception {
+    SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired JwtRequestFilter jwtRequestFilter,
+            final @Autowired EnableUserRequestFilter enableUserRequestFilter) throws Exception {
         LOGGER.info("Configurando SecurityFilterChain");
         // Disable CSRF for REST API and use stateless session management
         http.csrf(csrf -> csrf.disable())
@@ -111,11 +115,11 @@ public class SecurityConfiguration {
                 .cors(withDefaults());
 
         // Allow H2 console access by modifying frame options
-        http.headers(headers -> headers.frameOptions(options -> options.sameOrigin()));
+        http.headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin));
 
         // Add JWT filter before UsernamePasswordAuthenticationFilter
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(enableUserRequestFilter, UsernamePasswordAuthenticationFilter.class);
         // Permit all requests to /api/auth/signup and /api/auth/signin
         http.authorizeHttpRequests(requests -> requests.requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()
@@ -123,6 +127,8 @@ public class SecurityConfiguration {
                 .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL).permitAll()
                 .requestMatchers("/v3/api-docs/swagger-config").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/activities").permitAll()
                 .requestMatchers("/getAllLichessProfiles").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/lichessAuth").authenticated()
                 .requestMatchers("/api/address/getCountries", "/api/address/country/**").permitAll().anyRequest()
