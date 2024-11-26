@@ -390,7 +390,7 @@ public final class DefaultUserService implements UserService {
         final var profileImage = user.getProfileImage();
 
         if (profileImage == null) {
-            throw new UserServiceException("No profile image found for user with DNI: " + dni);
+            return new ProfileImageResponse(null, null, null, null);
         }
 
         if (profileImage.getStored().equals(Boolean.TRUE)) {

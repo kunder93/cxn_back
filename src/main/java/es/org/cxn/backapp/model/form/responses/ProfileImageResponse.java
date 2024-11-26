@@ -15,7 +15,7 @@ import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
  * @param url            the URL where the image can be accessed.
  * @param file           optional data representing the image file content.
  */
-public record ProfileImageResponse(String imageExtension, boolean stored, String url, String file) {
+public record ProfileImageResponse(String imageExtension, Boolean stored, String url, String file) {
 
     /**
      * Constructs a ProfileImageResponse from a PersistentProfileImageEntity.
