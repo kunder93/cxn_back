@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  *
  * @param completeUserName The complete user name with name, first surname and
  *                         second surname.
- * @param id               The unique identifier of the Lichess profile.
+ * @param identifier       The unique identifier of the Lichess profile.
  * @param username         The username of the Lichess profile.
  * @param updatedAt        The updatedAt local time date for lichess user
  *                         profile.
@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
  * @param puzzle           The statistics for puzzles.
  *
  */
-public record LichessProfileDto(String completeUserName, String id, String username, LocalDateTime updatedAt,
+public record LichessProfileDto(String completeUserName, String identifier, String username, LocalDateTime updatedAt,
         GameStatistics blitz, GameStatistics bullet, GameStatistics classical, GameStatistics rapid,
         GameStatistics puzzle) {
 
@@ -31,14 +31,14 @@ public record LichessProfileDto(String completeUserName, String id, String usern
      * Contains details such as the number of games played, rating, rating deviation
      * (rd), progress, and whether the rating is provisional.
      *
-     * @param games  The number of games played.
-     * @param rating The rating of the player in this category.
-     * @param rd     The rating deviation (rd), representing uncertainty in the
-     *               rating.
-     * @param prog   The progress of the rating.
-     * @param prov   Whether the rating is provisional (true if provisional, false
-     *               otherwise).
+     * @param games            The number of games played.
+     * @param rating           The rating of the player in this category.
+     * @param ratingDerivation The rating deviation (rd), representing uncertainty
+     *                         in the rating.
+     * @param prog             The progress of the rating.
+     * @param prov             Whether the rating is provisional (true if
+     *                         provisional, false otherwise).
      */
-    public record GameStatistics(Integer games, Integer rating, Integer rd, Integer prog, Boolean prov) {
+    public record GameStatistics(Integer games, Integer rating, Integer ratingDerivation, Integer prog, Boolean prov) {
     }
 }

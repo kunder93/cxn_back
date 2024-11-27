@@ -4,6 +4,7 @@
     <groupId>es.org.cxn</groupId>
     <artifactId>back-app</artifactId>
     <version>4.0.0-SNAPSHOT</version>
+
     <name>back-app</name>
     <description>BackEnd app para CXN naron</description>
     <url>https:xadreznaron.es</url>
@@ -51,7 +52,7 @@
 
         <!-- Spring  Versions -->
         <spring.test.version>6.1.15</spring.test.version>
-        <spring.boot.version>3.3.5</spring.boot.version>
+        <spring.boot.version>3.3.6</spring.boot.version>
         <spring.version>6.1.15</spring.version>
         <spring.security.version>6.3.5</spring.security.version>
         <spring.web.version>6.1.15</spring.web.version>

@@ -99,32 +99,6 @@ public final class DefaultUserService implements UserService {
      */
     public static final String USER_PASSWORD_NOT_MATCH = "User current password dont match.";
 
-    private static boolean checkAgeUnder18(final UserEntity user) {
-
-        final var birthDate = user.getBirthDate();
-        final var today = LocalDate.now();
-        final var age = Period.between(birthDate, today).getYears();
-        // Return if under 18.
-        return age < AGE_LIMIT;
-    }
-
-    /**
-     * Validate change user kind member.
-     *
-     * @param userType kind of member to change.
-     * @param user     The user entity.
-     * @return true if can change false if not.
-     */
-    private static boolean validateKindMemberChange(final UserType userType, final UserEntity user) {
-        return switch (userType) {
-        case SOCIO_NUMERO -> true;
-        case SOCIO_ASPIRANTE -> checkAgeUnder18(user);
-        case SOCIO_HONORARIO -> true;
-        case SOCIO_FAMILIAR -> true;
-        default -> false;
-        };
-    }
-
     /**
      * Path for profile's image.
      */
@@ -200,6 +174,53 @@ public final class DefaultUserService implements UserService {
         this.imageStorageService = checkNotNull(imgStorageService, "Received a null pointer as image storage service");
     }
 
+    /**
+     * Converts a {@link UserEntity} to a {@link PersistentUserEntity} if the
+     * provided entity is of the expected type.
+     *
+     * @param userEntity the {@link UserEntity} to be converted
+     * @return the {@link PersistentUserEntity} instance if the provided entity is
+     *         of the expected type
+     * @throws UserServiceException if the provided entity is not an instance of
+     *                              {@link PersistentUserEntity}
+     */
+    public static PersistentUserEntity asPersistentUserEntity(final UserEntity userEntity) throws UserServiceException {
+        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
+            return persistentUserEntity;
+        } else {
+            throw new UserServiceException("User entity is not of expected type.");
+        }
+    }
+
+    private static boolean checkAgeUnder18(final UserEntity user) {
+
+        final var birthDate = user.getBirthDate();
+        final var today = LocalDate.now();
+        final var age = Period.between(birthDate, today).getYears();
+        // Return if under 18.
+        return age < AGE_LIMIT;
+    }
+
+    /**
+     * Validate change user kind member.
+     *
+     * @param userType kind of member to change.
+     * @param user     The user entity.
+     * @return true if can change false if not.
+     */
+    private static boolean validateKindMemberChange(final UserType userType, final UserEntity user) {
+        return switch (userType) {
+        case SOCIO_NUMERO -> true;
+        case SOCIO_ASPIRANTE -> checkAgeUnder18(user);
+        case SOCIO_HONORARIO -> true;
+        case SOCIO_FAMILIAR -> true;
+        default -> false;
+        };
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserEntity add(final UserRegistrationDetailsDto userDetails) throws UserServiceException {
         final var dni = userDetails.dni();
@@ -265,6 +286,9 @@ public final class DefaultUserService implements UserService {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public UserEntity changeKindMember(final String userEmail, final UserType newKindMember)
             throws UserServiceException {
@@ -273,54 +297,52 @@ public final class DefaultUserService implements UserService {
         if (!validateKindMemberChange(newKindMember, userEntity)) {
             throw new UserServiceException("Cannot change the kind of member");
         }
-        userEntity.setKindMember(newKindMember);
-        // Guardar la entidad de usuario actualizada en la base de datos
-        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
-            return userRepository.save(persistentUserEntity);
-        } else {
-            throw new UserServiceException("User entity is not of expected type.");
-        }
+        final var persistentUserEntity = asPersistentUserEntity(userEntity);
+        persistentUserEntity.setKindMember(newKindMember);
+        return userRepository.save(persistentUserEntity);
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserEntity changeUserEmail(final String email, final String newEmail) throws UserServiceException {
         final var userEntity = findByEmail(email);
         userEntity.setEmail(newEmail);
         // Guardar la entidad de usuario actualizada en la base de datos
-        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
-            return userRepository.save(persistentUserEntity);
-        } else {
-            throw new UserServiceException("User entity is not of expected type.");
-        }
+        final var persistentUserEntity = asPersistentUserEntity(userEntity);
+        return userRepository.save(persistentUserEntity);
+
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserEntity changeUserPassword(final String email, final String currentPassword, final String newPassword)
             throws UserServiceException {
-
-        // Buscar al usuario por su correo electrónico en la base de datos
         final var userEntity = findByEmail(email);
 
-        // Verificar la contraseña proporcionada coincide con la almacenada
+        // Check password with stored.
         final var passwordEncoder = new BCryptPasswordEncoder();
         final String storedPassword = userEntity.getPassword();
         if (!passwordEncoder.matches(currentPassword, storedPassword)) {
             throw new UserServiceException(USER_PASSWORD_NOT_MATCH);
         }
-        // Hash de la nueva contraseña antes de guardarla en la base de datos
+        // new password hashed.
         final var hashedNewPassword = passwordEncoder.encode(newPassword);
-        // Actualizar la contraseña del usuario con la nueva contraseña hash
+        // Update user password with new user password hash.
         userEntity.setPassword(hashedNewPassword);
-        // Guardar la entidad de usuario actualizada en la base de datos
-        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
-            return userRepository.save(persistentUserEntity);
-        } else {
-            throw new UserServiceException("User entity is not of expected type.");
-        }
+        final var persistentUserEntity = asPersistentUserEntity(userEntity);
+        return userRepository.save(persistentUserEntity);
+
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Transactional
     public UserEntity changeUserRoles(final String email, final List<UserRoleName> roleNameList)
@@ -337,12 +359,9 @@ public final class DefaultUserService implements UserService {
             rolesSet.add(role.get());
 
         }
-        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
-            persistentUserEntity.setRoles(rolesSet);
-            return userRepository.save(persistentUserEntity);
-        } else {
-            throw new UserServiceException("User entity is not of expected type.");
-        }
+        final var persistentUserEntity = asPersistentUserEntity(userEntity);
+        persistentUserEntity.setRoles(rolesSet);
+        return userRepository.save(persistentUserEntity);
     }
 
     /**
@@ -389,11 +408,11 @@ public final class DefaultUserService implements UserService {
         final var user = findByDni(dni);
         final var profileImage = user.getProfileImage();
 
-        if (profileImage == null) {
-            return new ProfileImageResponse(null, null, null, null);
-        }
+        final ProfileImageResponse response;
 
-        if (profileImage.getStored().equals(Boolean.TRUE)) {
+        if (profileImage == null) {
+            response = new ProfileImageResponse(null, null, null, null);
+        } else if (profileImage.getStored().equals(Boolean.TRUE)) {
             // Load the image file from the filesystem
             final File imageFile = new File(profileImage.getUrl());
 
@@ -428,29 +447,26 @@ public final class DefaultUserService implements UserService {
                 // Prepend the MIME type to the Base64 image data
                 final String base64ImageWithPrefix = mimeType + base64Image;
 
-                // Return the response with the Base64-encoded image
-                return new ProfileImageResponse(profileImage, base64ImageWithPrefix);
+                // Assign to response
+                response = new ProfileImageResponse(profileImage, base64ImageWithPrefix);
 
             } catch (IOException e) {
                 throw new UserServiceException("Error reading profile image file: " + e.getMessage(), e);
             }
-
         } else {
             // If the image is not stored, return the external URL
-            return new ProfileImageResponse(profileImage);
+            response = new ProfileImageResponse(profileImage);
         }
+
+        return response;
     }
 
     @Transactional
     @Override
     public void remove(final String email) throws UserServiceException {
         final var userEntity = findByEmail(email);
-        // Guardar la entidad de usuario actualizada en la base de datos
-        if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
-            userRepository.delete(persistentUserEntity);
-        } else {
-            throw new UserServiceException("User entity is not of expected type.");
-        }
+        final var persistentUserEntity = asPersistentUserEntity(userEntity);
+        userRepository.delete(persistentUserEntity);
     }
 
     /**
@@ -523,13 +539,10 @@ public final class DefaultUserService implements UserService {
      */
     @Override
     public PersistentUserEntity saveProfileImageFile(final String userDni, final MultipartFile file)
-            throws IllegalStateException, IOException, UserServiceException {
+            throws UserServiceException {
 
         // Fetch the user entity by DNI
         final PersistentUserEntity userEntity = (PersistentUserEntity) findByDni(userDni);
-
-        // Directory path for saving images (already loaded from properties file)
-        final String uploadDir = imageLocationProfiles; // Use the property loaded from application properties
 
         // Get the original file name
         final String originalFileName = file.getOriginalFilename();
@@ -549,6 +562,8 @@ public final class DefaultUserService implements UserService {
 
         // Use the image storage service to save the image
         final String savedImagePath;
+        // Directory path for saving images (already loaded from properties file)
+        final String uploadDir = imageLocationProfiles; // Use the property loaded from application properties
         try {
             savedImagePath = imageStorageService.saveImage(file, uploadDir, "profile", userDni);
         } catch (IOException e) {

@@ -169,7 +169,7 @@ public class LichessController {
     private LichessProfileListResponse fromServiceDtoToControllerResponseList(
             final List<LichessProfileDto> profilesListDto) {
         final var responsesList = profilesListDto.stream().map(dto -> new LichessProfileResponse(dto.completeUserName(),
-                dto.id(), dto.updatedAt(),
+                dto.identifier(), dto.updatedAt(),
                 new LichessProfileResponse.Game(dto.blitz().rating(), dto.blitz().games(), dto.blitz().prov()),
                 new LichessProfileResponse.Game(dto.bullet().rating(), dto.bullet().games(), dto.bullet().prov()),
                 new LichessProfileResponse.Game(dto.rapid().rating(), dto.rapid().games(), dto.rapid().prov()),
