@@ -70,12 +70,6 @@ class UserControllerIntegrationTest {
     private static final String GET_USER_DATA_URL = "/api/user";
 
     /**
-     * URL endpoint for retrieving data of all users. This static final string
-     * represents the URL used to fetch a list of all users.
-     */
-    private static final String GET_ALL_USERS_DATA_URL = "/api/user/getAll";
-
-    /**
      * URL endpoint for user sign-in. This static final string represents the URL
      * used for user authentication and generating JWT tokens.
      */
@@ -104,12 +98,6 @@ class UserControllerIntegrationTest {
      * represents the URL used to update a user's role or membership type.
      */
     private static final String CHANGE_KIND_MEMBER_URL = "/api/user/changeKindOfMember";
-
-    @BeforeAll
-    static void setup() {
-        gson = UsersControllerFactory.GSON;
-
-    }
 
     /**
      * Mocked {@link SecurityContext} used in the test to simulate the security
@@ -151,6 +139,12 @@ class UserControllerIntegrationTest {
      */
     UserControllerIntegrationTest() {
         super();
+    }
+
+    @BeforeAll
+    static void setup() {
+        gson = UsersControllerFactory.GSON;
+
     }
 
     private String authenticateAndGetToken(final String email, final String password) throws Exception {

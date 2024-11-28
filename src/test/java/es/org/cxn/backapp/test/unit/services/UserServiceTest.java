@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -1088,90 +1087,6 @@ class UserServiceTest {
         // Assert: Verifica el resultado contiene el usuario esperado
         assertThat(result).as("Expected the result to contain exactly the persistent user entity")
                 .containsExactly(persistentUserEntity);
-    }
-
-    /**
-     * Tests the {@link UserService#remove(String)} method to ensure that it throws
-     * a {@link UserServiceException} when attempting to remove a user who does not
-     * exist.
-     *
-     * <p>
-     * This test simulates the scenario where a user with the specified email does
-     * not exist in the repository. It ensures that when attempting to remove a
-     * non-existent user, a {@code UserServiceException} is thrown with the
-     * appropriate error message.
-     * </p>
-     *
-     * <p>
-     * Steps:
-     * </p>
-     * <ul>
-     * <li>Arrange: Mock the {@code userRepository} to return
-     * {@code Optional.empty()} for the specified email, indicating that the user is
-     * not found.</li>
-     * <li>Act: Call {@code userService.remove} with the email of the user that does
-     * not exist.</li>
-     * <li>Assert: Verify that a {@code UserServiceException} is thrown and check
-     * the exception message to ensure that it indicates the user was not
-     * found.</li>
-     * </ul>
-     *
-     * <p>
-     * Expected Result:
-     * </p>
-     * The test should pass if a {@code UserServiceException} is thrown with the
-     * message "User not found.", confirming that the system behaves as expected
-     * when attempting to remove a non-existent user.
-     */
-    @Test
-    void testRemoveUserNotFound() {
-        // Configura el mock para devolver vacío al buscar por email
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
-
-        // Verifica que se lanza la excepción esperada y añade un mensaje
-        var exception = assertThrows(UserServiceException.class, () -> userService.remove("test@example.com"),
-                "Expected UserServiceException to be thrown when trying to " + "remove a non-existent user");
-
-        // Opcional: Verifica el mensaje de la excepción, si es relevante
-        assertEquals("User not found.", exception.getMessage(),
-                "Expected exception message to be 'User not found' but was '" + exception.getMessage() + "'");
-    }
-
-    /**
-     * Tests the {@link UserService#remove(String)} method to verify that a user is
-     * successfully removed from the system when the user exists.
-     *
-     * <p>
-     * This test simulates the process of deleting a user by their email address. It
-     * ensures that when the user is found in the repository, the {@code delete}
-     * method is called once to remove the user from the database.
-     * </p>
-     *
-     * <p>
-     * Steps:
-     * </p>
-     * <ul>
-     * <li>Arrange: Mock the {@code userRepository} to return the user entity for
-     * the specified email.</li>
-     * <li>Act: Call {@code userService.remove} with the email of the user to be
-     * deleted.</li>
-     * <li>Assert: Verify that the {@code delete} method of the repository is called
-     * once, ensuring that the user is removed from the database.</li>
-     * </ul>
-     *
-     * <p>
-     * Expected Result:
-     * </p>
-     * The test should pass if the {@code delete} method is called exactly once,
-     * confirming that the user was successfully removed from the repository.
-     */
-    @Test
-    void testRemoveUserSuccess() throws UserServiceException {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(persistentUserEntity));
-        doNothing().when(userRepository).delete(persistentUserEntity);
-
-        userService.remove("test@example.com");
-        verify(userRepository, times(1)).delete(persistentUserEntity);
     }
 
     /**

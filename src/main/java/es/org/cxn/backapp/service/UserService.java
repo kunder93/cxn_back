@@ -139,15 +139,6 @@ public interface UserService {
     List<UserEntity> getAll();
 
     /**
-     * Removes an user from persistence.
-     *
-     * @param email email of the user to remove.
-     *
-     * @throws UserServiceException when user with provided email not found.
-     */
-    void remove(String email) throws UserServiceException;
-
-    /**
      * Unsubscribe an user.
      *
      * @param email The user email

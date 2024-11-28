@@ -368,14 +368,6 @@ public final class DefaultUserService implements UserService {
 
     @Transactional
     @Override
-    public void remove(final String email) throws UserServiceException {
-        final var userEntity = findByEmail(email);
-        final var persistentUserEntity = asPersistentUserEntity(userEntity);
-        userRepository.delete(persistentUserEntity);
-    }
-
-    @Transactional
-    @Override
     public void unsubscribe(final String email) throws UserServiceException {
         final Optional<PersistentUserEntity> userOptional;
         userOptional = userRepository.findByEmail(email);
