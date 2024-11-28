@@ -26,39 +26,29 @@ package es.org.cxn.backapp.service;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
-import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
-import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
-import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
@@ -100,12 +90,6 @@ public final class DefaultUserService implements UserService {
     public static final String USER_PASSWORD_NOT_MATCH = "User current password dont match.";
 
     /**
-     * Path for profile's image.
-     */
-    @Value("${image.location.profiles}")
-    private String imageLocationProfiles;
-
-    /**
      * Repository for the user entities handled by the service.
      */
     private final UserEntityRepository userRepository;
@@ -126,16 +110,6 @@ public final class DefaultUserService implements UserService {
     private final CountrySubdivisionEntityRepository countrySubdivisionRepo;
 
     /**
-     * Repository for image profile user data.
-     */
-    private final ImageProfileEntityRepository imageProfileEntityRepository;
-
-    /**
-     * The image storage service implementation.
-     */
-    private final DefaultImageStorageService imageStorageService;
-
-    /**
      * Constructs a DefaultUserService with the specified repositories and image
      * storage service.
      *
@@ -149,29 +123,18 @@ public final class DefaultUserService implements UserService {
      * @param countrySubdivRepo The country subdivisions repository
      *                          {@link CountrySubdivisionEntityRepository} used for
      *                          country subdivision-related operations.
-     * @param imgRepo           The image profile repository
-     *                          {@link ImageProfileEntityRepository} used for
-     *                          managing user profile images.
-     * @param imgStorageService The image storage service
-     *                          {@link DefaultImageStorageService} used for saving
-     *                          and loading images.
      *
      * @throws NullPointerException if any of the provided repositories or services
      *                              are null.
      */
     public DefaultUserService(final UserEntityRepository userRepo, final RoleEntityRepository roleRepo,
-            final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo,
-            final ImageProfileEntityRepository imgRepo, final DefaultImageStorageService imgStorageService) {
+            final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo) {
         super();
-
         this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
         this.roleRepository = checkNotNull(roleRepo, "Received a null pointer as role repository");
         this.countryRepository = checkNotNull(countryRepo, "Received a null pointer as country repository");
-        this.imageProfileEntityRepository = checkNotNull(imgRepo,
-                "Received a null pointer as image profile repository");
         this.countrySubdivisionRepo = checkNotNull(countrySubdivRepo,
                 "Received a null pointer as country subdivision repository");
-        this.imageStorageService = checkNotNull(imgStorageService, "Received a null pointer as image storage service");
     }
 
     /**
@@ -403,187 +366,12 @@ public final class DefaultUserService implements UserService {
         return new ArrayList<>(persistentUsers);
     }
 
-    @Override
-    public ProfileImageResponse getProfileImage(final String dni) throws UserServiceException {
-        final var user = findByDni(dni);
-        final var profileImage = user.getProfileImage();
-
-        final ProfileImageResponse response;
-
-        if (profileImage == null) {
-            response = new ProfileImageResponse(null, null, null, null);
-        } else if (profileImage.isStored().equals(Boolean.TRUE)) {
-            // Load the image file from the filesystem
-            final File imageFile = new File(profileImage.getUrl());
-
-            if (!imageFile.exists()) {
-                throw new UserServiceException("Profile image file not found at path: " + profileImage.getUrl());
-            }
-
-            try {
-                // Read the image file and encode it in Base64
-                final byte[] imageData = Files.readAllBytes(imageFile.toPath());
-                final String base64Image = Base64.getEncoder().encodeToString(imageData);
-
-                // Determine the MIME type based on the file extension
-                final String mimeType;
-                switch (profileImage.getExtension()) {
-                case ImageExtension.PNG:
-                    mimeType = "data:image/png;base64,";
-                    break;
-                case ImageExtension.JPG:
-                    mimeType = "data:image/jpeg;base64,";
-                    break;
-                case ImageExtension.JPEG:
-                    mimeType = "data:image/jpeg;base64,";
-                    break;
-                case ImageExtension.WEBP:
-                    mimeType = "data:image/webp;base64,";
-                    break;
-                default:
-                    throw new UserServiceException("Unsupported image extension: " + profileImage.getExtension());
-                }
-
-                // Prepend the MIME type to the Base64 image data
-                final String base64ImageWithPrefix = mimeType + base64Image;
-
-                // Assign to response
-                response = new ProfileImageResponse(profileImage, base64ImageWithPrefix);
-
-            } catch (IOException e) {
-                throw new UserServiceException("Error reading profile image file: " + e.getMessage(), e);
-            }
-        } else {
-            // If the image is not stored, return the external URL
-            response = new ProfileImageResponse(profileImage);
-        }
-
-        return response;
-    }
-
     @Transactional
     @Override
     public void remove(final String email) throws UserServiceException {
         final var userEntity = findByEmail(email);
         final var persistentUserEntity = asPersistentUserEntity(userEntity);
         userRepository.delete(persistentUserEntity);
-    }
-
-    /**
-     * Saves the profile image for a user based on the provided URL. If an existing
-     * profile image is stored for the user, it will be deleted from the filesystem
-     * before saving the new URL.
-     *
-     * @param userEmail the email of the user for whom the profile image is being
-     *                  saved.
-     * @param url       the URL where the profile image is located. This can be a
-     *                  direct URL or a relative path to the image file.
-     * @return the saved {@link PersistentProfileImageEntity} object containing the
-     *         profile image information.
-     * @throws UserServiceException if there is an error while saving the profile
-     *                              image for the user, including issues with
-     *                              deleting the existing image file.
-     */
-    @Override
-    public PersistentUserEntity saveProfileImage(final String userEmail, final String url) throws UserServiceException {
-        PersistentUserEntity userEntity = (PersistentUserEntity) findByEmail(userEmail);
-        final var userDni = userEntity.getDni();
-        final var imageProfileOptional = imageProfileEntityRepository.findById(userDni);
-        if (imageProfileOptional.isPresent()) {
-            final var image = imageProfileOptional.get();
-            if (image.isStored().equals(Boolean.TRUE)) { // Borrar la imagen almacenada.
-                // Get the file path from the existing image entity
-                final String existingImagePath = image.getUrl(); // Assuming getUrl() returns the complete path
-                // Create a File object
-                final File existingFile = new File(existingImagePath);
-                // Check if the file exists and delete it
-                if (existingFile.exists()) {
-                    final boolean deleted = existingFile.delete();
-                    if (!deleted) {
-                        // Handle the case where the file could not be deleted
-                        throw new UserServiceException(
-                                "Could not delete existing profile image file: " + existingImagePath);
-                    }
-                }
-            }
-        }
-        userEntity = (PersistentUserEntity) findByDni(userDni);
-        final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
-        profileImageEntity.setExtension(ImageExtension.PROVIDED);
-        profileImageEntity.setStored(false);
-        profileImageEntity.setUrl(url);
-        profileImageEntity.setUserDni(userDni);
-        final var savedImageEntity = imageProfileEntityRepository.save(profileImageEntity);
-        userEntity.setProfileImage(savedImageEntity);
-        return userRepository.save(userEntity);
-    }
-
-    /**
-     * Saves the profile image for a user based on the uploaded file. If an existing
-     * profile image is stored for the user, it will be deleted from the filesystem
-     * before saving the new image file.
-     *
-     * @param userDni the DNI (Document Number of Identification) of the user for
-     *                whom the profile image is being saved.
-     * @param file    the uploaded {@link MultipartFile} representing the profile
-     *                image.
-     * @return the saved {@link PersistentProfileImageEntity} object containing the
-     *         profile image information.
-     * @throws IllegalStateException if the method is invoked when the application
-     *                               is in an invalid state for this operation.
-     * @throws IOException           if an I/O error occurs while saving the file to
-     *                               the filesystem.
-     * @throws UserServiceException  if there is an error while saving the profile
-     *                               image for the user, including invalid image
-     *                               extensions or file handling issues.
-     */
-    @Override
-    public PersistentUserEntity saveProfileImageFile(final String userDni, final MultipartFile file)
-            throws UserServiceException {
-
-        // Fetch the user entity by DNI
-        final PersistentUserEntity userEntity = (PersistentUserEntity) findByDni(userDni);
-
-        // Get the original file name
-        final String originalFileName = file.getOriginalFilename();
-        if (originalFileName == null || originalFileName.isEmpty()) {
-            throw new UserServiceException("Invalid file name");
-        }
-
-        // Split the filename to get the extension
-        final String[] tokens = originalFileName.split("\\.");
-        final String fileExtension = tokens[tokens.length - 1];
-
-        // Validate the file extension
-        final ImageExtension imageExtension = ImageExtension.fromString(fileExtension);
-        if (imageExtension == null) {
-            throw new UserServiceException("Invalid image extension: " + fileExtension);
-        }
-
-        // Use the image storage service to save the image
-        final String savedImagePath;
-        // Directory path for saving images (already loaded from properties file)
-        final String uploadDir = imageLocationProfiles; // Use the property loaded from application properties
-        try {
-            savedImagePath = imageStorageService.saveImage(file, uploadDir, "profile", userDni);
-        } catch (IOException e) {
-            throw new UserServiceException("Error saving profile image: " + e.getMessage(), e);
-        }
-
-        // Create the profile image entity
-        final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
-        profileImageEntity.setExtension(imageExtension);
-        profileImageEntity.setStored(true);
-        profileImageEntity.setUrl(savedImagePath); // Store the full path
-        profileImageEntity.setUserDni(userDni);
-
-        // Save the profile image entity to the database
-        final var savedImageEntity = imageProfileEntityRepository.save(profileImageEntity);
-
-        // Update the user's profile image and save the user entity
-        userEntity.setProfileImage(savedImageEntity);
-
-        return userRepository.save(userEntity);
     }
 
     @Transactional

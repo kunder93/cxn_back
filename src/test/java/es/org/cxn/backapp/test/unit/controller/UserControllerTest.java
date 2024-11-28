@@ -29,6 +29,7 @@ import es.org.cxn.backapp.controller.entity.UserController;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 import es.org.cxn.backapp.service.DefaultUserService;
+import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
@@ -65,6 +66,12 @@ class UserControllerTest {
      */
     @MockBean
     private UserService userService;
+
+    /**
+     * Mock user profile image service for build userController.
+     */
+    @MockBean
+    private UserProfileImageService userProfileImageService;
 
     /**
      * Test case to verify the successful deletion of a user when the user exists.

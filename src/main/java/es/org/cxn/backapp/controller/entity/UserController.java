@@ -56,6 +56,7 @@ import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
+import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
@@ -137,13 +138,26 @@ public class UserController {
     private final UserService userService;
 
     /**
-     * Constructs the controller with a given user service.
-     *
-     * @param service the user service instance, must not be null.
+     * The user profile image service to handle user profile images.
      */
-    public UserController(final UserService service) {
+    private final UserProfileImageService userProfileImageService;
+
+    /**
+     * Constructs a new {@code UserController} instance with the specified services.
+     *
+     * @param service             the {@link UserService} instance used for managing
+     *                            user-related operations. Must not be {@code null}.
+     * @param usrProfileImageServ the {@link UserProfileImageService} instance used
+     *                            for managing user profile image operations. Must
+     *                            not be {@code null}.
+     * @throws NullPointerException if {@code service} or
+     *                              {@code usrProfileImageServ} is {@code null}.
+     */
+    public UserController(final UserService service, final UserProfileImageService usrProfileImageServ) {
         super();
         userService = checkNotNull(service, "Received a null pointer as user service");
+        userProfileImageService = checkNotNull(usrProfileImageServ,
+                "Received a null pointer as user profile image service.");
     }
 
     /**
@@ -302,7 +316,7 @@ public class UserController {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             final var user = userService.findByEmail(userName);
-            final var imageProfile = userService.getProfileImage(user.getDni());
+            final var imageProfile = userProfileImageService.getProfileImage(user.getDni());
 
             return new ResponseEntity<>(imageProfile, HttpStatus.OK);
         } catch (UserServiceException e) {
@@ -358,7 +372,7 @@ public class UserController {
             // Puedes agregar más validaciones aquí (por ejemplo, tipos MIME permitidos)
 
             // Llama al servicio para guardar la URL o archivo en tu sistema
-            final var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
+            final var updatedUser = userProfileImageService.saveProfileImageFile(userEntity.getDni(), profileImage);
 
             return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
 
@@ -392,7 +406,7 @@ public class UserController {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             final String profileImageUrl = requestBody.get("profileImageUrl"); // Extract the value from the map
-            final var userUpdated = userService.saveProfileImage(userName, profileImageUrl);
+            final var userUpdated = userProfileImageService.saveProfileImage(userName, profileImageUrl);
             return new ResponseEntity<>(new ProfileImageResponse(userUpdated.getProfileImage()), HttpStatus.OK);
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
