@@ -71,37 +71,6 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/auth")
 public class AuthController {
     /**
-     * Creates an address details object from the provided sign-up request form.
-     *
-     * @param signUpRequestForm the sign-up request form containing address
-     *                          information.
-     * @return an {@link AddressRegistrationDetailsDto} containing address details.
-     */
-    private static AddressRegistrationDetailsDto createAddressDetails(final SignUpRequestForm signUpRequestForm) {
-        return new AddressRegistrationDetailsDto(signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
-                signUpRequestForm.city(), signUpRequestForm.postalCode(), signUpRequestForm.street(),
-                signUpRequestForm.countryNumericCode(), signUpRequestForm.countrySubdivisionName());
-    }
-
-    /**
-     * Creates a user details object from the provided sign-up request form and
-     * address details.
-     *
-     * @param signUpRequestForm the sign-up request form containing user
-     *                          information.
-     * @param addressDetails    the address details for the user.
-     * @return a {@link UserRegistrationDetailsDto} containing user and address
-     *         details.
-     */
-    private static UserRegistrationDetailsDto createUserDetails(final SignUpRequestForm signUpRequestForm,
-            final AddressRegistrationDetailsDto addressDetails) {
-        return new UserRegistrationDetailsDto(signUpRequestForm.dni(), signUpRequestForm.name(),
-                signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
-                signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
-                signUpRequestForm.kindMember());
-    }
-
-    /**
      * The user service for handling user-related operations.
      */
     private final UserService userService;
@@ -140,6 +109,37 @@ public class AuthController {
         this.usrDtlsSrv = Preconditions.checkNotNull(userDetailsServ, "Received a null pointer as userDetailsService");
         this.emailService = Preconditions.checkNotNull(emailServ, "Received a null pointer as email service.");
         Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
+    }
+
+    /**
+     * Creates an address details object from the provided sign-up request form.
+     *
+     * @param signUpRequestForm the sign-up request form containing address
+     *                          information.
+     * @return an {@link AddressRegistrationDetailsDto} containing address details.
+     */
+    private static AddressRegistrationDetailsDto createAddressDetails(final SignUpRequestForm signUpRequestForm) {
+        return new AddressRegistrationDetailsDto(signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
+                signUpRequestForm.city(), signUpRequestForm.postalCode(), signUpRequestForm.street(),
+                signUpRequestForm.countryNumericCode(), signUpRequestForm.countrySubdivisionName());
+    }
+
+    /**
+     * Creates a user details object from the provided sign-up request form and
+     * address details.
+     *
+     * @param signUpRequestForm the sign-up request form containing user
+     *                          information.
+     * @param addressDetails    the address details for the user.
+     * @return a {@link UserRegistrationDetailsDto} containing user and address
+     *         details.
+     */
+    private static UserRegistrationDetailsDto createUserDetails(final SignUpRequestForm signUpRequestForm,
+            final AddressRegistrationDetailsDto addressDetails) {
+        return new UserRegistrationDetailsDto(signUpRequestForm.dni(), signUpRequestForm.name(),
+                signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
+                signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
+                signUpRequestForm.kindMember());
     }
 
     /**

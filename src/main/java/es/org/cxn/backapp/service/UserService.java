@@ -24,7 +24,6 @@
 
 package es.org.cxn.backapp.service;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -186,13 +185,10 @@ public interface UserService {
      *         image information.
      * @throws IllegalStateException if the method is invoked when the application
      *                               is in an invalid state for this operation.
-     * @throws IOException           if an I/O error occurs while saving the file to
-     *                               the filesystem.
      * @throws UserServiceException  if there is an error while saving the profile
      *                               image for the user.
      */
-    PersistentUserEntity saveProfileImageFile(String userDni, MultipartFile file)
-            throws IllegalStateException, IOException, UserServiceException;
+    PersistentUserEntity saveProfileImageFile(String userDni, MultipartFile file) throws UserServiceException;
 
     /**
      * Unsubscribe an user.

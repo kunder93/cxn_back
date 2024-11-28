@@ -27,7 +27,6 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -93,7 +92,6 @@ import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-
     /**
      * Represents a request to update the profile image URL for a user.
      *
@@ -110,7 +108,7 @@ public class UserController {
         /**
          * Default constructor.
          */
-        ProfileImageUpdateRequest() {
+        public ProfileImageUpdateRequest() {
             // Default public constructor.
         }
 
@@ -364,7 +362,7 @@ public class UserController {
 
             return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
 
-        } catch (IOException | UserServiceException e) {
+        } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }

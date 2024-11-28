@@ -28,4 +28,25 @@ public final class LichessServiceException extends Exception {
     public LichessServiceException(final String value) {
         super(value);
     }
+
+    /**
+     * Constructs a new {@code LichessServiceException} with the specified detail
+     * message and cause.
+     * <p>
+     * This constructor is used to create an exception that includes both a specific
+     * message and the underlying cause, which allows the original exception's stack
+     * trace to be preserved.
+     * </p>
+     *
+     * @param value the detail message (which is saved for later retrieval by the
+     *              {@link Throwable#getMessage()} method).
+     * @param cause the cause of the exception (which is saved for later retrieval
+     *              by the {@link Throwable#getCause()} method). (A {@code null}
+     *              value is permitted, and indicates that the cause is nonexistent
+     *              or unknown.)
+     */
+    public LichessServiceException(final String value, final Throwable cause) {
+        super(value, cause);
+    }
+
 }

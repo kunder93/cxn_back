@@ -27,6 +27,27 @@ import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 public class UserDataInitializer {
 
     /**
+     * The user service.
+     */
+    private final UserService userService;
+
+    /**
+     * The user repository.
+     */
+    private final UserEntityRepository userRepository;
+
+    /**
+     * Default public constructor.
+     *
+     * @param userServ The user service for use in this class.
+     * @param userRepo user repository for use in this class.
+     */
+    public UserDataInitializer(final UserService userServ, final UserEntityRepository userRepo) {
+        userService = checkNotNull(userServ, "Received user service as null.");
+        userRepository = checkNotNull(userRepo, "Received user repository as null.");
+    }
+
+    /**
      * Creates an address details object from the provided sign-up request form.
      *
      * @param signUpRequestForm the sign-up request form containing address
@@ -55,27 +76,6 @@ public class UserDataInitializer {
                 signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
                 signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
                 signUpRequestForm.kindMember());
-    }
-
-    /**
-     * The user service.
-     */
-    private final UserService userService;
-
-    /**
-     * The user repository.
-     */
-    private final UserEntityRepository userRepository;
-
-    /**
-     * Default public constructor.
-     *
-     * @param userServ The user service for use in this class.
-     * @param userRepo user repository for use in this class.
-     */
-    public UserDataInitializer(final UserService userServ, final UserEntityRepository userRepo) {
-        userService = checkNotNull(userServ, "Received user service as null.");
-        userRepository = checkNotNull(userRepo, "Received user repository as null.");
     }
 
     /**

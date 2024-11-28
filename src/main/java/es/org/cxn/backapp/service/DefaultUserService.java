@@ -412,7 +412,7 @@ public final class DefaultUserService implements UserService {
 
         if (profileImage == null) {
             response = new ProfileImageResponse(null, null, null, null);
-        } else if (profileImage.getStored().equals(Boolean.TRUE)) {
+        } else if (profileImage.isStored().equals(Boolean.TRUE)) {
             // Load the image file from the filesystem
             final File imageFile = new File(profileImage.getUrl());
 
@@ -491,7 +491,7 @@ public final class DefaultUserService implements UserService {
         final var imageProfileOptional = imageProfileEntityRepository.findById(userDni);
         if (imageProfileOptional.isPresent()) {
             final var image = imageProfileOptional.get();
-            if (image.getStored().equals(Boolean.TRUE)) { // Borrar la imagen almacenada.
+            if (image.isStored().equals(Boolean.TRUE)) { // Borrar la imagen almacenada.
                 // Get the file path from the existing image entity
                 final String existingImagePath = image.getUrl(); // Assuming getUrl() returns the complete path
                 // Create a File object

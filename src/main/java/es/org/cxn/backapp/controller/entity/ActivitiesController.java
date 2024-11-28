@@ -107,8 +107,9 @@ public class ActivitiesController {
 
         try {
             // Call the service with file and other parameters
-            var createdActivityEntity = activitiesService.addActivity(activityData.title(), activityData.description(),
-                    activityData.startDate(), activityData.endDate(), activityData.category(), imageFile);
+            final var createdActivityEntity = activitiesService.addActivity(activityData.title(),
+                    activityData.description(), activityData.startDate(), activityData.endDate(),
+                    activityData.category(), imageFile);
 
             return new ResponseEntity<>(new CreatedActivityResponse(createdActivityEntity), HttpStatus.CREATED);
 
@@ -156,7 +157,7 @@ public class ActivitiesController {
     @GetMapping()
     public ResponseEntity<Stream<ActivityWithImageDto>> getAllActivities() {
 
-        Stream<ActivityWithImageDto> activitiesList;
+        final Stream<ActivityWithImageDto> activitiesList;
         try {
             activitiesList = activitiesService.getAllActivities();
             return new ResponseEntity<>(activitiesList, HttpStatus.OK);

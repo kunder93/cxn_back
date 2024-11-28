@@ -118,46 +118,50 @@ public class DefaultLichessService implements LichessService {
         final String userDni = userEntity.getDni();
 
         final var lichessProfileOptional = lichessEntityRepository.findById(userDni);
+        final LichessProfileDto lichessProfileDto;
+
         if (lichessProfileOptional.isEmpty()) {
-            // estadísticas vacías
+            // Estadísticas vacías
             final LichessProfileDto.GameStatistics emptyStats = new LichessProfileDto.GameStatistics(0, 0, 0, 0, false);
 
-            return new LichessProfileDto(userEntity.getCompleteName(), "", "", LocalDateTime.now(), emptyStats,
-                    emptyStats, emptyStats, emptyStats, emptyStats);
+            lichessProfileDto = new LichessProfileDto(userEntity.getCompleteName(), "", "", LocalDateTime.now(),
+                    emptyStats, emptyStats, emptyStats, emptyStats, emptyStats);
+        } else {
+            final var lichessProfileEntity = lichessProfileOptional.get();
 
+            // Mapear parámetros para cada tipo de juego.
+            final LichessProfileDto.GameStatistics blitzStats = new LichessProfileDto.GameStatistics(
+                    lichessProfileEntity.getBlitzGames(), lichessProfileEntity.getBlitzRating(),
+                    lichessProfileEntity.getBlitzRd(), lichessProfileEntity.getBlitzProg(),
+                    lichessProfileEntity.isBlitzProv());
+
+            final LichessProfileDto.GameStatistics bulletStats = new LichessProfileDto.GameStatistics(
+                    lichessProfileEntity.getBulletGames(), lichessProfileEntity.getBulletRating(),
+                    lichessProfileEntity.getBulletRd(), lichessProfileEntity.getBulletProg(),
+                    lichessProfileEntity.isBulletProv());
+
+            final LichessProfileDto.GameStatistics classicalStats = new LichessProfileDto.GameStatistics(
+                    lichessProfileEntity.getClassicalGames(), lichessProfileEntity.getClassicalRating(),
+                    lichessProfileEntity.getClassicalRd(), lichessProfileEntity.getClassicalProg(),
+                    lichessProfileEntity.isClassicalProv());
+
+            final LichessProfileDto.GameStatistics rapidStats = new LichessProfileDto.GameStatistics(
+                    lichessProfileEntity.getRapidGames(), lichessProfileEntity.getRapidRating(),
+                    lichessProfileEntity.getRapidRd(), lichessProfileEntity.getRapidProg(),
+                    lichessProfileEntity.isRapidProv());
+
+            final LichessProfileDto.GameStatistics puzzleStats = new LichessProfileDto.GameStatistics(
+                    lichessProfileEntity.getPuzzleGames(), lichessProfileEntity.getPuzzleRating(),
+                    lichessProfileEntity.getPuzzleRd(), lichessProfileEntity.getPuzzleProg(),
+                    lichessProfileEntity.isPuzzleProv());
+
+            lichessProfileDto = new LichessProfileDto(userEntity.getCompleteName(),
+                    lichessProfileEntity.getIdentifier(), lichessProfileEntity.getUsername(),
+                    lichessProfileEntity.getUpdatedAt(), blitzStats, bulletStats, classicalStats, rapidStats,
+                    puzzleStats);
         }
 
-        final var lichessProfileEntity = lichessProfileOptional.get();
-
-        // Map params for each kind of game.
-        final LichessProfileDto.GameStatistics blitzStats = new LichessProfileDto.GameStatistics(
-                lichessProfileEntity.getBlitzGames(), lichessProfileEntity.getBlitzRating(),
-                lichessProfileEntity.getBlitzRd(), lichessProfileEntity.getBlitzProg(),
-                lichessProfileEntity.getBlitzProv());
-
-        final LichessProfileDto.GameStatistics bulletStats = new LichessProfileDto.GameStatistics(
-                lichessProfileEntity.getBulletGames(), lichessProfileEntity.getBulletRating(),
-                lichessProfileEntity.getBulletRd(), lichessProfileEntity.getBulletProg(),
-                lichessProfileEntity.getBulletProv());
-
-        final LichessProfileDto.GameStatistics classicalStats = new LichessProfileDto.GameStatistics(
-                lichessProfileEntity.getClassicalGames(), lichessProfileEntity.getClassicalRating(),
-                lichessProfileEntity.getClassicalRd(), lichessProfileEntity.getClassicalProg(),
-                lichessProfileEntity.getClassicalProv());
-
-        final LichessProfileDto.GameStatistics rapidStats = new LichessProfileDto.GameStatistics(
-                lichessProfileEntity.getRapidGames(), lichessProfileEntity.getRapidRating(),
-                lichessProfileEntity.getRapidRd(), lichessProfileEntity.getRapidProg(),
-                lichessProfileEntity.getRapidProv());
-
-        final LichessProfileDto.GameStatistics puzzleStats = new LichessProfileDto.GameStatistics(
-                lichessProfileEntity.getPuzzleGames(), lichessProfileEntity.getPuzzleRating(),
-                lichessProfileEntity.getPuzzleRd(), lichessProfileEntity.getPuzzleProg(),
-                lichessProfileEntity.getPuzzleProv());
-
-        return new LichessProfileDto(userEntity.getCompleteName(), lichessProfileEntity.getId(),
-                lichessProfileEntity.getUsername(), lichessProfileEntity.getUpdatedAt(), blitzStats, bulletStats,
-                classicalStats, rapidStats, puzzleStats);
+        return lichessProfileDto;
     }
 
     /**
@@ -175,27 +179,28 @@ public class DefaultLichessService implements LichessService {
             // Map statistics from entity to GameStatistics DTO
             final LichessProfileDto.GameStatistics blitzStats = new LichessProfileDto.GameStatistics(
                     entity.getBlitzGames(), entity.getBlitzRating(), entity.getBlitzRd(), entity.getBlitzProg(),
-                    entity.getBlitzProv());
+                    entity.isBlitzProv());
 
             final LichessProfileDto.GameStatistics bulletStats = new LichessProfileDto.GameStatistics(
                     entity.getBulletGames(), entity.getBulletRating(), entity.getBulletRd(), entity.getBulletProg(),
-                    entity.getBulletProv());
+                    entity.isBulletProv());
 
             final LichessProfileDto.GameStatistics classicalStats = new LichessProfileDto.GameStatistics(
                     entity.getClassicalGames(), entity.getClassicalRating(), entity.getClassicalRd(),
-                    entity.getClassicalProg(), entity.getClassicalProv());
+                    entity.getClassicalProg(), entity.isClassicalProv());
 
             final LichessProfileDto.GameStatistics rapidStats = new LichessProfileDto.GameStatistics(
                     entity.getRapidGames(), entity.getRapidRating(), entity.getRapidRd(), entity.getRapidProg(),
-                    entity.getRapidProv());
+                    entity.isRapidProv());
 
             final LichessProfileDto.GameStatistics puzzleStats = new LichessProfileDto.GameStatistics(
                     entity.getPuzzleGames(), entity.getPuzzleRating(), entity.getPuzzleRd(), entity.getPuzzleProg(),
-                    entity.getPuzzleProv());
+                    entity.isPuzzleProv());
 
             // Create LichessProfileDto
-            dtoList.add(new LichessProfileDto(userEntity.getCompleteName(), entity.getId(), entity.getUsername(),
-                    entity.getUpdatedAt(), blitzStats, bulletStats, classicalStats, rapidStats, puzzleStats));
+            dtoList.add(
+                    new LichessProfileDto(userEntity.getCompleteName(), entity.getIdentifier(), entity.getUsername(),
+                            entity.getUpdatedAt(), blitzStats, bulletStats, classicalStats, rapidStats, puzzleStats));
         });
 
         return dtoList;
@@ -273,42 +278,42 @@ public class DefaultLichessService implements LichessService {
 
         // Map main fields
         entity.setUserDni(userEntity.getDni());
-        entity.setId(dto.id());
+        entity.setIdentifier(dto.identifier());
         entity.setUsername(dto.username());
         entity.setUpdatedAt(LocalDateTime.now());
 
         // Map Blitz statistics
         entity.setBlitzGames(dto.blitz().games());
         entity.setBlitzRating(dto.blitz().rating());
-        entity.setBlitzRd(dto.blitz().rd());
+        entity.setBlitzRd(dto.blitz().ratingDerivation());
         entity.setBlitzProg(dto.blitz().prog());
         entity.setBlitzProv(dto.blitz().prov());
 
         // Map Bullet statistics
         entity.setBulletGames(dto.bullet().games());
         entity.setBulletRating(dto.bullet().rating());
-        entity.setBulletRd(dto.bullet().rd());
+        entity.setBulletRd(dto.bullet().ratingDerivation());
         entity.setBulletProg(dto.bullet().prog());
         entity.setBulletProv(dto.bullet().prov());
 
         // Map Classical statistics
         entity.setClassicalGames(dto.classical().games());
         entity.setClassicalRating(dto.classical().rating());
-        entity.setClassicalRd(dto.classical().rd());
+        entity.setClassicalRd(dto.classical().ratingDerivation());
         entity.setClassicalProg(dto.classical().prog());
         entity.setClassicalProv(dto.classical().prov());
 
         // Map Rapid statistics
         entity.setRapidGames(dto.rapid().games());
         entity.setRapidRating(dto.rapid().rating());
-        entity.setRapidRd(dto.rapid().rd());
+        entity.setRapidRd(dto.rapid().ratingDerivation());
         entity.setRapidProg(dto.rapid().prog());
         entity.setRapidProv(dto.rapid().prov());
 
         // Map Puzzle statistics
         entity.setPuzzleGames(dto.puzzle().games());
         entity.setPuzzleRating(dto.puzzle().rating());
-        entity.setPuzzleRd(dto.puzzle().rd());
+        entity.setPuzzleRd(dto.puzzle().ratingDerivation());
         entity.setPuzzleProg(dto.puzzle().prog());
         entity.setPuzzleProv(dto.puzzle().prov());
 

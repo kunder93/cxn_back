@@ -186,7 +186,7 @@ class PersistentLichessProfileEntityTest {
     @Test
     void testSetAndGetBlitzProv() {
         profile.setBlitzProv(BLITZ_PROV);
-        assertEquals(BLITZ_PROV, profile.getBlitzProv());
+        assertEquals(BLITZ_PROV, profile.isBlitzProv());
     }
 
     @Test
@@ -217,7 +217,7 @@ class PersistentLichessProfileEntityTest {
     @Test
     void testSetAndGetBulletProv() {
         profile.setBulletProv(BULLET_PROV);
-        assertEquals(BULLET_PROV, profile.getBulletProv());
+        assertEquals(BULLET_PROV, profile.isBulletProv());
     }
 
     @Test
@@ -248,7 +248,7 @@ class PersistentLichessProfileEntityTest {
     @Test
     void testSetAndGetClassicalProv() {
         profile.setClassicalProv(CLASSICAL_PROV);
-        assertEquals(CLASSICAL_PROV, profile.getClassicalProv());
+        assertEquals(CLASSICAL_PROV, profile.isClassicalProv());
     }
 
     @Test
@@ -265,9 +265,9 @@ class PersistentLichessProfileEntityTest {
 
     // Test the setId() and getId() methods
     @Test
-    public void testSetAndGetId() {
-        profile.setId(TEST_ID);
-        assertEquals(TEST_ID, profile.getId(), "The retrieved ID should match the set ID.");
+    void testSetAndGetId() {
+        profile.setIdentifier(TEST_ID);
+        assertEquals(TEST_ID, profile.getIdentifier(), "The retrieved ID should match the set ID.");
     }
 
     // Puzzle statistics tests
@@ -286,7 +286,7 @@ class PersistentLichessProfileEntityTest {
     @Test
     void testSetAndGetPuzzleProv() {
         profile.setPuzzleProv(PUZZLE_PROV);
-        assertEquals(PUZZLE_PROV, profile.getPuzzleProv());
+        assertEquals(PUZZLE_PROV, profile.isPuzzleProv());
     }
 
     @Test
@@ -317,7 +317,7 @@ class PersistentLichessProfileEntityTest {
     @Test
     void testSetAndGetRapidProv() {
         profile.setRapidProv(RAPID_PROV);
-        assertEquals(RAPID_PROV, profile.getRapidProv());
+        assertEquals(RAPID_PROV, profile.isRapidProv());
     }
 
     @Test

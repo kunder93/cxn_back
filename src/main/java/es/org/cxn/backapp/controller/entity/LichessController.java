@@ -201,7 +201,7 @@ public class LichessController {
                 final JsonNode rootNode = objectMapper.readTree(response.getBody());
 
                 // Extraer y mapear los campos necesarios al DTO
-                final String id = rootNode.path("id").asText();
+                final String identifier = rootNode.path("id").asText();
                 final String username = rootNode.path("username").asText();
                 // Obtener estadísticas de diferentes modalidades
                 final SaveGameStatistics blitz = mapSaveGameStatistics(rootNode.path("perfs").path("blitz"));
@@ -210,13 +210,13 @@ public class LichessController {
                 final SaveGameStatistics rapid = mapSaveGameStatistics(rootNode.path("perfs").path("rapid"));
                 final SaveGameStatistics puzzle = mapSaveGameStatistics(rootNode.path("perfs").path("puzzle"));
                 // Crear el DTO con la información mapeada
-                return new LichessSaveProfileDto(userDni, id, username, LocalDateTime.now(), blitz, bullet, classical,
+                return new LichessSaveProfileDto(userDni, identifier, username, LocalDateTime.now(), blitz, bullet, classical,
                         rapid, puzzle);
             } else {
                 throw new LichessServiceException("Error al obtener el perfil de Lichess.");
             }
         } catch (RestClientException | JsonProcessingException e) {
-            throw new LichessServiceException("Error en la llamada a la API de Lichess.");
+            throw new LichessServiceException("Error en la llamada a la API de Lichess.", e);
         }
     }
 
@@ -344,7 +344,9 @@ public class LichessController {
      * @return true if the response status code is in the 2xx range, false otherwise
      */
     private boolean isResponseSuccessful(final ResponseEntity<String> response) {
-        return response != null && response.getStatusCode().is2xxSuccessful();
+        final var statusCode = response.getStatusCode();
+
+        return response != null && statusCode.is2xxSuccessful();
     }
 
     /**

@@ -1,8 +1,10 @@
 
 package es.org.cxn.backapp.model.persistence;
 
-import es.org.cxn.backapp.model.AuthorEntity;
+import java.util.HashSet;
+import java.util.Set;
 
+import es.org.cxn.backapp.model.AuthorEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,10 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-
-import java.util.HashSet;
-import java.util.Set;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,8 +23,8 @@ import lombok.NoArgsConstructor;
  * This makes use of JPA annotations for the persistence configuration.
  * <p>
  * The default constructor is provided by Lombok's @NoArgsConstructor
- * annotation.
- * This default constructor is required by JPA for entity instantiation.
+ * annotation. This default constructor is required by JPA for entity
+ * instantiation.
  *
  * @author Santiago Paz Perez.
  */
@@ -38,40 +36,40 @@ import lombok.NoArgsConstructor;
 @Table(name = "author")
 public class PersistentAuthorEntity implements AuthorEntity {
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 5777796129999170661L;
+    /**
+     * Serial UID.
+     */
+    private static final long serialVersionUID = 5777796129999170661L;
 
-  /**
-   * Author identifier.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    /**
+     * Author identifier.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long identifier;
 
-  /**
-   * Author first name.
-   */
-  @Column(name = "first_name", nullable = false, unique = false)
-  private String firstName;
+    /**
+     * Author first name.
+     */
+    @Column(name = "first_name", nullable = false, unique = false)
+    private String firstName;
 
-  /**
-   * Author last name.
-   */
-  @Column(name = "last_name", nullable = false, unique = false)
-  private String lastName;
+    /**
+     * Author last name.
+     */
+    @Column(name = "last_name", nullable = false, unique = false)
+    private String lastName;
 
-  /**
-   * Author nationality.
-   */
-  @Column(name = "nationality", nullable = true, unique = false)
-  private String nationality;
+    /**
+     * Author nationality.
+     */
+    @Column(name = "nationality", nullable = true, unique = false)
+    private String nationality;
 
-  /**
-   * Books written by this author.
-   */
-  @ManyToMany(mappedBy = "authors")
-  @Builder.Default
-  private Set<PersistentBookEntity> books = new HashSet<>();
+    /**
+     * Books written by this author.
+     */
+    @ManyToMany(mappedBy = "authors")
+    @Builder.Default
+    private Set<PersistentBookEntity> books = new HashSet<>();
 }

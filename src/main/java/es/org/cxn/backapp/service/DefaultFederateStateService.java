@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -145,7 +146,7 @@ public final class DefaultFederateStateService implements FederateStateService {
     }
 
     /**
-     * Federates a member by storing their DNI images and updating their federate
+     * Federate a member by storing their DNI images and updating their federate
      * state.
      *
      * @param userEmail    The email of the user to federate.
@@ -163,6 +164,7 @@ public final class DefaultFederateStateService implements FederateStateService {
     public PersistentFederateStateEntity federateMember(final String userEmail, final MultipartFile frontDniFile,
             final MultipartFile backDniFile, final boolean autoRenewal)
             throws UserServiceException, FederateStateServiceException {
+
         final var user = userService.findByEmail(userEmail);
         final var userDni = user.getDni();
         final var federateStateOptional = federateStateRepository.findById(userDni);
@@ -173,8 +175,8 @@ public final class DefaultFederateStateService implements FederateStateService {
 
         final var federateStateEntity = federateStateOptional.get();
         final var baseDirectory = imageLocationDnis;
-        // Define user-specific directory based on their DNI using Paths.get()
         final Path userDirectoryPath = Paths.get(baseDirectory, userDni);
+
         if (!Files.exists(userDirectoryPath)) {
             try {
                 Files.createDirectories(userDirectoryPath);
@@ -182,24 +184,10 @@ public final class DefaultFederateStateService implements FederateStateService {
                 throw new FederateStateServiceException("Error creating directory: " + e.getMessage(), e);
             }
         }
+        final PersistentFederateStateEntity updatedEntity;
+        if (federateStateEntity.getState() == FederateState.NO_FEDERATE
+                || federateStateEntity.getState() == FederateState.FEDERATE) {
 
-        if (federateStateEntity.getState() == FederateState.NO_FEDERATE) {
-            federateStateEntity.setAutomaticRenewal(autoRenewal);
-            federateStateEntity.setDniLastUpdate(LocalDate.now());
-            federateStateEntity.setState(FederateState.IN_PROGRESS);
-
-            try {
-                final String frontUrl = saveFile(frontDniFile, userDni, "frontal");
-                final String backUrl = saveFile(backDniFile, userDni, "trasera");
-
-                federateStateEntity.setDniFrontImageUrl(frontUrl);
-                federateStateEntity.setDniBackImageUrl(backUrl);
-
-                return federateStateRepository.save(federateStateEntity);
-            } catch (IOException e) {
-                throw new FederateStateServiceException("Error saving DNI images: " + e.getMessage(), e);
-            }
-        } else if (federateStateEntity.getState() == FederateState.FEDERATE) {
             federateStateEntity.setAutomaticRenewal(autoRenewal);
             federateStateEntity.setDniLastUpdate(LocalDate.now());
 
@@ -210,15 +198,20 @@ public final class DefaultFederateStateService implements FederateStateService {
                 federateStateEntity.setDniFrontImageUrl(frontUrl);
                 federateStateEntity.setDniBackImageUrl(backUrl);
 
-                federateStateEntity.setState(FederateState.IN_PROGRESS);
+                if (federateStateEntity.getState() == FederateState.NO_FEDERATE) {
+                    federateStateEntity.setState(FederateState.IN_PROGRESS);
+                }
 
-                return federateStateRepository.save(federateStateEntity);
+                updatedEntity = federateStateRepository.save(federateStateEntity);
             } catch (IOException e) {
                 throw new FederateStateServiceException("Error saving DNI images: " + e.getMessage(), e);
             }
+
         } else {
             throw new FederateStateServiceException("Bad state. User dni: " + userDni);
         }
+
+        return updatedEntity;
     }
 
     /**
@@ -275,7 +268,7 @@ public final class DefaultFederateStateService implements FederateStateService {
         }
 
         final String[] tokens = originalFileName.split("\\.");
-        final String fileExtension = tokens[tokens.length - 1].toLowerCase();
+        final String fileExtension = tokens[tokens.length - 1].toLowerCase(Locale.ROOT); // Specify Locale
 
         final ImageExtension imageExtension = ImageExtension.fromString(fileExtension);
         if (imageExtension == null) {

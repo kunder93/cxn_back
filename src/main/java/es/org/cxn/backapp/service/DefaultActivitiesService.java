@@ -200,7 +200,7 @@ public final class DefaultActivitiesService implements ActivitiesService {
 
         return activitiesList.stream().map(activity -> {
             try {
-                byte[] image = getActivityImage(activity.getTitle());
+                final byte[] image = getActivityImage(activity.getTitle());
                 return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(), activity.getStartDate(),
                         activity.getEndDate(), activity.getCategory(), Base64.getEncoder().encodeToString(image));
             } catch (ActivityServiceException e) {

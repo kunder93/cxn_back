@@ -118,14 +118,6 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
      * {@inheritDoc}
      */
     @Override
-    public Boolean getStored() {
-        return stored;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getUrl() {
         return url;
     }
@@ -144,6 +136,14 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
     @Override
     public String getUserDni() {
         return userDni;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean isStored() {
+        return stored;
     }
 
     /**

@@ -27,15 +27,6 @@ package es.org.cxn.backapp.test.integration.services;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 
-import es.org.cxn.backapp.exceptions.RoleNameExistsException;
-import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
-import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
-import es.org.cxn.backapp.repository.RoleEntityRepository;
-import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.DefaultRoleService;
-import es.org.cxn.backapp.service.RoleService;
-
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -47,6 +38,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import es.org.cxn.backapp.exceptions.RoleNameExistsException;
+import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.repository.RoleEntityRepository;
+import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.DefaultRoleService;
+import es.org.cxn.backapp.service.RoleService;
+
 /**
  * Unit tests for {@link DefaultRoleService}.
  * <p>
@@ -56,229 +56,214 @@ import org.springframework.test.context.ActiveProfiles;
  *
  * @author Santiago Paz
  */
-@SpringBootTest(
-      classes = { UserEntityRepository.class, RoleEntityRepository.class,
-          RoleService.class, DefaultRoleService.class }
-)
+@SpringBootTest(classes = { UserEntityRepository.class, RoleEntityRepository.class, RoleService.class,
+        DefaultRoleService.class })
 @ActiveProfiles("test")
 final class TestDefaultRoleService {
 
-  /**
-   * The ID of the role used in the tests.
-   * <p>
-   * This field holds the default ID value assigned to roles for the purpose of
-   * testing role-related operations. It is initialized with the value of
-   * {@link #DEFAULT_ROLE_ID}.
-   * </p>
-   */
-  private Integer roleId = DEFAULT_ROLE_ID;
+    /**
+     * The default role ID used in tests.
+     * <p>
+     * This constant provides a standard role ID that is used across different tests
+     * to ensure consistency in the testing scenarios.
+     * </p>
+     */
+    private static final Integer DEFAULT_ROLE_ID = 79;
 
-  /**
-   * The default role ID used in tests.
-   * <p>
-   * This constant provides a standard role ID that is used across different
-   *  tests to ensure consistency in the testing scenarios.
-   * </p>
-   */
-  private static final Integer DEFAULT_ROLE_ID = 79;
+    /**
+     * A different role ID used in tests to check scenarios where IDs differ.
+     * <p>
+     * This constant is used to verify that the system correctly identifies and
+     * handles cases where role IDs are not matching.
+     * </p>
+     */
+    private static final Integer DIFFERENT_ROLE_ID = 77;
 
-  /**
-   * A different role ID used in tests to check scenarios where IDs differ.
-   * <p>
-   * This constant is used to verify that the system correctly identifies and
-   * handles cases where role IDs are not matching.
-   * </p>
-   */
-  private static final Integer DIFFERENT_ROLE_ID = 77;
+    /**
+     * The ID of the role used in the tests.
+     * <p>
+     * This field holds the default ID value assigned to roles for the purpose of
+     * testing role-related operations. It is initialized with the value of
+     * {@link #DEFAULT_ROLE_ID}.
+     * </p>
+     */
+    private Integer roleId = DEFAULT_ROLE_ID;
 
-  /**
-   * The name of the role used in the tests.
-   * <p>
-   * This field holds the role name value that is used for testing role-related
-   * operations. It is initialized with
-   * {@link UserRoleName#ROLE_CANDIDATO_SOCIO}.
-   * </p>
-   */
-  private UserRoleName roleName = UserRoleName.ROLE_CANDIDATO_SOCIO;
+    /**
+     * The name of the role used in the tests.
+     * <p>
+     * This field holds the role name value that is used for testing role-related
+     * operations. It is initialized with {@link UserRoleName#ROLE_CANDIDATO_SOCIO}.
+     * </p>
+     */
+    private UserRoleName roleName = UserRoleName.ROLE_CANDIDATO_SOCIO;
 
-  /**
-   * The {@link RoleService} instance that is injected by Spring for testing.
-   * <p>
-   * This service is used in the tests to verify the behavior of
-   * role-related operations.
-   * </p>
-   */
-  @Autowired
-  private RoleService roleService;
+    /**
+     * The {@link RoleService} instance that is injected by Spring for testing.
+     * <p>
+     * This service is used in the tests to verify the behavior of role-related
+     * operations.
+     * </p>
+     */
+    @Autowired
+    private RoleService roleService;
 
-  /**
-   * A mock instance of {@link RoleEntityRepository} that is used in testing.
-   * <p>
-   * This mock is created by Spring Boot's test framework to simulate the
-   *  repository  layer and to verify interactions with it without requiring
-   *  an actual database.
-   * </p>
-   */
-  @MockBean
-  private RoleEntityRepository roleEntityRepository;
+    /**
+     * A mock instance of {@link RoleEntityRepository} that is used in testing.
+     * <p>
+     * This mock is created by Spring Boot's test framework to simulate the
+     * repository layer and to verify interactions with it without requiring an
+     * actual database.
+     * </p>
+     */
+    @MockBean
+    private RoleEntityRepository roleEntityRepository;
 
-  /**
-   * Default constructor.
-   */
-  TestDefaultRoleService() {
-    super();
-  }
+    /**
+     * Default constructor.
+     */
+    TestDefaultRoleService() {
+        super();
+    }
 
-  /**
-   * Verifies that two roles are equal or not.
-   */
-  @DisplayName("Assert equals")
-  @Test
-  void testTwoRolesEquals() {
-    var roleEntityA = new PersistentRoleEntity();
-    roleEntityA.setName(roleName);
-    roleEntityA.setId(roleId);
+    /**
+     * Verifies that the service calls repository save if data is correct.
+     *
+     * @throws RoleNameExistsException when role name already exists
+     */
+    @DisplayName("Add role with name that not exists persist it")
+    @Test
+    void testAddRoleNameReturnRole() throws RoleNameExistsException {
+        var roleEntity = new PersistentRoleEntity();
 
-    var roleEntityB = new PersistentRoleEntity();
-    roleEntityB.setName(roleEntityA.getName());
-    roleEntityB.setId(roleEntityA.getId());
+        Mockito.when(roleEntityRepository.existsByName(roleName)).thenReturn(false);
+        Mockito.when(roleEntityRepository.save(any(PersistentRoleEntity.class))).thenReturn(roleEntity);
 
-    Assertions.assertEquals(roleEntityA, roleEntityB, "same id and roleName");
+        var result = (PersistentRoleEntity) roleService.add(roleName);
+        Assertions.assertEquals(result, roleEntity, "persisted is same as provided");
+        Mockito.verify(roleEntityRepository, times(1)).save(any(PersistentRoleEntity.class));
+    }
 
-    roleEntityA.setId(DIFFERENT_ROLE_ID);
-    Assertions.assertNotEquals(
-          roleEntityA, roleEntityB, "same name but different id"
-    );
+    /**
+     * Verifies that the service throws an exception when the role name already
+     * exists.
+     *
+     * @throws RoleNameExistsException when role name already exists
+     */
+    @DisplayName("Add role with name that exists throw exception")
+    @Test
+    void testAddRoleRoleNameThatExistsThrowException() {
+        Mockito.when(roleEntityRepository.existsByName(roleName)).thenReturn(true);
+        Assertions.assertThrows(RoleNameExistsException.class, () -> {
+            roleService.add(roleName);
+        }, "The RoleNameExistsException is caught");
+    }
 
-    PersistentRoleEntity nullEntity = null;
-    Assertions.assertNotEquals(
-          nullEntity, roleEntityA, "equals with null is false"
-    );
-  }
+    /**
+     * Verifies that the service returns the role when found by id.
+     *
+     * @throws RoleNameExistsException when role name already exists
+     */
+    @DisplayName("Find role with id that exists")
+    @Test
+    void testFindRoleByIdRoleExists() {
+        var roleEntity = new PersistentRoleEntity(roleName);
+        Optional<PersistentRoleEntity> roleOptional = Optional.of(roleEntity);
 
-  /**
-   * Verifies that the service throws an exception when the role name already
-   *  exists.
-   *
-   * @throws RoleNameExistsException when role name already exists
-   */
-  @DisplayName("Add role with name that exists throw exception")
-  @Test
-  void testAddRoleRoleNameThatExistsThrowException() {
-    Mockito.when(roleEntityRepository.existsByName(roleName)).thenReturn(true);
-    Assertions.assertThrows(RoleNameExistsException.class, () -> {
-      roleService.add(roleName);
-    }, "The RoleNameExistsException is caught");
-  }
+        Mockito.when(roleEntityRepository.findById(roleId)).thenReturn(roleOptional);
 
-  /**
-   * Verifies that the service calls repository save if data is correct.
-   *
-   * @throws RoleNameExistsException when role name already exists
-   */
-  @DisplayName("Add role with name that not exists persist it")
-  @Test
-  void testAddRoleNameReturnRole() throws RoleNameExistsException {
-    var roleEntity = new PersistentRoleEntity();
+        var roleResult = roleService.findById(roleId);
+        Assertions.assertEquals(roleEntity, roleResult, "Check role found");
+        Mockito.verify(roleEntityRepository, times(1)).findById(roleId);
+    }
 
-    Mockito.when(roleEntityRepository.existsByName(roleName)).thenReturn(false);
-    Mockito.when(roleEntityRepository.save(any(PersistentRoleEntity.class)))
-          .thenReturn(roleEntity);
+    /**
+     * Verifies that the service returns the role when found by name.
+     *
+     * @throws RoleNameNotFoundException when role name not found
+     */
+    @DisplayName("Find role with name provided")
+    @Test
+    void testFindRoleByNameRoleExists() throws RoleNameNotFoundException {
+        var roleEntity = new PersistentRoleEntity(roleName);
+        Optional<PersistentRoleEntity> roleOptional = Optional.of(roleEntity);
 
-    var result = (PersistentRoleEntity) roleService.add(roleName);
-    Assertions
-          .assertEquals(result, roleEntity, "persisted is same as provided");
-    Mockito.verify(roleEntityRepository, times(1))
-          .save(any(PersistentRoleEntity.class));
-  }
+        Mockito.when(roleEntityRepository.findByName(roleName)).thenReturn(roleOptional);
 
-  /**
-   * Verifies that the service returns the role when found by id.
-   *
-   * @throws RoleNameExistsException when role name already exists
-   */
-  @DisplayName("Find role with id that exists")
-  @Test
-  void testFindRoleByIdRoleExists() {
-    var roleEntity = new PersistentRoleEntity(roleName);
-    Optional<PersistentRoleEntity> roleOptional = Optional.of(roleEntity);
+        var roleResult = roleService.findByName(roleName);
+        Assertions.assertEquals(roleEntity, roleResult, "Check role found");
+        Mockito.verify(roleEntityRepository, times(1)).findByName(roleName);
+    }
 
-    Mockito.when(roleEntityRepository.findById(roleId))
-          .thenReturn(roleOptional);
+    /**
+     * Verifies that the service throws an exception when role name is not found.
+     *
+     * @throws RoleNameNotFoundException when role name not found
+     */
+    @DisplayName("Find role with name that not exists throw exception")
+    @Test
+    void testFindRoleRoleNameNotExists() {
+        Mockito.when(roleEntityRepository.findByName(roleName)).thenReturn(Optional.empty());
 
-    var roleResult = roleService.findById(roleId);
-    Assertions.assertEquals(roleEntity, roleResult, "Check role found");
-    Mockito.verify(roleEntityRepository, times(1)).findById(roleId);
-  }
+        Assertions.assertThrows(RoleNameNotFoundException.class, () -> {
+            roleService.findByName(roleName);
+        }, "Role name not found throw exception");
+    }
 
-  /**
-   * Verifies that the service returns the role when found by name.
-   *
-   * @throws RoleNameNotFoundException when role name not found
-   */
-  @DisplayName("Find role with name provided")
-  @Test
-  void testFindRoleByNameRoleExists() throws RoleNameNotFoundException {
-    var roleEntity = new PersistentRoleEntity(roleName);
-    Optional<PersistentRoleEntity> roleOptional = Optional.of(roleEntity);
+    /**
+     * Verifies that the service calls repository to remove a role.
+     *
+     * @throws RoleNameNotFoundException when role name not found
+     */
+    @DisplayName("Remove role with name that exists")
+    @Test
+    void testRemoveRoleCallRepository() throws RoleNameNotFoundException {
+        var roleEntity = new PersistentRoleEntity(roleName);
+        Optional<PersistentRoleEntity> roleOptional = Optional.of(roleEntity);
 
-    Mockito.when(roleEntityRepository.findByName(roleName))
-          .thenReturn(roleOptional);
+        Mockito.when(roleEntityRepository.findByName(roleName)).thenReturn(roleOptional);
 
-    var roleResult = roleService.findByName(roleName);
-    Assertions.assertEquals(roleEntity, roleResult, "Check role found");
-    Mockito.verify(roleEntityRepository, times(1)).findByName(roleName);
-  }
+        Mockito.doNothing().when(roleEntityRepository).delete(roleEntity);
+        roleService.remove(roleName);
+        Mockito.verify(roleEntityRepository, times(1)).delete(roleEntity);
+    }
 
-  /**
-   * Verifies that the service throws an exception when role name is not found.
-   *
-   * @throws RoleNameNotFoundException when role name not found
-   */
-  @DisplayName("Find role with name that not exists throw exception")
-  @Test
-  void testFindRoleRoleNameNotExists() {
-    Mockito.when(roleEntityRepository.findByName(roleName))
-          .thenReturn(Optional.empty());
+    /**
+     * Verifies that the service throws an exception when role name cannot be
+     * removed.
+     *
+     * @throws RoleNameNotFoundException when role name not found
+     */
+    @DisplayName("Remove role with name that not exists throw exception")
+    @Test
+    void testRemoveRoleRoleNameNotExists() {
+        Mockito.when(roleEntityRepository.findByName(roleName)).thenReturn(Optional.empty());
 
-    Assertions.assertThrows(RoleNameNotFoundException.class, () -> {
-      roleService.findByName(roleName);
-    }, "Role name not found throw exception");
-  }
+        Assertions.assertThrows(RoleNameNotFoundException.class, () -> {
+            roleService.remove(roleName);
+        }, "Role name not found throw exception");
+    }
 
-  /**
-   * Verifies that the service throws an exception when role name cannot be
-   * removed.
-   *
-   * @throws RoleNameNotFoundException when role name not found
-   */
-  @DisplayName("Remove role with name that not exists throw exception")
-  @Test
-  void testRemoveRoleRoleNameNotExists() {
-    Mockito.when(roleEntityRepository.findByName(roleName))
-          .thenReturn(Optional.empty());
+    /**
+     * Verifies that two roles are equal or not.
+     */
+    @DisplayName("Assert equals")
+    @Test
+    void testTwoRolesEquals() {
+        var roleEntityA = new PersistentRoleEntity();
+        roleEntityA.setName(roleName);
+        roleEntityA.setIdentifier(roleId);
 
-    Assertions.assertThrows(RoleNameNotFoundException.class, () -> {
-      roleService.remove(roleName);
-    }, "Role name not found throw exception");
-  }
+        var roleEntityB = new PersistentRoleEntity();
+        roleEntityB.setName(roleEntityA.getName());
+        roleEntityB.setIdentifier(roleEntityA.getIdentifier());
 
-  /**
-   * Verifies that the service calls repository to remove a role.
-   *
-   * @throws RoleNameNotFoundException when role name not found
-   */
-  @DisplayName("Remove role with name that exists")
-  @Test
-  void testRemoveRoleCallRepository() throws RoleNameNotFoundException {
-    var roleEntity = new PersistentRoleEntity(roleName);
-    Optional<PersistentRoleEntity> roleOptional = Optional.of(roleEntity);
+        Assertions.assertEquals(roleEntityA, roleEntityB, "same id and roleName");
 
-    Mockito.when(roleEntityRepository.findByName(roleName))
-          .thenReturn(roleOptional);
+        roleEntityA.setIdentifier(DIFFERENT_ROLE_ID);
+        Assertions.assertNotEquals(roleEntityA, roleEntityB, "same name but different id");
 
-    Mockito.doNothing().when(roleEntityRepository).delete(roleEntity);
-    roleService.remove(roleName);
-    Mockito.verify(roleEntityRepository, times(1)).delete(roleEntity);
-  }
+        PersistentRoleEntity nullEntity = null;
+        Assertions.assertNotEquals(nullEntity, roleEntityA, "equals with null is false");
+    }
 }

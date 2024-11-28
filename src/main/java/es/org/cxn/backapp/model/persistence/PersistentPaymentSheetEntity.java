@@ -62,7 +62,7 @@ public class PersistentPaymentSheetEntity implements PaymentSheetEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
-    private Integer id;
+    private Integer identifier;
 
     /**
      * Reason for the payment sheet.

@@ -455,7 +455,7 @@ class DefaultLichessServiceTest {
 
         // Create a mock Lichess profile entity
         PersistentLichessProfileEntity lichessProfileEntity = new PersistentLichessProfileEntity();
-        lichessProfileEntity.setId(profileId);
+        lichessProfileEntity.setIdentifier(profileId);
         lichessProfileEntity.setUsername(username);
         lichessProfileEntity.setUpdatedAt(LocalDateTime.now());
         lichessProfileEntity.setBlitzGames(blitzGames);
@@ -487,7 +487,7 @@ class DefaultLichessServiceTest {
         // Creating the first Lichess profile entity
         PersistentLichessProfileEntity profile1 = new PersistentLichessProfileEntity();
         profile1.setUserDni("123456");
-        profile1.setId("lichessId1");
+        profile1.setIdentifier("lichessId1");
         profile1.setUsername("user1");
         profile1.setBlitzGames(BLITZ_GAMES_1);
         profile1.setBlitzRating(BLITZ_RATING_1);
@@ -519,7 +519,7 @@ class DefaultLichessServiceTest {
         // Creating the second Lichess profile entity
         PersistentLichessProfileEntity profile2 = new PersistentLichessProfileEntity();
         profile2.setUserDni("654321");
-        profile2.setId("lichessId2");
+        profile2.setIdentifier("lichessId2");
         profile2.setUsername("user2");
         profile2.setBlitzGames(BLITZ_GAMES_2);
         profile2.setBlitzRating(BLITZ_RATING_2);
@@ -649,7 +649,7 @@ class DefaultLichessServiceTest {
 
         // Mock the lichess entity repository to return the saved entity
         PersistentLichessProfileEntity savedEntity = new PersistentLichessProfileEntity();
-        savedEntity.setId("profileId");
+        savedEntity.setIdentifier("profileId");
         savedEntity.setUsername("testUser");
         savedEntity.setUserDni(userEntity.getDni());
         savedEntity.setBlitzGames(blitzStats.games());
@@ -671,7 +671,7 @@ class DefaultLichessServiceTest {
 
         // Assertions to verify the profile was saved correctly
         assertNotNull(result);
-        assertEquals("profileId", result.getId());
+        assertEquals("profileId", result.getIdentifier());
         assertEquals("testUser", result.getUsername());
         assertEquals(userEntity.getDni(), result.getUserDni());
         assertEquals(blitzStats.games(), result.getBlitzGames());
