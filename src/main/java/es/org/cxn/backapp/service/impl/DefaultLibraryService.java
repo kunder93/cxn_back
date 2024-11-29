@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -12,6 +12,7 @@ import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
+import es.org.cxn.backapp.service.LibraryService;
 
 import java.util.List;
 

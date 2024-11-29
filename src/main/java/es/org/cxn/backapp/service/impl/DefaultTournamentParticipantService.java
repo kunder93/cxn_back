@@ -1,11 +1,12 @@
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity;
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity.TournamentCategory;
 import es.org.cxn.backapp.repository.TournamentParticipantRepository;
+import es.org.cxn.backapp.service.TournamentParticipantService;
 
 import java.math.BigInteger;
 import java.time.LocalDate;

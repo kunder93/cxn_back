@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -43,6 +43,7 @@ import es.org.cxn.backapp.repository.PaymentSheetEntityRepository;
 import es.org.cxn.backapp.repository.RegularTransportRepository;
 import es.org.cxn.backapp.repository.SelfVehicleRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.PaymentSheetService;
 
 /**
  * Default implementation of the {@link PaymentSheetService}.

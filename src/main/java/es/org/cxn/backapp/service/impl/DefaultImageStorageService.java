@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -31,6 +31,8 @@ import java.nio.file.Paths;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import es.org.cxn.backapp.service.ImageStorageService;
 
 /**
  * Service class for handling image storage operations, including saving,

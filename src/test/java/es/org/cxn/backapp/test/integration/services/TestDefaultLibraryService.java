@@ -39,8 +39,8 @@ import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
-import es.org.cxn.backapp.service.DefaultLibraryService;
 import es.org.cxn.backapp.service.LibraryService;
+import es.org.cxn.backapp.service.impl.DefaultLibraryService;
 
 import java.time.LocalDate;
 import java.util.Arrays;

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,6 +32,7 @@ import es.org.cxn.backapp.model.RoleEntity;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
+import es.org.cxn.backapp.service.RoleService;
 
 import java.util.ArrayList;
 import java.util.List;

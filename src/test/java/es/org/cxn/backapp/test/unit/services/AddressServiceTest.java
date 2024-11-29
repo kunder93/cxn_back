@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 import es.org.cxn.backapp.exceptions.AddressServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
-import es.org.cxn.backapp.service.DefaultAddressService;
+import es.org.cxn.backapp.service.impl.DefaultAddressService;
 
 import java.util.Arrays;
 import java.util.Optional;

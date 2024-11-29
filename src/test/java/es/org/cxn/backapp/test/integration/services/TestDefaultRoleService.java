@@ -44,8 +44,8 @@ import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.DefaultRoleService;
 import es.org.cxn.backapp.service.RoleService;
+import es.org.cxn.backapp.service.impl.DefaultRoleService;
 
 /**
  * Unit tests for {@link DefaultRoleService}.

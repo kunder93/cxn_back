@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.security;
 
 import java.util.Collection;
 import java.util.EnumSet;

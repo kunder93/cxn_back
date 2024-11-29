@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.security;
 
 import java.util.Date;
 import java.util.function.Function;

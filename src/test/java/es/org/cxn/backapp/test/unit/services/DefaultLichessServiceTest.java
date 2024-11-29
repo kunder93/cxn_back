@@ -30,10 +30,10 @@ import es.org.cxn.backapp.repository.LichessAuthRepository;
 import es.org.cxn.backapp.repository.LichessEntityRepository;
 import es.org.cxn.backapp.repository.OAuthAuthorizationRequestRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.DefaultLichessService;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto.SaveGameStatistics;
+import es.org.cxn.backapp.service.impl.DefaultLichessService;
 
 /**
  * Unit test class for {@link DefaultLichessService}. This class verifies the

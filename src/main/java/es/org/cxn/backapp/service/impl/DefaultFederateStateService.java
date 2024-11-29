@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,6 +23,8 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
+import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.UserService;
 
 /**
  * Service implementation for handling operations related to the federate state

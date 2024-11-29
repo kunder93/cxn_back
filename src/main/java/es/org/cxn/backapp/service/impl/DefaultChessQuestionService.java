@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,6 +30,8 @@ import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
+import es.org.cxn.backapp.service.ChessQuestionsService;
+import es.org.cxn.backapp.service.UserService;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;

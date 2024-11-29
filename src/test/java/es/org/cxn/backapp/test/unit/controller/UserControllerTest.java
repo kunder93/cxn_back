@@ -29,10 +29,10 @@ import es.org.cxn.backapp.controller.entity.UserController;
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
-import es.org.cxn.backapp.service.DefaultUserService;
 import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.impl.DefaultUserService;
 
 /**
  * Unit test class for {@link UserController}. This class tests the behavior of

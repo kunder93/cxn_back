@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,6 +30,8 @@ import es.org.cxn.backapp.exceptions.CompanyServiceException;
 import es.org.cxn.backapp.model.CompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.repository.CompanyEntityRepository;
+import es.org.cxn.backapp.service.CompanyService;
+import es.org.cxn.backapp.service.UserService;
 
 import java.util.List;
 

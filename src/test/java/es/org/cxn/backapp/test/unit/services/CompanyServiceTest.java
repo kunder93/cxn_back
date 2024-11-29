@@ -15,7 +15,7 @@ import es.org.cxn.backapp.exceptions.CompanyServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.repository.CompanyEntityRepository;
-import es.org.cxn.backapp.service.DefaultCompanyService;
+import es.org.cxn.backapp.service.impl.DefaultCompanyService;
 
 import java.util.Collections;
 import java.util.Optional;

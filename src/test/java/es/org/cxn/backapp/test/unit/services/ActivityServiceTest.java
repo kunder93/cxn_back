@@ -33,9 +33,9 @@ import org.springframework.web.multipart.MultipartFile;
 import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
-import es.org.cxn.backapp.service.DefaultActivitiesService;
-import es.org.cxn.backapp.service.DefaultImageStorageService;
 import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
+import es.org.cxn.backapp.service.impl.DefaultActivitiesService;
+import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 
 /**
  * Unit tests for the {@link DefaultActivitiesService} class, focusing on

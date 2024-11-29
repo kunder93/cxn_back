@@ -25,7 +25,7 @@ import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
-import es.org.cxn.backapp.service.DefaultRoleService;
+import es.org.cxn.backapp.service.impl.DefaultRoleService;
 
 /**
  * Unit test class for {@link DefaultRoleService}.

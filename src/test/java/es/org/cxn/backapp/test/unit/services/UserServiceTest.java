@@ -39,12 +39,12 @@ import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.DefaultImageStorageService;
-import es.org.cxn.backapp.service.DefaultUserService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.DefaultUserService;
 
 /**
  * Unit test class for {@link DefaultUserService}.

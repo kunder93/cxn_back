@@ -53,12 +53,12 @@ import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.service.DefaultEmailService;
-import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.MyPrincipalUser;
+import es.org.cxn.backapp.security.DefaultJwtUtils;
+import es.org.cxn.backapp.security.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 

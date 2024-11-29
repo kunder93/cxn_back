@@ -40,8 +40,8 @@ import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
+import es.org.cxn.backapp.security.DefaultJwtUtils;
 import es.org.cxn.backapp.service.ChessQuestionsService;
-import es.org.cxn.backapp.service.DefaultJwtUtils;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 @WebMvcTest(ChessQuestionsController.class)

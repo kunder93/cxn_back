@@ -17,7 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.persistence.user.UserType;
-import es.org.cxn.backapp.service.MyUserDetailsService;
+import es.org.cxn.backapp.security.MyUserDetailsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;

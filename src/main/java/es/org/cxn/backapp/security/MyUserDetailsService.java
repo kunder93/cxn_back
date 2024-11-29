@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.security;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

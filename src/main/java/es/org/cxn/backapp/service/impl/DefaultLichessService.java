@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import es.org.cxn.backapp.repository.LichessAuthRepository;
 import es.org.cxn.backapp.repository.LichessEntityRepository;
 import es.org.cxn.backapp.repository.OAuthAuthorizationRequestRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.LichessService;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 import jakarta.transaction.Transactional;

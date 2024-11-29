@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.service;
+package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -52,6 +52,7 @@ import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 
@@ -148,7 +149,8 @@ public final class DefaultUserService implements UserService {
      * @throws UserServiceException if the provided entity is not an instance of
      *                              {@link PersistentUserEntity}
      */
-    public static PersistentUserEntity asPersistentUserEntity(final UserEntity userEntity) throws UserServiceException {
+    private static PersistentUserEntity asPersistentUserEntity(final UserEntity userEntity)
+            throws UserServiceException {
         if (userEntity instanceof PersistentUserEntity persistentUserEntity) {
             return persistentUserEntity;
         } else {

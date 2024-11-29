@@ -51,8 +51,8 @@ import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.service.CompanyService;
-import es.org.cxn.backapp.service.DefaultCompanyService;
 import es.org.cxn.backapp.service.InvoiceService;
+import es.org.cxn.backapp.service.impl.DefaultCompanyService;
 import jakarta.validation.Valid;
 
 /**

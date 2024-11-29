@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
-import es.org.cxn.backapp.service.DefaultChessQuestionService;
+import es.org.cxn.backapp.service.impl.DefaultChessQuestionService;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

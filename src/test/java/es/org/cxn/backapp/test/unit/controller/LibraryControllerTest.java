@@ -40,8 +40,8 @@ import es.org.cxn.backapp.model.form.requests.AuthorRequest;
 import es.org.cxn.backapp.model.form.responses.BookListResponse;
 import es.org.cxn.backapp.model.form.responses.BookResponse;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
-import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.DefaultLibraryService;
+import es.org.cxn.backapp.security.DefaultJwtUtils;
+import es.org.cxn.backapp.service.impl.DefaultLibraryService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 /**
