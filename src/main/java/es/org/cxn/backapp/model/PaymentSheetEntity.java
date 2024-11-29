@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * Represents a payment sheet that records details about a specific payment

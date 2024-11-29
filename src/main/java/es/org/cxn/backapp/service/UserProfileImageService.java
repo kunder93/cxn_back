@@ -28,7 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * Service interface for managing user profile images. Provides methods for

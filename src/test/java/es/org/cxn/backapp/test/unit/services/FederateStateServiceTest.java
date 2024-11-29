@@ -24,7 +24,7 @@ import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
 import es.org.cxn.backapp.service.DefaultFederateStateService;
 import es.org.cxn.backapp.service.UserService;

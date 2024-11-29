@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import es.org.cxn.backapp.model.PaymentSheetEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

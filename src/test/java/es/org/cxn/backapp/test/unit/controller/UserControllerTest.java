@@ -27,7 +27,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import es.org.cxn.backapp.controller.entity.UserController;
 import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.service.DefaultUserService;
 import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
@@ -174,11 +175,13 @@ class UserControllerTest {
         // Create a mock UserEntity to return from the update method
         PersistentUserEntity userEntity = new PersistentUserEntity();
         userEntity.setEmail(userName); // Assuming userName is the email
-        userEntity.setName("John");
-        userEntity.setFirstSurname("Doe");
-        userEntity.setSecondSurname("Smith");
-        userEntity.setBirthDate(LocalDate.of(2000, 1, 1));
-        userEntity.setGender("M");
+        UserProfile profile = new UserProfile();
+        profile.setName("John");
+        profile.setFirstSurname("Doe");
+        profile.setSecondSurname("Smith");
+        profile.setBirthDate(LocalDate.of(2000, 1, 1));
+        profile.setGender("M");
+        userEntity.setProfile(profile);
 
         // Mock the service method to return the userEntity
         when(userService.update(any(UserServiceUpdateDto.class), anyString())).thenReturn(userEntity);

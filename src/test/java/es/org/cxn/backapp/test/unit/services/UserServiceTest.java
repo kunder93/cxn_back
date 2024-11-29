@@ -31,8 +31,9 @@ import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.UserProfile;
+import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
@@ -154,7 +155,13 @@ class UserServiceTest {
         persistentUserEntity.setEmail("test@example.com");
         persistentUserEntity.setPassword(new BCryptPasswordEncoder().encode("password123"));
         persistentUserEntity.setDni("123456789");
-
+        UserProfile userProfile = new UserProfile();
+        userProfile.setName("UserName");
+        userProfile.setFirstSurname("First name");
+        userProfile.setSecondSurname("SecondSurname");
+        userProfile.setGender("Male");
+        userProfile.setBirthDate(LocalDate.of(1991, 5, 5));
+        persistentUserEntity.setProfile(userProfile);
         // Initialize the profile image entity with a placeholder URL
         profileImageEntity = new PersistentProfileImageEntity();
         profileImageEntity.setUrl("path/to/upload/123456789.jpg"); // Placeholder URL
@@ -480,19 +487,20 @@ class UserServiceTest {
         // Declare a valid birth date for the user
         final var validBirthDate = LocalDate.of(2000, 1, 1);
         // Set the user's birth date to ensure they are over 18 years old
-        persistentUserEntity.setBirthDate(validBirthDate);
-
+        final var userProfile = persistentUserEntity.getProfile();
+        userProfile.setBirthDate(validBirthDate);
+        persistentUserEntity.setProfile(userProfile);
         // Mock repository to return the existing user when searching by email
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(persistentUserEntity));
         // Mock repository to return the updated user after saving
         when(userRepository.save(any(PersistentUserEntity.class))).thenReturn(persistentUserEntity);
 
         // Call the method to change the user's type
-        var result = userService.changeKindMember("test@example.com", PersistentUserEntity.UserType.SOCIO_HONORARIO);
+        var result = userService.changeKindMember("test@example.com", UserType.SOCIO_HONORARIO);
 
         // Verify that the user type has been updated to SOCIO_HONORARIO
         assertThat(result.getKindMember()).as("Checking that the kind member is set to SOCIO_HONORARIO")
-                .isEqualTo(PersistentUserEntity.UserType.SOCIO_HONORARIO);
+                .isEqualTo(UserType.SOCIO_HONORARIO);
     }
 
     /**
@@ -529,7 +537,7 @@ class UserServiceTest {
 
         // Verify that the expected exception is thrown with a clear message
         var exception = assertThrows(UserServiceException.class,
-                () -> userService.changeKindMember("test@example.com", PersistentUserEntity.UserType.SOCIO_ASPIRANTE),
+                () -> userService.changeKindMember("test@example.com", UserType.SOCIO_ASPIRANTE),
                 "Expected changeKindMember to throw UserServiceException " + "when user is not found.");
 
         // Optional: Verify the exception message, if relevant
@@ -1192,21 +1200,26 @@ class UserServiceTest {
         var result = (PersistentUserEntity) userService.update(userForm, testEmail);
 
         // Verify that user fields are updated correctly
-        assertThat(result.getName()).as("Checking updated user name").isEqualTo(testName);
+        assertThat(result.getProfile().getName()).as("Checking updated user name").isEqualTo(testName);
 
-        assertThat(result.getFirstSurname()).as("Checking updated user's first surname").isEqualTo(testFirstSurname);
+        assertThat(result.getProfile().getFirstSurname()).as("Checking updated user's first surname")
+                .isEqualTo(testFirstSurname);
 
-        assertThat(result.getSecondSurname()).as("Checking updated user's second surname").isEqualTo(testSecondSurname);
+        assertThat(result.getProfile().getSecondSurname()).as("Checking updated user's second surname")
+                .isEqualTo(testSecondSurname);
 
-        assertThat(result.getBirthDate()).as("Checking updated user's birth date").isEqualTo(testBirthDate);
+        assertThat(result.getProfile().getBirthDate()).as("Checking updated user's birth date")
+                .isEqualTo(testBirthDate);
 
-        assertThat(result.getGender()).as("Checking updated user's gender").isEqualTo(testGender);
+        assertThat(result.getProfile().getGender()).as("Checking updated user's gender").isEqualTo(testGender);
 
         // Additional assertion to ensure all properties match
         assertThat(result).as("Checking the updated user").matches(
-                user -> user.getName().equals(testName) && user.getFirstSurname().equals(testFirstSurname)
-                        && user.getSecondSurname().equals(testSecondSurname)
-                        && user.getBirthDate().equals(testBirthDate) && user.getGender().equals(testGender),
+                user -> user.getProfile().getName().equals(testName)
+                        && user.getProfile().getFirstSurname().equals(testFirstSurname)
+                        && user.getProfile().getSecondSurname().equals(testSecondSurname)
+                        && user.getProfile().getBirthDate().equals(testBirthDate)
+                        && user.getProfile().getGender().equals(testGender),
                 "User properties should match the updated values");
 
         // Verify that save was called once with the updated user

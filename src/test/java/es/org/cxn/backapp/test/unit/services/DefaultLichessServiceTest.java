@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,8 @@ import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
 import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.repository.LichessAuthRepository;
 import es.org.cxn.backapp.repository.LichessEntityRepository;
 import es.org.cxn.backapp.repository.OAuthAuthorizationRequestRepository;
@@ -349,10 +351,12 @@ class DefaultLichessServiceTest {
         userEntity = new PersistentUserEntity();
         userEntity.setDni("12345678");
         userEntity.setEmail("test@example.com");
-        userEntity.setName("Test");
-        userEntity.setFirstSurname("User");
-        userEntity.setSecondSurname("Example");
+        UserProfile profile = new UserProfile();
 
+        profile.setName("Test");
+        profile.setFirstSurname("User");
+        profile.setSecondSurname("Example");
+        userEntity.setProfile(profile);
         authEntity = new PersistentLichessAuthEntity();
         authEntity.setAccessToken("token123");
         authEntity.setExpirationDate(LocalDateTime.now().plusHours(1));
@@ -554,9 +558,29 @@ class DefaultLichessServiceTest {
         // Mocking the repository methods
         when(lichessEntityRepository.findAll()).thenReturn(lichessProfilesEntitiesList);
 
+        UserProfile userProfile1 = new UserProfile();
+        userProfile1.setName("User name");
+        userProfile1.setFirstSurname("first surname");
+        userProfile1.setSecondSurname("second surname");
+        userProfile1.setBirthDate(LocalDate.of(1991, 02, 4));
+        userProfile1.setGender("Male");
+        PersistentUserEntity userEntity1 = new PersistentUserEntity();
+        userEntity1.setDni("123456");
+        userEntity1.setProfile(userProfile1);
+
+        UserProfile userProfile2 = new UserProfile();
+        userProfile1.setName("User name2");
+        userProfile1.setFirstSurname("first surname2");
+        userProfile1.setSecondSurname("second surname2");
+        userProfile1.setBirthDate(LocalDate.of(1991, 02, 4));
+        userProfile1.setGender("Male");
+        PersistentUserEntity userEntity2 = new PersistentUserEntity();
+        userEntity2.setDni("654321");
+        userEntity2.setProfile(userProfile2);
+
         // Mock the userEntityRepository responses
-        when(userEntityRepository.findByDni("123456")).thenReturn(Optional.of(new PersistentUserEntity()));
-        when(userEntityRepository.findByDni("654321")).thenReturn(Optional.of(new PersistentUserEntity()));
+        when(userEntityRepository.findByDni("123456")).thenReturn(Optional.of(userEntity1));
+        when(userEntityRepository.findByDni("654321")).thenReturn(Optional.of(userEntity2));
 
         // Act
         List<LichessProfileDto> result = lichessService.getLichessProfiles();

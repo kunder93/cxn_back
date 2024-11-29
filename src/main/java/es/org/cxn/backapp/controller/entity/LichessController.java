@@ -210,8 +210,8 @@ public class LichessController {
                 final SaveGameStatistics rapid = mapSaveGameStatistics(rootNode.path("perfs").path("rapid"));
                 final SaveGameStatistics puzzle = mapSaveGameStatistics(rootNode.path("perfs").path("puzzle"));
                 // Crear el DTO con la información mapeada
-                return new LichessSaveProfileDto(userDni, identifier, username, LocalDateTime.now(), blitz, bullet, classical,
-                        rapid, puzzle);
+                return new LichessSaveProfileDto(userDni, identifier, username, LocalDateTime.now(), blitz, bullet,
+                        classical, rapid, puzzle);
             } else {
                 throw new LichessServiceException("Error al obtener el perfil de Lichess.");
             }

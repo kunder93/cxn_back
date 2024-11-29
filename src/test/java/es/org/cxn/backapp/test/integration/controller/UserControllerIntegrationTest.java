@@ -40,7 +40,7 @@ import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.service.DefaultUserService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;

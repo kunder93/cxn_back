@@ -3,7 +3,7 @@ package es.org.cxn.backapp.model;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * Interface for Lichess Authentication Entity.

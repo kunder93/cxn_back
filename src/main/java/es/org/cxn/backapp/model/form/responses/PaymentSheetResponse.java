@@ -108,11 +108,13 @@ public record PaymentSheetResponse(Integer paymentSheetIdentifier, String userNa
             regularTransportList = null;
         }
 
-        return new PaymentSheetResponse(paymentSheetEntity.getIdentifier(), paymentSheetEntity.getUserOwner().getName(),
-                paymentSheetEntity.getUserOwner().getFirstSurname(),
-                paymentSheetEntity.getUserOwner().getSecondSurname(), paymentSheetEntity.getUserOwner().getDni(),
-                paymentSheetEntity.getReason(), paymentSheetEntity.getPlace(), paymentSheetEntity.getStartDate(),
-                paymentSheetEntity.getEndDate(), selfVehicle, foodHousing, regularTransportList,
+        return new PaymentSheetResponse(paymentSheetEntity.getIdentifier(),
+                paymentSheetEntity.getUserOwner().getProfile().getName(),
+                paymentSheetEntity.getUserOwner().getProfile().getFirstSurname(),
+                paymentSheetEntity.getUserOwner().getProfile().getSecondSurname(),
+                paymentSheetEntity.getUserOwner().getDni(), paymentSheetEntity.getReason(),
+                paymentSheetEntity.getPlace(), paymentSheetEntity.getStartDate(), paymentSheetEntity.getEndDate(),
+                selfVehicle, foodHousing, regularTransportList,
                 paymentSheetEntity.getUserOwner().getAddress().getPostalCode(),
                 paymentSheetEntity.getUserOwner().getAddress().getApartmentNumber(),
                 paymentSheetEntity.getUserOwner().getAddress().getBuilding(),

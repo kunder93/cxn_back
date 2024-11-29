@@ -27,7 +27,7 @@ package es.org.cxn.backapp.model;
 import java.io.Serializable;
 import java.util.Set;
 
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * A simple entity to be used as an example.

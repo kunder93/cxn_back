@@ -10,7 +10,7 @@ import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
 import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.LichessAuthRepository;
 import es.org.cxn.backapp.repository.LichessEntityRepository;
 import es.org.cxn.backapp.repository.OAuthAuthorizationRequestRepository;

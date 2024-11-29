@@ -29,6 +29,7 @@ import java.util.Set;
 
 import es.org.cxn.backapp.model.RoleEntity;
 import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

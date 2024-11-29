@@ -24,14 +24,14 @@
 
 package es.org.cxn.backapp.repository;
 
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
-
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * Spring-JPA repository for {@link PersistentUserEntity}.
@@ -42,32 +42,31 @@ import org.springframework.stereotype.Repository;
  * @author Santiago Paz.
  */
 @Repository
-public interface UserEntityRepository
-      extends JpaRepository<PersistentUserEntity, String> {
+public interface UserEntityRepository extends JpaRepository<PersistentUserEntity, String> {
 
-  /**
-   * Returns all entities with a partial match to the name.
-   *
-   * @param name name for searching.
-   * @param page pagination to apply.
-   * @return all entities at least partially matching the name.
-   */
-  Page<PersistentUserEntity> findByNameContaining(String name, Pageable page);
+    /**
+     * Find user entity with provided dni.
+     *
+     * @param dni the user dni.
+     * @return user entity with dni provided.
+     */
+    Optional<PersistentUserEntity> findByDni(String dni);
 
-  /**
-   * Find user entity with provided email.
-   *
-   * @param email the user email.
-   * @return user entity with email provided.
-   */
-  Optional<PersistentUserEntity> findByEmail(String email);
+    /**
+     * Find user entity with provided email.
+     *
+     * @param email the user email.
+     * @return user entity with email provided.
+     */
+    Optional<PersistentUserEntity> findByEmail(String email);
 
-  /**
-   * Find user entity with provided dni.
-   *
-   * @param dni the user dni.
-   * @return user entity with dni provided.
-   */
-  Optional<PersistentUserEntity> findByDni(String dni);
+    /**
+     * Returns all entities with a partial match to the name.
+     *
+     * @param name name for searching.
+     * @param page pagination to apply.
+     * @return all entities at least partially matching the name.
+     */
+    Page<PersistentUserEntity> findByProfileNameContaining(String name, Pageable page);
 
 }

@@ -28,6 +28,7 @@ import java.time.LocalDate;
 
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.FederateStateEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

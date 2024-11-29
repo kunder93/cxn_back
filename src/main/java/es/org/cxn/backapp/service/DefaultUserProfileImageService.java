@@ -39,7 +39,7 @@ import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 

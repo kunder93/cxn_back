@@ -32,7 +32,7 @@ import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
 import es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.FoodHousingRepository;
 import es.org.cxn.backapp.repository.InvoiceEntityRepository;
 import es.org.cxn.backapp.repository.PaymentSheetEntityRepository;

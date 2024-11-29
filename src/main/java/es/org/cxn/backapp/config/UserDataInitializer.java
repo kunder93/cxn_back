@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;

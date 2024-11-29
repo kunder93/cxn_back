@@ -1,6 +1,7 @@
 package es.org.cxn.backapp.model.persistence;
 
 import es.org.cxn.backapp.model.ProfileImageEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

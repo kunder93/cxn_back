@@ -45,8 +45,9 @@ import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.UserProfile;
+import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
@@ -157,7 +158,7 @@ public final class DefaultUserService implements UserService {
 
     private static boolean checkAgeUnder18(final UserEntity user) {
 
-        final var birthDate = user.getBirthDate();
+        final var birthDate = user.getProfile().getBirthDate();
         final var today = LocalDate.now();
         final var age = Period.between(birthDate, today).getYears();
         // Return if under 18.
@@ -196,13 +197,18 @@ public final class DefaultUserService implements UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
         } else {
-            final PersistentUserEntity save = PersistentUserEntity.builder().dni(dni).name(userDetails.name())
-                    .firstSurname(userDetails.firstSurname()).secondSurname(userDetails.secondSurname())
-                    .gender(userDetails.gender()).birthDate(userDetails.birthDate()).enabled(true)
-                    .password(new BCryptPasswordEncoder().encode(userDetails.password())) // Encrypt the password
-                    .email(email).kindMember(PersistentUserEntity.UserType.SOCIO_NUMERO) // Set kindMember directly
-                    .build(); // Build the instance
+            final UserProfile userProfile = new UserProfile();
+            userProfile.setName(userDetails.name());
+            userProfile.setFirstSurname(userDetails.firstSurname());
+            userProfile.setSecondSurname(userDetails.secondSurname());
+            userProfile.setGender(userDetails.gender());
+            userProfile.setBirthDate(userDetails.birthDate());
+            final var saveBuidler = PersistentUserEntity.builder().dni(dni).enabled(true)
+                    .password(new BCryptPasswordEncoder().encode(userDetails.password())).profile(userProfile)
 
+                    .email(email).kindMember(UserType.SOCIO_NUMERO); // Set kindMember directly
+            // Build the instance
+            final var save = saveBuidler.build();
             final var addressDetails = userDetails.addressDetails();
             final var apartmentNumber = addressDetails.apartmentNumber();
             final var building = addressDetails.building();
@@ -391,17 +397,18 @@ public final class DefaultUserService implements UserService {
         }
         final PersistentUserEntity userEntity;
         userEntity = userOptional.get();
+        final UserProfile userProfile = new UserProfile();
         final var name = userForm.name();
-        userEntity.setName(name);
+        userProfile.setName(name);
         final var firstSurname = userForm.firstSurname();
-        userEntity.setFirstSurname(firstSurname);
+        userProfile.setFirstSurname(firstSurname);
         final var secondSurname = userForm.secondSurname();
-        userEntity.setSecondSurname(secondSurname);
+        userProfile.setSecondSurname(secondSurname);
         final var birthDate = userForm.birthDate();
-        userEntity.setBirthDate(birthDate);
+        userProfile.setBirthDate(birthDate);
         final var gender = userForm.gender();
-        userEntity.setGender(gender);
-
+        userProfile.setGender(gender);
+        userEntity.setProfile(userProfile);
         return userRepository.save(userEntity);
     }
 

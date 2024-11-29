@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package es.org.cxn.backapp.model.persistence;
+package es.org.cxn.backapp.model.persistence.user;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -33,8 +33,16 @@ import java.util.Set;
 
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
+import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
+import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
+import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
+import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -67,35 +75,10 @@ import lombok.NonNull;
 public class PersistentUserEntity implements UserEntity {
 
     /**
-     * kind of member that users can be.
-     *
-     * @author Santi
-     *
-     */
-    public enum UserType {
-        /**
-         * Socio numerario, cuota de 30, mayor de 18 independiente economicamente.
-         */
-        SOCIO_NUMERO,
-        /**
-         * Socio aspirante, menor de 18, sin voto en junta.
-         */
-        SOCIO_ASPIRANTE,
-        /**
-         * Socio honorario, cuota de 0, sin voto en junta.
-         */
-        SOCIO_HONORARIO,
-        /**
-         * Depende economicamente de socio de numero, cuota 0, sin voto en junta.
-         */
-        SOCIO_FAMILIAR
-    }
-
-    /**
      * Serialization ID.
      */
     @Transient
-    private static final long serialVersionUID = 1328773339450853291L;
+    private static final long serialVersionUID = 1328773388450853291L;
 
     /**
      * Entity's dni aka Identifier.
@@ -106,49 +89,17 @@ public class PersistentUserEntity implements UserEntity {
     private String dni;
 
     /**
-     * Name of the user.
+     * The user's profile details, including name, surname, birthdate, and gender.
+     *
      * <p>
-     * This is to have additional data apart from the id, to be used on the tests.
+     * This field is marked as {@code @Embedded}, meaning it is part of the
+     * {@code PersistentUserEntity} and will be stored in the same table. It is also
+     * annotated with {@code @NonNull}, ensuring that this field cannot be null.
+     * </p>
      */
-    @Column(name = "name", nullable = false, unique = false)
+    @Embedded
     @NonNull
-    private String name;
-
-    /**
-     * First surname of the user.
-     * <p>
-     * This is to have additional data apart from the id, to be used on the tests.
-     */
-    @Column(name = "first_surname", nullable = false, unique = false)
-    @NonNull
-    private String firstSurname;
-
-    /**
-     * Second surname of the user.
-     * <p>
-     * This is to have additional data apart from the id, to be used on the tests.
-     */
-    @Column(name = "second_surname", nullable = false, unique = false)
-    @NonNull
-    private String secondSurname;
-
-    /**
-     * Birth date of the user.
-     * <p>
-     * This is to have additional data apart from the id, to be used on the tests.
-     */
-    @Column(name = "birth_date", nullable = false, unique = false)
-    @NonNull
-    private LocalDate birthDate;
-
-    /**
-     * Gender of the user.
-     * <p>
-     * This is to have additional data apart from the id, to be used on the tests.
-     */
-    @Column(name = "gender", nullable = false, unique = false)
-    @NonNull
-    private String gender;
+    private UserProfile profile;
 
     /**
      * Password of the user.
@@ -256,28 +207,20 @@ public class PersistentUserEntity implements UserEntity {
      *
      * @param dni             the user's DNI (identification number). Must not be null or empty if
      *                        {@code federateState} is to be initialized.
-     * @param name            the user's name. Must not be null.
-     * @param firstSurname    the user's first surname. Must not be null.
-     * @param secondSurname   the user's second surname. Must not be null.
-     * @param birthDate       the user's birth date. Must not be null.
-     * @param gender          the user's gender. Must not be null.
+     * @param usrProfile      the user's profile details including name, surname, birthdate, and gender. Must not be
+     *  null.
      * @param password        the user's password. Must not be null.
-     * @param email           the user's email. Must not be null.
+     * @param email           the user's email address. Must not be null.
      * @param kindMember      the user's membership type. Can be null; defaults to {@code UserType.SOCIO_NUMERO}.
      * @param enabled         indicates whether the user account is enabled. Must not be null.
-     * @param rolesEntity           a set of roles associated with the user. Can be null; defaults to an empty set.
+     * @param rolesEntity     a set of roles associated with the user. Can be null; defaults to an empty set.
      */
     @Builder
-    public PersistentUserEntity(final String dni, final String name, final String firstSurname,
-            final String secondSurname, final LocalDate birthDate, final String gender, final String password,
+    public PersistentUserEntity(final String dni, final UserProfile usrProfile, final String password,
             final String email, final UserType kindMember, final boolean enabled,
             final Set<PersistentRoleEntity> rolesEntity) {
         this.dni = dni;
-        this.name = name;
-        this.firstSurname = firstSurname;
-        this.secondSurname = secondSurname;
-        this.birthDate = birthDate;
-        this.gender = gender;
+        this.profile = usrProfile;
         this.password = password;
         this.email = email;
         this.kindMember = kindMember != null ? kindMember : UserType.SOCIO_NUMERO;
@@ -333,7 +276,7 @@ public class PersistentUserEntity implements UserEntity {
      * @return The complete user name, name, first surname and second surname.
      */
     public String getCompleteName() {
-        return name + " " +  firstSurname +  " " + secondSurname;
+        return profile.getName() + " " +  profile.getFirstSurname() +  " " + profile.getSecondSurname();
     }
     /**
      * Hash code with dni and email fields.

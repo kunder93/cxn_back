@@ -16,7 +16,7 @@ import es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
 import es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * Unit tests for the {@link PersistentPaymentSheetEntity} class. This class
