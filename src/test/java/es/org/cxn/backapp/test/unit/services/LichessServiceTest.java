@@ -47,7 +47,7 @@ import es.org.cxn.backapp.service.impl.DefaultLichessService;
  * @author Santiago Paz
  */
 @ExtendWith(MockitoExtension.class)
-class DefaultLichessServiceTest {
+class LichessServiceTest {
 
     /**
      * Minimum number of Blitz games required for a certain rating level.

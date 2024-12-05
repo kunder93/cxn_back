@@ -8,6 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -167,6 +170,59 @@ class FederateStateServiceTest {
         assertThrows(FederateStateServiceException.class, () -> {
             federateStateService.confirmCancelFederate(userDni);
         });
+    }
+
+    @Test
+    void testGetAllFederateStateReturnEmpty() {
+        List<PersistentFederateStateEntity> listOfFederateState = new ArrayList<>();
+        final String firstFederateStateUserDni = "22721880E";
+        final String firstFederateStateBackImageUrl = "Dni back image URL";
+        final String firstFederateStateFrontImageUrl = "Front dni image URL";
+        final FederateState firstFederateStateState = FederateState.IN_PROGRESS;
+
+        PersistentFederateStateEntity firstFederateState = new PersistentFederateStateEntity();
+        firstFederateState.setAutomaticRenewal(Boolean.TRUE);
+        firstFederateState.setDniBackImageUrl(firstFederateStateBackImageUrl);
+        firstFederateState.setDniFrontImageUrl(firstFederateStateFrontImageUrl);
+        firstFederateState.setDniLastUpdate(LocalDate.now());
+        firstFederateState.setState(firstFederateStateState);
+        firstFederateState.setUserDni(firstFederateStateUserDni);
+
+        listOfFederateState.add(firstFederateState);
+
+        final String secondFederateStateUserDni = "24421880E";
+        final String secondFederateStateBackImageUrl = "Dni back image URL 2";
+        final String secondFederateStateFrontImageUrl = "Front dni image URL 2";
+        final FederateState secondFederateStateState = FederateState.FEDERATE;
+
+        PersistentFederateStateEntity secondFederateState = new PersistentFederateStateEntity();
+        secondFederateState.setAutomaticRenewal(Boolean.FALSE);
+        secondFederateState.setDniBackImageUrl(secondFederateStateBackImageUrl);
+        secondFederateState.setDniFrontImageUrl(secondFederateStateFrontImageUrl);
+        secondFederateState.setDniLastUpdate(LocalDate.now());
+        secondFederateState.setState(secondFederateStateState);
+        secondFederateState.setUserDni(secondFederateStateUserDni);
+
+        listOfFederateState.add(secondFederateState);
+
+        when(federateStateRepository.findAll()).thenReturn(listOfFederateState);
+
+        // Act
+        final var result = federateStateService.getAll();
+
+        assertEquals(2, result.size(), "List only have 2 federate state added.");
+
+        // Assert
+        assertEquals(firstFederateStateUserDni, result.getFirst().getUserDni());
+        assertEquals(firstFederateStateBackImageUrl, result.getFirst().getDniBackImageUrl());
+        assertEquals(firstFederateStateFrontImageUrl, result.getFirst().getDniFrontImageUrl());
+        assertEquals(firstFederateStateState, result.getFirst().getState());
+
+        assertEquals(secondFederateStateUserDni, result.getLast().getUserDni());
+        assertEquals(secondFederateStateBackImageUrl, result.getLast().getDniBackImageUrl());
+        assertEquals(secondFederateStateFrontImageUrl, result.getLast().getDniFrontImageUrl());
+        assertEquals(secondFederateStateState, result.getLast().getState());
+
     }
 
     @Test

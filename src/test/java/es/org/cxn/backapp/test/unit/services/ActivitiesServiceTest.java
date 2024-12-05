@@ -17,9 +17,11 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +30,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.exceptions.ActivityServiceException;
@@ -55,8 +59,9 @@ import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
  * {@link DefaultImageStorageService} for image handling.
  * </p>
  */
+@MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
-class ActivityServiceTest {
+class ActivitiesServiceTest {
 
     /**
      * Mocked repository for activity entities, used for interaction with the
@@ -64,7 +69,7 @@ class ActivityServiceTest {
      * tests.
      */
     @Mock
-    private ActivityEntityRepository mockRepository;
+    private ActivityEntityRepository activityRepository;
 
     /**
      * Mocked service for handling image storage operations, used to simulate
@@ -88,18 +93,24 @@ class ActivityServiceTest {
      */
     private PersistentActivityEntity sampleActivity;
 
+    private final String activityTitle = "Sample activity";
+    private final String activityDescription = "A sample description";
+    private final LocalDateTime activityStartDate = LocalDateTime.now();
+    private final LocalDateTime activityEndDate = LocalDateTime.now().plusHours(2);
+    private final String activityCategory = "Sample category";
+    private final String activityImageSrc = "srcImageSample";
+
     @BeforeEach
     void setUp() {
-        activitiesService = new DefaultActivitiesService(mockRepository, imageStorageService);
 
         // Create a sample activity entity for reuse in tests
         sampleActivity = new PersistentActivityEntity();
-        sampleActivity.setTitle("Sample Activity");
-        sampleActivity.setDescription("A sample description");
-        sampleActivity.setStartDate(LocalDateTime.now());
-        sampleActivity.setEndDate(LocalDateTime.now().plusHours(2));
-        sampleActivity.setCategory("Sample Category");
-
+        sampleActivity.setTitle(activityTitle);
+        sampleActivity.setDescription(activityDescription);
+        sampleActivity.setStartDate(activityStartDate);
+        sampleActivity.setEndDate(activityEndDate);
+        sampleActivity.setCategory(activityCategory);
+        sampleActivity.setImageSrc(activityImageSrc);
         // Set createdAt manually if it's set automatically in addActivity
         sampleActivity.setCreatedAt(LocalDateTime.now());
     }
@@ -113,19 +124,22 @@ class ActivityServiceTest {
     @Test
     void testAddActivity() throws ActivityServiceException {
         // Arrange
-        when(mockRepository.save(any(PersistentActivityEntity.class))).thenReturn(sampleActivity);
+        when(activityRepository.save(any(PersistentActivityEntity.class))).thenReturn(sampleActivity);
+        when(activityRepository.existsById(activityTitle)).thenReturn(Boolean.FALSE);
         final MultipartFile imageFile = Mockito.mock(MultipartFile.class);
 
         // Act
-        PersistentActivityEntity result = activitiesService.addActivity(sampleActivity.getTitle(),
-                sampleActivity.getDescription(), sampleActivity.getStartDate(), sampleActivity.getEndDate(),
-                sampleActivity.getCategory(), imageFile);
+        PersistentActivityEntity result = activitiesService.addActivity(activityTitle, activityDescription,
+                activityStartDate, activityEndDate, activityCategory, imageFile);
 
         // Assert
         assertNotNull(result);
-        assertEquals(sampleActivity.getTitle(), result.getTitle());
-        assertEquals(sampleActivity.getDescription(), result.getDescription());
-        verify(mockRepository, times(1)).save(any(PersistentActivityEntity.class));
+        assertEquals(activityTitle, result.getTitle());
+        assertEquals(activityDescription, result.getDescription());
+        assertEquals(activityStartDate, result.getStartDate());
+        assertEquals(activityEndDate, result.getEndDate());
+        assertEquals(activityCategory, result.getCategory());
+        verify(activityRepository, times(1)).save(any(PersistentActivityEntity.class));
     }
 
     /**
@@ -138,18 +152,17 @@ class ActivityServiceTest {
     @Test
     void testAddActivityActivityIdExistsThrowException() throws ActivityServiceException {
         // Arrange
-        String existingActivityTitle = "Sample Activity";
-        when(mockRepository.existsById(existingActivityTitle)).thenReturn(true);
-
+        when(activityRepository.existsById(activityTitle)).thenReturn(true);
+        final MultipartFile imageFile = Mockito.mock(MultipartFile.class);
         // Act & Assert
         ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.addActivity(existingActivityTitle, "Some description", LocalDateTime.now(),
-                    LocalDateTime.now().plusHours(2), "Sample Category", Mockito.mock(MultipartFile.class));
+            activitiesService.addActivity(activityTitle, activityDescription, activityStartDate, activityEndDate,
+                    activityCategory, imageFile);
         });
 
-        assertEquals("Activity with title: Sample Activity already exists.", exception.getMessage());
-        verify(mockRepository, times(1)).existsById(existingActivityTitle); // Verify if the check for existing title
-                                                                            // was made
+        assertEquals("Activity with title: " + activityTitle + " already exists.", exception.getMessage());
+        // Verify if the check for existing title was made.
+        verify(activityRepository, times(1)).existsById(activityTitle);
     }
 
     /**
@@ -163,9 +176,7 @@ class ActivityServiceTest {
     @Test
     void testAddActivityIOExceptionThrown() throws ActivityServiceException, IOException {
         // Arrange
-        String newActivityTitle = "New Activity with IO Exception";
-
-        when(mockRepository.existsById(newActivityTitle)).thenReturn(false);
+        when(activityRepository.existsById(activityTitle)).thenReturn(false);
         MultipartFile mockImageFile = Mockito.mock(MultipartFile.class);
         when(mockImageFile.isEmpty()).thenReturn(false);
 
@@ -175,12 +186,12 @@ class ActivityServiceTest {
 
         // Act & Assert
         ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.addActivity(newActivityTitle, "Description of activity with image failure",
-                    LocalDateTime.now(), LocalDateTime.now().plusHours(2), "New Category", mockImageFile);
+            activitiesService.addActivity(activityTitle, activityDescription, activityStartDate, activityEndDate,
+                    activityCategory, mockImageFile);
         });
 
         assertEquals("Error saving activity image: Error saving image", exception.getMessage());
-        verify(mockRepository, times(0)).save(any(PersistentActivityEntity.class));
+        verify(activityRepository, times(0)).save(any(PersistentActivityEntity.class));
     }
 
     /**
@@ -193,37 +204,46 @@ class ActivityServiceTest {
     @Test
     void testAddActivityNoImageFile() throws ActivityServiceException {
         // Arrange
-        String newActivityTitle = "Sample Activity";
-        when(mockRepository.existsById(newActivityTitle)).thenReturn(false); // Activity title doesn't exist
-        when(mockRepository.save(any(PersistentActivityEntity.class))).thenReturn(sampleActivity);
+        // Create a sample activity entity for reuse in tests
+        final var sampleActivityNoImageSrc = new PersistentActivityEntity();
+        sampleActivityNoImageSrc.setTitle(activityTitle);
+        sampleActivityNoImageSrc.setDescription(activityDescription);
+        sampleActivityNoImageSrc.setStartDate(activityStartDate);
+        sampleActivityNoImageSrc.setEndDate(activityEndDate);
+        sampleActivityNoImageSrc.setCategory(activityCategory);
+
+        // Set createdAt manually if it's set automatically in addActivity
+        sampleActivityNoImageSrc.setCreatedAt(LocalDateTime.now());
+
+        when(activityRepository.existsById(activityTitle)).thenReturn(false); // Activity title doesn't exist
+        when(activityRepository.save(any(PersistentActivityEntity.class))).thenReturn(sampleActivityNoImageSrc);
         MultipartFile emptyImageFile = Mockito.mock(MultipartFile.class);
         when(emptyImageFile.isEmpty()).thenReturn(true); // Simulating an empty image file
 
         // Act
-        PersistentActivityEntity result = activitiesService.addActivity(newActivityTitle, "Description of new activity",
-                LocalDateTime.now(), LocalDateTime.now().plusHours(2), "New Category", emptyImageFile);
+        PersistentActivityEntity result = activitiesService.addActivity(activityTitle, activityDescription,
+                activityStartDate, activityEndDate, activityCategory, emptyImageFile);
 
         // Assert
         assertNotNull(result);
         assertNull(result.getImageSrc(), "Expected imageSrc to be null when imageFile is empty.");
-        assertEquals(newActivityTitle, result.getTitle());
-        assertEquals("A sample description", result.getDescription());
-        verify(mockRepository, times(1)).save(any(PersistentActivityEntity.class)); // Ensure save was called once
+        assertEquals(activityTitle, result.getTitle());
+        assertEquals(activityDescription, result.getDescription());
+        verify(activityRepository, times(1)).save(any(PersistentActivityEntity.class)); // Ensure save was called once
     }
 
     @Test
     void testGetActivityImageIOExceptionWhileLoadingImage() throws Exception {
         // Arrange
-        String title = "Sample Activity with Image";
         String imagePath = "path/to/image.jpg";
         PersistentActivityEntity mockActivity = mock(PersistentActivityEntity.class);
         when(mockActivity.getImageSrc()).thenReturn(imagePath);
-        when(mockRepository.findById(title)).thenReturn(Optional.of(mockActivity));
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
         when(imageStorageService.loadImage(imagePath)).thenThrow(new IOException("Image loading error"));
 
         // Act & Assert
         ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.getActivityImage(title);
+            activitiesService.getActivityImage(activityTitle);
         });
 
         assertEquals("Error loading activity image: Image loading error", exception.getMessage());
@@ -233,68 +253,64 @@ class ActivityServiceTest {
     @Test
     void testGetActivityImageNoImageSource() throws IOException {
         // Arrange
-        String title = "Sample Activity with No Image";
         PersistentActivityEntity mockActivity = mock(PersistentActivityEntity.class);
         when(mockActivity.getImageSrc()).thenReturn(null);
-        when(mockRepository.findById(title)).thenReturn(Optional.of(mockActivity));
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
         ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.getActivityImage(title);
+            activitiesService.getActivityImage(activityTitle);
         });
 
-        assertEquals("No image associated with activity: " + title, exception.getMessage());
+        assertEquals("No image associated with activity: " + activityTitle, exception.getMessage());
         verify(imageStorageService, never()).loadImage(anyString());
     }
 
     @Test
     void testGetActivityImageNoImageSourceEmpty() throws IOException {
         // Arrange
-        String title = "Sample Activity with Empty Image";
         PersistentActivityEntity mockActivity = mock(PersistentActivityEntity.class);
         when(mockActivity.getImageSrc()).thenReturn("");
-        when(mockRepository.findById(title)).thenReturn(Optional.of(mockActivity));
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
         ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.getActivityImage(title);
+            activitiesService.getActivityImage(activityTitle);
         });
 
-        assertEquals("No image associated with activity: " + title, exception.getMessage());
+        assertEquals("No image associated with activity: " + activityTitle, exception.getMessage());
         verify(imageStorageService, never()).loadImage(anyString());
     }
 
     @Test
     void testGetActivityImageNoImageSourceNull() throws IOException {
         // Arrange
-        String title = "Sample Activity with No Image";
         PersistentActivityEntity mockActivity = mock(PersistentActivityEntity.class);
         when(mockActivity.getImageSrc()).thenReturn(null);
-        when(mockRepository.findById(title)).thenReturn(Optional.of(mockActivity));
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
         ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.getActivityImage(title);
+            activitiesService.getActivityImage(activityTitle);
         });
 
-        assertEquals("No image associated with activity: " + title, exception.getMessage());
+        assertEquals("No image associated with activity: " + activityTitle, exception.getMessage());
         verify(imageStorageService, never()).loadImage(anyString());
     }
 
     @Test
     void testGetActivityImageSuccess() throws Exception {
         // Arrange
-        String title = "Sample Activity";
         String imagePath = "path/to/image.jpg";
         byte[] imageData = "sample image data".getBytes();
 
         PersistentActivityEntity mockActivity = mock(PersistentActivityEntity.class);
         when(mockActivity.getImageSrc()).thenReturn(imagePath);
-        when(mockRepository.findById(title)).thenReturn(Optional.of(mockActivity));
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
         when(imageStorageService.loadImage(imagePath)).thenReturn(imageData);
 
         // Act
-        byte[] result = activitiesService.getActivityImage(title);
+        byte[] result = activitiesService.getActivityImage(activityTitle);
 
         // Assert
         assertArrayEquals(imageData, result);
@@ -308,15 +324,15 @@ class ActivityServiceTest {
     @Test
     void testGetActivityNotFound() {
         // Arrange
-        when(mockRepository.findById("Sample Activity")).thenReturn(Optional.empty());
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.empty());
 
         // Act & Assert
         Exception exception = assertThrows(ActivityServiceException.class, () -> {
-            activitiesService.getActivity("Sample Activity");
+            activitiesService.getActivity(activityTitle);
         });
 
-        assertEquals("Activity with title: Sample Activity not found.", exception.getMessage());
-        verify(mockRepository, times(1)).findById("Sample Activity");
+        assertEquals("Activity with title: " + activityTitle + " not found.", exception.getMessage());
+        verify(activityRepository, times(1)).findById(activityTitle);
     }
 
     /**
@@ -326,48 +342,46 @@ class ActivityServiceTest {
     @Test
     void testGetActivitySuccess() throws ActivityServiceException {
         // Arrange
-        when(mockRepository.findById("Sample Activity")).thenReturn(Optional.of(sampleActivity));
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(sampleActivity));
 
         // Act
-        PersistentActivityEntity result = activitiesService.getActivity("Sample Activity");
+        PersistentActivityEntity result = activitiesService.getActivity(activityTitle);
 
         // Assert
         assertNotNull(result);
         assertEquals(sampleActivity.getTitle(), result.getTitle());
-        verify(mockRepository, times(1)).findById("Sample Activity");
+        verify(activityRepository, times(1)).findById(activityTitle);
     }
 
-//    @Test
-//    void testGetAllActivities_Success() throws Exception {
-//        // Arrange
-//        PersistentActivityEntity activity1 = mock(PersistentActivityEntity.class);
-//        when(activity1.getTitle()).thenReturn("Sample Activity");
-//        when(activity1.getDescription()).thenReturn("Description 1");
-//        when(activity1.getStartDate()).thenReturn(LocalDateTime.now());
-//        when(activity1.getEndDate()).thenReturn(LocalDateTime.now().plusHours(2));
-//        when(activity1.getCategory()).thenReturn("Category 1");
-//
-//        // Mock the image retrieval
-//        byte[] imageData = "sample image data".getBytes();
-//        when(imageStorageService.loadImage(anyString())).thenReturn(imageData);
-//
-//        // Simulate the repository returning a list of activities
-//        when(mockRepository.findAll()).thenReturn(Arrays.asList(activity1));
-//
-//        // Mocks the findById method of the repository to return an Optional containing
-//        // activity1
-//        when(mockRepository.findById("Sample Activity")).thenReturn(Optional.of(activity1));
-//
-//        // Act
-//        Stream<ActivityWithImageDto> result = activitiesService.getAllActivities();
-//
-//        // Assert
-//        assertNotNull(result);
-//        ActivityWithImageDto activityDto = result.findFirst().get();
-//        assertEquals("Activity 1", activityDto.title());
-//        assertEquals("Description 1", activityDto.description());
-//        assertNotNull(activityDto.image()); // Image should be encoded
-//    }
+    @Test
+    void testGetAllActivitiesHandlesRuntimeException() throws IOException, ActivityServiceException {
+        // Arrange
+        PersistentActivityEntity activity1 = new PersistentActivityEntity();
+        activity1.setTitle("Activity 1");
+        activity1.setDescription("Description 1");
+        activity1.setStartDate(LocalDateTime.now());
+        activity1.setEndDate(LocalDateTime.now().plusHours(1));
+        activity1.setCategory("Category 1");
+
+        PersistentActivityEntity activity2 = new PersistentActivityEntity();
+        activity2.setTitle("Activity 2");
+        activity2.setDescription("Description 2");
+        activity2.setStartDate(LocalDateTime.now());
+        activity2.setEndDate(LocalDateTime.now().plusHours(2));
+        activity2.setCategory("Category 2");
+
+        List<PersistentActivityEntity> activitiesList = Arrays.asList(activity1, activity2);
+
+        when(activityRepository.findAll()).thenReturn(activitiesList);
+        when(imageStorageService.loadImage(anyString())).thenThrow(new IOException("Image loading error"))
+                .thenReturn("image-data".getBytes());
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> {
+            activitiesService.getAllActivities().forEach(activity -> {
+            });
+        });
+    }
 
     /**
      * Test for the getAllActivities method to verify behavior when no activities
@@ -376,7 +390,7 @@ class ActivityServiceTest {
     @Test
     void testGetAllActivitiesNoActivities() throws ActivityServiceException {
         // Arrange
-        when(mockRepository.findAll()).thenReturn(Collections.emptyList());
+        when(activityRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Act
         List<ActivityWithImageDto> result = activitiesService.getAllActivities().toList();
@@ -384,7 +398,37 @@ class ActivityServiceTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.isEmpty());
-        verify(mockRepository, times(1)).findAll();
+        verify(activityRepository, times(1)).findAll();
+    }
+
+    @Test
+    void testGetAllActivitiesSuccess() throws Exception {
+        // Simulate the repository returning a list of activities
+        when(activityRepository.findAll()).thenReturn(Arrays.asList(sampleActivity));
+
+        // Mock the image retrieval
+        byte[] imageData = "sample image data".getBytes();
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(sampleActivity));
+        when(imageStorageService.loadImage(activityImageSrc)).thenReturn(imageData);
+
+        // Mocks the findById method of the repository to return an Optional containing
+        // activity1
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(sampleActivity));
+
+        // Act
+        Stream<ActivityWithImageDto> result = activitiesService.getAllActivities();
+
+        // Assert
+        assertNotNull(result);
+        final var resultList = result.toList();
+
+        assertEquals(1, resultList.size(), "One element in list.");
+        assertEquals(sampleActivity.getTitle(), resultList.getFirst().title());
+        assertEquals(sampleActivity.getCategory(), resultList.getFirst().category());
+        assertEquals(sampleActivity.getEndDate(), resultList.getFirst().endDate());
+        assertEquals(sampleActivity.getStartDate(), resultList.getFirst().startDate());
+        assertEquals(sampleActivity.getDescription(), resultList.getFirst().description());
+        result.close();
     }
 
 }
