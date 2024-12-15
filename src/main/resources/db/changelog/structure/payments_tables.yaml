@@ -1,0 +1,58 @@
+databaseChangeLog:
+- changeSet:
+    id: payments_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: payments
+        columns:
+        - column:
+            name: id
+            type: uuid
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: title
+            type: varchar(80)
+            constraints:
+              nullable: false
+        - column:
+            name: description
+            type: text
+            constraints:
+              nullable: false
+        - column:
+            name: created_at
+            type: datetime
+            constraints:
+              nullable: false
+        - column:
+            name: state
+            type: varchar(40)
+            constraints:
+              nullable: false
+        - column:
+            name: category
+            type: varchar(50)
+            constraints:
+              nullable: false 
+        - column:
+            name: paid_at
+            type: datetime
+            constraints:
+              nullable: false
+        - column:
+            name: amount
+            type: decimal(19,2)
+        - column:
+            name: user_dni  
+            type: varchar(20)
+            constraints:
+              nullable: false
+    - addForeignKeyConstraint:
+        baseTableName: payments
+        baseColumnNames: user_dni
+        referencedTableName: users
+        referencedColumnNames: dni
+        constraintName: fk_payments_user_dni
