@@ -93,6 +93,27 @@ public interface PaymentsService {
             String userDni) throws PaymentsServiceException;
 
     /**
+     * Finds a payment by its ID.
+     *
+     * <p>
+     * This method attempts to retrieve a {@link PaymentsEntity} from the repository
+     * based on the provided payment ID. If no payment is found with the specified
+     * ID, a {@link PaymentsServiceException} is thrown.
+     * </p>
+     *
+     * @param paymentId The ID of the payment to be retrieved.
+     * @return The {@link PaymentsEntity} object corresponding to the given payment
+     *         ID.
+     * @throws PaymentsServiceException if no payment with the specified ID is
+     *                                  found. The exception message will indicate
+     *                                  the ID that was not found.
+     *
+     * @see PaymentsEntity
+     * @see PaymentsServiceException
+     */
+    PaymentsEntity findPayment(UUID paymentId) throws PaymentsServiceException;
+
+    /**
      * Retrieves all payments associated with a given user's DNI.
      * <p>
      * This method queries the payments repository to find all payments linked to
