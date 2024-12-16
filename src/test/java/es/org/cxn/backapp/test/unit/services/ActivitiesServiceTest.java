@@ -34,10 +34,10 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
+import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.service.impl.DefaultActivitiesService;
 import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 

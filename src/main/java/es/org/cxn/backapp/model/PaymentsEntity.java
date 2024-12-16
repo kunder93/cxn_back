@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
+import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
+
 /**
  * The {@code PaymentsEntity} interface represents a contract for a payment
  * entity in the system. It defines the attributes associated with a payment
@@ -31,7 +34,6 @@ import java.util.UUID;
  * <li>Payment amount and category.</li>
  * <li>Associated user identifier (e.g., DNI).</li>
  * </ul>
- * </p>
  *
  * <p>
  * All fields are expected to have corresponding database columns in persistent
@@ -56,7 +58,7 @@ public interface PaymentsEntity extends Serializable {
      *
      * @return the category of the payment.
      */
-    String getCategory();
+    PaymentsCategory getCategory();
 
     /**
      * Gets the timestamp when the payment was created.
@@ -91,7 +93,7 @@ public interface PaymentsEntity extends Serializable {
      *
      * @return the current state of the payment.
      */
-    String getState();
+    PaymentsState getState();
 
     /**
      * Gets the title of the payment.
@@ -106,4 +108,61 @@ public interface PaymentsEntity extends Serializable {
      * @return the DNI of the associated user.
      */
     String getUserDni();
+
+    /**
+     * Sets the monetary amount of the payment.
+     *
+     * @param amount the monetary amount to set.
+     */
+    void setAmount(BigDecimal amount);
+
+    /**
+     * Sets the category of the payment.
+     *
+     * @param category the category to set.
+     */
+    void setCategory(PaymentsCategory category);
+
+    /**
+     * Sets the creation timestamp of the payment.
+     *
+     * @param createdAt the creation timestamp to set.
+     */
+    void setCreatedAt(LocalDateTime createdAt);
+
+    /**
+     * Sets the description of the payment.
+     *
+     * @param description the description to set.
+     */
+    void setDescription(String description);
+
+    /**
+     * Sets the completion timestamp of the payment.
+     *
+     * @param paidAt the completion timestamp to set.
+     */
+    void setPaidAt(LocalDateTime paidAt);
+
+    /**
+     * Sets the state of the payment.
+     *
+     * @param state the state to set.
+     */
+    void setState(PaymentsState state);
+
+    /**
+     * Sets the title of the payment.
+     *
+     * @param title the title to set.
+     */
+    void setTitle(String title);
+
+    /**
+     * Sets the user DNI associated with the payment.
+     *
+     * @param userDni the DNI of the associated user to set.
+     */
+    void setUserDni(String userDni);
+
 }

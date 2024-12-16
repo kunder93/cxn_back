@@ -1,10 +1,9 @@
-package es.org.cxn.backapp.model.persistence;
+package es.org.cxn.backapp.model.persistence.payments;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import es.org.cxn.backapp.model.ActivityEntity;
 import es.org.cxn.backapp.model.PaymentsEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,7 +33,7 @@ import lombok.NoArgsConstructor;
  * <p>
  * This class is licensed under the MIT License.
  *
- * @see ActivityEntity
+ * @see PaymentsEntity
  */
 @Entity
 @Table(name = "payments")
@@ -42,6 +41,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PersistentPaymentsEntity implements PaymentsEntity {
+
+    /**
+     * The maximum allowed length for the title of the payment. This corresponds to
+     * the {@code title} column in the database.
+     */
+    private static final int TITLE_MAX_LENGTH = 80;
+
+    /**
+     * The maximum allowed length for the user DNI (identifier). This corresponds to
+     * the {@code user_dni} column in the database.
+     */
+    private static final int USER_DNI_MAX_LENGTH = 20;
+
+    /**
+     * The precision of the amount field, representing the total number of digits
+     * that can be stored, both to the left and right of the decimal point. This
+     * corresponds to the {@code amount} column in the database.
+     */
+    private static final int AMOUNT_PRECISION = 10;
+
+    /**
+     * The scale of the amount field, representing the number of digits to the right
+     * of the decimal point. This corresponds to the {@code amount} column in the
+     * database.
+     */
+    private static final int AMOUNT_SCALE = 2;
 
     /**
      * Serial version UID for serialization compatibility.
@@ -60,7 +85,7 @@ public class PersistentPaymentsEntity implements PaymentsEntity {
     /**
      * Title of the payment.
      */
-    @Column(name = "title", nullable = false, length = 80)
+    @Column(name = "title", nullable = false, length = TITLE_MAX_LENGTH)
     private String title;
 
     /**
@@ -72,31 +97,31 @@ public class PersistentPaymentsEntity implements PaymentsEntity {
     /**
      * State of the payment.
      */
-    @Column(name = "state", nullable = false, length = 40)
-    private String state;
+    @Column(name = "state", nullable = false)
+    private PaymentsState state;
 
     /**
      * Category of the payment.
      */
-    @Column(name = "category", nullable = false, length = 50)
-    private String category;
+    @Column(name = "category", nullable = false)
+    private PaymentsCategory category;
 
     /**
      * Date and time when the payment was made.
      */
-    @Column(name = "paid_at", nullable = false, columnDefinition = "TIMESTAMP")
+    @Column(name = "paid_at", nullable = true, columnDefinition = "TIMESTAMP")
     private LocalDateTime paidAt;
 
     /**
      * Monetary amount of the payment.
      */
-    @Column(name = "amount", nullable = false, precision = 10, scale = 2)
+    @Column(name = "amount", nullable = false, precision = AMOUNT_PRECISION, scale = AMOUNT_SCALE)
     private BigDecimal amount;
 
     /**
      * The DNI of the user associated with the payment.
      */
-    @Column(name = "user_dni", nullable = false, length = 20)
+    @Column(name = "user_dni", nullable = false, length = USER_DNI_MAX_LENGTH)
     private String userDni;
 
     /**

@@ -35,7 +35,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
@@ -44,6 +43,7 @@ import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * The MIT License (MIT)

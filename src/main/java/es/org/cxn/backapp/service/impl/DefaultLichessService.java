@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
 import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
@@ -18,6 +17,7 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.LichessService;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
+import es.org.cxn.backapp.service.exceptions.LichessServiceException;
 import jakarta.transaction.Transactional;
 
 /**

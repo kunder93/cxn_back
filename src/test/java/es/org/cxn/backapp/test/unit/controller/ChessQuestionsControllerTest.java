@@ -33,7 +33,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.controller.entity.ChessQuestionsController;
-import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
@@ -42,6 +41,7 @@ import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
 import es.org.cxn.backapp.service.ChessQuestionsService;
+import es.org.cxn.backapp.service.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 @WebMvcTest(ChessQuestionsController.class)

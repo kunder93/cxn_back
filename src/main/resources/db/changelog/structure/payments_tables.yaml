@@ -41,7 +41,7 @@ databaseChangeLog:
             name: paid_at
             type: datetime
             constraints:
-              nullable: false
+              nullable: true
         - column:
             name: amount
             type: decimal(19,2)

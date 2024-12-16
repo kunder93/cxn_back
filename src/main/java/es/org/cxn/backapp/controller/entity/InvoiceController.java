@@ -42,8 +42,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.CompanyServiceException;
-import es.org.cxn.backapp.exceptions.InvoiceServiceException;
 import es.org.cxn.backapp.model.InvoiceEntity;
 import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
@@ -52,6 +50,8 @@ import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.service.CompanyService;
 import es.org.cxn.backapp.service.InvoiceService;
+import es.org.cxn.backapp.service.exceptions.CompanyServiceException;
+import es.org.cxn.backapp.service.exceptions.InvoiceServiceException;
 import es.org.cxn.backapp.service.impl.DefaultCompanyService;
 import jakarta.validation.Valid;
 

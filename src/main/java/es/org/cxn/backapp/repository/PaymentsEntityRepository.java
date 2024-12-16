@@ -24,12 +24,13 @@
 
 package es.org.cxn.backapp.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import es.org.cxn.backapp.model.persistence.PersistentPaymentsEntity;
+import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 
 /**
  * Repository interface for {@link PersistentPaymentsEntity} entities. This
@@ -49,5 +50,13 @@ import es.org.cxn.backapp.model.persistence.PersistentPaymentsEntity;
  */
 @Repository
 public interface PaymentsEntityRepository extends JpaRepository<PersistentPaymentsEntity, UUID> {
+
+    /**
+     * Finds all payments associated with a given user DNI.
+     *
+     * @param userDni the DNI of the user.
+     * @return a list of payments associated with the given user DNI.
+     */
+    List<PersistentPaymentsEntity> findByUserDni(String userDni);
 
 }

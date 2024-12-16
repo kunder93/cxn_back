@@ -45,7 +45,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
@@ -59,6 +58,7 @@ import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
 import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Rest controller for managing user-related operations.

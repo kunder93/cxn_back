@@ -13,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import es.org.cxn.backapp.model.persistence.PersistentPaymentsEntity;
+import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
+import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
+import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
@@ -45,12 +47,35 @@ import jakarta.transaction.Transactional;
 @ActiveProfiles("test")
 class PaymentsRepositoryTest {
 
+    /**
+     * Repository for managing persistence operations related to payment entities.
+     * <p>
+     * This field is autowired by Spring, providing access to the
+     * {@link PaymentsEntityRepository} for performing CRUD operations and custom
+     * queries on the payments table.
+     * </p>
+     */
     @Autowired
     private PaymentsEntityRepository paymentsEntityRepository;
 
+    /**
+     * Repository for managing persistence operations related to user entities.
+     * <p>
+     * This field is autowired by Spring, providing access to the
+     * {@link UserEntityRepository} for performing CRUD operations and custom
+     * queries on the users table.
+     * </p>
+     */
     @Autowired
     private UserEntityRepository userEntityRepository;
 
+    /**
+     * A sample DNI value used for testing purposes.
+     * <p>
+     * This constant represents the unique identifier of a user and is used to
+     * associate payment records with a specific user in test cases.
+     * </p>
+     */
     private final String userDni = "32721850X";
 
     /**
@@ -68,10 +93,10 @@ class PaymentsRepositoryTest {
         // Arrange
         PersistentPaymentsEntity payment = new PersistentPaymentsEntity();
         final String description = "Test payment description";
-        final String category = "Test payment category";
+        final PaymentsCategory category = PaymentsCategory.MEMBERSHIP_PAYMENT;
         final LocalDateTime createdDate = LocalDateTime.of(2012, 5, 14, 10, 30);
         final LocalDateTime paidAt = LocalDateTime.of(2012, 5, 19, 11, 20);
-        final String paymentState = "Test payment state";
+        final PaymentsState paymentState = PaymentsState.UNPAID;
         final String paymentTitle = "Test Payment title";
         final BigDecimal paymentAmount = BigDecimal.valueOf(100.50);
         payment.setAmount(paymentAmount);
@@ -114,10 +139,10 @@ class PaymentsRepositoryTest {
         // Arrange
         PersistentPaymentsEntity payment = new PersistentPaymentsEntity();
         final String description = "Test payment description";
-        final String category = "Test payment category";
+        final PaymentsCategory category = PaymentsCategory.MEMBERSHIP_PAYMENT;
         final LocalDateTime createdDate = LocalDateTime.of(2012, 5, 14, 10, 30);
         final LocalDateTime paidAt = LocalDateTime.of(2012, 5, 19, 11, 20);
-        final String paymentState = "Test payment state";
+        final PaymentsState paymentState = PaymentsState.UNPAID;
         final String paymentTitle = "Test Payment title";
         final BigDecimal paymentAmount = BigDecimal.valueOf(100.50);
         payment.setAmount(paymentAmount);
@@ -146,14 +171,23 @@ class PaymentsRepositoryTest {
     @BeforeEach
     void initialize() {
         final UserProfile userProfile = new UserProfile();
-        userProfile.setBirthDate(LocalDate.of(1991, 10, 21));
-        userProfile.setFirstSurname("FirstSurname");
-        userProfile.setSecondSurname("secondSurname");
-        userProfile.setGender("Gender");
-        userProfile.setName("UserName");
-        final PersistentUserEntity userEntity = PersistentUserEntity.builder().dni(userDni).email("email@email.es")
-                .enabled(Boolean.TRUE).kindMember(UserType.SOCIO_NUMERO).password("aaadddd").profile(userProfile)
-                .build();
+        final int year = 1991;
+        final int month = 10;
+        final int day = 21;
+        final String userName = "UserName";
+        final String userFirstSurname = "FirstSurname";
+        final String userSecondSurname = "secondSurname";
+        final String userGender = "Gender";
+        final String userEmail = "email@email.es";
+        final String userPass = "123123123";
+        final UserType kindMember = UserType.SOCIO_NUMERO;
+        userProfile.setBirthDate(LocalDate.of(year, month, day));
+        userProfile.setFirstSurname(userFirstSurname);
+        userProfile.setSecondSurname(userSecondSurname);
+        userProfile.setGender(userGender);
+        userProfile.setName(userName);
+        final PersistentUserEntity userEntity = PersistentUserEntity.builder().dni(userDni).email(userEmail)
+                .enabled(Boolean.TRUE).kindMember(kindMember).password(userPass).profile(userProfile).build();
         userEntityRepository.save(userEntity);
     }
 
@@ -171,10 +205,10 @@ class PaymentsRepositoryTest {
         // Arrange
         PersistentPaymentsEntity payment = new PersistentPaymentsEntity();
         final String description = "Test payment description";
-        final String category = "Test payment category";
+        final PaymentsCategory category = PaymentsCategory.MEMBERSHIP_PAYMENT;
         final LocalDateTime createdDate = LocalDateTime.of(2012, 5, 14, 10, 30);
         final LocalDateTime paidAt = LocalDateTime.of(2012, 5, 19, 11, 20);
-        final String paymentState = "Test payment state";
+        final PaymentsState paymentState = PaymentsState.UNPAID;
         final String paymentTitle = "Test Payment title";
         final BigDecimal paymentAmount = BigDecimal.valueOf(100.50);
         payment.setAmount(paymentAmount);
@@ -220,10 +254,10 @@ class PaymentsRepositoryTest {
         // Arrange
         PersistentPaymentsEntity payment = new PersistentPaymentsEntity();
         final String description = "Test payment description";
-        final String category = "Test payment category";
+        final PaymentsCategory category = PaymentsCategory.MEMBERSHIP_PAYMENT;
         final LocalDateTime createdDate = LocalDateTime.of(2012, 5, 14, 10, 30);
         final LocalDateTime paidAt = LocalDateTime.of(2012, 5, 19, 11, 20);
-        final String paymentState = "Test payment state";
+        final PaymentsState paymentState = PaymentsState.UNPAID;
         final String paymentTitle = "Test Payment title";
         final BigDecimal paymentAmount = BigDecimal.valueOf(100.50);
         payment.setAmount(paymentAmount);
@@ -241,10 +275,10 @@ class PaymentsRepositoryTest {
         // Updated values for assertions
         final BigDecimal updatedAmount = BigDecimal.valueOf(175.00);
         final String updatedDescription = "Updated Payment";
-        final String updatedCategory = "Updated Category";
+        final PaymentsCategory updatedCategory = PaymentsCategory.FEDERATE_PAYMENT;
         final LocalDateTime updatedCreatedAt = LocalDateTime.of(2022, 12, 25, 9, 15);
         final LocalDateTime updatedPaidAt = LocalDateTime.of(2022, 12, 30, 10, 25);
-        final String updatedState = "Updated State";
+        final PaymentsState updatedState = PaymentsState.CANCELLED;
         final String updatedTitle = "Updated Payment Title";
 
         // Act: Update the values (excluding dni and id)

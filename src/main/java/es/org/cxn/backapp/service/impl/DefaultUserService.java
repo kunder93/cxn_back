@@ -38,7 +38,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
@@ -55,6 +54,7 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Default implementation of the {@link UserService}.

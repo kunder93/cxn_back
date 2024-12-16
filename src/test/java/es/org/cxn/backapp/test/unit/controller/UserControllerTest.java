@@ -26,12 +26,12 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import es.org.cxn.backapp.controller.entity.UserController;
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultUserService;
 
 /**

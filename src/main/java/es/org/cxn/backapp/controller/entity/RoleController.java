@@ -35,10 +35,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Rest controller for the example entities.

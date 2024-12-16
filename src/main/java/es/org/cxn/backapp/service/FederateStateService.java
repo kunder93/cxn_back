@@ -28,9 +28,9 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.exceptions.FederateStateServiceException;
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
+import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Service interface for managing federate state operations.

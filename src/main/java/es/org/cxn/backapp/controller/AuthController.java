@@ -47,7 +47,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.google.common.base.Preconditions;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
@@ -58,6 +57,7 @@ import es.org.cxn.backapp.security.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;

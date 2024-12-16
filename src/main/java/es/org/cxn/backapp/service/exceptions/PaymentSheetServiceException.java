@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.exceptions;
+package es.org.cxn.backapp.service.exceptions;
 
 /**
  * Exception thrown by payment sheet service.

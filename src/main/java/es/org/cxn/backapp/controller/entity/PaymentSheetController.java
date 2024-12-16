@@ -41,7 +41,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
 import es.org.cxn.backapp.model.form.requests.AddFoodHousingToPaymentSheetRequest;
 import es.org.cxn.backapp.model.form.requests.AddRegularTransportRequest;
 import es.org.cxn.backapp.model.form.requests.AddSelfVehicleRequest;
@@ -50,6 +49,7 @@ import es.org.cxn.backapp.model.form.responses.PaymentSheetListResponse;
 import es.org.cxn.backapp.model.form.responses.PaymentSheetResponse;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.service.PaymentSheetService;
+import es.org.cxn.backapp.service.exceptions.PaymentSheetServiceException;
 import jakarta.validation.Valid;
 
 /**

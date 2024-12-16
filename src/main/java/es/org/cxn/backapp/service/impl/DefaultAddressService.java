@@ -26,11 +26,11 @@ package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import es.org.cxn.backapp.exceptions.AddressServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.service.AddressService;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.exceptions.AddressServiceException;
 
 import java.util.List;
 

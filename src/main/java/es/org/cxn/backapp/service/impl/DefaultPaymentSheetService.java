@@ -32,7 +32,6 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity;
 import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity;
@@ -44,6 +43,7 @@ import es.org.cxn.backapp.repository.RegularTransportRepository;
 import es.org.cxn.backapp.repository.SelfVehicleRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.PaymentSheetService;
+import es.org.cxn.backapp.service.exceptions.PaymentSheetServiceException;
 
 /**
  * Default implementation of the {@link PaymentSheetService}.

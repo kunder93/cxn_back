@@ -41,13 +41,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.service.ChessQuestionsService;
+import es.org.cxn.backapp.service.exceptions.ChessQuestionServiceException;
 import jakarta.validation.Valid;
 
 /**

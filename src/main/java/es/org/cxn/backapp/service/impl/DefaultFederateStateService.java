@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.exceptions.FederateStateServiceException;
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
@@ -25,6 +23,8 @@ import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Service implementation for handling operations related to the federate state

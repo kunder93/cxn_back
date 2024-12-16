@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.exceptions;
+package es.org.cxn.backapp.service.exceptions;
 
 /**
  * ActivityServiceException is a custom exception for handling errors within the

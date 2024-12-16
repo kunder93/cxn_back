@@ -25,7 +25,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import es.org.cxn.backapp.exceptions.PaymentSheetServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
@@ -39,6 +38,7 @@ import es.org.cxn.backapp.repository.PaymentSheetEntityRepository;
 import es.org.cxn.backapp.repository.RegularTransportRepository;
 import es.org.cxn.backapp.repository.SelfVehicleRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.exceptions.PaymentSheetServiceException;
 import es.org.cxn.backapp.service.impl.DefaultPaymentSheetService;
 
 /**

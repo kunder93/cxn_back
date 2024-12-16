@@ -22,14 +22,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.exceptions.FederateStateServiceException;
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultFederateStateService;
 
 /**

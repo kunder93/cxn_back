@@ -25,7 +25,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
@@ -43,6 +42,7 @@ import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 import es.org.cxn.backapp.service.impl.DefaultUserService;
 

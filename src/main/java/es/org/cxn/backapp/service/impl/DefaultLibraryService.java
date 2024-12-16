@@ -3,7 +3,6 @@ package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.AuthorEntity;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
@@ -13,6 +12,7 @@ import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
 import es.org.cxn.backapp.service.LibraryService;
+import es.org.cxn.backapp.service.exceptions.LibraryServiceException;
 
 import java.util.List;
 
