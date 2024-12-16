@@ -37,7 +37,7 @@ public record PaymentResponse(UUID id, String title, String description, Payment
      * @param entity The PaymentsEntity object containing payment data. Must not be
      *               null.
      */
-    public PaymentResponse(PaymentsEntity entity) {
+    public PaymentResponse(final PaymentsEntity entity) {
         this(entity.getId(), entity.getTitle(), entity.getDescription(), entity.getState(), entity.getCategory(),
                 entity.getAmount(), entity.getUserDni(), entity.getCreatedAt(), entity.getPaidAt());
     }

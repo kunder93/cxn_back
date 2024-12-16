@@ -42,7 +42,6 @@ import org.springframework.test.context.ActiveProfiles;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
-import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
@@ -68,47 +67,67 @@ import jakarta.transaction.Transactional;
 @ActiveProfiles("test")
 final class TestPaymentsService {
 
+    /**
+     * The service for managing payments. Used to test the functionality of
+     * {@link PaymentsService}.
+     */
     @Autowired
     private PaymentsService paymentsService;
 
+    /**
+     * The service for managing users. Used to perform operations related to user
+     * management and registration.
+     */
     @Autowired
     private UserService userService;
 
+    /**
+     * Mocked mail sender to avoid sending actual emails during tests. Simulates
+     * email sending functionality.
+     */
     @MockBean
-    JavaMailSender mailSender;
+    private JavaMailSender mailSender;
 
+    /**
+     * Mocked email service to test email-related functionality without triggering
+     * real email-sending operations.
+     */
     @MockBean
-    DefaultEmailService emailService;
+    private DefaultEmailService emailService;
 
-    final String userDni = "32721880X";
-    final String userEmail = "email@email.es";
-    final Boolean userEnabled = Boolean.TRUE;
-    PersistentUserEntity createdUser = new PersistentUserEntity();
+    /**
+     * Test user dni.
+     */
+    private final String userDni = "32721880X";
 
     @BeforeEach
     void setUp() throws UserServiceException {
-        // Create an AddressRegistrationDetailsDto with sample data
-        AddressRegistrationDetailsDto addressDetails = new AddressRegistrationDetailsDto("12B", // apartmentNumber
-                "Building A", // building
-                "CityName", // city
-                "12345", // postalCode
-                "Main Street 1", // street
-                724, // countryNumericCode
-                "Burgos" // countrySubdivisionName
-        );
+        // Define variables for address details
+        final String apartmentNumber = "12B";
+        final String building = "Building A";
+        final String city = "CityName";
+        final String postalCode = "12345";
+        final String street = "Main Street 1";
+        final int countryNumericCode = 724;
+        final String countrySubdivisionName = "Burgos";
 
-        // Create a UserRegistrationDetailsDto with sample data
-        UserRegistrationDetailsDto createUserDto = new UserRegistrationDetailsDto(userDni, // dni
-                "John", // name
-                "Doe", // firstSurname
-                "Smith", // secondSurname
-                LocalDate.of(1990, 1, 1), // birthDate
-                "Male", // gender
-                "password123", // password
-                "johndoe@example.com", // email
-                addressDetails, // addressDetails
-                UserType.SOCIO_NUMERO // kindMember
-        );
+        // Create an AddressRegistrationDetailsDto using the variables
+        AddressRegistrationDetailsDto addressDetails = new AddressRegistrationDetailsDto(apartmentNumber, building,
+                city, postalCode, street, countryNumericCode, countrySubdivisionName);
+
+        // Define variables for user details
+        final String name = "John";
+        final String firstSurname = "Doe";
+        final String secondSurname = "Smith";
+        final LocalDate birthDate = LocalDate.of(1990, 1, 1);
+        final String gender = "Male";
+        final String password = "password123";
+        final String email = "johndoe@example.com";
+        final UserType kindMember = UserType.SOCIO_NUMERO;
+
+        // Create a UserRegistrationDetailsDto using the variables
+        UserRegistrationDetailsDto createUserDto = new UserRegistrationDetailsDto(userDni, name, firstSurname,
+                secondSurname, birthDate, gender, password, email, addressDetails, kindMember);
 
         // Call the userService to add the user
         userService.add(createUserDto);
@@ -630,6 +649,7 @@ final class TestPaymentsService {
     @Test
     @Transactional
     void testGetUserPaymentsWhenUserHasPayments() throws PaymentsServiceException {
+        final int expectedPaymentsSize = 3;
         // Arrange: Define payment details
         final BigDecimal paymentAmount = BigDecimal.TEN;
         final PaymentsCategory paymentCategory = PaymentsCategory.FEDERATE_PAYMENT;
@@ -660,7 +680,7 @@ final class TestPaymentsService {
         Assertions.assertFalse(paymentsList.isEmpty(), "Payments list should not be empty for the user.");
 
         // Assert: Verify the list size matches the number of payments created
-        Assertions.assertEquals(3, paymentsList.size(),
+        Assertions.assertEquals(expectedPaymentsSize, paymentsList.size(),
                 "The number of payments retrieved does not match the expected.");
 
         // Assert: Verify that the payments in the list match the created payments
@@ -725,22 +745,25 @@ final class TestPaymentsService {
     @Test
     @Transactional
     void testMakePaymentWhenAlreadyPaid() throws PaymentsServiceException {
-        // Arrange: Define payment details
+        // Arrange: Define variables for payment details
         final BigDecimal paymentAmount = BigDecimal.TEN;
         final PaymentsCategory paymentCategory = PaymentsCategory.FEDERATE_PAYMENT;
         final String paymentTitle = "paymentTitle";
         final String paymentDescription = "payment description";
+        final LocalDateTime firstPaymentTime = LocalDateTime.of(2024, 12, 10, 10, 20);
+        final LocalDateTime secondPaymentTime = LocalDateTime.of(2024, 12, 10, 12, 30);
 
         // Act: Create a payment
         final var createdPayment = paymentsService.createPayment(paymentAmount, paymentCategory, paymentDescription,
                 paymentTitle, userDni);
 
-        paymentsService.makePayment(createdPayment.getId(), LocalDateTime.of(2024, 12, 10, 10, 20));
+        // Act: Make the first payment
+        paymentsService.makePayment(createdPayment.getId(), firstPaymentTime);
 
         // Act & Assert: Attempt to mark the same payment as paid again and expect an
         // exception
         final PaymentsServiceException exception = Assertions.assertThrows(PaymentsServiceException.class,
-                () -> paymentsService.makePayment(createdPayment.getId(), LocalDateTime.of(2024, 12, 10, 12, 30)),
+                () -> paymentsService.makePayment(createdPayment.getId(), secondPaymentTime),
                 "Expected exception not thrown when trying to mark an already paid payment.");
 
         // Assert: Verify the exception message is correct

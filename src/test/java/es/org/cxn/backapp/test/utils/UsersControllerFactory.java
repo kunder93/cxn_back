@@ -117,7 +117,7 @@ public final class UsersControllerFactory {
     /**
      * User B dni.
      */
-    public static final String USER_B_DNI = "32721860J";
+    public static final String USER_B_DNI = "55456534S";
 
     /**
      * User B email.
@@ -175,7 +175,7 @@ public final class UsersControllerFactory {
     /**
      * User B address country subdivision name, "provincia".
      */
-    public static final String USER_B_COUNTRY_SUBDIVISION_NAME = "Coruña";
+    public static final String USER_B_COUNTRY_SUBDIVISION_NAME = "A Coruña";
     /**
      * User B kind of member.
      */

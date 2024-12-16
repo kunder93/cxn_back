@@ -38,8 +38,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -59,6 +59,9 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/payments")
 public class PaymentsController {
 
+    /**
+     * Service for manage payments.
+     */
     private final PaymentsService paymentsService;
 
     /**
@@ -101,7 +104,7 @@ public class PaymentsController {
      * @throws ResponseStatusException if the payment cannot be created.
      */
     @PostMapping()
-    public ResponseEntity<PaymentResponse> createPayment(@RequestParam
+    public ResponseEntity<PaymentResponse> createPayment(@RequestBody
     @Valid final CreatePaymentRequest request) {
         try {
             final var createdPayment = paymentsService.createPayment(request.amount(), request.category(),
@@ -138,7 +141,7 @@ public class PaymentsController {
      * @param userDni The DNI of the user.
      * @return A ResponseEntity containing a list of payments for the user.
      */
-    @GetMapping("/{userDni}")
+    @GetMapping("/user/{userDni}")
     public ResponseEntity<List<PaymentResponse>> getUserPayments(@PathVariable final String userDni) {
         final List<PersistentPaymentsEntity> results = paymentsService.getUserPayments(userDni);
         List<PaymentResponse> responsesList = new ArrayList<>();
