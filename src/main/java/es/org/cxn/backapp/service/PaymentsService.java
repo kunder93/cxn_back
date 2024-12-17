@@ -27,6 +27,7 @@ package es.org.cxn.backapp.service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import es.org.cxn.backapp.model.PaymentsEntity;
@@ -34,6 +35,7 @@ import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
+import es.org.cxn.backapp.service.impl.DefaultPaymentsService.PaymentDetails;
 
 /**
  * Interface for services that handle payment operations.
@@ -112,6 +114,14 @@ public interface PaymentsService {
      * @see PaymentsServiceException
      */
     PaymentsEntity findPayment(UUID paymentId) throws PaymentsServiceException;
+
+    /**
+     * Retrieves all users with their associated payments.
+     *
+     * @return a map where the key is the user's DNI and the value is a list of
+     *         their payments.
+     */
+    Map<String, List<PaymentDetails>> getAllUsersWithPayments();
 
     /**
      * Retrieves all payments associated with a given user's DNI.

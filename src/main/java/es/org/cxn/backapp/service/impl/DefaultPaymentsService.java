@@ -5,18 +5,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import es.org.cxn.backapp.model.PaymentsEntity;
+import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.repository.PaymentsEntityRepository;
 import es.org.cxn.backapp.service.PaymentsService;
+import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 
 /**
@@ -36,19 +40,75 @@ import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 public final class DefaultPaymentsService implements PaymentsService {
 
     /**
+     * Default implementation of PaymentDetails.
+     */
+    private static final class DefaultPaymentDetails implements PaymentDetails {
+        private final BigDecimal amount;
+        private final PaymentsCategory category;
+        private final PaymentsState state;
+
+        public DefaultPaymentDetails(BigDecimal amount, PaymentsCategory category, PaymentsState state) {
+            this.amount = amount;
+            this.category = category;
+            this.state = state;
+        }
+
+        @Override
+        public BigDecimal getAmount() {
+            return amount;
+        }
+
+        @Override
+        public PaymentsCategory getCategory() {
+            return category;
+        }
+
+        @Override
+        public PaymentsState getState() {
+            return state;
+        }
+
+    }
+
+    public interface PaymentDetails {
+        BigDecimal getAmount();
+
+        PaymentsCategory getCategory();
+
+        PaymentsState getState();
+
+    }
+
+    /**
      * The repository used for saving and retrieving payment entities.
      */
     private final PaymentsEntityRepository paymentsRepository;
+
+    /**
+     * The service used to interact with user-related functionality.
+     * <p>
+     * This service provides access to user information and business logic, such as
+     * retrieving user details, validating user data, and other user management
+     * operations. It is used within this service to associate payments with users
+     * or to retrieve user-related data needed for payment processing.
+     * </p>
+     *
+     * @see UserService
+     */
+    private final UserService userService;
 
     /**
      * Constructs a DefaultPaymentsService with the provided payments repository.
      *
      * @param repository the repository used to persist payment data. Must not be
      *                   null.
+     * @param usrServ    the service used to interact with users data. Must not be
+     *                   null.
      * @throws IllegalArgumentException if the repository is null.
      */
-    public DefaultPaymentsService(final PaymentsEntityRepository repository) {
-        paymentsRepository = checkNotNull(repository, "payments entity repository cannot be null");
+    public DefaultPaymentsService(final PaymentsEntityRepository repository, final UserService usrServ) {
+        paymentsRepository = checkNotNull(repository, "Payments entity repository cannot be null.");
+        userService = checkNotNull(usrServ, "User service cannot be null.");
     }
 
     /**
@@ -170,6 +230,25 @@ public final class DefaultPaymentsService implements PaymentsService {
     }
 
     /**
+     * Retrieves all users with their associated payments.
+     *
+     * @return a map where the key is the user's DNI and the value is a list of
+     *         their payments.
+     */
+    @Override
+    public Map<String, List<PaymentDetails>> getAllUsersWithPayments() {
+        // Get all users from the user service
+        final var users = userService.getAll();
+
+        // Create a map of user DNI to their list of payments
+        return users.stream().collect(
+                Collectors.toMap(UserEntity::getDni, user -> transformToPaymentDetails(getUserPayments(user.getDni())) // Adapt
+                                                                                                                       // the
+                                                                                                                       // payments
+                ));
+    }
+
+    /**
      * Retrieves all payments associated with a given user's DNI.
      * <p>
      * This method queries the payments repository to find all payments linked to
@@ -229,6 +308,13 @@ public final class DefaultPaymentsService implements PaymentsService {
                     "Payment with id: " + paymentId + " have not " + PaymentsState.UNPAID + " state.");
         }
 
+    }
+
+    // Helper method to transform PersistentPaymentsEntity to PaymentDetails
+    private List<PaymentDetails> transformToPaymentDetails(List<PersistentPaymentsEntity> payments) {
+        return payments.stream().map(
+                payment -> new DefaultPaymentDetails(payment.getAmount(), payment.getCategory(), payment.getState()))
+                .collect(Collectors.toList());
     }
 
 }

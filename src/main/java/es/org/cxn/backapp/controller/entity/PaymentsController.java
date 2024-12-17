@@ -30,6 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,7 @@ import es.org.cxn.backapp.model.form.responses.payments.PaymentResponse;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
+import es.org.cxn.backapp.service.impl.DefaultPaymentsService.PaymentDetails;
 import jakarta.validation.Valid;
 
 /**
@@ -114,6 +116,20 @@ public class PaymentsController {
         } catch (PaymentsServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
+    }
+
+    /**
+     * Retrieves from all users all payment information.
+     *
+     * @return A List with all users basic info with their payments info list.
+     */
+    @GetMapping("/getAll")
+    public ResponseEntity<Map<String, List<PaymentDetails>>> getAllUsersPayments() {
+
+        final var usersPaymentsList = paymentsService.getAllUsersWithPayments();
+
+        return new ResponseEntity<>(usersPaymentsList, HttpStatus.OK);
+
     }
 
     /**
