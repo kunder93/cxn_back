@@ -27,6 +27,7 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
+import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
@@ -58,6 +59,9 @@ class FederateStateServiceTest {
      */
     @Mock
     private UserService userService;
+
+    @Mock
+    PaymentsService paymentsService;
 
     /**
      * Mock MultipartFile representing the front side of a DNI (Documento Nacional
@@ -92,7 +96,7 @@ class FederateStateServiceTest {
 
     @BeforeEach
     public void setup() {
-        federateStateService = new DefaultFederateStateService(federateStateRepository, userService);
+        federateStateService = new DefaultFederateStateService(federateStateRepository, userService, paymentsService);
     }
 
     @Test

@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,10 +21,13 @@ import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
+import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
@@ -69,18 +73,27 @@ public final class DefaultFederateStateService implements FederateStateService {
     private final UserService userService;
 
     /**
+     * Service for create payments when federate a user.
+     */
+    private final PaymentsService paymentsService;
+
+    /**
      * Constructs the DefaultFederateStateService with a repository and user
      * service.
      *
      * @param repoFederate The repository for managing federate states.
      * @param userServ     The user service for retrieving user details.
+     * @param paymentsServ The payments service for manage payments when federate or
+     *                     cancel federate states.
      * @throws NullPointerException if the provided repository or user service is
      *                              null.
      */
-    public DefaultFederateStateService(final FederateStateEntityRepository repoFederate, final UserService userServ) {
+    public DefaultFederateStateService(final FederateStateEntityRepository repoFederate, final UserService userServ,
+            final PaymentsService paymentsServ) {
         super();
-        federateStateRepository = checkNotNull(repoFederate, "Received a null pointer as federate state repository");
-        userService = checkNotNull(userServ, "Received a null pointer as user service");
+        federateStateRepository = checkNotNull(repoFederate, "Received a null pointer as federate state repository.");
+        userService = checkNotNull(userServ, "Received a null pointer as user service.");
+        paymentsService = checkNotNull(paymentsServ, "Receivec a null pointer as payments service.");
     }
 
     /**
@@ -161,11 +174,12 @@ public final class DefaultFederateStateService implements FederateStateService {
      *                                       extension is invalid.
      * @throws FederateStateServiceException If the federate state is invalid or the
      *                                       images cannot be saved.
+     * @throws PaymentsServiceException      When new payment cannot be generated.
      */
     @Override
     public PersistentFederateStateEntity federateMember(final String userEmail, final MultipartFile frontDniFile,
             final MultipartFile backDniFile, final boolean autoRenewal)
-            throws UserServiceException, FederateStateServiceException {
+            throws UserServiceException, FederateStateServiceException, PaymentsServiceException {
 
         final var user = userService.findByEmail(userEmail);
         final var userDni = user.getDni();
@@ -213,6 +227,8 @@ public final class DefaultFederateStateService implements FederateStateService {
             throw new FederateStateServiceException("Bad state. User dni: " + userDni);
         }
 
+        paymentsService.createPayment(BigDecimal.valueOf(15.00), PaymentsCategory.FEDERATE_PAYMENT,
+                "Coste ficha federativa.", "Pago federar usuario", userDni);
         return updatedEntity;
     }
 

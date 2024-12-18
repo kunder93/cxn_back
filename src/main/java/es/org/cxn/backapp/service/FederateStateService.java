@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
@@ -92,7 +93,8 @@ public interface FederateStateService {
             throws FederateStateServiceException, UserServiceException;
 
     /**
-     * Federates a member by processing the provided DNI documents.
+     * Federates a member by processing the provided DNI documents. When federates
+     * member it also generates a new payment for the user.
      *
      * @param userEmail    the email of the user being federated
      * @param frontDniFile the front image of the DNI document
@@ -104,9 +106,11 @@ public interface FederateStateService {
      *                                       user service
      * @throws FederateStateServiceException if there is an error during the
      *                                       federate process
+     * @throws PaymentsServiceException      When payment cannot be generated.
      */
     PersistentFederateStateEntity federateMember(String userEmail, MultipartFile frontDniFile,
-            MultipartFile backDniFile, boolean autoRenewal) throws UserServiceException, FederateStateServiceException;
+            MultipartFile backDniFile, boolean autoRenewal)
+            throws UserServiceException, FederateStateServiceException, PaymentsServiceException;
 
     /**
      * Retrieves a list of all federate state entities.

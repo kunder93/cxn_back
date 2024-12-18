@@ -45,6 +45,7 @@ import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList
 import es.org.cxn.backapp.model.form.responses.FederateStateResponse;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
@@ -209,7 +210,7 @@ public class FederateController {
                     autoRenewal);
             return new ResponseEntity<>(new FederateStateResponse(federateStateEntity), HttpStatus.OK);
 
-        } catch (UserServiceException | FederateStateServiceException e) {
+        } catch (UserServiceException | FederateStateServiceException | PaymentsServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
