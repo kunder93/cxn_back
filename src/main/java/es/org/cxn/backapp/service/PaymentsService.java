@@ -34,8 +34,8 @@ import es.org.cxn.backapp.model.PaymentsEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
+import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
-import es.org.cxn.backapp.service.impl.DefaultPaymentsService.PaymentDetails;
 
 /**
  * Interface for services that handle payment operations.

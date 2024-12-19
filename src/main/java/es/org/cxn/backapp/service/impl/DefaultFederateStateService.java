@@ -22,6 +22,7 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
+import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.PaymentsService;
@@ -97,6 +98,31 @@ public final class DefaultFederateStateService implements FederateStateService {
     }
 
     /**
+     * Checks if the given {@link Optional} of {@link PersistentFederateStateEntity}
+     * contains a value. If the {@link Optional} is empty, throws a
+     * {@link FederateStateServiceException}.
+     *
+     * @param federateStateOptional the {@link Optional} containing the federate
+     *                              state entity to check.
+     * @param userDni               the DNI of the user for whom the federate state
+     *                              is being checked.
+     * @return the {@link PersistentFederateStateEntity} if present in the
+     *         {@link Optional}.
+     * @throws FederateStateServiceException if the {@link Optional} is empty,
+     *                                       indicating that no federate state was
+     *                                       found for the user.
+     */
+    private static PersistentFederateStateEntity getFederateStateOptional(
+            final Optional<PersistentFederateStateEntity> federateStateOptional, final String userDni)
+            throws FederateStateServiceException {
+        if (federateStateOptional.isEmpty()) {
+            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
+        } else {
+            return federateStateOptional.get();
+        }
+    }
+
+    /**
      * Toggles the auto-renewal status for federate member. If member is not
      * federated yet, throw exception.
      *
@@ -112,18 +138,15 @@ public final class DefaultFederateStateService implements FederateStateService {
         final UserEntity user = userService.findByEmail(userEmail);
         final String userDni = user.getDni();
         final Optional<PersistentFederateStateEntity> federateStateOptional = federateStateRepository.findById(userDni);
-        if (federateStateOptional.isEmpty()) {
-            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
+
+        final PersistentFederateStateEntity federateState = getFederateStateOptional(federateStateOptional, userDni);
+        final FederateState state = federateState.getState();
+        if (state.equals(FederateState.FEDERATE)) {
+            federateState.setAutomaticRenewal(!federateState.isAutomaticRenewal());
+            return federateStateRepository.save(federateState);
         } else {
-            final PersistentFederateStateEntity federateState = federateStateOptional.get();
-            final FederateState state = federateState.getState();
-            if (state.equals(FederateState.FEDERATE)) {
-                federateState.setAutomaticRenewal(!federateState.isAutomaticRenewal());
-                return federateStateRepository.save(federateState);
-            } else {
-                throw new FederateStateServiceException(
-                        "Federate state is not : FEDERATE for user with dni: " + userDni);
-            }
+            throw new FederateStateServiceException("Federate state is not : FEDERATE for user with dni: " + userDni);
+
         }
     }
 
@@ -142,22 +165,20 @@ public final class DefaultFederateStateService implements FederateStateService {
     public PersistentFederateStateEntity confirmCancelFederate(final String userDni)
             throws FederateStateServiceException, UserServiceException {
         final var federateStateOptional = federateStateRepository.findById(userDni);
-        if (federateStateOptional.isEmpty()) {
-            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
-        } else {
-            final var federateStateEntity = federateStateOptional.get();
-            final var entityState = federateStateEntity.getState();
-            if (entityState == FederateState.IN_PROGRESS) {
-                federateStateEntity.setState(FederateState.FEDERATE);
-            }
-            if (entityState == FederateState.FEDERATE) {
-                federateStateEntity.setState(FederateState.NO_FEDERATE);
-            }
-            if (entityState == FederateState.NO_FEDERATE) {
-                throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
-            }
-            return federateStateRepository.save(federateStateEntity);
+
+        final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
+        final var entityState = federateStateEntity.getState();
+        if (entityState == FederateState.IN_PROGRESS) {
+            federateStateEntity.setState(FederateState.FEDERATE);
         }
+        if (entityState == FederateState.FEDERATE) {
+            federateStateEntity.setState(FederateState.NO_FEDERATE);
+        }
+        if (entityState == FederateState.NO_FEDERATE) {
+            throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
+        }
+        return federateStateRepository.save(federateStateEntity);
+
     }
 
     /**
@@ -185,11 +206,7 @@ public final class DefaultFederateStateService implements FederateStateService {
         final var userDni = user.getDni();
         final var federateStateOptional = federateStateRepository.findById(userDni);
 
-        if (federateStateOptional.isEmpty()) {
-            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
-        }
-
-        final var federateStateEntity = federateStateOptional.get();
+        final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
         final var baseDirectory = imageLocationDnis;
         final Path userDirectoryPath = Paths.get(baseDirectory, userDni);
 
@@ -218,6 +235,9 @@ public final class DefaultFederateStateService implements FederateStateService {
                     federateStateEntity.setState(FederateState.IN_PROGRESS);
                 }
 
+                final var createdAssociatedPayment = paymentsService.createPayment(BigDecimal.valueOf(15.00),
+                        PaymentsCategory.FEDERATE_PAYMENT, "Coste ficha federativa.", "Pago federar usuario", userDni);
+                federateStateEntity.setPayment((PersistentPaymentsEntity) createdAssociatedPayment);
                 updatedEntity = federateStateRepository.save(federateStateEntity);
             } catch (IOException e) {
                 throw new FederateStateServiceException("Error saving DNI images: " + e.getMessage(), e);
@@ -227,8 +247,6 @@ public final class DefaultFederateStateService implements FederateStateService {
             throw new FederateStateServiceException("Bad state. User dni: " + userDni);
         }
 
-        paymentsService.createPayment(BigDecimal.valueOf(15.00), PaymentsCategory.FEDERATE_PAYMENT,
-                "Coste ficha federativa.", "Pago federar usuario", userDni);
         return updatedEntity;
     }
 
@@ -259,11 +277,8 @@ public final class DefaultFederateStateService implements FederateStateService {
 
         final var federateStateOptional = federateStateRepository.findById(userDni);
 
-        if (federateStateOptional.isPresent()) {
-            return federateStateOptional.get();
-        } else {
-            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
-        }
+        return getFederateStateOptional(federateStateOptional, userDni);
+
     }
 
     /**
@@ -329,28 +344,25 @@ public final class DefaultFederateStateService implements FederateStateService {
 
         final var federateStateOptional = federateStateRepository.findById(userDni);
 
-        if (federateStateOptional.isPresent()) {
-            final var federateStateEntity = federateStateOptional.get();
-            final var state = federateStateEntity.getState();
-            if (state.equals(FederateState.FEDERATE)) {
-                federateStateEntity.setDniLastUpdate(LocalDate.now());
-                try {
-                    final String frontUrl = saveFile(frontDniFile, userDni, "frontal");
-                    final String backUrl = saveFile(backDniFile, userDni, "trasera");
+        final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
+        final var state = federateStateEntity.getState();
+        if (state.equals(FederateState.FEDERATE)) {
+            federateStateEntity.setDniLastUpdate(LocalDate.now());
+            try {
+                final String frontUrl = saveFile(frontDniFile, userDni, "frontal");
+                final String backUrl = saveFile(backDniFile, userDni, "trasera");
 
-                    federateStateEntity.setDniFrontImageUrl(frontUrl);
-                    federateStateEntity.setDniBackImageUrl(backUrl);
+                federateStateEntity.setDniFrontImageUrl(frontUrl);
+                federateStateEntity.setDniBackImageUrl(backUrl);
 
-                    return federateStateRepository.save(federateStateEntity);
-                } catch (IOException e) {
-                    throw new FederateStateServiceException("Error updating DNI images: " + e.getMessage(), e);
-                }
-            } else {
-                throw new FederateStateServiceException("User is not in a federate state.");
+                return federateStateRepository.save(federateStateEntity);
+            } catch (IOException e) {
+                throw new FederateStateServiceException("Error updating DNI images: " + e.getMessage(), e);
             }
         } else {
-            throw new FederateStateServiceException("No federate state found for user with dni: " + userDni);
+            throw new FederateStateServiceException("User is not in a federate state.");
         }
+
     }
 
 }

@@ -60,8 +60,11 @@ class FederateStateServiceTest {
     @Mock
     private UserService userService;
 
+    /**
+     * The mocked payment service.
+     */
     @Mock
-    PaymentsService paymentsService;
+    private PaymentsService paymentsService;
 
     /**
      * Mock MultipartFile representing the front side of a DNI (Documento Nacional

@@ -21,6 +21,7 @@ import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.repository.PaymentsEntityRepository;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 
 /**
@@ -38,46 +39,6 @@ import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
  */
 @Service
 public final class DefaultPaymentsService implements PaymentsService {
-
-    /**
-     * Default implementation of PaymentDetails.
-     */
-    private static final class DefaultPaymentDetails implements PaymentDetails {
-        private final BigDecimal amount;
-        private final PaymentsCategory category;
-        private final PaymentsState state;
-
-        public DefaultPaymentDetails(BigDecimal amount, PaymentsCategory category, PaymentsState state) {
-            this.amount = amount;
-            this.category = category;
-            this.state = state;
-        }
-
-        @Override
-        public BigDecimal getAmount() {
-            return amount;
-        }
-
-        @Override
-        public PaymentsCategory getCategory() {
-            return category;
-        }
-
-        @Override
-        public PaymentsState getState() {
-            return state;
-        }
-
-    }
-
-    public interface PaymentDetails {
-        BigDecimal getAmount();
-
-        PaymentsCategory getCategory();
-
-        PaymentsState getState();
-
-    }
 
     /**
      * The repository used for saving and retrieving payment entities.
@@ -109,6 +70,20 @@ public final class DefaultPaymentsService implements PaymentsService {
     public DefaultPaymentsService(final PaymentsEntityRepository repository, final UserService usrServ) {
         paymentsRepository = checkNotNull(repository, "Payments entity repository cannot be null.");
         userService = checkNotNull(usrServ, "User service cannot be null.");
+    }
+
+    /**
+     * Transforms a list of PersistentPaymentsEntity objects to a list of
+     * PaymentDetails.
+     *
+     * @param payments the list of PersistentPaymentsEntity objects to transform
+     * @return an unmodifiable list of PaymentDetails, each representing a payment's
+     *         amount, category, and state
+     */
+    public static List<PaymentDetails> transformToPaymentDetails(final List<PersistentPaymentsEntity> payments) {
+        return payments.stream()
+                .map(payment -> new PaymentDetails(payment.getAmount(), payment.getCategory(), payment.getState()))
+                .toList(); // Using Stream.toList() for an unmodifiable list
     }
 
     /**
@@ -179,7 +154,7 @@ public final class DefaultPaymentsService implements PaymentsService {
         final PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
 
         // Validate payment amount
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
             throw new PaymentsServiceException("Payment amount must be greater than zero.");
         }
 
@@ -241,11 +216,8 @@ public final class DefaultPaymentsService implements PaymentsService {
         final var users = userService.getAll();
 
         // Create a map of user DNI to their list of payments
-        return users.stream().collect(
-                Collectors.toMap(UserEntity::getDni, user -> transformToPaymentDetails(getUserPayments(user.getDni())) // Adapt
-                                                                                                                       // the
-                                                                                                                       // payments
-                ));
+        return users.stream().collect(Collectors.toMap(UserEntity::getDni,
+                user -> transformToPaymentDetails(getUserPayments(user.getDni()))));
     }
 
     /**
@@ -308,13 +280,6 @@ public final class DefaultPaymentsService implements PaymentsService {
                     "Payment with id: " + paymentId + " have not " + PaymentsState.UNPAID + " state.");
         }
 
-    }
-
-    // Helper method to transform PersistentPaymentsEntity to PaymentDetails
-    private List<PaymentDetails> transformToPaymentDetails(List<PersistentPaymentsEntity> payments) {
-        return payments.stream().map(
-                payment -> new DefaultPaymentDetails(payment.getAmount(), payment.getCategory(), payment.getState()))
-                .collect(Collectors.toList());
     }
 
 }

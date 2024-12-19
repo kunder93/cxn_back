@@ -49,8 +49,8 @@ import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
 import es.org.cxn.backapp.model.form.responses.payments.PaymentResponse;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.service.PaymentsService;
+import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
-import es.org.cxn.backapp.service.impl.DefaultPaymentsService.PaymentDetails;
 import jakarta.validation.Valid;
 
 /**
@@ -89,7 +89,7 @@ public class PaymentsController {
     public ResponseEntity<PaymentResponse> cancelPayment(@Valid
     @PathVariable final UUID paymentId) {
         try {
-            PaymentsEntity updatedPayment;
+            final PaymentsEntity updatedPayment;
             updatedPayment = paymentsService.cancelPayment(paymentId);
             final var response = new PaymentResponse(updatedPayment);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -160,7 +160,7 @@ public class PaymentsController {
     @GetMapping("/user/{userDni}")
     public ResponseEntity<List<PaymentResponse>> getUserPayments(@PathVariable final String userDni) {
         final List<PersistentPaymentsEntity> results = paymentsService.getUserPayments(userDni);
-        List<PaymentResponse> responsesList = new ArrayList<>();
+        final List<PaymentResponse> responsesList = new ArrayList<>();
         results.forEach((PersistentPaymentsEntity paymentEntity) -> {
             responsesList.add(new PaymentResponse(paymentEntity));
         });
@@ -177,7 +177,7 @@ public class PaymentsController {
     @PatchMapping("/{paymentId}/pay")
     public ResponseEntity<PaymentResponse> makePayment(@PathVariable final UUID paymentId) {
         try {
-            PaymentsEntity updatedPayment;
+            final PaymentsEntity updatedPayment;
             updatedPayment = paymentsService.makePayment(paymentId, LocalDateTime.now());
             final var response = new PaymentResponse(updatedPayment);
             return new ResponseEntity<>(response, HttpStatus.OK);

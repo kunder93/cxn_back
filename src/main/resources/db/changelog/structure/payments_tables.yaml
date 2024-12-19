@@ -56,3 +56,26 @@ databaseChangeLog:
         referencedTableName: users
         referencedColumnNames: dni
         constraintName: fk_payments_user_dni
+
+- changeSet:
+    id: addPaymentToFederateState
+    author: Santiago
+    changes:
+      - addColumn:
+          tableName: user_federative_data
+          columns:
+            - column:
+                name: payment_id
+                type: uuid
+                constraints:
+                  nullable: true
+      - addUniqueConstraint:
+          columnNames: payment_id
+          tableName: user_federative_data
+          constraintName: uq_payment_id
+      - addForeignKeyConstraint:
+          baseColumnNames: payment_id
+          baseTableName: user_federative_data
+          referencedColumnNames: id
+          referencedTableName: payments
+          constraintName: fk_user_federative_data_to_payments       

@@ -93,11 +93,29 @@ class ActivitiesServiceTest {
      */
     private PersistentActivityEntity sampleActivity;
 
+    /**
+     * The activity title.
+     */
     private final String activityTitle = "Sample activity";
+    /**
+     * The activity description.
+     */
     private final String activityDescription = "A sample description";
+    /**
+     * The activity start date.
+     */
     private final LocalDateTime activityStartDate = LocalDateTime.now();
+    /**
+     * The activity end date.
+     */
     private final LocalDateTime activityEndDate = LocalDateTime.now().plusHours(2);
+    /**
+     * The activity category.
+     */
     private final String activityCategory = "Sample category";
+    /**
+     * The activity image source location.
+     */
     private final String activityImageSrc = "srcImageSample";
 
     @BeforeEach
