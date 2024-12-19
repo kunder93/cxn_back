@@ -153,17 +153,18 @@ public final class DefaultFederateStateService implements FederateStateService {
     /**
      * Confirms the cancellation of a user's federate status. If the federate state
      * is 'IN_PROGRESS', it changes to 'FEDERATE'. If the state is 'FEDERATE', it
-     * changes to 'NO_FEDERATE'.
+     * changes to 'NO_FEDERATE'. Cancel federate proccess removes payment too.
      *
      * @param userDni The DNI of the user whose federate state is to be updated.
      * @return The updated federate state entity.
      * @throws FederateStateServiceException If the state is already 'NO_FEDERATE'
      *                                       or if no federate state is found.
      * @throws UserServiceException          If the user is not found.
+     * @throws PaymentsServiceException      When cannot delete associated payment.
      */
     @Override
     public PersistentFederateStateEntity confirmCancelFederate(final String userDni)
-            throws FederateStateServiceException, UserServiceException {
+            throws FederateStateServiceException, UserServiceException, PaymentsServiceException {
         final var federateStateOptional = federateStateRepository.findById(userDni);
 
         final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
@@ -173,12 +174,17 @@ public final class DefaultFederateStateService implements FederateStateService {
         }
         if (entityState == FederateState.FEDERATE) {
             federateStateEntity.setState(FederateState.NO_FEDERATE);
+            final var payment = federateStateEntity.getPayment();
+
+            federateStateEntity.setPayment(null);
+            final var result = federateStateRepository.save(federateStateEntity);
+            paymentsService.remove(payment.getId());
+            return result;
         }
         if (entityState == FederateState.NO_FEDERATE) {
             throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
         }
         return federateStateRepository.save(federateStateEntity);
-
     }
 
     /**

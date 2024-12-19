@@ -160,4 +160,19 @@ public interface PaymentsService {
      */
     PaymentsEntity makePayment(UUID paymentId, LocalDateTime paymentDate) throws PaymentsServiceException;
 
+    /**
+     * Removes a payment record by its unique identifier.
+     * <p>
+     * This method deletes a payment from the system by using its unique identifier
+     * (payment ID). The payment record is permanently removed from the database. If
+     * no payment with the specified ID is found, no action is taken.
+     * </p>
+     *
+     * @param paymentId the unique identifier of the payment to be removed.
+     * @throws PaymentsServiceException if an error occurs while removing the
+     *                                  payment (e.g., if the payment cannot be
+     *                                  found or deleted).
+     */
+    void remove(UUID paymentId) throws PaymentsServiceException;
+
 }

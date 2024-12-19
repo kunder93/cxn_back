@@ -282,4 +282,27 @@ public final class DefaultPaymentsService implements PaymentsService {
 
     }
 
+    /**
+     * Removes a payment record by its unique identifier.
+     * <p>
+     * This method deletes a payment from the system by using its unique identifier
+     * (payment ID). The payment record is permanently removed from the database. If
+     * no payment with the specified ID is found, no action is taken.
+     * </p>
+     *
+     * @param paymentId the unique identifier of the payment to be removed.
+     * @throws PaymentsServiceException if a payment cannot be found.
+     */
+    @Override
+    public void remove(final UUID paymentId) throws PaymentsServiceException {
+        final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
+
+        if (paymentOptional.isEmpty()) {
+            throw new PaymentsServiceException("No payment with id: " + paymentId + " found.");
+        }
+
+        paymentsRepository.deleteById(paymentId);
+
+    }
+
 }

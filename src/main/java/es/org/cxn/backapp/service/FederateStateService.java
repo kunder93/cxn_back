@@ -88,12 +88,13 @@ public interface FederateStateService {
      *                                       confirmation process
      * @throws UserServiceException          if there is an error related to the
      *                                       user service
+     * @throws PaymentsServiceException      if payment cannot be deleted.
      */
     PersistentFederateStateEntity confirmCancelFederate(String userDni)
-            throws FederateStateServiceException, UserServiceException;
+            throws FederateStateServiceException, UserServiceException, PaymentsServiceException;
 
     /**
-     * Federates a member by processing the provided DNI documents. When federates
+     * Federate a member by processing the provided DNI documents. When federate
      * member it also generates a new payment for the user.
      *
      * @param userEmail    the email of the user being federated

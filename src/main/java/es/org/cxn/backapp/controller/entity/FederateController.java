@@ -50,12 +50,12 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * The FederateController class handles HTTP requests related to federate state
- * management. It provides endpoints for confirming a federate state, federating
- * a member, retrieving federate state data for the authenticated user, updating
+ * management. It provides endpoints for confirming a federate state, federate a
+ * member, retrieving federate state data for the authenticated user, updating
  * DNI information, and fetching federate state data for all users.
  *
  * <p>
- * This controller supports methods for confirming federate status, federating
+ * This controller supports methods for confirming federate status, federate
  * members with DNI document uploads, and retrieving federate state information.
  * It uses the {@link FederateStateService} to interact with the federate state
  * business logic.
@@ -168,13 +168,14 @@ public class FederateController {
      *
      * @param request the request containing the user's DNI
      * @return a ResponseEntity containing the updated federate state response
-     * @throws ResponseStatusException if there is an error during the confirmation
-     *                                 process
+     * @throws PaymentsServiceException if associated payment cannot be deleted.
+     * @throws ResponseStatusException  if there is an error during the confirmation
+     *                                  process
      */
     @PatchMapping()
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
     public ResponseEntity<FederateStateExtendedResponse> confirmCancelFederate(
-            @RequestBody final ConfirmCancelFederateRequest request) {
+            @RequestBody final ConfirmCancelFederateRequest request) throws PaymentsServiceException {
         try {
             final var result = federateStateService.confirmCancelFederate(request.userDni);
             return new ResponseEntity<>(new FederateStateExtendedResponse(result), HttpStatus.OK);
@@ -184,7 +185,7 @@ public class FederateController {
     }
 
     /**
-     * Federates a member by uploading their DNI documents and enabling or disabling
+     * Federate a member by uploading their DNI documents and enabling or disabling
      * auto-renewal.
      *
      * <p>
