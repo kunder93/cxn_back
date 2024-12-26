@@ -78,12 +78,15 @@ public final class DefaultPaymentsService implements PaymentsService {
      *
      * @param payments the list of PersistentPaymentsEntity objects to transform
      * @return an unmodifiable list of PaymentDetails, each representing a payment's
-     *         amount, category, and state
+     *         details including title, description, amount, category, state, and
+     *         timestamps
      */
     public static List<PaymentDetails> transformToPaymentDetails(final List<PersistentPaymentsEntity> payments) {
         return payments.stream()
-                .map(payment -> new PaymentDetails(payment.getAmount(), payment.getCategory(), payment.getState()))
-                .toList(); // Using Stream.toList() for an unmodifiable list
+                .map(payment -> new PaymentDetails(payment.getId(), payment.getTitle(), payment.getDescription(),
+                        payment.getAmount(), payment.getCategory(), payment.getState(), payment.getCreatedAt(),
+                        payment.getPaidAt()))
+                .toList(); // Stream.toList() for an unmodifiable list
     }
 
     /**
@@ -296,13 +299,10 @@ public final class DefaultPaymentsService implements PaymentsService {
     @Override
     public void remove(final UUID paymentId) throws PaymentsServiceException {
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
-
         if (paymentOptional.isEmpty()) {
             throw new PaymentsServiceException("No payment with id: " + paymentId + " found.");
         }
-
         paymentsRepository.deleteById(paymentId);
-
     }
 
 }
