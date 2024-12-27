@@ -296,6 +296,27 @@ public class UserController {
     }
 
     /**
+     * Retrieves the profile of a user based on their DNI (Documento Nacional de
+     * Identidad).
+     *
+     * @param userDni the DNI of the user whose profile is to be retrieved.
+     * @return a {@link ResponseEntity} containing a {@link UserDataResponse} object
+     *         with the user's profile information and an HTTP status of 200 (OK).
+     * @throws ResponseStatusException with HTTP status 400 (BAD REQUEST) if the
+     *                                 user cannot be found or if there is an error
+     *                                 in the {@link UserService}.
+     */
+    @GetMapping("/{userDni}")
+    public ResponseEntity<UserDataResponse> getUserProfile(final @PathVariable String userDni) {
+        try {
+            final var userFound = userService.findByDni(userDni);
+            return new ResponseEntity<>(new UserDataResponse(userFound), HttpStatus.OK);
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
      * Retrieves the profile image of the authenticated user.
      *
      * <p>
