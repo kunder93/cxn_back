@@ -12,7 +12,7 @@
  *         Ensures that the chess question service behaves as expected,
  *         including creating, retrieving, and managing chess questions.</li>
  *     <li>{@link UserServiceTest} - Tests for the {@link
- *         es.org.cxn.backapp.service.impl.services.DefaultUserService} class. Verifies
+ *         es.org.cxn.backapp.services.DefaultUserService} class. Verifies
  *         the correctness of user-related operations such as user creation,
  *         updating user details, and user authentication.</li>
  *     <li>{@link PaymentSheetServiceTest} - Tests for the {@link

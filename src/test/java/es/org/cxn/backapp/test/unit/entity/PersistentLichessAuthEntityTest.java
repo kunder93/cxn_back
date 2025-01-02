@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
-import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 /**
  * Unit tests for the {@link PersistentLichessAuthEntity} class.

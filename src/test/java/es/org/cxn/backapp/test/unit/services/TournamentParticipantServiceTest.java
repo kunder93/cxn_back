@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity;
 import es.org.cxn.backapp.repository.TournamentParticipantRepository;
-import es.org.cxn.backapp.service.impl.DefaultTournamentParticipantService;
+import es.org.cxn.backapp.service.DefaultTournamentParticipantService;
 
 import java.math.BigInteger;
 import java.time.LocalDate;

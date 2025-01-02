@@ -24,10 +24,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
 import es.org.cxn.backapp.controller.entity.ActivitiesController;
+import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
 
 @WebMvcTest(ActivitiesController.class)
 @Import(TestSecurityConfiguration.class)

@@ -6,11 +6,11 @@
  * <p>The services tested in this package include:</p>
  *
  * <ul>
- *   <li>{@link es.org.cxn.backapp.service.impl.DefaultLibraryService}: This service
+ *   <li>{@link es.org.cxn.backapp.service.DefaultLibraryService}: This service
  *   handles operations related to the management of the application's
  *   library resources.</li>
  *
- *   <li>{@link es.org.cxn.backapp.service.impl.DefaultRoleService}: This service
+ *   <li>{@link es.org.cxn.backapp.service.DefaultRoleService}: This service
  *   is responsible for managing roles within the application's
  *   security framework.</li>
  * </ul>

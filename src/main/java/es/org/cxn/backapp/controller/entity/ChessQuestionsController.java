@@ -41,13 +41,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.service.ChessQuestionsService;
-import es.org.cxn.backapp.service.exceptions.ChessQuestionServiceException;
 import jakarta.validation.Valid;
 
 /**
@@ -84,8 +84,8 @@ public class ChessQuestionsController {
      */
     @PostMapping("/changeChessQuestionHasSeen")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<ChessQuestionResponse> changeChessQuestionHasSeen(@RequestBody
-    @Valid final ChangeChessQuestionHasSeenRequest chessQuestionHasSeenRequestForm) {
+    public ResponseEntity<ChessQuestionResponse> changeChessQuestionHasSeen(
+            @RequestBody @Valid final ChangeChessQuestionHasSeenRequest chessQuestionHasSeenRequestForm) {
         try {
             final var result = chessQuestionsService.changeChessQuestionSeen(chessQuestionHasSeenRequestForm.id());
             final var response = new ChessQuestionResponse(result.getIdentifier(), result.getEmail(),
@@ -105,8 +105,8 @@ public class ChessQuestionsController {
      * @return form with the created chess question data.
      */
     @PostMapping()
-    public ResponseEntity<ChessQuestionResponse> createChessQuestion(@RequestBody
-    @Valid final CreateChessQuestionRequest createChessQuestionRequestForm) {
+    public ResponseEntity<ChessQuestionResponse> createChessQuestion(
+            @RequestBody @Valid final CreateChessQuestionRequest createChessQuestionRequestForm) {
         try {
             final var result = chessQuestionsService.add(createChessQuestionRequestForm.email(),
                     createChessQuestionRequestForm.category(), createChessQuestionRequestForm.topic(),
@@ -122,14 +122,14 @@ public class ChessQuestionsController {
     /**
      * Delete chess question by ID.
      *
-     * @param identifier the identifier of the chess question to delete.
+     * @param id the identifier of the chess question to delete.
      * @return response OK if delete is successful.
      */
-    @DeleteMapping("/{identifier}")
+    @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<Void> deleteChessQuestion(@PathVariable final Integer identifier) {
+    public ResponseEntity<Void> deleteChessQuestion(@PathVariable final Integer id) {
         try {
-            chessQuestionsService.delete(identifier);
+            chessQuestionsService.delete(id);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (ChessQuestionServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

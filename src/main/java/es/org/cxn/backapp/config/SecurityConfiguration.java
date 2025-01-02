@@ -72,7 +72,7 @@ public class SecurityConfiguration {
      * @throws Exception When fails.
      */
     @Bean
-    public AuthenticationManager authenticationManager(final AuthenticationConfiguration authConfig) throws Exception {
+    AuthenticationManager authenticationManager(final AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
@@ -82,7 +82,7 @@ public class SecurityConfiguration {
      * @return the CORS configuration source.
      */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfigurationSource corsConfigurationSource() {
         LOGGER.info("Configurando CORS");
         final var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
@@ -106,7 +106,7 @@ public class SecurityConfiguration {
      * @throws Exception The exception when fails.
      */
     @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired JwtRequestFilter jwtRequestFilter,
+    SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired JwtRequestFilter jwtRequestFilter,
             final @Autowired EnableUserRequestFilter enableUserRequestFilter) throws Exception {
         LOGGER.info("Configurando SecurityFilterChain");
         // Disable CSRF for REST API and use stateless session management
@@ -146,7 +146,7 @@ public class SecurityConfiguration {
      * @return the password encoder.
      */
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -160,7 +160,7 @@ public class SecurityConfiguration {
      * @return the configured WebSecurityCustomizer.
      */
     @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
+    WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
     }
 

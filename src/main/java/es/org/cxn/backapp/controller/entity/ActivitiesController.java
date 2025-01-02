@@ -42,12 +42,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import es.org.cxn.backapp.exceptions.ActivityServiceException;
 import es.org.cxn.backapp.model.form.requests.AddActivityRequestData;
 import es.org.cxn.backapp.model.form.responses.ActivityResponse;
 import es.org.cxn.backapp.model.form.responses.CreatedActivityResponse;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
 import jakarta.validation.Valid;
 
 /**
@@ -107,9 +107,8 @@ public class ActivitiesController {
 
         try {
             // Call the service with file and other parameters
-            final var createdActivityEntity = activitiesService.addActivity(activityData.title(),
-                    activityData.description(), activityData.startDate(), activityData.endDate(),
-                    activityData.category(), imageFile);
+            var createdActivityEntity = activitiesService.addActivity(activityData.title(), activityData.description(),
+                    activityData.startDate(), activityData.endDate(), activityData.category(), imageFile);
 
             return new ResponseEntity<>(new CreatedActivityResponse(createdActivityEntity), HttpStatus.CREATED);
 
@@ -157,7 +156,7 @@ public class ActivitiesController {
     @GetMapping()
     public ResponseEntity<Stream<ActivityWithImageDto>> getAllActivities() {
 
-        final Stream<ActivityWithImageDto> activitiesList;
+        Stream<ActivityWithImageDto> activitiesList;
         try {
             activitiesList = activitiesService.getAllActivities();
             return new ResponseEntity<>(activitiesList, HttpStatus.OK);

@@ -2,8 +2,6 @@ package es.org.cxn.backapp.model;
 
 import java.time.LocalDate;
 
-import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
-
 /**
  * Represents a Federate State entity with various details about a user's
  * federative status. This includes fields related to the user's DNI, DNI front
@@ -38,13 +36,6 @@ public interface FederateStateEntity extends java.io.Serializable {
      *         {@link java.time.LocalDateTime}.
      */
     LocalDate getDniLastUpdate();
-
-    /**
-     * Getter for associated payment entity.
-     *
-     * @return The federate state associated payment.
-     */
-    PersistentPaymentsEntity getPayment();
 
     /**
      * Gets the federate state of the user.
@@ -99,13 +90,6 @@ public interface FederateStateEntity extends java.io.Serializable {
      *                      {@link java.time.LocalDateTime}.
      */
     void setDniLastUpdate(LocalDate dniLastUpdate);
-
-    /**
-     * Setter for federate state payment.
-     *
-     * @param value The new federate state associated payment.
-     */
-    void setPayment(PersistentPaymentsEntity value);
 
     /**
      * Sets the federate state of the user.

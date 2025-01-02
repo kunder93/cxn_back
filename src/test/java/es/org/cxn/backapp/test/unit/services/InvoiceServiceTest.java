@@ -10,11 +10,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import es.org.cxn.backapp.exceptions.InvoiceServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
 import es.org.cxn.backapp.repository.InvoiceEntityRepository;
-import es.org.cxn.backapp.service.exceptions.InvoiceServiceException;
-import es.org.cxn.backapp.service.impl.DefaultInvoiceService;
+import es.org.cxn.backapp.service.DefaultInvoiceService;
 
 import java.time.LocalDate;
 import java.util.Collections;

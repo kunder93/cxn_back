@@ -49,6 +49,36 @@ public enum ImageExtension {
     PROVIDED("provided");
 
     /**
+     * Get the ImageExtension corresponding to a given string.
+     *
+     * @param extension the extension string to convert.
+     * @return the corresponding ImageExtension, or null if invalid.
+     */
+    public static ImageExtension fromString(final String extension) {
+        for (final ImageExtension imgExt : values()) {
+            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
+                return imgExt;
+            }
+        }
+        return null; // Return null if no match found
+    }
+
+    /**
+     * Check if the provided extension is valid.
+     *
+     * @param extension the extension to check.
+     * @return true if the extension is valid, false otherwise.
+     */
+    public static boolean isValidExtension(final String extension) {
+        for (final ImageExtension imgExt : values()) {
+            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * The string representation of the image extension.
      * <p>
      * This field stores the specific file extension associated with each image
@@ -65,40 +95,6 @@ public enum ImageExtension {
      */
     ImageExtension(final String value) {
         this.extension = value;
-    }
-
-    /**
-     * Get the ImageExtension corresponding to a given string.
-     *
-     * @param extension the extension string to convert.
-     * @return the corresponding ImageExtension, or null if invalid.
-     */
-    public static ImageExtension fromString(final String extension) {
-        ImageExtension result = null; // Initialize result with null
-        for (final ImageExtension imgExt : values()) {
-            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
-                result = imgExt;
-                break; // Exit the loop once a match is found
-            }
-        }
-        return result; // Return result at the end
-    }
-
-    /**
-     * Check if the provided extension is valid.
-     *
-     * @param extension the extension to check.
-     * @return true if the extension is valid, false otherwise.
-     */
-    public static boolean isValidExtension(final String extension) {
-        boolean isValid = false; // Initialize the result as false
-        for (final ImageExtension imgExt : values()) {
-            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
-                isValid = true; // Update the result if a match is found
-                break; // Exit the loop early
-            }
-        }
-        return isValid; // Return the result at the end
     }
 
     /**
