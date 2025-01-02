@@ -67,7 +67,7 @@ public class ChessQuestionsController {
     /**
      * Constructs a controller with the specified dependencies.
      *
-     * @param service company service.
+     * @param service chess questions service.
      */
     public ChessQuestionsController(final ChessQuestionsService service) {
         super();

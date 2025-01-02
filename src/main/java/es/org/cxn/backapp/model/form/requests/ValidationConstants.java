@@ -48,37 +48,6 @@ public final class ValidationConstants {
     public static final int MIN_AUTHORS_LIST_SIZE = 1;
 
     /**
-     * Maximum length allowed for the company name.
-     */
-    public static final int MAX_NAME_SIZE = 40;
-
-    /**
-     * Maximum length allowed for the company address.
-     */
-    public static final int MAX_ADDRESS_SIZE = 60;
-
-    /**
-     * Validation message for when the company name is blank.
-     */
-    public static final String NAME_NOT_BLANK_MESSAGE = "Company name must not be blank";
-
-    /**
-     * Validation message for when the company name exceeds the maximum length.
-     */
-    public static final String NAME_SIZE_MESSAGE = "Company name must not exceed " + MAX_NAME_SIZE + " characters";
-
-    /**
-     * Validation message for when the company address is blank.
-     */
-    public static final String ADDRESS_NOT_BLANK_MESSAGE = "Company address must not be blank";
-
-    /**
-     * Validation message for when the company address exceeds the maximum length.
-     */
-    public static final String ADDRESS_SIZE_MESSAGE = "Company address must not exceed " + MAX_ADDRESS_SIZE
-            + " characters";
-
-    /**
      * Minimum number of days for the event.
      */
     public static final int MIN_AMOUNT_DAYS = 1;
@@ -298,71 +267,6 @@ public final class ValidationConstants {
      */
     public static final String MESSAGE_MAX_LENGTH_MESSAGE = "Message length cannot exceed " + MESSAGE_MAX_LENGTH
             + " characters.";
-
-    /**
-     * The maximum length allowed for the Company NIF (Tax Identification Number)
-     * field. This constant is used to ensure that the NIF does not exceed this
-     * length.
-     */
-    public static final int COMPANY_NIF_MAX_LENGTH = 10;
-
-    /**
-     * The error message to be used when the Company NIF field is blank. This
-     * message is displayed if the NIF field is not provided.
-     */
-    public static final String COMPANY_NIF_NOT_BLANK_MESSAGE = "NIF must not be blank";
-
-    /**
-     * The error message to be used when the Company NIF field exceeds the maximum
-     * length. This message is displayed if the NIF field exceeds
-     * {@link #COMPANY_NIF_MAX_LENGTH} characters.
-     */
-    public static final String COMPANY_NIF_SIZE_MESSAGE = "NIF must not exceed " + COMPANY_NIF_MAX_LENGTH
-            + " characters";
-
-    // Constants for Company Name
-
-    /**
-     * The maximum length allowed for the Company Name field. This constant is used
-     * to ensure that the Name does not exceed this length.
-     */
-    public static final int COMPANY_NAME_MAX_LENGTH = 40;
-
-    /**
-     * The error message to be used when the Company Name field is blank. This
-     * message is displayed if the Name field is not provided.
-     */
-    public static final String COMPANY_NAME_NOT_BLANK_MESSAGE = "Name must not be blank";
-
-    /**
-     * The error message to be used when the Company Name field exceeds the maximum
-     * length. This message is displayed if the Name field exceeds
-     * {@link #COMPANY_NAME_MAX_LENGTH} characters.
-     */
-    public static final String COMPANY_NAME_SIZE_MESSAGE = "Name must not exceed " + COMPANY_NAME_MAX_LENGTH
-            + " characters";
-
-    // Constants for Company Address
-
-    /**
-     * The maximum length allowed for the Company Address field. This constant is
-     * used to ensure that the Address does not exceed this length.
-     */
-    public static final int COMPANY_ADDRESS_MAX_LENGTH = 60;
-
-    /**
-     * The error message to be used when the Company Address field is blank. This
-     * message is displayed if the Address field is not provided.
-     */
-    public static final String COMPANY_ADDRESS_NOT_BLANK_MESSAGE = "Address must not be blank";
-
-    /**
-     * The error message to be used when the Company Address field exceeds the
-     * maximum length. This message is displayed if the Address field exceeds
-     * {@link #COMPANY_ADDRESS_MAX_LENGTH} characters.
-     */
-    public static final String COMPANY_ADDRESS_SIZE_MESSAGE = "Address must not exceed " + COMPANY_ADDRESS_MAX_LENGTH
-            + " characters";
 
     /**
      * Maximum length allowed for the invoice series.
