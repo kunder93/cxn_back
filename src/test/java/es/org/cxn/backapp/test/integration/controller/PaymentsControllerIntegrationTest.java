@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -190,6 +191,7 @@ class PaymentsControllerIntegrationTest {
     @Test
     @DisplayName("Test for creating and cancelling a payment successfully")
     @Transactional
+    @WithMockUser(username = "tesorero", roles = { "TESORERO" })
     void testCancelPayment() throws Exception {
         // Variables inside the test method
         BigDecimal paymentAmount = BigDecimal.valueOf(100.00);
@@ -244,6 +246,7 @@ class PaymentsControllerIntegrationTest {
     @Test
     @DisplayName("Test for canceling a payment with a non-existent payment ID")
     @Transactional
+    @WithMockUser(username = "tesorero", roles = { "TESORERO" })
     void testCancelPaymentWithNonExistentId() throws Exception {
         // Generate a random UUID for the non-existent payment ID
         UUID nonExistentPaymentId = UUID.randomUUID();
@@ -274,6 +277,7 @@ class PaymentsControllerIntegrationTest {
     @Test
     @DisplayName("Test for creating a payment and retrieving its data")
     @Transactional
+    @WithMockUser(username = "tesorero", roles = { "TESORERO" })
     void testCreatePaymentGetPaymentData() throws Exception {
         // Variables inside the test method
         String userDni = "32721860J";
@@ -365,6 +369,7 @@ class PaymentsControllerIntegrationTest {
     @Test
     @DisplayName("Test for making a payment and marking it as paid")
     @Transactional
+    @WithMockUser(username = "tesorero", roles = { "TESORERO" })
     void testMakePayment() throws Exception {
         // Variables inside the test method
         String userDni = "32721860J";
@@ -422,6 +427,7 @@ class PaymentsControllerIntegrationTest {
     @Test
     @DisplayName("Test for making a payment with a non-existent payment ID")
     @Transactional
+    @WithMockUser(username = "tesorero", roles = { "TESORERO" })
     void testmakePaymentWithNonExistentId() throws Exception {
         // Generate a random UUID for the non-existent payment ID
         UUID nonExistentPaymentId = UUID.randomUUID();
@@ -446,6 +452,7 @@ class PaymentsControllerIntegrationTest {
     @Test
     @DisplayName("Test creating payments for two users and retrieving payments for each")
     @Transactional
+    @WithMockUser(username = "tesorero", roles = { "TESORERO" })
     void testTwoUsersCreatePaymentsRetrieveForOne() throws Exception {
         // Variables inside the test method
         String firstUserDni = UsersControllerFactory.USER_A_DNI;
