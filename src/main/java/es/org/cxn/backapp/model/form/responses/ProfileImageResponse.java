@@ -25,7 +25,7 @@ public record ProfileImageResponse(String imageExtension, Boolean stored, String
      */
     public ProfileImageResponse(final PersistentProfileImageEntity profileImageEntity) {
         // Convert the ImageExtension enum to a string using name() or toString()
-        this(profileImageEntity.getExtension().name(), profileImageEntity.getStored(), profileImageEntity.getUrl(),
+        this(profileImageEntity.getExtension().name(), profileImageEntity.isStored(), profileImageEntity.getUrl(),
                 null);
     }
 
@@ -39,7 +39,7 @@ public record ProfileImageResponse(String imageExtension, Boolean stored, String
      */
     public ProfileImageResponse(final PersistentProfileImageEntity profileImageEntity, final String imageFileData) {
         // Convert the ImageExtension enum to a string using name() or toString()
-        this(profileImageEntity.getExtension().name(), profileImageEntity.getStored(), profileImageEntity.getUrl(),
+        this(profileImageEntity.getExtension().name(), profileImageEntity.isStored(), profileImageEntity.getUrl(),
                 imageFileData);
     }
 

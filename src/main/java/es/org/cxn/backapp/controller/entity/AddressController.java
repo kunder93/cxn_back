@@ -26,11 +26,11 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import es.org.cxn.backapp.exceptions.AddressServiceException;
 import es.org.cxn.backapp.model.CountryEntity;
 import es.org.cxn.backapp.model.form.responses.CountryListResponse;
 import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
 import es.org.cxn.backapp.service.AddressService;
+import es.org.cxn.backapp.service.exceptions.AddressServiceException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

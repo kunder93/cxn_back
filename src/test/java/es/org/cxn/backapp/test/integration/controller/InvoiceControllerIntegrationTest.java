@@ -32,7 +32,7 @@ import com.google.gson.GsonBuilder;
 import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
 import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
-import es.org.cxn.backapp.service.DefaultCompanyService;
+import es.org.cxn.backapp.service.impl.DefaultCompanyService;
 import es.org.cxn.backapp.test.utils.CompanyControllerFactory;
 import es.org.cxn.backapp.test.utils.InvoicesControllerFactory;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;

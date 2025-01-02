@@ -24,9 +24,9 @@
 
 package es.org.cxn.backapp.service;
 
-import es.org.cxn.backapp.exceptions.CompanyServiceException;
 import es.org.cxn.backapp.model.CompanyEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
+import es.org.cxn.backapp.service.exceptions.CompanyServiceException;
 
 import java.util.List;
 

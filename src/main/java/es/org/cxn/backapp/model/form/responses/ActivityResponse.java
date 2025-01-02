@@ -43,18 +43,20 @@ public record ActivityResponse(String title, String description, LocalDateTime s
     }
 
     @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true; // Check if the same reference
-        }
-        if (!(o instanceof ActivityResponse other)) {
-            return false; // Check if the object is an instance of the same class
+    public boolean equals(final Object obj) {
+        boolean isEqual = false; // Initialize the result as false
+
+        if (this == obj) {
+            isEqual = true; // Same reference, objects are equal
+        } else if (obj instanceof ActivityResponse other) {
+            // Compare all fields for equality
+            isEqual = title.equals(other.title) && description.equals(other.description)
+                    && startDate.equals(other.startDate) && endDate.equals(other.endDate)
+                    && category.equals(other.category) && Arrays.equals(image, other.image); // Use Arrays.equals for
+                                                                                             // byte arrays
         }
 
-        // Compare all fields for equality
-        return title.equals(other.title) && description.equals(other.description) && startDate.equals(other.startDate)
-                && endDate.equals(other.endDate) && category.equals(other.category)
-                && Arrays.equals(image, other.image); // Use Arrays.equals for byte arrays
+        return isEqual; // Return the result at the end
     }
 
     @Override

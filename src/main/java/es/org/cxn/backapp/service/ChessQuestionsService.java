@@ -1,9 +1,9 @@
 
 package es.org.cxn.backapp.service;
 
-import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
+import es.org.cxn.backapp.service.exceptions.ChessQuestionServiceException;
 
 import java.util.List;
 

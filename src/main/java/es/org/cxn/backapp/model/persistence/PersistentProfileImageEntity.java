@@ -1,6 +1,7 @@
 package es.org.cxn.backapp.model.persistence;
 
 import es.org.cxn.backapp.model.ProfileImageEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -118,14 +119,6 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
      * {@inheritDoc}
      */
     @Override
-    public Boolean getStored() {
-        return stored;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public String getUrl() {
         return url;
     }
@@ -144,6 +137,14 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
     @Override
     public String getUserDni() {
         return userDni;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean isStored() {
+        return stored;
     }
 
     /**
