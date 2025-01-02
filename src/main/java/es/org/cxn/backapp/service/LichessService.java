@@ -3,12 +3,12 @@ package es.org.cxn.backapp.service;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
 import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
+import es.org.cxn.backapp.service.exceptions.LichessServiceException;
 
 /**
  * Interface for Lichess user authentication processes.

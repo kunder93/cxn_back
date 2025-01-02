@@ -15,12 +15,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
-import es.org.cxn.backapp.service.MyUserDetailsService;
+import es.org.cxn.backapp.model.persistence.user.UserType;
+import es.org.cxn.backapp.security.MyUserDetailsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import jakarta.transaction.Transactional;
 
 /**

@@ -24,19 +24,14 @@
 
 package es.org.cxn.backapp.service;
 
-import java.io.IOException;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Service for the User entity domain.
@@ -142,57 +137,6 @@ public interface UserService {
      *         users.
      */
     List<UserEntity> getAll();
-
-    /**
-     * Get user profile image.
-     *
-     * @param dni The user identifier.
-     * @return The profile image response dto.
-     * @throws UserServiceException When user with dni not found.
-     */
-    ProfileImageResponse getProfileImage(String dni) throws UserServiceException;
-
-    /**
-     * Removes an user from persistence.
-     *
-     * @param email email of the user to remove.
-     *
-     * @throws UserServiceException when user with provided email not found.
-     */
-    void remove(String email) throws UserServiceException;
-
-    /**
-     * Saves the profile image for a user based on the provided URL.
-     *
-     * @param userDni the DNI (Document Number of Identification) of the user for
-     *                whom the profile image is being saved.
-     * @param url     the URL where the profile image is located. This can be a
-     *                direct URL or a relative path to the image file.
-     * @return the saved {@link PersistentUserEntity} object containing the profile
-     *         image information.
-     * @throws UserServiceException if there is an error while saving the profile
-     *                              image for the user.
-     */
-    PersistentUserEntity saveProfileImage(String userDni, String url) throws UserServiceException;
-
-    /**
-     * Saves the profile image for a user based on the uploaded file.
-     *
-     * @param userDni the DNI (Document Number of Identification) of the user for
-     *                whom the profile image is being saved.
-     * @param file    the uploaded {@link MultipartFile} representing the profile
-     *                image.
-     * @return the saved {@link PersistentUserEntity} object containing the profile
-     *         image information.
-     * @throws IllegalStateException if the method is invoked when the application
-     *                               is in an invalid state for this operation.
-     * @throws IOException           if an I/O error occurs while saving the file to
-     *                               the filesystem.
-     * @throws UserServiceException  if there is an error while saving the profile
-     *                               image for the user.
-     */
-    PersistentUserEntity saveProfileImageFile(String userDni, MultipartFile file)
-            throws IllegalStateException, IOException, UserServiceException;
 
     /**
      * Unsubscribe an user.

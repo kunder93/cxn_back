@@ -1,13 +1,12 @@
 
 package es.org.cxn.backapp.controller.entity;
 
-import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
 import es.org.cxn.backapp.model.form.responses.AuthorListResponse;
 import es.org.cxn.backapp.model.form.responses.BookListResponse;
 import es.org.cxn.backapp.model.form.responses.BookResponse;
 import es.org.cxn.backapp.service.LibraryService;
-
+import es.org.cxn.backapp.service.exceptions.LibraryServiceException;
 import jakarta.validation.Valid;
 
 import java.util.Objects;

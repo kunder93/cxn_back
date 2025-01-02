@@ -35,13 +35,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.form.responses.LichessProfileListResponse;
 import es.org.cxn.backapp.model.form.responses.LichessProfileResponse;
 import es.org.cxn.backapp.service.LichessService;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto.SaveGameStatistics;
+import es.org.cxn.backapp.service.exceptions.LichessServiceException;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -169,7 +169,7 @@ public class LichessController {
     private LichessProfileListResponse fromServiceDtoToControllerResponseList(
             final List<LichessProfileDto> profilesListDto) {
         final var responsesList = profilesListDto.stream().map(dto -> new LichessProfileResponse(dto.completeUserName(),
-                dto.id(), dto.updatedAt(),
+                dto.identifier(), dto.updatedAt(),
                 new LichessProfileResponse.Game(dto.blitz().rating(), dto.blitz().games(), dto.blitz().prov()),
                 new LichessProfileResponse.Game(dto.bullet().rating(), dto.bullet().games(), dto.bullet().prov()),
                 new LichessProfileResponse.Game(dto.rapid().rating(), dto.rapid().games(), dto.rapid().prov()),
@@ -201,7 +201,7 @@ public class LichessController {
                 final JsonNode rootNode = objectMapper.readTree(response.getBody());
 
                 // Extraer y mapear los campos necesarios al DTO
-                final String id = rootNode.path("id").asText();
+                final String identifier = rootNode.path("id").asText();
                 final String username = rootNode.path("username").asText();
                 // Obtener estadísticas de diferentes modalidades
                 final SaveGameStatistics blitz = mapSaveGameStatistics(rootNode.path("perfs").path("blitz"));
@@ -210,13 +210,13 @@ public class LichessController {
                 final SaveGameStatistics rapid = mapSaveGameStatistics(rootNode.path("perfs").path("rapid"));
                 final SaveGameStatistics puzzle = mapSaveGameStatistics(rootNode.path("perfs").path("puzzle"));
                 // Crear el DTO con la información mapeada
-                return new LichessSaveProfileDto(userDni, id, username, LocalDateTime.now(), blitz, bullet, classical,
-                        rapid, puzzle);
+                return new LichessSaveProfileDto(userDni, identifier, username, LocalDateTime.now(), blitz, bullet,
+                        classical, rapid, puzzle);
             } else {
                 throw new LichessServiceException("Error al obtener el perfil de Lichess.");
             }
         } catch (RestClientException | JsonProcessingException e) {
-            throw new LichessServiceException("Error en la llamada a la API de Lichess.");
+            throw new LichessServiceException("Error en la llamada a la API de Lichess.", e);
         }
     }
 
@@ -344,7 +344,9 @@ public class LichessController {
      * @return true if the response status code is in the 2xx range, false otherwise
      */
     private boolean isResponseSuccessful(final ResponseEntity<String> response) {
-        return response != null && response.getStatusCode().is2xxSuccessful();
+        final var statusCode = response.getStatusCode();
+
+        return response != null && statusCode.is2xxSuccessful();
     }
 
     /**

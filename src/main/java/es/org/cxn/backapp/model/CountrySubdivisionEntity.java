@@ -1,11 +1,11 @@
 
 package es.org.cxn.backapp.model;
 
-import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
-import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
-
 import java.io.Serializable;
 import java.util.List;
+
+import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
 /**
  * The CountrySubdivisionEntity interface represents a subdivision within a
@@ -17,49 +17,49 @@ import java.util.List;
  */
 public interface CountrySubdivisionEntity extends Serializable {
 
-  /**
-   * Retrieves the unique identifier for the country subdivision.
-   *
-   * @return The identifier of the country subdivision, or {@code null} if
-   * not set.
-   */
-  Integer getId();
+    /**
+     * Retrieves a list of addresses that use this country subdivision.
+     *
+     * @return A list of address entities associated with this country subdivision,
+     *         or an empty list if none are found.
+     */
+    List<PersistentAddressEntity> getAddressList();
 
-  /**
-   * Retrieves the name or type of the subdivision (e.g., state, province).
-   *
-   * @return The kind or type of subdivision, or {@code null} if not set.
-   */
-  String getKindSubdivisionName();
+    /**
+     * Retrieves the code associated with the country subdivision.
+     *
+     * @return The code of the country subdivision, or {@code null} if not set.
+     */
+    String getCode();
 
-  /**
-   * Retrieves the name of the country subdivision.
-   *
-   * @return The name of the country subdivision, or {@code null} if not set.
-   */
-  String getName();
+    /**
+     * Retrieves the country to which the subdivision belongs.
+     *
+     * @return The country entity associated with this subdivision, or {@code null}
+     *         if not set.
+     */
+    PersistentCountryEntity getCountry();
 
-  /**
-   * Retrieves the code associated with the country subdivision.
-   *
-   * @return The code of the country subdivision, or {@code null} if not set.
-   */
-  String getCode();
+    /**
+     * Retrieves the unique identifier for the country subdivision.
+     *
+     * @return The identifier of the country subdivision, or {@code null} if not
+     *         set.
+     */
+    Integer getIdentifier();
 
-  /**
-   * Retrieves the country to which the subdivision belongs.
-   *
-   * @return The country entity associated with this subdivision, or
-   * {@code null} if not set.
-   */
-  PersistentCountryEntity getCountry();
+    /**
+     * Retrieves the name or type of the subdivision (e.g., state, province).
+     *
+     * @return The kind or type of subdivision, or {@code null} if not set.
+     */
+    String getKindSubdivisionName();
 
-  /**
-   * Retrieves a list of addresses that use this country subdivision.
-   *
-   * @return A list of address entities associated with this country
-   * subdivision, or an empty list if none are found.
-   */
-  List<PersistentAddressEntity> getAddressList();
+    /**
+     * Retrieves the name of the country subdivision.
+     *
+     * @return The name of the country subdivision, or {@code null} if not set.
+     */
+    String getName();
 
 }
