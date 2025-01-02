@@ -19,12 +19,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import es.org.cxn.backapp.AppURL;
@@ -82,7 +80,7 @@ public class SecurityConfiguration {
      * @return the CORS configuration source.
      */
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         LOGGER.info("Configurando CORS");
         final var configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("*"));
@@ -106,7 +104,8 @@ public class SecurityConfiguration {
      * @throws Exception The exception when fails.
      */
     @Bean
-    public SecurityFilterChain filterChain(final HttpSecurity http, final @Autowired JwtRequestFilter jwtRequestFilter,
+    public DefaultSecurityFilterChain filterChain(final HttpSecurity http,
+            final @Autowired JwtRequestFilter jwtRequestFilter,
             final @Autowired EnableUserRequestFilter enableUserRequestFilter) throws Exception {
         LOGGER.info("Configurando SecurityFilterChain");
         // Disable CSRF for REST API and use stateless session management
@@ -146,7 +145,7 @@ public class SecurityConfiguration {
      * @return the password encoder.
      */
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 

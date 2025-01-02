@@ -24,13 +24,13 @@
 
 package es.org.cxn.backapp.service;
 
+import java.util.List;
+
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.service.exceptions.AddressServiceException;
 
-import java.util.List;
-
 /**
- * Service for the Company entity domain.
+ * Service for the address entity domain.
  * <p>
  * This is a domain service just to allow the endpoints querying the entities
  * they are asked for.
@@ -39,22 +39,21 @@ import java.util.List;
  */
 public interface AddressService {
 
-  /**
-   * Get the list of all avaliable countries with their data.
-   *
-   * @return List with country entities.
-   */
-  List<PersistentCountryEntity> getCountries();
+    /**
+     * Get the list of all avaliable countries with their data.
+     *
+     * @return List with country entities.
+     */
+    List<PersistentCountryEntity> getCountries();
 
-  /**
-   * Get country entity data with provided country numeric code.
-   *
-   * @param countryNumericCode The country numeric code.
-   * @return The country entity with data.
-   * @throws AddressServiceException When country entity with country numeric
-   *                                 code not found.
-   */
-  PersistentCountryEntity getCountry(Integer countryNumericCode)
-        throws AddressServiceException;
+    /**
+     * Get country entity data with provided country numeric code.
+     *
+     * @param countryNumericCode The country numeric code.
+     * @return The country entity with data.
+     * @throws AddressServiceException When country entity with country numeric code
+     *                                 not found.
+     */
+    PersistentCountryEntity getCountry(Integer countryNumericCode) throws AddressServiceException;
 
 }

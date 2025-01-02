@@ -25,9 +25,7 @@
 package es.org.cxn.backapp.model.persistence.user;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -37,7 +35,6 @@ import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
-import es.org.cxn.backapp.model.persistence.PersistentPaymentSheetEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import jakarta.persistence.CascadeType;
@@ -51,7 +48,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -144,12 +140,6 @@ public class PersistentUserEntity implements UserEntity {
     @Builder.Default
     private Set<PersistentRoleEntity> roles = new HashSet<>();
 
-    /**
-     * The payment sheet user owner.
-     */
-    @OneToMany(mappedBy = "userOwner")
-    @Builder.Default
-    private List<PersistentPaymentSheetEntity> paymentSheets = new ArrayList<>();
 
     /**
      * The user address.
