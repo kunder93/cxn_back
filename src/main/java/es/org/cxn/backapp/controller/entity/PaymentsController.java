@@ -35,6 +35,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,6 +87,7 @@ public class PaymentsController {
      * @throws ResponseStatusException if the payment cannot be canceled.
      */
     @PatchMapping("/{paymentId}/cancel")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO')")
     public ResponseEntity<PaymentResponse> cancelPayment(@Valid
     @PathVariable final UUID paymentId) {
         try {
@@ -106,6 +108,7 @@ public class PaymentsController {
      * @throws ResponseStatusException if the payment cannot be created.
      */
     @PostMapping()
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO')")
     public ResponseEntity<PaymentResponse> createPayment(@RequestBody
     @Valid final CreatePaymentRequest request) {
         try {
@@ -124,6 +127,7 @@ public class PaymentsController {
      * @return A List with all users basic info with their payments info list.
      */
     @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO')")
     public ResponseEntity<Map<String, List<PaymentDetails>>> getAllUsersPayments() {
 
         final var usersPaymentsList = paymentsService.getAllUsersWithPayments();
@@ -175,6 +179,7 @@ public class PaymentsController {
      * @throws ResponseStatusException if the payment cannot be updated.
      */
     @PatchMapping("/{paymentId}/pay")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO')")
     public ResponseEntity<PaymentResponse> makePayment(@PathVariable final UUID paymentId) {
         try {
             final PaymentsEntity updatedPayment;
