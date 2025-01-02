@@ -26,6 +26,20 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import es.org.cxn.backapp.exceptions.CompanyServiceException;
+import es.org.cxn.backapp.exceptions.InvoiceServiceException;
+import es.org.cxn.backapp.model.InvoiceEntity;
+import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
+import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
+import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
+import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
+import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
+import es.org.cxn.backapp.service.CompanyService;
+import es.org.cxn.backapp.service.DefaultCompanyService;
+import es.org.cxn.backapp.service.InvoiceService;
+
+import jakarta.validation.Valid;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 
@@ -42,19 +56,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.model.InvoiceEntity;
-import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
-import es.org.cxn.backapp.model.form.responses.InvoiceListResponse;
-import es.org.cxn.backapp.model.form.responses.InvoiceResponse;
-import es.org.cxn.backapp.model.persistence.PersistentCompanyEntity;
-import es.org.cxn.backapp.model.persistence.PersistentInvoiceEntity;
-import es.org.cxn.backapp.service.CompanyService;
-import es.org.cxn.backapp.service.InvoiceService;
-import es.org.cxn.backapp.service.exceptions.CompanyServiceException;
-import es.org.cxn.backapp.service.exceptions.InvoiceServiceException;
-import es.org.cxn.backapp.service.impl.DefaultCompanyService;
-import jakarta.validation.Valid;
-
 /**
  * Rest controller for invoices.
  *
@@ -65,119 +66,164 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/invoice")
 public class InvoiceController {
 
-    /**
-     * The invoice service.
-     */
-    private final InvoiceService invoiceService;
-    /**
-     * The company service.
-     */
-    private final CompanyService companyService;
+  /**
+   * The invoice service.
+   */
+  private final InvoiceService invoiceService;
+  /**
+   * The company service.
+   */
+  private final CompanyService companyService;
 
-    /**
-     * Constructs a controller with the specified dependencies.
-     *
-     * @param invoiceServ The invoice service.
-     * @param companyServ The company service.
-     */
-    public InvoiceController(final InvoiceService invoiceServ, final DefaultCompanyService companyServ) {
-        super();
-        invoiceService = checkNotNull(invoiceServ, "Received a null pointer as service");
-        companyService = checkNotNull(companyServ, "Received a null pointer as service");
+  /**
+   * Constructs a controller with the specified dependencies.
+   *
+   * @param invoiceServ The invoice service.
+   * @param companyServ The company service.
+   */
+  public InvoiceController(
+        final InvoiceService invoiceServ,
+        final DefaultCompanyService companyServ
+  ) {
+    super();
+    invoiceService =
+          checkNotNull(invoiceServ, "Received a null pointer as service");
+    companyService =
+          checkNotNull(companyServ, "Received a null pointer as service");
+  }
+
+  /**
+   * Create a new invoice.
+   *
+   * @param invoiceCreateRequestForm form with data to create invoice.
+   *                                 {@link CreateInvoiceRequest}.
+   * @return response with the created invoice data.
+   */
+  @CrossOrigin
+  @PostMapping()
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
+  public ResponseEntity<InvoiceResponse> createInvoice(@RequestBody @Valid
+  final CreateInvoiceRequest invoiceCreateRequestForm) {
+    final var sellerNif = invoiceCreateRequestForm.sellerNif();
+    final var buyerNif = invoiceCreateRequestForm.buyerNif();
+    try {
+      final var sellerCompany =
+            (PersistentCompanyEntity) companyService.findById(sellerNif);
+      final var buyerCompany =
+            (PersistentCompanyEntity) companyService.findById(buyerNif);
+
+      if (sellerCompany.getNif().equals(buyerCompany.getNif())) {
+        throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST, "Seller and buyer cannot be the same"
+        );
+      }
+      final var result = invoiceService.add(
+            invoiceCreateRequestForm.number().intValue(),
+            invoiceCreateRequestForm.series(),
+            invoiceCreateRequestForm.expeditionDate(),
+            invoiceCreateRequestForm.advancePaymentDate(),
+            invoiceCreateRequestForm.taxExempt(), sellerCompany, buyerCompany
+      );
+      final var response = new InvoiceResponse(
+            BigInteger.valueOf(result.getNumber()), result.getSeries(),
+            result.getAdvancePaymentDate(), result.getExpeditionDate(),
+            result.getTaxExempt(), result.getSeller().getNif(),
+            result.getBuyer().getNif()
+      );
+      return new ResponseEntity<>(response, HttpStatus.CREATED);
+    } catch (CompanyServiceException | InvoiceServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
+  }
 
-    /**
-     * Create a new invoice.
-     *
-     * @param invoiceCreateRequestForm form with data to create invoice.
-     *                                 {@link CreateInvoiceRequest}.
-     * @return response with the created invoice data.
-     */
-    @CrossOrigin
-    @PostMapping()
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<InvoiceResponse> createInvoice(@RequestBody
-    @Valid final CreateInvoiceRequest invoiceCreateRequestForm) {
-        final var sellerNif = invoiceCreateRequestForm.sellerNif();
-        final var buyerNif = invoiceCreateRequestForm.buyerNif();
-        try {
-            final var sellerCompany = (PersistentCompanyEntity) companyService.findById(sellerNif);
-            final var buyerCompany = (PersistentCompanyEntity) companyService.findById(buyerNif);
-
-            if (sellerCompany.getNif().equals(buyerCompany.getNif())) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Seller and buyer cannot be the same");
-            }
-            final var result = invoiceService.add(invoiceCreateRequestForm.number().intValue(),
-                    invoiceCreateRequestForm.series(), invoiceCreateRequestForm.expeditionDate(),
-                    invoiceCreateRequestForm.advancePaymentDate(), invoiceCreateRequestForm.taxExempt(), sellerCompany,
-                    buyerCompany);
-            final var response = new InvoiceResponse(BigInteger.valueOf(result.getNumber()), result.getSeries(),
-                    result.getAdvancePaymentDate(), result.getExpeditionDate(), result.getTaxExempt(),
-                    result.getSeller().getNif(), result.getBuyer().getNif());
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } catch (CompanyServiceException | InvoiceServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
+  /**
+   * Get an invoice by its series and number.
+   *
+   * @param series The invoice series.
+   * @param number The invoice number.
+   * @return Response status 200 OK with invoice details or error status.
+   */
+  @CrossOrigin
+  @GetMapping("/{series}/{number}")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
+  public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable
+  final String series, @PathVariable
+  final int number) {
+    try {
+      final var invoiceEntity =
+            invoiceService.findBySeriesAndNumber(series, number);
+      final var response = InvoiceResponse.fromEntity(invoiceEntity);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (InvoiceServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
+  }
 
-    /**
-     * Delete invoice providing a invoice series and number.
-     *
-     * @param series The invoice series.
-     * @param number The invoice number.
-     * @return Response status 200 OK or some error.
-     */
-    @CrossOrigin
-    @DeleteMapping("/{series}/{number}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<Boolean> deleteInvoice(@PathVariable final String series, @PathVariable final int number) {
-        try {
-            invoiceService.remove(series, number);
-        } catch (InvoiceServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-        return new ResponseEntity<>(true, HttpStatus.OK);
+  /**
+   * Returns all stored invoices.
+   *
+   * @return all stored invoices.
+   */
+  @CrossOrigin
+  @GetMapping()
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
+  public ResponseEntity<InvoiceListResponse> getAllInvoices() {
+
+    final var invoices = invoiceService.getInvoices();
+    final var invoiceResponseList = new ArrayList<InvoiceResponse>();
+    invoices.forEach(
+          (InvoiceEntity invoice) -> invoiceResponseList.add(
+                new InvoiceResponse(
+                      BigInteger.valueOf(invoice.getNumber()),
+                      invoice.getSeries(), invoice.getAdvancePaymentDate(),
+                      invoice.getExpeditionDate(), invoice.getTaxExempt(),
+                      ((PersistentInvoiceEntity) invoice).getSeller().getNif(),
+                      ((PersistentInvoiceEntity) invoice).getBuyer().getNif()
+                )
+          )
+    );
+    return new ResponseEntity<>(
+          new InvoiceListResponse(invoiceResponseList), HttpStatus.OK
+    );
+  }
+
+  /**
+   * Delete invoice providing a invoice series and number.
+   *
+   * @param series The invoice series.
+   * @param number The invoice number.
+   * @return Response status 200 OK or some error.
+   */
+  @CrossOrigin
+  @DeleteMapping("/{series}/{number}")
+  @PreAuthorize(
+    "hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or"
+          + " hasRole('SECRETARIO')"
+  )
+  public ResponseEntity<Boolean> deleteInvoice(@PathVariable
+  final String series, @PathVariable
+  final int number) {
+    try {
+      invoiceService.remove(series, number);
+    } catch (InvoiceServiceException e) {
+      throw new ResponseStatusException(
+            HttpStatus.BAD_REQUEST, e.getMessage(), e
+      );
     }
-
-    /**
-     * Returns all stored invoices.
-     *
-     * @return all stored invoices.
-     */
-    @CrossOrigin
-    @GetMapping()
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<InvoiceListResponse> getAllInvoices() {
-
-        final var invoices = invoiceService.getInvoices();
-        final var invoiceResponseList = new ArrayList<InvoiceResponse>();
-        invoices.forEach((InvoiceEntity invoice) -> invoiceResponseList
-                .add(new InvoiceResponse(BigInteger.valueOf(invoice.getNumber()), invoice.getSeries(),
-                        invoice.getAdvancePaymentDate(), invoice.getExpeditionDate(), invoice.isTaxExempt(),
-                        ((PersistentInvoiceEntity) invoice).getSeller().getNif(),
-                        ((PersistentInvoiceEntity) invoice).getBuyer().getNif())));
-        return new ResponseEntity<>(new InvoiceListResponse(invoiceResponseList), HttpStatus.OK);
-    }
-
-    /**
-     * Get an invoice by its series and number.
-     *
-     * @param series The invoice series.
-     * @param number The invoice number.
-     * @return Response status 200 OK with invoice details or error status.
-     */
-    @CrossOrigin
-    @GetMapping("/{series}/{number}")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<InvoiceResponse> getInvoice(@PathVariable final String series,
-            @PathVariable final int number) {
-        try {
-            final var invoiceEntity = invoiceService.findBySeriesAndNumber(series, number);
-            final var response = InvoiceResponse.fromEntity(invoiceEntity);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (InvoiceServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
-    }
+    return new ResponseEntity<>(true, HttpStatus.OK);
+  }
 
 }

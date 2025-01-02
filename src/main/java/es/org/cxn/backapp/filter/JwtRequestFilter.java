@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import es.org.cxn.backapp.AppURL;
-import es.org.cxn.backapp.security.DefaultJwtUtils;
-import es.org.cxn.backapp.security.MyPrincipalUser;
+import es.org.cxn.backapp.service.DefaultJwtUtils;
+import es.org.cxn.backapp.service.MyPrincipalUser;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -97,7 +97,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             final FilterChain filterChain) throws ServletException, IOException {
         final String requestURI = request.getRequestURI();
 
-        // Ensure debug logging is enabled before calling LOGGER.debug
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Request URI: {}", requestURI);
         }
@@ -107,10 +106,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                     .flatMap(username -> validateAndLoadUser(username, request))
                     .ifPresent(user -> setAuthentication(user, request));
         } catch (JwtException e) {
-            // Ensure warn logging is enabled before calling LOGGER.warn
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("JWT validation failed: {}", e.getMessage());
-            }
+            LOGGER.warn("JWT validation failed: {}", e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -144,8 +140,12 @@ public class JwtRequestFilter extends OncePerRequestFilter {
      *         extracted; otherwise, an empty {@link Optional}.
      */
     private Optional<String> getUsernameFromJwt(final String jwt) {
-        final Optional<String> username; // Default to empty
-        username = Optional.ofNullable(DefaultJwtUtils.extractUsername(jwt));
+        Optional<String> username = Optional.empty(); // Default to empty
+        try {
+            username = Optional.ofNullable(DefaultJwtUtils.extractUsername(jwt));
+        } catch (Exception e) {
+            LOGGER.warn("Failed to extract username from JWT", e);
+        }
         return username;
     }
 
@@ -222,15 +222,18 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private Optional<MyPrincipalUser> validateAndLoadUser(final String username, final HttpServletRequest request) {
         Optional<MyPrincipalUser> result = Optional.empty(); // Single exit point, initialize the result
 
-        final MyPrincipalUser user = (MyPrincipalUser) userDetailsService.loadUserByUsername(username);
-        final String jwt = extractJwtFromRequest(request).orElse(null);
-        if (Boolean.TRUE.equals(DefaultJwtUtils.validateToken(jwt, user))) {
-            LOGGER.debug("Valid JWT for user: {}", username);
-            result = Optional.of(user);
-        } else {
-            LOGGER.debug("Invalid JWT for user: {}", username);
+        try {
+            final MyPrincipalUser user = (MyPrincipalUser) userDetailsService.loadUserByUsername(username);
+            final String jwt = extractJwtFromRequest(request).orElse(null);
+            if (Boolean.TRUE.equals(DefaultJwtUtils.validateToken(jwt, user))) {
+                LOGGER.debug("Valid JWT for user: {}", username);
+                result = Optional.of(user);
+            } else {
+                LOGGER.debug("Invalid JWT for user: {}", username);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error during user validation", e);
         }
-
         return result; // The single return statement
     }
 

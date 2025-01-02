@@ -3,7 +3,6 @@ package es.org.cxn.backapp.model.persistence;
 import java.time.LocalDateTime;
 
 import es.org.cxn.backapp.model.LichessAuthEntity;
-import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

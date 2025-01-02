@@ -24,8 +24,8 @@
 
 package es.org.cxn.backapp.service;
 
+import es.org.cxn.backapp.exceptions.AddressServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
-import es.org.cxn.backapp.service.exceptions.AddressServiceException;
 
 import java.util.List;
 

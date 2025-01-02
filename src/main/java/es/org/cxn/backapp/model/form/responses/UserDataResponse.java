@@ -8,7 +8,7 @@ import java.util.Set;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
-import es.org.cxn.backapp.model.persistence.user.UserType;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
 
 /**
  * Represents the form used for responding to authenticated user data requests.
@@ -56,9 +56,9 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
      * @param user The {@code UserEntity} from which to create the response record.
      */
     public UserDataResponse(final UserEntity user) {
-        this(user.getDni(), user.getProfile().getName(), user.getProfile().getFirstSurname(),
-                user.getProfile().getSecondSurname(), user.getProfile().getGender(), user.getProfile().getBirthDate(),
-                user.getEmail(), user.getKindMember(), new AddressResponse(user.getAddress()), extractUserRoles(user));
+        this(user.getDni(), user.getName(), user.getFirstSurname(), user.getSecondSurname(), user.getGender(),
+                user.getBirthDate(), user.getEmail(), user.getKindMember(), new AddressResponse(user.getAddress()),
+                extractUserRoles(user));
     }
 
     /**

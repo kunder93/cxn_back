@@ -25,6 +25,7 @@
 package es.org.cxn.backapp.model.persistence;
 
 import es.org.cxn.backapp.model.RegularTransportEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,6 +37,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -55,49 +57,50 @@ import lombok.NonNull;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PersistentRegularTransportEntity implements RegularTransportEntity {
+public class PersistentRegularTransportEntity
+      implements RegularTransportEntity {
 
-    /**
-     * serial UID.
-     */
-    @Transient
-    private static final long serialVersionUID = -8284511511230367460L;
+  /**
+   * serial UID.
+   */
+  @Transient
+  private static final long serialVersionUID = -8284511511230367460L;
 
-    /**
-     * Regular transport identifier.
-     */
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    private Integer identifier;
+  /**
+   * Regular transport identifier.
+   */
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "id", nullable = false, unique = true)
+  private Integer id;
 
-    /**
-     * Regular transport category.
-     */
-    @Column(name = "category", nullable = false, unique = false)
-    @NonNull
-    private String category;
+  /**
+   * Regular transport category.
+   */
+  @Column(name = "category", nullable = false, unique = false)
+  @NonNull
+  private String category;
 
-    /**
-     * Regular transport description.
-     */
-    @Column(name = "description", nullable = false, unique = false)
-    @NonNull
-    private String description;
+  /**
+   * Regular transport description.
+   */
+  @Column(name = "description", nullable = false, unique = false)
+  @NonNull
+  private String description;
 
-    /**
-     * The regular transport assigned invoice.
-     */
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "invoice_id", nullable = false)
-    @NonNull
-    private PersistentInvoiceEntity transportInvoice;
+  /**
+   * The regular transport assigned invoice.
+   */
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "invoice_id", nullable = false)
+  @NonNull
+  private PersistentInvoiceEntity transportInvoice;
 
-    /**
-     * The regular transport assigned payment sheet.
-     */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "payment_sheet_id", nullable = false)
-    private PersistentPaymentSheetEntity paymentSheet;
+  /**
+   * The regular transport assigned payment sheet.
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "payment_sheet_id", nullable = false)
+  private PersistentPaymentSheetEntity paymentSheet;
 
 }

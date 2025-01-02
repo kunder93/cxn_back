@@ -28,7 +28,7 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * The user's Lichess profile ID.
      */
     @Column(name = "id")
-    private String identifier;
+    private String id;
 
     /**
      * The username associated with the Lichess profile.
@@ -225,6 +225,14 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * {@inheritDoc}
      */
     @Override
+    public Boolean getBlitzProv() {
+        return blitzProv;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getBlitzRating() {
         return blitzRating;
     }
@@ -251,6 +259,14 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Override
     public Integer getBulletProg() {
         return bulletProg;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean getBulletProv() {
+        return bulletProv;
     }
 
     /**
@@ -289,6 +305,14 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * {@inheritDoc}
      */
     @Override
+    public Boolean getClassicalProv() {
+        return classicalProv;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Integer getClassicalRating() {
         return classicalRating;
     }
@@ -305,8 +329,8 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * {@inheritDoc}
      */
     @Override
-    public String getIdentifier() {
-        return identifier;
+    public String getId() {
+        return id;
     }
 
     /**
@@ -323,6 +347,14 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Override
     public Integer getPuzzleProg() {
         return puzzleProg;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean getPuzzleProv() {
+        return puzzleProv;
     }
 
     /**
@@ -355,6 +387,14 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Override
     public Integer getRapidProg() {
         return rapidProg;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Boolean getRapidProv() {
+        return rapidProv;
     }
 
     /**
@@ -395,46 +435,6 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Override
     public String getUsername() {
         return username;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Boolean isBlitzProv() {
-        return blitzProv;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Boolean isBulletProv() {
-        return bulletProv;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Boolean isClassicalProv() {
-        return classicalProv;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Boolean isPuzzleProv() {
-        return puzzleProv;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Boolean isRapidProv() {
-        return rapidProv;
     }
 
     /**
@@ -561,8 +561,8 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      * {@inheritDoc}
      */
     @Override
-    public void setIdentifier(final String value) {
-        identifier = value;
+    public void setId(final String value) {
+        id = value;
     }
 
     /**

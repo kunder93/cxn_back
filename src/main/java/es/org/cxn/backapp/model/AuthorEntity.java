@@ -12,32 +12,25 @@ import java.io.Serializable;
  */
 public interface AuthorEntity extends Serializable {
 
-    /**
-     * Gets the first name of the author.
-     *
-     * @return The author's first name.
-     */
-    String getFirstName();
+  /**
+   * Gets the first name of the author.
+   *
+   * @return The author's first name.
+   */
+  String getFirstName();
 
-    /**
-     * The author entity identifier.
-     *
-     * @return the author identifier.
-     */
-    Long getIdentifier();
+  /**
+   * Gets the last name of the author.
+   *
+   * @return The author's last name.
+   */
+  String getLastName();
 
-    /**
-     * Gets the last name of the author.
-     *
-     * @return The author's last name.
-     */
-    String getLastName();
-
-    /**
-     * Gets the nationality of the author.
-     *
-     * @return The author's nationality.
-     */
-    String getNationality();
+  /**
+   * Gets the nationality of the author.
+   *
+   * @return The author's nationality.
+   */
+  String getNationality();
 
 }

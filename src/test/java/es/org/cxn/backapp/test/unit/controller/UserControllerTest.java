@@ -26,13 +26,11 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import es.org.cxn.backapp.controller.entity.UserController;
-import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
-import es.org.cxn.backapp.model.persistence.user.UserProfile;
-import es.org.cxn.backapp.service.UserProfileImageService;
+import es.org.cxn.backapp.exceptions.UserServiceException;
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+import es.org.cxn.backapp.service.DefaultUserService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
-import es.org.cxn.backapp.service.exceptions.UserServiceException;
-import es.org.cxn.backapp.service.impl.DefaultUserService;
 
 /**
  * Unit test class for {@link UserController}. This class tests the behavior of
@@ -67,12 +65,6 @@ class UserControllerTest {
      */
     @MockBean
     private UserService userService;
-
-    /**
-     * Mock user profile image service for build userController.
-     */
-    @MockBean
-    private UserProfileImageService userProfileImageService;
 
     /**
      * Test case to verify the successful deletion of a user when the user exists.
@@ -175,13 +167,11 @@ class UserControllerTest {
         // Create a mock UserEntity to return from the update method
         PersistentUserEntity userEntity = new PersistentUserEntity();
         userEntity.setEmail(userName); // Assuming userName is the email
-        UserProfile profile = new UserProfile();
-        profile.setName("John");
-        profile.setFirstSurname("Doe");
-        profile.setSecondSurname("Smith");
-        profile.setBirthDate(LocalDate.of(2000, 1, 1));
-        profile.setGender("M");
-        userEntity.setProfile(profile);
+        userEntity.setName("John");
+        userEntity.setFirstSurname("Doe");
+        userEntity.setSecondSurname("Smith");
+        userEntity.setBirthDate(LocalDate.of(2000, 1, 1));
+        userEntity.setGender("M");
 
         // Mock the service method to return the userEntity
         when(userService.update(any(UserServiceUpdateDto.class), anyString())).thenReturn(userEntity);

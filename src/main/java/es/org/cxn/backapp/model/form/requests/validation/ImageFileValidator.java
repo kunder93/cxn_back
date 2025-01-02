@@ -90,28 +90,27 @@ public class ImageFileValidator implements ConstraintValidator<ValidImageFile, M
      */
     @Override
     public boolean isValid(final MultipartFile file, final ConstraintValidatorContext context) {
-        boolean isValid = true; // Default to valid
-
-        if (file != null && !file.isEmpty()) {
-            // Check file size
-            if (file.getSize() > maxFileSize) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate("File size should not exceed " + maxFileSize + " bytes")
-                        .addConstraintViolation();
-                isValid = false; // Update result to false
-            }
-
-            // Check file type
-            final String contentType = file.getContentType();
-            if (contentType == null || Arrays.stream(allowedFormats).noneMatch(contentType::endsWith)) {
-                context.disableDefaultConstraintViolation();
-                context.buildConstraintViolationWithTemplate(
-                        "File type must be one of: " + String.join(", ", allowedFormats)).addConstraintViolation();
-                isValid = false; // Update result to false
-            }
+        if (file == null || file.isEmpty()) {
+            return true; // Let @NotNull handle null checks if needed
         }
 
-        return isValid; // Return the result at the end
-    }
+        // Check file size
+        if (file.getSize() > maxFileSize) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate("File size should not exceed " + maxFileSize + " bytes")
+                    .addConstraintViolation();
+            return false;
+        }
 
+        // Check file type
+        final String contentType = file.getContentType();
+        if (contentType == null || Arrays.stream(allowedFormats).noneMatch(format -> contentType.endsWith(format))) {
+            context.disableDefaultConstraintViolation();
+            context.buildConstraintViolationWithTemplate(
+                    "File type must be one of: " + String.join(", ", allowedFormats)).addConstraintViolation();
+            return false;
+        }
+
+        return true;
+    }
 }

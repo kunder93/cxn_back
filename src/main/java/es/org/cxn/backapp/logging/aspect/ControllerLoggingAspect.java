@@ -2,7 +2,6 @@
 package es.org.cxn.backapp.logging.aspect;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -30,20 +29,21 @@ public class ControllerLoggingAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerLoggingAspect.class);
 
     /**
+     * Helper method to retrieve the name of the method being executed.
+     *
+     * @param joinPoint the join point providing reflective access to the method
+     * @return the name of the method being executed
+     */
+    private static String getMethodName(final JoinPoint joinPoint) {
+        final var joinPointSignature = joinPoint.getSignature();
+        return joinPointSignature.getName();
+    }
+
+    /**
      * Default constructor.
      */
     public ControllerLoggingAspect() {
         // Default constructor.
-    }
-
-    /**
-     * Get the method name.
-     *
-     * @param signature the joinpoint signature.
-     * @return the signature name.
-     */
-    private static String getMethodName(final Signature signature) {
-        return signature.getName();
     }
 
     /**
@@ -61,7 +61,7 @@ public class ControllerLoggingAspect {
     @AfterReturning(pointcut = "execution(* es.org.cxn.backapp.controller.*.*(..))", returning = "result")
     public void logAfterReturning(final JoinPoint joinPoint, final Object result) {
         if (LOGGER.isInfoEnabled()) {
-            final var methodName = getMethodName(joinPoint.getSignature());
+            final var methodName = getMethodName(joinPoint);
             LOGGER.info("Exiting method: {} with return value: {}", methodName, result);
         }
     }
@@ -81,7 +81,7 @@ public class ControllerLoggingAspect {
     @AfterThrowing(pointcut = "execution(* es.org.cxn.backapp.controller.*.*(..))", throwing = "error")
     public void logAfterThrowing(final JoinPoint joinPoint, final Throwable error) {
         if (LOGGER.isErrorEnabled()) {
-            final var methodName = getMethodName(joinPoint.getSignature());
+            final var methodName = getMethodName(joinPoint);
             LOGGER.error("Exception in method: {} with message: {}", methodName, error.getMessage());
         }
     }

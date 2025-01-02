@@ -26,13 +26,14 @@ package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import es.org.cxn.backapp.exceptions.CompanyServiceException;
 import es.org.cxn.backapp.model.form.requests.CompanyUpdateRequest;
 import es.org.cxn.backapp.model.form.requests.CreateCompanyRequest;
 import es.org.cxn.backapp.model.form.responses.CompanyListResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyUpdateResponse;
 import es.org.cxn.backapp.service.CompanyService;
-import es.org.cxn.backapp.service.exceptions.CompanyServiceException;
+
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;

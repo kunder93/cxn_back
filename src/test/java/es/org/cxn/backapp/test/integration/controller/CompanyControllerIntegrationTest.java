@@ -34,7 +34,7 @@ import es.org.cxn.backapp.model.form.requests.CreateInvoiceRequest;
 import es.org.cxn.backapp.model.form.responses.CompanyListResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyResponse;
 import es.org.cxn.backapp.model.form.responses.CompanyUpdateResponse;
-import es.org.cxn.backapp.service.impl.DefaultCompanyService;
+import es.org.cxn.backapp.service.DefaultCompanyService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import jakarta.transaction.Transactional;
 

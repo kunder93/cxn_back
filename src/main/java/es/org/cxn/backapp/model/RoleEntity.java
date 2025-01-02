@@ -24,10 +24,10 @@
 
 package es.org.cxn.backapp.model;
 
+import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * A simple entity to be used as an example.
@@ -36,49 +36,49 @@ import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
  */
 public interface RoleEntity extends Serializable {
 
-    /**
-     * Returns the identifier assigned to this entity.
-     * <p>
-     * If no identifier has been assigned yet, then the value is expected to be
-     * {@code null} or lower than zero.
-     *
-     * @return the entity's identifier
-     */
-    Integer getIdentifier();
+  /**
+   * Returns the identifier assigned to this entity.
+   * <p>
+   * If no identifier has been assigned yet, then the value is expected to be
+   * {@code null} or lower than zero.
+   *
+   * @return the entity's identifier
+   */
+  Integer getId();
 
-    /**
-     * Returns the name of role.
-     *
-     * @return the role name
-     */
-    UserRoleName getName();
+  /**
+   * Returns the name of role.
+   *
+   * @return the role name
+   */
+  UserRoleName getName();
 
-    /**
-     * Returns the users associated to this role.
-     *
-     * @return the user set
-     */
-    Set<PersistentUserEntity> getUsers();
+  /**
+   * Returns the users associated to this role.
+   *
+   * @return the user set
+   */
+  Set<PersistentUserEntity> getUsers();
 
-    /**
-     * Sets the identifier assigned to this role.
-     *
-     * @param identifier the identifier for the role
-     */
-    void setIdentifier(Integer identifier);
+  /**
+   * Sets the identifier assigned to this role.
+   *
+   * @param identifier the identifier for the role
+   */
+  void setId(Integer identifier);
 
-    /**
-     * Changes the name of the role.
-     *
-     * @param roleName the name to set on role
-     */
-    void setName(UserRoleName roleName);
+  /**
+   * Changes the name of the role.
+   *
+   * @param roleName the name to set on role
+   */
+  void setName(UserRoleName roleName);
 
-    /**
-     * Changes the users associated to this role.
-     *
-     * @param users Set of users have relation
-     */
-    void setUsers(Set<PersistentUserEntity> users);
+  /**
+   * Changes the users associated to this role.
+   *
+   * @param users Set of users have relation
+   */
+  void setUsers(Set<PersistentUserEntity> users);
 
 }

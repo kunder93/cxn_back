@@ -100,7 +100,7 @@ public class WebConfiguration implements WebMvcConfigurer {
      * @return A customizer that adds an error page for HTTP status 404.
      */
     @Bean
-    public WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
+    WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> containerCustomizer() {
         return container -> container.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notFound"));
     }
 }

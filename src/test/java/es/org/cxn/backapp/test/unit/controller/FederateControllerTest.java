@@ -33,11 +33,11 @@ import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.controller.entity.FederateController;
 import es.org.cxn.backapp.controller.entity.FederateController.ConfirmCancelFederateRequest;
+import es.org.cxn.backapp.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.service.FederateStateService;
-import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
-import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 @WebMvcTest(FederateController.class)

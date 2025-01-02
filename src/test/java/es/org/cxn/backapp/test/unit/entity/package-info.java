@@ -54,7 +54,7 @@
  *   class.</li>
  *   <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentUserEntityTest}
  *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.user.PersistentUserEntity}
+ *    {@link es.org.cxn.backapp.model.persistence.PersistentUserEntity}
  *    class.</li>
  * </ul>
  */

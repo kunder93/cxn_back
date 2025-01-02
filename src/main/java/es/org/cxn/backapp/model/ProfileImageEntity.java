@@ -18,6 +18,13 @@ public interface ProfileImageEntity extends java.io.Serializable {
     ImageExtension getExtension();
 
     /**
+     * Checks if the profile image is stored in the system.
+     *
+     * @return true if the profile image is stored, false otherwise.
+     */
+    Boolean getStored();
+
+    /**
      * Retrieves the URL where the profile image is accessible.
      *
      * @return the URL of the profile image.
@@ -38,13 +45,6 @@ public interface ProfileImageEntity extends java.io.Serializable {
      * @return the user's DNI.
      */
     String getUserDni();
-
-    /**
-     * Checks if the profile image is stored in the system.
-     *
-     * @return true if the profile image is stored, false otherwise.
-     */
-    Boolean isStored();
 
     /**
      * Sets the file extension of the profile image.
