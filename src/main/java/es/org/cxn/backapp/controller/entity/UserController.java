@@ -204,12 +204,21 @@ public class UserController {
     public ResponseEntity<UserDataResponse> changeUserEmail(
             @RequestBody final UserChangeEmailRequest userChangeEmailRequest) {
         final UserEntity result;
+
+        final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
+
         try {
-            result = userService.changeUserEmail(userChangeEmailRequest.email(), userChangeEmailRequest.newEmail());
+            final var user = userService.findByEmail(authName);
+            if (user.getEmail().equals(userChangeEmailRequest.email())) {
+                result = userService.changeUserEmail(userChangeEmailRequest.email(), userChangeEmailRequest.newEmail());
+                return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not valid user email");
+            }
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-        return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+
     }
 
     /**

@@ -344,6 +344,11 @@ public final class DefaultUserService implements UserService {
     @Override
     @Transactional
     public UserEntity changeUserEmail(final String email, final String newEmail) throws UserServiceException {
+        final var userWithNewEmail = userRepository.findByEmail(newEmail);
+        if (userWithNewEmail.isPresent()) {
+            throw new UserServiceException("User with email: " + newEmail + " exists.");
+        }
+
         final var userEntity = findByEmail(email);
         userEntity.setEmail(newEmail);
         // Guardar la entidad de usuario actualizada en la base de datos

@@ -28,11 +28,16 @@ public class DefaultEmailService implements EmailService {
     @Value("${spring.mail.username}")
     private String senderAddress;
 
+    /**
+     * Main service constructor.
+     *
+     * @param mailSender The mail java mail sender implementation.
+     */
     public DefaultEmailService(final JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
-    private String loadEmailTemplate(String templatePath) throws IOException {
+    private String loadEmailTemplate(final String templatePath) throws IOException {
         final ClassPathResource resource = new ClassPathResource(templatePath);
         try (var inputStream = resource.getInputStream();
                 var reader = new java.io.InputStreamReader(inputStream, StandardCharsets.UTF_8);
@@ -41,8 +46,8 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
-    private void sendEmail(String toEmail, String subject, String templatePath, Map<String, String> placeholders)
-            throws MessagingException, IOException {
+    private void sendEmail(final String toEmail, final String subject, final String templatePath,
+            Map<String, String> placeholders) throws MessagingException, IOException {
         final var message = mailSender.createMimeMessage();
         message.setFrom(new InternetAddress(senderAddress));
         message.setRecipients(RecipientType.TO, toEmail);
@@ -58,19 +63,20 @@ public class DefaultEmailService implements EmailService {
     @Override
     public void sendPaymentConfirmationEmail(final String toEmail, final String memberName,
             final String paymentQuantity, final String reason) throws MessagingException, IOException {
-        sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/PaymentConfirmedEmail.html",
+        sendEmail(toEmail, "CXN: Confirmación pago\"", "mailTemplates/PaymentConfirmedEmail.html",
                 Map.of("name", memberName, "motivo", reason, "cantidad", paymentQuantity));
     }
 
     @Override
-    public void sendSignUpEmail(String toEmail, String memberName, String body) throws MessagingException, IOException {
+    public void sendSignUpEmail(final String toEmail, final String memberName, final String body)
+            throws MessagingException, IOException {
         sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/SignUpWelcomeEmail.html",
                 Map.of("name", memberName));
     }
 
     @Override
-    public void sendWelcomeEmail(String toEmail, String memberName) throws MessagingException, IOException {
-        sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/AcceptedMemberEmail.html",
-                Map.of("name", memberName));
+    public void sendWelcomeEmail(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Ya eres socio", "mailTemplates/AcceptedMemberEmail.html", Map.of("name", memberName));
     }
+
 }
