@@ -46,6 +46,15 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
+    @Override
+    public void sendChangeEmail(final String oldEmail, final String newEmail, final String memberName)
+            throws MessagingException, IOException {
+        sendEmail(oldEmail, "CXN: Cambio de correo", "mailTemplates/ChangeEmailMessage.html",
+                Map.of("name", memberName, "oldEmail", oldEmail, "newEmail", newEmail));
+        sendEmail(newEmail, "CXN: Cambio de correo", "mailTemplates/ChangeEmailMessage.html",
+                Map.of("name", memberName, "oldEmail", oldEmail, "newEmail", newEmail));
+    }
+
     private void sendEmail(final String toEmail, final String subject, final String templatePath,
             Map<String, String> placeholders) throws MessagingException, IOException {
         final var message = mailSender.createMimeMessage();
@@ -61,21 +70,21 @@ public class DefaultEmailService implements EmailService {
     }
 
     @Override
-    public void sendPaymentConfirmationEmail(final String toEmail, final String memberName,
-            final String paymentQuantity, final String reason) throws MessagingException, IOException {
+    public void sendPaymentConfirmation(final String toEmail, final String memberName, final String paymentQuantity,
+            final String reason) throws MessagingException, IOException {
         sendEmail(toEmail, "CXN: Confirmación pago\"", "mailTemplates/PaymentConfirmedEmail.html",
                 Map.of("name", memberName, "motivo", reason, "cantidad", paymentQuantity));
     }
 
     @Override
-    public void sendSignUpEmail(final String toEmail, final String memberName, final String body)
+    public void sendSignUp(final String toEmail, final String memberName, final String body)
             throws MessagingException, IOException {
         sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/SignUpWelcomeEmail.html",
                 Map.of("name", memberName));
     }
 
     @Override
-    public void sendWelcomeEmail(final String toEmail, final String memberName) throws MessagingException, IOException {
+    public void sendWelcome(final String toEmail, final String memberName) throws MessagingException, IOException {
         sendEmail(toEmail, "CXN: Ya eres socio", "mailTemplates/AcceptedMemberEmail.html", Map.of("name", memberName));
     }
 

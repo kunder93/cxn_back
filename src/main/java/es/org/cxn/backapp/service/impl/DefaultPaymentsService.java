@@ -283,7 +283,7 @@ public final class DefaultPaymentsService implements PaymentsService {
             }
             final var userEntity = userOptional.get();
             try {
-                emailService.sendPaymentConfirmationEmail(userEntity.getEmail(), userEntity.getCompleteName(),
+                emailService.sendPaymentConfirmation(userEntity.getEmail(), userEntity.getCompleteName(),
                         paymentEntity.getAmount().toString(), paymentEntity.getDescription());
             } catch (MessagingException e) {
                 throw new PaymentsServiceException("Cannot send email.", e);

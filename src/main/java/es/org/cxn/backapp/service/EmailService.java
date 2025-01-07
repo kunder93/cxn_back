@@ -11,6 +11,18 @@ import jakarta.mail.MessagingException;
 public interface EmailService {
 
     /**
+     * Sends a message to old and new member email.
+     *
+     * @param oldEmail   The member's old email.
+     * @param newEmail   The member's new email.
+     * @param memberName The member's complete name.
+     * @throws MessagingException When message fails.
+     * @throws IOException        When fails cause cannot load mail template file.
+     */
+    void sendChangeEmail(final String oldEmail, final String newEmail, final String memberName)
+            throws MessagingException, IOException;
+
+    /**
      * Sends a confirmation payment received email to member.
      *
      * @param toEmail         the recipient's email address
@@ -20,7 +32,7 @@ public interface EmailService {
      * @throws MessagingException When message fails.
      * @throws IOException        When fails cause cannot load mail template file.
      */
-    void sendPaymentConfirmationEmail(final String toEmail, final String memberName, final String paymentQuantity,
+    void sendPaymentConfirmation(final String toEmail, final String memberName, final String paymentQuantity,
             final String reason) throws MessagingException, IOException;
 
     /**
@@ -32,7 +44,7 @@ public interface EmailService {
      * @throws MessagingException When message fails.
      * @throws IOException        When fails cause cannot load mail template file.
      */
-    void sendSignUpEmail(String toEmail, String subject, String body) throws MessagingException, IOException;
+    void sendSignUp(String toEmail, String subject, String body) throws MessagingException, IOException;
 
     /**
      * Sends a welcome email to newly approved members.
@@ -42,6 +54,6 @@ public interface EmailService {
      * @throws MessagingException When message fails.
      * @throws IOException        When fails cause cannot load mail template file.
      */
-    void sendWelcomeEmail(String toEmail, String memberName) throws MessagingException, IOException;
+    void sendWelcome(String toEmail, String memberName) throws MessagingException, IOException;
 
 }

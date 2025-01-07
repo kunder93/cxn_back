@@ -226,7 +226,7 @@ public final class DefaultUserService implements UserService {
 
                     final UserEntity result = userRepository.save(asPersistentUserEntity(userWithchangedRoles));
 
-                    emailService.sendWelcomeEmail(result.getEmail(), result.getCompleteName());
+                    emailService.sendWelcome(result.getEmail(), result.getCompleteName());
                     generatePaymentForAcceptedUser(result);
                     return result;
                 } catch (MessagingException e) {
@@ -353,7 +353,15 @@ public final class DefaultUserService implements UserService {
         userEntity.setEmail(newEmail);
         // Guardar la entidad de usuario actualizada en la base de datos
         final var persistentUserEntity = asPersistentUserEntity(userEntity);
-        return userRepository.save(persistentUserEntity);
+        final var result = userRepository.save(persistentUserEntity);
+        try {
+            emailService.sendChangeEmail(email, newEmail, result.getCompleteName());
+            return result;
+        } catch (MessagingException e) {
+            throw new UserServiceException("Cannot send email to: " + email + " or " + newEmail + ".", e);
+        } catch (IOException e) {
+            throw new UserServiceException("Cannot load email template.", e);
+        }
 
     }
 
