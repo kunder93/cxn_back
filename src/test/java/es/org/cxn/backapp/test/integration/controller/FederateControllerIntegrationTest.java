@@ -32,6 +32,7 @@ import es.org.cxn.backapp.controller.entity.FederateController;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.internet.MimeMessage;
 
@@ -58,7 +59,6 @@ class FederateControllerIntegrationTest {
      * response payloads in the tests.
      */
     private static Gson gson;
-
     /**
      * The URL endpoint for user sign-up. This static final string represents the
      * URL used for user registration in the authentication process.
@@ -71,10 +71,8 @@ class FederateControllerIntegrationTest {
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
 
-    @BeforeAll
-    static void setup() {
-        gson = UsersControllerFactory.GSON;
-    }
+    @MockBean
+    private DefaultEmailService defaultEmailService;
 
     /**
      * The MockMvc instance used for performing HTTP requests and testing the
@@ -112,6 +110,11 @@ class FederateControllerIntegrationTest {
 
     FederateControllerIntegrationTest() {
         super();
+    }
+
+    @BeforeAll
+    static void setup() {
+        gson = UsersControllerFactory.GSON;
     }
 
     private String authenticateAndGetToken(final String email, final String password) throws Exception {

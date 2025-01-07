@@ -26,4 +26,15 @@ public final class PaymentsServiceException extends Exception {
         super(value);
     }
 
+    /**
+     * Constructs a new PaymentServiceException with a specified error message and a
+     * cause.
+     *
+     * @param message the detailed message for the exception
+     * @param cause   the underlying cause of the exception
+     */
+    public PaymentsServiceException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
 }

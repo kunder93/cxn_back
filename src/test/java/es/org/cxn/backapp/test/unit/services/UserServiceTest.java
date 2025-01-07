@@ -38,6 +38,9 @@ import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.EmailService;
+import es.org.cxn.backapp.service.PaymentsService;
+import es.org.cxn.backapp.service.RoleService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
@@ -117,6 +120,24 @@ class UserServiceTest {
      */
     @Mock
     private DefaultImageStorageService imageStorageService;
+
+    /**
+     * The email service used by user service.
+     */
+    @Mock
+    private EmailService emailService;
+
+    /**
+     * The role service used by user service.
+     */
+    @Mock
+    private RoleService roleService;
+
+    /**
+     * The payments service used by user service.
+     */
+    @Mock
+    private PaymentsService paymentsService;
 
     /**
      * Service instance being tested.

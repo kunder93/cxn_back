@@ -38,6 +38,13 @@ public interface UserEntity extends Serializable {
     PersistentAddressEntity getAddress();
 
     /**
+     * Gets the complete name.
+     *
+     * @return The complete name, that is name, first surname and second surname.
+     */
+    String getCompleteName();
+
+    /**
      * Retrieves the identifier assigned to this user entity (DNI).
      *
      * @return The user's identifier (DNI).

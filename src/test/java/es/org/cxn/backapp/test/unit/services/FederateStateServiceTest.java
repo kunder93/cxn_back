@@ -100,6 +100,7 @@ class FederateStateServiceTest {
     @BeforeEach
     public void setup() {
         federateStateService = new DefaultFederateStateService(federateStateRepository, userService, paymentsService);
+
     }
 
     @Test

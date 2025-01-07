@@ -2,6 +2,7 @@ package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,11 +19,14 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.PaymentsEntityRepository;
+import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.EmailService;
 import es.org.cxn.backapp.service.PaymentsService;
-import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
+import jakarta.mail.MessagingException;
 
 /**
  * DefaultPaymentsService is an implementation of the PaymentsService interface
@@ -46,30 +50,28 @@ public final class DefaultPaymentsService implements PaymentsService {
     private final PaymentsEntityRepository paymentsRepository;
 
     /**
-     * The service used to interact with user-related functionality.
-     * <p>
-     * This service provides access to user information and business logic, such as
-     * retrieving user details, validating user data, and other user management
-     * operations. It is used within this service to associate payments with users
-     * or to retrieve user-related data needed for payment processing.
-     * </p>
-     *
-     * @see UserService
+     * The user repository used by this service.
      */
-    private final UserService userService;
+    private final UserEntityRepository userRepository;
+
+    /**
+     * The email service used by this service.
+     */
+    private final EmailService emailService;
 
     /**
      * Constructs a DefaultPaymentsService with the provided payments repository.
      *
      * @param repository the repository used to persist payment data. Must not be
      *                   null.
-     * @param usrServ    the service used to interact with users data. Must not be
-     *                   null.
+     * @param userRepo   the user repository.
      * @throws IllegalArgumentException if the repository is null.
      */
-    public DefaultPaymentsService(final PaymentsEntityRepository repository, final UserService usrServ) {
+    public DefaultPaymentsService(final PaymentsEntityRepository repository, final UserEntityRepository userRepo,
+            final EmailService emailServ) {
         paymentsRepository = checkNotNull(repository, "Payments entity repository cannot be null.");
-        userService = checkNotNull(usrServ, "User service cannot be null.");
+        userRepository = checkNotNull(userRepo, "User repository cannot be null.");
+        emailService = checkNotNull(emailServ, "Email service cannot be null.");
     }
 
     /**
@@ -216,8 +218,7 @@ public final class DefaultPaymentsService implements PaymentsService {
     @Override
     public Map<String, List<PaymentDetails>> getAllUsersWithPayments() {
         // Get all users from the user service
-        final var users = userService.getAll();
-
+        final var users = userRepository.findAll();
         // Create a map of user DNI to their list of payments
         return users.stream().collect(Collectors.toMap(UserEntity::getDni,
                 user -> transformToPaymentDetails(getUserPayments(user.getDni()))));
@@ -266,23 +267,34 @@ public final class DefaultPaymentsService implements PaymentsService {
     public PaymentsEntity makePayment(final UUID paymentId, final LocalDateTime paymentDate)
             throws PaymentsServiceException {
         Objects.requireNonNull(paymentDate, "Payment date must not be null.");
-
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
-
         if (paymentOptional.isEmpty()) {
             throw new PaymentsServiceException("No payment with id: " + paymentId + " found.");
         }
         final var paymentEntity = paymentOptional.get();
-
         if (paymentEntity.getState().equals(PaymentsState.UNPAID)) {
             paymentEntity.setState(PaymentsState.PAID);
             paymentEntity.setPaidAt(paymentDate);
-            return paymentsRepository.save(paymentEntity);
+            final var result = paymentsRepository.save(paymentEntity);
+            final var userDni = result.getUserDni();
+            final Optional<PersistentUserEntity> userOptional = userRepository.findByDni(userDni);
+            if (userOptional.isEmpty()) {
+                throw new PaymentsServiceException("No user with dni: " + userDni + " found.");
+            }
+            final var userEntity = userOptional.get();
+            try {
+                emailService.sendPaymentConfirmationEmail(userEntity.getEmail(), userEntity.getCompleteName(),
+                        paymentEntity.getAmount().toString(), paymentEntity.getDescription());
+            } catch (MessagingException e) {
+                throw new PaymentsServiceException("Cannot send email.", e);
+            } catch (IOException e) {
+                throw new PaymentsServiceException("Cannot load email template.", e);
+            }
+            return result;
         } else {
             throw new PaymentsServiceException(
                     "Payment with id: " + paymentId + " have not " + PaymentsState.UNPAID + " state.");
         }
-
     }
 
     /**

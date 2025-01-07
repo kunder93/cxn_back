@@ -90,4 +90,5 @@ public class RoleController {
         return new ResponseEntity<>(new UserChangeRoleResponseForm(userChangeRoleRequestForm.email(),
                 userChangeRoleRequestForm.userRoles()), HttpStatus.OK);
     }
+
 }

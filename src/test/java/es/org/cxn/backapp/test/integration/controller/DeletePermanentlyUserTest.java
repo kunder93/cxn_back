@@ -24,6 +24,7 @@ import com.google.gson.Gson;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
@@ -37,7 +38,6 @@ class DeletePermanentlyUserTest {
      * represents the URL used to create a new user account.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
-
     /**
      * URL endpoint for user sign-in. This static final string represents the URL
      * used for user authentication and generating JWT tokens.
@@ -61,11 +61,8 @@ class DeletePermanentlyUserTest {
      */
     private static Gson gson;
 
-    @BeforeAll
-    static void initializeTest() {
-        gson = UsersControllerFactory.GSON;
-
-    }
+    @MockBean
+    private DefaultEmailService defaultEmailService;
 
     /**
      * Mocked mail sender.
@@ -89,6 +86,12 @@ class DeletePermanentlyUserTest {
      */
     @Autowired
     private MockMvc mockMvc;
+
+    @BeforeAll
+    static void initializeTest() {
+        gson = UsersControllerFactory.GSON;
+
+    }
 
     private String authenticateAndGetToken(final String email, final String password) throws Exception {
         var authRequest = new AuthenticationRequest(email, password);

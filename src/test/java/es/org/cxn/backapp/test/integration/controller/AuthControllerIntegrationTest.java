@@ -29,6 +29,7 @@ import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
@@ -68,7 +69,6 @@ class AuthControllerIntegrationTest {
      * URL endpoint for user sign-up.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
-
     /**
      * URL endpoint for user sign-in.
      */
@@ -79,19 +79,8 @@ class AuthControllerIntegrationTest {
      */
     private static Gson gson;
 
-    /**
-     * Sets up the test environment by initializing the Gson instance with a custom
-     * adapter for handling {@link LocalDate} objects.
-     *
-     * <p>
-     * This method is annotated with {@link BeforeAll}, which means it will be
-     * executed once before any test methods in this class are run.
-     * </p>
-     */
-    @BeforeAll
-    static void createUsersData() {
-        gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
-    }
+    @MockBean
+    private DefaultEmailService defaultEmailService;
 
     /**
      * Mocked mail sender.
@@ -115,6 +104,20 @@ class AuthControllerIntegrationTest {
      */
     AuthControllerIntegrationTest() {
         super();
+    }
+
+    /**
+     * Sets up the test environment by initializing the Gson instance with a custom
+     * adapter for handling {@link LocalDate} objects.
+     *
+     * <p>
+     * This method is annotated with {@link BeforeAll}, which means it will be
+     * executed once before any test methods in this class are run.
+     * </p>
+     */
+    @BeforeAll
+    static void createUsersData() {
+        gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
     }
 
     /**

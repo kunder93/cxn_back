@@ -26,6 +26,8 @@ package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -44,6 +46,7 @@ import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
@@ -51,10 +54,14 @@ import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.EmailService;
+import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
+import jakarta.mail.MessagingException;
 
 /**
  * Default implementation of the {@link UserService}.
@@ -112,6 +119,16 @@ public final class DefaultUserService implements UserService {
     private final CountrySubdivisionEntityRepository countrySubdivisionRepo;
 
     /**
+     * The email service for sending emails.
+     */
+    private final EmailService emailService;
+
+    /**
+     * The payments service for generating payments.
+     */
+    private final PaymentsService paymentsService;
+
+    /**
      * Constructs a DefaultUserService with the specified repositories and image
      * storage service.
      *
@@ -125,18 +142,24 @@ public final class DefaultUserService implements UserService {
      * @param countrySubdivRepo The country subdivisions repository
      *                          {@link CountrySubdivisionEntityRepository} used for
      *                          country subdivision-related operations.
+     * @param paymentsServ      The payments service.
+     *
+     * @param emailServ         The email service.
      *
      * @throws NullPointerException if any of the provided repositories or services
      *                              are null.
      */
     public DefaultUserService(final UserEntityRepository userRepo, final RoleEntityRepository roleRepo,
-            final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo) {
+            final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo,
+            final EmailService emailServ, final PaymentsService paymentsServ) {
         super();
         this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
         this.roleRepository = checkNotNull(roleRepo, "Received a null pointer as role repository");
         this.countryRepository = checkNotNull(countryRepo, "Received a null pointer as country repository");
         this.countrySubdivisionRepo = checkNotNull(countrySubdivRepo,
                 "Received a null pointer as country subdivision repository");
+        this.emailService = checkNotNull(emailServ, "Received a null pointer as email service.");
+        this.paymentsService = checkNotNull(paymentsServ, "Received a null pointer as payments service.");
     }
 
     /**
@@ -156,6 +179,7 @@ public final class DefaultUserService implements UserService {
         } else {
             throw new UserServiceException("User entity is not of expected type.");
         }
+
     }
 
     private static boolean checkAgeUnder18(final UserEntity user) {
@@ -182,6 +206,47 @@ public final class DefaultUserService implements UserService {
         case SOCIO_FAMILIAR -> true;
         default -> false;
         };
+    }
+
+    @Override
+    public UserEntity acceptUserAsMember(String userDni) throws UserServiceException {
+        final var userEntity = findByDni(userDni);
+        final var userRoles = userEntity.getRoles();
+        final Integer numberRolesExpected = Integer.valueOf(1);
+        if (numberRolesExpected.equals(userRoles.size())) {
+            // Get the only one role.
+            final var roleName = userRoles.iterator().next();
+            if (roleName.getName().equals(UserRoleName.ROLE_CANDIDATO_SOCIO)) {
+                // Modify user roles for have only UserRoleName.ROLE_SOCIO
+                final var roles = new ArrayList<UserRoleName>();
+                roles.add(UserRoleName.ROLE_SOCIO);
+                final UserEntity userWithchangedRoles = changeUserRoles(userEntity.getEmail(), roles);
+
+                try {
+
+                    final UserEntity result = userRepository.save(asPersistentUserEntity(userWithchangedRoles));
+
+                    emailService.sendWelcomeEmail(result.getEmail(), result.getCompleteName());
+                    generatePaymentForAcceptedUser(result);
+                    return result;
+                } catch (MessagingException e) {
+                    throw new UserServiceException("User with dni: " + userDni + "cannot send email.", e);
+                } catch (IOException e) {
+                    throw new UserServiceException(
+                            "User with dni: " + userDni + "cannot send email: cannot load template.", e);
+                } catch (PaymentsServiceException e) {
+                    throw new UserServiceException(
+                            "User with dni: " + userDni + "cannot generate payment for this user.", e);
+                }
+
+            } else {
+                throw new UserServiceException(
+                        "User with dni: " + userDni + "no have " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
+            }
+        } else {
+            throw new UserServiceException(
+                    "User with dni: " + userDni + "have no only " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
+        }
     }
 
     /**
@@ -368,6 +433,30 @@ public final class DefaultUserService implements UserService {
         return result.get();
     }
 
+    private void generatePaymentForAcceptedUser(UserEntity userEntity) throws PaymentsServiceException {
+        final UserType kindMember = userEntity.getKindMember();
+        BigDecimal amountOfPayment = null;
+
+        switch (kindMember) {
+        case SOCIO_ASPIRANTE:
+            amountOfPayment = BigDecimal.valueOf(20.00);
+            break;
+        case SOCIO_NUMERO:
+            amountOfPayment = BigDecimal.valueOf(40.00);
+            break;
+        case SOCIO_FAMILIAR:
+        case SOCIO_HONORARIO:
+            // No payments required for these types
+            return;
+        }
+
+        if (amountOfPayment != null) {
+            paymentsService.createPayment(amountOfPayment, PaymentsCategory.MEMBERSHIP_PAYMENT,
+                    "Pago cuota de socio para el año: " + LocalDate.now().getYear() + ".", "Cuota socio",
+                    userEntity.getDni());
+        }
+    }
+
     @Override
     public List<UserEntity> getAll() {
         final var persistentUsers = userRepository.findAll();
@@ -391,14 +480,9 @@ public final class DefaultUserService implements UserService {
     @Transactional
     @Override
     public UserEntity update(final UserServiceUpdateDto userForm, final String userEmail) throws UserServiceException {
-        final Optional<PersistentUserEntity> userOptional;
 
-        userOptional = userRepository.findByEmail(userEmail);
-        if (userOptional.isEmpty()) {
-            throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
-        }
-        final PersistentUserEntity userEntity;
-        userEntity = userOptional.get();
+        final var userEntity = findByEmail(userEmail);
+
         final UserProfile userProfile = new UserProfile();
         final var name = userForm.name();
         userProfile.setName(name);
@@ -411,7 +495,7 @@ public final class DefaultUserService implements UserService {
         final var gender = userForm.gender();
         userProfile.setGender(gender);
         userEntity.setProfile(userProfile);
-        return userRepository.save(userEntity);
+        return userRepository.save(asPersistentUserEntity(userEntity));
     }
 
 }

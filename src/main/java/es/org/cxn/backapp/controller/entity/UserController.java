@@ -29,6 +29,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Map;
 
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -161,6 +163,33 @@ public class UserController {
     }
 
     /**
+     * Accepts a user as a member based on their DNI.
+     *
+     * <p>
+     * This method allows administrators or the president to change the status of a
+     * user to a member. The user's DNI is passed as a path variable. If the
+     * operation succeeds, a 200 OK response is returned. If any exception occurs
+     * during the process, a 400 Bad Request response is returned.
+     * </p>
+     *
+     * @param userDni the DNI of the user to be accepted as a member.
+     * @return a {@link ResponseEntity} with an HTTP status of 200 if the operation
+     *         is successful.
+     * @throws ResponseStatusException if a {@link UserServiceException} occurs,
+     *                                 with an HTTP status of 400.
+     */
+    @PatchMapping("/acceptAsMember/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE')")
+    public ResponseEntity<Void> acceptUserAsMember(@PathVariable final String userDni) {
+        try {
+            userService.acceptUserAsMember(userDni);
+            return ResponseEntity.ok().build();
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
      * Changes the user's email.
      *
      * <p>
@@ -269,8 +298,12 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or " + "hasRole('SECRETARIO')")
     public ResponseEntity<UserListDataResponse> getAllUserData() {
         final var users = userService.getAll();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setCacheControl(CacheControl.noCache().mustRevalidate());
+        headers.setPragma("no-cache");
+        headers.setExpires(0);
         final var response = UserListDataResponse.fromUserEntities(users);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, headers, HttpStatus.OK);
     }
 
     /**

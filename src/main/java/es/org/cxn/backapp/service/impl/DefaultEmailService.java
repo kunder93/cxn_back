@@ -2,8 +2,11 @@ package es.org.cxn.backapp.service.impl;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.text.StringSubstitutor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -20,59 +23,54 @@ import jakarta.mail.internet.InternetAddress;
 @Service
 public class DefaultEmailService implements EmailService {
 
-    /**
-     * The java mail sender.
-     */
     private final JavaMailSender mailSender;
 
-    /**
-     * Default mail service constructor.
-     *
-     * @param value Provided java mail sender.
-     */
-    public DefaultEmailService(final JavaMailSender value) {
-        this.mailSender = value;
+    @Value("${spring.mail.username}")
+    private String senderAddress;
+
+    public DefaultEmailService(final JavaMailSender mailSender) {
+        this.mailSender = mailSender;
     }
 
-    /**
-     * Loads the email template from the resources directory.
-     *
-     * @return the content of the HTML template as a String
-     * @throws IOException if there is an error reading the file
-     */
-    private String loadEmailTemplate() throws IOException {
-        final ClassPathResource resource = new ClassPathResource("mailTemplates/SignUpWelcomeEmail.html");
-
-        // Use InputStream instead of Files.lines to handle resources inside the JAR
+    private String loadEmailTemplate(String templatePath) throws IOException {
+        final ClassPathResource resource = new ClassPathResource(templatePath);
         try (var inputStream = resource.getInputStream();
                 var reader = new java.io.InputStreamReader(inputStream, StandardCharsets.UTF_8);
                 var bufferedReader = new java.io.BufferedReader(reader)) {
-
             return bufferedReader.lines().collect(Collectors.joining("\n"));
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void sendSignUpEmail(final String toEmail, final String subject, final String body)
+    private void sendEmail(String toEmail, String subject, String templatePath, Map<String, String> placeholders)
             throws MessagingException, IOException {
         final var message = mailSender.createMimeMessage();
-
-        message.setFrom(new InternetAddress("principal@xadreznaron.es"));
+        message.setFrom(new InternetAddress(senderAddress));
         message.setRecipients(RecipientType.TO, toEmail);
-        message.setSubject("Hola, " + subject + "!");
+        message.setSubject(subject);
 
-        // Load HTML template from file
-        final String htmlTemplate = loadEmailTemplate();
+        final String htmlTemplate = loadEmailTemplate(templatePath);
+        final String formattedHtml = StringSubstitutor.replace(htmlTemplate, placeholders);
 
-        // Replace the placeholder with the subject (name)
-        final String formattedHtml = String.format(htmlTemplate, subject);
-
-        // Set the email's content to be the HTML template
         message.setContent(formattedHtml, "text/html; charset=utf-8");
-
         mailSender.send(message);
+    }
+
+    @Override
+    public void sendPaymentConfirmationEmail(final String toEmail, final String memberName,
+            final String paymentQuantity, final String reason) throws MessagingException, IOException {
+        sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/PaymentConfirmedEmail.html",
+                Map.of("name", memberName, "motivo", reason, "cantidad", paymentQuantity));
+    }
+
+    @Override
+    public void sendSignUpEmail(String toEmail, String memberName, String body) throws MessagingException, IOException {
+        sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/SignUpWelcomeEmail.html",
+                Map.of("name", memberName));
+    }
+
+    @Override
+    public void sendWelcomeEmail(String toEmail, String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/AcceptedMemberEmail.html",
+                Map.of("name", memberName));
     }
 }
