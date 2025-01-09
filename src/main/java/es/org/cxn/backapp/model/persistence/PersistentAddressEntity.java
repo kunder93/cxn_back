@@ -36,15 +36,14 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
 import lombok.Data;
 
 /**
  * Entity representing an address in the system.
  * <p>
- * This class uses JPA annotations for mapping the entity to the database.
- * It is equipped with Lombok annotations to generate getters, setters,
- * and other boilerplate code.
+ * This class uses JPA annotations for mapping the entity to the database. It is
+ * equipped with Lombok annotations to generate getters, setters, and other
+ * boilerplate code.
  * </p>
  *
  * @author Santiago Paz Perez
@@ -54,77 +53,77 @@ import lombok.Data;
 @Data
 public class PersistentAddressEntity implements AddressEntity {
 
-  /**
-   * Serialization ID.
-   */
-  @Transient
-  private static final long serialVersionUID = 1396772919450111291L;
+    /**
+     * Serialization ID.
+     */
+    @Transient
+    private static final long serialVersionUID = 1396772919450111291L;
 
-  /**
-   * The unique identifier for this address, corresponding to the user's DNI.
-   */
-  @Id
-  private String userDni;
+    /**
+     * The unique identifier for this address, corresponding to the user's DNI.
+     */
+    @Id
+    private String userDni;
 
-  /**
-   * Address postal code.
-   */
-  @Column(name = "postal_code", nullable = false, unique = false)
-  private String postalCode = "";
+    /**
+     * Address postal code.
+     */
+    @Column(name = "postal_code", nullable = false, unique = false)
+    private String postalCode = "";
 
-  /**
-   * Address apartment or number.
-   */
-  @Column(name = "apartment_number", nullable = false, unique = false)
-  private String apartmentNumber = "";
+    /**
+     * Address apartment or number.
+     */
+    @Column(name = "apartment_number", nullable = false, unique = false)
+    private String apartmentNumber = "";
 
-  /**
-   * Address building.
-   */
-  @Column(name = "building", nullable = false, unique = false)
-  private String building = "";
+    /**
+     * Address building.
+     */
+    @Column(name = "building", nullable = false, unique = false)
+    private String building = "";
 
-  /**
-   * Address street.
-   */
-  @Column(name = "street", nullable = false, unique = false)
-  private String street = "";
+    /**
+     * Address street.
+     */
+    @Column(name = "street", nullable = false, unique = false)
+    private String street = "";
 
-  /**
-   * Address city.
-   */
-  @Column(name = "city", nullable = false, unique = false)
-  private String city = "";
+    /**
+     * Address city.
+     */
+    @Column(name = "city", nullable = false, unique = false)
+    private String city = "";
 
-  // RELATIONS
+    // RELATIONS
 
-  /**
-   * The user associated with this address.
-   */
-  @OneToOne
-  @MapsId
-  @JoinColumn(name = "user_dni")
-  private PersistentUserEntity user;
+    /**
+     * The user associated with this address.
+     */
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_dni")
+    private PersistentUserEntity user;
 
-  /**
-   * The country associated with this address.
-   */
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "country_numeric_code")
-  private PersistentCountryEntity country;
+    /**
+     * The country associated with this address.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_numeric_code")
+    private PersistentCountryEntity country;
 
-  /**
-   * The country subdivision associated with this address.
-   */
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "country_subdivision_id")
-  private PersistentCountrySubdivisionEntity countrySubdivision;
+    /**
+     * The country subdivision associated with this address.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_subdivision_id")
+    private PersistentCountrySubdivisionEntity countrySubdivision;
 
-  /**
-   * Default constructor. This is used by JPA for entity instantiation.
-   */
-  public PersistentAddressEntity() {
-    // Default constructor
-  }
+    /**
+     * Default constructor. This is used by JPA for entity instantiation.
+     */
+    public PersistentAddressEntity() {
+        // Default constructor
+    }
 
 }

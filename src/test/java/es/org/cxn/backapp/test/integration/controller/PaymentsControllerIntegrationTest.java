@@ -73,6 +73,9 @@ class PaymentsControllerIntegrationTest {
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
 
+    /**
+     * The email service mocked implementation.
+     */
     @MockBean
     private DefaultEmailService defaultEmailService;
 

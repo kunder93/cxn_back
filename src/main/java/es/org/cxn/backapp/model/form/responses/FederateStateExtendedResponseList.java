@@ -15,9 +15,29 @@ import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
  * state information of individual users.
  * </p>
  *
- * @param federateStateMembersList a list of federate state responses
+ * @param federateStateMembersList an immutable list of federate state responses
  */
 public record FederateStateExtendedResponseList(List<FederateStateExtendedResponse> federateStateMembersList) {
+
+    /**
+     * Canonical constructor with a defensive copy to ensure immutability.
+     *
+     * @param federateStateMembersList the list of federate state responses
+     */
+    public FederateStateExtendedResponseList(final List<FederateStateExtendedResponse> federateStateMembersList) {
+        this.federateStateMembersList = List
+                .copyOf(federateStateMembersList == null ? List.of() : federateStateMembersList);
+    }
+
+    /**
+     * Returns an immutable view of the federate state members list.
+     *
+     * @return an unmodifiable list of federate state members
+     */
+    @Override
+    public List<FederateStateExtendedResponse> federateStateMembersList() {
+        return List.copyOf(federateStateMembersList);
+    }
 
     /**
      * Nested record representing an individual federate state response.

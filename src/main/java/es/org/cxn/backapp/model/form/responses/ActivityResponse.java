@@ -29,7 +29,7 @@ public record ActivityResponse(String title, String description, LocalDateTime s
 
     /**
      * Constructs an {@code ActivityResponse} from an {@code ActivityEntity} and an
-     * optional {@code MultipartFile} image.
+     * optional image as a byte array.
      *
      * @param entity The {@code ActivityEntity} providing details of the activity.
      *               Must not be null.
@@ -39,7 +39,38 @@ public record ActivityResponse(String title, String description, LocalDateTime s
      */
     public ActivityResponse(final ActivityEntity entity, final byte[] img) {
         this(entity.getTitle(), entity.getDescription(), entity.getStartDate(), entity.getEndDate(),
-                entity.getCategory(), img);
+                entity.getCategory(), img != null ? img.clone() : null);
+    }
+
+    /**
+     * Constructs an {@code ActivityResponse} using all fields.
+     * <p>
+     * Creates a defensive copy of the provided {@code image} array to ensure
+     * immutability.
+     *
+     * @param title       The title of the activity.
+     * @param description The description of the activity.
+     * @param startDate   The start date of the activity.
+     * @param endDate     The end date of the activity.
+     * @param category    The category of the activity.
+     * @param image       The image file associated with the activity.
+     */
+    public ActivityResponse {
+        image = image != null ? image.clone() : null; // Defensive copy of the array
+    }
+
+    /**
+     * Returns the image file associated with the activity.
+     * <p>
+     * Provides a defensive copy of the internal {@code image} array to prevent
+     * external modification.
+     *
+     * @return A copy of the {@code image} array, or {@code null} if no image is
+     *         provided.
+     */
+    @Override
+    public byte[] image() {
+        return image != null ? image.clone() : null; // Defensive copy when returning
     }
 
     @Override

@@ -64,6 +64,7 @@ public final class DefaultPaymentsService implements PaymentsService {
      *
      * @param repository the repository used to persist payment data. Must not be
      *                   null.
+     * @param emailServ  The email service instance used by this service.
      * @param userRepo   the user repository.
      * @throws IllegalArgumentException if the repository is null.
      */

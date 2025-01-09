@@ -95,44 +95,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    /**
-     * Represents a request to update the profile image URL for a user.
-     *
-     * <p>
-     * This class contains the profile image URL that will be used to update the
-     * user's profile image in the system.
-     * </p>
-     */
-    public class ProfileImageUpdateRequest {
-
-        /** The URL of the new profile image. */
-        private String profileImageUrl;
-
-        /**
-         * Default constructor.
-         */
-        public ProfileImageUpdateRequest() {
-            // Default public constructor.
-        }
-
-        /**
-         * Gets the profile image URL.
-         *
-         * @return the URL of the profile image.
-         */
-        public String getProfileImageUrl() {
-            return profileImageUrl;
-        }
-
-        /**
-         * Sets the profile image URL.
-         *
-         * @param value the new URL of the profile image.
-         */
-        public void setProfileImageUrl(final String value) {
-            this.profileImageUrl = value;
-        }
-    }
 
     /**
      * The user service to handle business logic related to user operations.

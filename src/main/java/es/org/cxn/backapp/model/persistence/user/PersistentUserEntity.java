@@ -265,6 +265,7 @@ public class PersistentUserEntity implements UserEntity {
      *
      * @return The complete user name, name, first surname and second surname.
      */
+    @Override
     public String getCompleteName() {
         return profile.getName() + " " +  profile.getFirstSurname() +  " " + profile.getSecondSurname();
     }

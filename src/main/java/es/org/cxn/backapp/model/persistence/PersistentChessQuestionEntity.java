@@ -24,22 +24,19 @@
 
 package es.org.cxn.backapp.model.persistence;
 
-import es.org.cxn.backapp.model.ChessQuestionEntity;
+import java.time.LocalDateTime;
 
+import es.org.cxn.backapp.model.ChessQuestionEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 /**
  * Self vehicle entity.
@@ -56,64 +53,59 @@ import lombok.NonNull;
 @Builder
 public class PersistentChessQuestionEntity implements ChessQuestionEntity {
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 2897644409670798725L;
+    /**
+     * Serial UID.
+     */
+    private static final long serialVersionUID = 2897644409670798725L;
 
-  /**
-   * Entity's identifier.
-   */
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(name = "id", nullable = false, unique = true)
-  private Integer identifier;
+    /**
+     * Entity's identifier.
+     */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
+    private Integer identifier;
 
-  /**
-   * Chess question topic.
-   *
-   */
-  @Column(name = "topic", nullable = false, unique = false)
-  @NonNull
-  private String topic;
+    /**
+     * Chess question topic.
+     *
+     */
+    @Column(name = "topic", nullable = false, unique = false)
+    private String topic;
 
-  /**
-   * Chess question message.
-   *
-   */
-  @Column(name = "message", nullable = false, unique = false)
-  @NonNull
-  private String message;
+    /**
+     * Chess question message.
+     *
+     */
+    @Column(name = "message", nullable = false, unique = false)
+    private String message;
 
-  /**
-   * Chess question category.
-   *
-   */
-  @Column(name = "category", nullable = false, unique = false)
-  @NonNull
-  private String category;
+    /**
+     * Chess question category.
+     *
+     */
+    @Column(name = "category", nullable = false, unique = false)
+    private String category;
 
-  /**
-   * Chess question email.
-   *
-   */
-  @Column(name = "email", nullable = false, unique = false)
-  @NonNull
-  private String email;
+    /**
+     * Chess question email.
+     *
+     */
+    @Column(name = "email", nullable = false, unique = false)
+    private String email;
 
-  /**
-   * Chess question date.
-   *
-   */
-  @Column(name = "date", nullable = false, unique = false)
-  @NonNull
-  private LocalDateTime date;
+    /**
+     * Chess question date.
+     *
+     */
+    @Column(name = "date", nullable = false, unique = false)
+    private LocalDateTime date;
 
-  /**
-   * Chess question seen state.
-   *
-   */
-  @Column(name = "seen", nullable = false, unique = false)
-  private boolean seen;
+    /**
+     * Chess question seen state.
+     *
+     */
+    @Column(name = "seen", nullable = false, unique = false)
+    private boolean seen;
 
 }

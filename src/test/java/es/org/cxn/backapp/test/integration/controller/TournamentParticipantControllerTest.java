@@ -67,6 +67,9 @@ class TournamentParticipantControllerTest {
      */
     private static final LocalDate BIRTH_DATE_ALICE = LocalDate.of(2005, 10, 30);
 
+    /**
+     * The email service mocked implementation.
+     */
     @MockBean
     private DefaultEmailService defaultEmailService;
 

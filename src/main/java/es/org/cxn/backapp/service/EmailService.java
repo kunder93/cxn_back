@@ -19,8 +19,7 @@ public interface EmailService {
      * @throws MessagingException When message fails.
      * @throws IOException        When fails cause cannot load mail template file.
      */
-    void sendChangeEmail(final String oldEmail, final String newEmail, final String memberName)
-            throws MessagingException, IOException;
+    void sendChangeEmail(String oldEmail, String newEmail, String memberName) throws MessagingException, IOException;
 
     /**
      * Sends a confirmation payment received email to member.
@@ -32,8 +31,8 @@ public interface EmailService {
      * @throws MessagingException When message fails.
      * @throws IOException        When fails cause cannot load mail template file.
      */
-    void sendPaymentConfirmation(final String toEmail, final String memberName, final String paymentQuantity,
-            final String reason) throws MessagingException, IOException;
+    void sendPaymentConfirmation(String toEmail, String memberName, String paymentQuantity, String reason)
+            throws MessagingException, IOException;
 
     /**
      * Sends a sign up email.

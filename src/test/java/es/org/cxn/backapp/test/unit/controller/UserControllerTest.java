@@ -171,6 +171,9 @@ class UserControllerTest {
     void updateUserDataValidDataReturnsSuccess() throws Exception {
         // Arrange
         String userName = "testuser@example.com";
+        final int yearOfBirth = 2000;
+        final int monthOfBirth = 1;
+        final int dayOfBirth = 1;
 
         // Create a mock UserEntity to return from the update method
         PersistentUserEntity userEntity = new PersistentUserEntity();
@@ -179,7 +182,7 @@ class UserControllerTest {
         profile.setName("John");
         profile.setFirstSurname("Doe");
         profile.setSecondSurname("Smith");
-        profile.setBirthDate(LocalDate.of(2000, 1, 1));
+        profile.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
         profile.setGender("M");
         userEntity.setProfile(profile);
 
@@ -198,7 +201,8 @@ class UserControllerTest {
 
         // Verify that the update method was called with the expected parameters
         verify(userService).update(argThat(dto -> dto.name().equals("John") && dto.firstSurname().equals("Doe")
-                && dto.secondSurname().equals("Smith") && dto.birthDate().equals(LocalDate.of(2000, 1, 1))
+                && dto.secondSurname().equals("Smith")
+                && dto.birthDate().equals(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth))
                 && dto.gender().equals("M")), anyString());
     }
 

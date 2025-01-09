@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.FederateState;
+import es.org.cxn.backapp.model.FederateStateEntity;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
@@ -67,6 +70,12 @@ class FederateStateServiceTest {
     private PaymentsService paymentsService;
 
     /**
+     * The mocked federateState entity.
+     */
+    @Mock
+    private FederateStateEntity federateStateEntity;
+
+    /**
      * Mock MultipartFile representing the front side of a DNI (Documento Nacional
      * de Identidad) image. This mock is used to simulate uploading of a DNI front
      * image during testing.
@@ -97,9 +106,14 @@ class FederateStateServiceTest {
     @Value("${image.location.dnis}")
     private String imageLocationDnis;
 
+    // Mocking saveFile method (you can also mock it as part of the service if
+    // needed)
+    private String saveFile(final MultipartFile file, final String dni, final String type) throws IOException {
+        return "path/to/" + type + dni + ".jpg"; // Simulate saving the file and returning a path
+    }
+
     @BeforeEach
     public void setup() {
-        federateStateService = new DefaultFederateStateService(federateStateRepository, userService, paymentsService);
 
     }
 
@@ -268,6 +282,29 @@ class FederateStateServiceTest {
 
         // Assert
         assertEquals(federateState, result);
+    }
+
+    @Test
+    void testUpdateDniUserNotFederate() throws Exception {
+        final String userEmail = "user@example.com";
+        final String userDni = "12345678A";
+
+        // Given
+        UserEntity mockUserEntity = mock(UserEntity.class);
+        when(mockUserEntity.getDni()).thenReturn(userDni);
+        when(userService.findByEmail(userEmail)).thenReturn(mockUserEntity);
+
+        // Mock federate state entity with a non-federate state
+        PersistentFederateStateEntity mockFederateStateEntity = mock(PersistentFederateStateEntity.class);
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(mockFederateStateEntity));
+        when(mockFederateStateEntity.getState()).thenReturn(FederateState.NO_FEDERATE);
+
+        // When & Then
+        FederateStateServiceException exception = assertThrows(FederateStateServiceException.class, () -> {
+            federateStateService.updateDni(userEmail, frontDniFile, backDniFile);
+        });
+
+        assertEquals("User is not in a federate state.", exception.getMessage());
     }
 
 }

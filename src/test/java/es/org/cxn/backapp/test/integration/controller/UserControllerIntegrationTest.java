@@ -99,6 +99,9 @@ class UserControllerIntegrationTest {
      */
     private static final String CHANGE_KIND_MEMBER_URL = "/api/user/changeKindOfMember";
 
+    /**
+     * The email service mocked implementation.
+     */
     @MockBean
     private DefaultEmailService defaultEmailService;
 

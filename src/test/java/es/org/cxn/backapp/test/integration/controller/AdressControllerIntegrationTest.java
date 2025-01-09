@@ -71,6 +71,9 @@ class AdressControllerIntegrationTest {
      */
     private static final int SPAIN_SUBDIVISIONS = 50;
 
+    /**
+     * The email service mocked implementation.
+     */
     @MockBean
     private DefaultEmailService defaultEmailService;
 

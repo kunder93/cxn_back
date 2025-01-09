@@ -8,7 +8,6 @@ import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 /**
  * Encapsulates basic user profile details.
@@ -30,7 +29,6 @@ public class UserProfile implements Serializable {
      * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "name", nullable = false, unique = false)
-    @NonNull
     private String name;
 
     /**
@@ -39,7 +37,6 @@ public class UserProfile implements Serializable {
      * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "first_surname", nullable = false, unique = false)
-    @NonNull
     private String firstSurname;
 
     /**
@@ -48,7 +45,6 @@ public class UserProfile implements Serializable {
      * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "second_surname", nullable = false, unique = false)
-    @NonNull
     private String secondSurname;
 
     /**
@@ -57,7 +53,6 @@ public class UserProfile implements Serializable {
      * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "birth_date", nullable = false, unique = false)
-    @NonNull
     private LocalDate birthDate;
 
     /**
@@ -66,7 +61,6 @@ public class UserProfile implements Serializable {
      * This is to have additional data apart from the id, to be used on the tests.
      */
     @Column(name = "gender", nullable = false, unique = false)
-    @NonNull
     private String gender;
 
 }

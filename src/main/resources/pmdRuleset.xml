@@ -22,11 +22,17 @@
       <property name="minimum" value="35" />
     </properties>
   </rule>
+  <rule ref="category/java/codestyle.xml/ShortVariable">
+    <properties>
+        <property name="minimum" value="2" />
+    </properties>
+</rule>
+  
   <!-- Customize CommentSize rule -->
   <rule ref="category/java/documentation.xml/CommentSize">
     <properties>
-      <property name="maxLines" value="40" />
-      <property name="maxLineLength" value="80" />
+      <property name="maxLines" value="80" />
+      <property name="maxLineLength" value="120" />
     </properties>
   </rule>
 </ruleset>

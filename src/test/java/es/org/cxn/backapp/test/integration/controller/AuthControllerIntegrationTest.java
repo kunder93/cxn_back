@@ -79,6 +79,9 @@ class AuthControllerIntegrationTest {
      */
     private static Gson gson;
 
+    /**
+     * The email service mocked implementation.
+     */
     @MockBean
     private DefaultEmailService defaultEmailService;
 

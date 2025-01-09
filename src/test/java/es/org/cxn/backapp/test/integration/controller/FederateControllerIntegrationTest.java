@@ -71,6 +71,9 @@ class FederateControllerIntegrationTest {
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
 
+    /**
+     * The email service mocked implementation.
+     */
     @MockBean
     private DefaultEmailService defaultEmailService;
 

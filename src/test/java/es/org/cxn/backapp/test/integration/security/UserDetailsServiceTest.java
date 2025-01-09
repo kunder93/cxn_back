@@ -47,6 +47,9 @@ class UserDetailsServiceTest {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    /**
+     * The email service mocked implementation.
+     */
     @MockBean
     private DefaultEmailService defaultEmailService;
     /**
