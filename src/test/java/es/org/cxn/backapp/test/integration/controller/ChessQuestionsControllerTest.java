@@ -30,6 +30,7 @@ import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 @SpringBootTest
@@ -50,11 +51,11 @@ class ChessQuestionsControllerTest {
      */
     private static Gson gson;
 
-    @BeforeAll
-    static void initializeTest() {
-        gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
-
-    }
+    /**
+     * The email service mocked implementation.
+     */
+    @MockBean
+    private DefaultEmailService defaultEmailService;
 
     /**
      * Mocked mail sender.
@@ -73,6 +74,12 @@ class ChessQuestionsControllerTest {
      */
     @Autowired
     private MockMvc mockMvc;
+
+    @BeforeAll
+    static void initializeTest() {
+        gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
+
+    }
 
     @Test
     @Transactional

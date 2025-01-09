@@ -41,6 +41,7 @@ import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
@@ -60,7 +61,6 @@ class PaymentsControllerIntegrationTest {
      * response payloads in the tests.
      */
     private static Gson gson;
-
     /**
      * URL endpoint for user sign-in. This static final string represents the URL
      * used for user authentication and generating JWT tokens.
@@ -72,6 +72,12 @@ class PaymentsControllerIntegrationTest {
      * represents the URL used to create a new user account.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
+
+    /**
+     * The email service mocked implementation.
+     */
+    @MockBean
+    private DefaultEmailService defaultEmailService;
 
     /**
      * Mocked {@link SecurityContext} used in the test to simulate the security

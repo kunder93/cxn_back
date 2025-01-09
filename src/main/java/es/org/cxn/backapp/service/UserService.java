@@ -44,6 +44,19 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 public interface UserService {
 
     /**
+     * Changes the user roles for the specified user by promoting them from
+     * {@link UserRoleName#ROLE_CANDIDATO_SOCIO} to {@link UserRoleName#ROLE_SOCIO}.
+     *
+     * @param userDni the dni of the user to be promoted.
+     * @return the updated user entity containing only the
+     *         {@link UserRoleName#ROLE_SOCIO} role.
+     * @throws UserServiceException if the user is not found, has roles other than
+     *                              {@link UserRoleName#ROLE_CANDIDATO_SOCIO}, or if
+     *                              the roles cannot be changed.
+     */
+    UserEntity acceptUserAsMember(String userDni) throws UserServiceException;
+
+    /**
      * Creates new user entity.
      *
      * @param userDetails The dto with user and address data.

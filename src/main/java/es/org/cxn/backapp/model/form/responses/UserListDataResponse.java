@@ -24,17 +24,19 @@
 
 package es.org.cxn.backapp.model.form.responses;
 
-import es.org.cxn.backapp.model.UserEntity;
-
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import es.org.cxn.backapp.model.UserEntity;
 
 /**
  * Represents the form used for response authenticating user.
  * <p>
  * This is a DTO, meant to allow communication between the view and the
- * controller, and mapping all the values from the form. Each field in the
- * DTO matches a field in the form.
+ * controller, and mapping all the values from the form. Each field in the DTO
+ * matches a field in the form.
  * <p>
  * Includes Java validation annotations, for applying binding validation. This
  * way the controller will make sure it receives all the required data.
@@ -44,16 +46,36 @@ import java.util.List;
  */
 public record UserListDataResponse(List<UserDataResponse> usersList) {
 
-  /**
-   * Constructs a DTO for user data response with fields values.
-   *
-   * @param users the collection of user entities with data.
-   * @return UserListDataResponse object.
-   */
-  public static UserListDataResponse
-        fromUserEntities(final Collection<UserEntity> users) {
-    return new UserListDataResponse(
-          users.stream().map(UserDataResponse::new).toList()
-    );
-  }
+    /**
+     * Constructs a {@code UserListDataResponse} object with a list of user data
+     * responses. The list is made immutable to prevent modification of the data
+     * once the object is created.
+     *
+     * @param usersList the list of user data response objects to initialize the
+     *                  DTO.
+     */
+    public UserListDataResponse(final List<UserDataResponse> usersList) {
+        this.usersList = Collections.unmodifiableList(usersList);
+    }
+
+    /**
+     * Constructs a DTO for user data response with fields values.
+     *
+     * @param users the collection of user entities with data.
+     * @return UserListDataResponse object.
+     */
+    public static UserListDataResponse fromUserEntities(final Collection<UserEntity> users) {
+        return new UserListDataResponse(users.stream().map(UserDataResponse::new).toList());
+    }
+
+    /**
+     * Returns a copy of the list of user data responses.
+     *
+     * @return A new list containing all the user data responses in the original
+     *         list.
+     */
+    public List<UserDataResponse> usersList() {
+        return new ArrayList<>(usersList);
+    }
+
 }

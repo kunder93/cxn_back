@@ -298,7 +298,7 @@ public final class DefaultFederateStateService implements FederateStateService {
      * @throws IOException          If there is an error while saving the file.
      * @throws UserServiceException If the file name or extension is invalid.
      */
-    private String saveFile(final MultipartFile file, final String dni, final String kindDniImage)
+    public String saveFile(final MultipartFile file, final String dni, final String kindDniImage)
             throws IOException, UserServiceException {
 
         final String originalFileName = file.getOriginalFilename();

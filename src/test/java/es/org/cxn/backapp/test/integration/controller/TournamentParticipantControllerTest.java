@@ -26,6 +26,7 @@ import com.google.gson.GsonBuilder;
 import es.org.cxn.backapp.model.form.requests.AddTournamentParticipantRequest;
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity;
 import es.org.cxn.backapp.service.TournamentParticipantService;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 /**
@@ -41,7 +42,6 @@ class TournamentParticipantControllerTest {
      * FIDE ID for the participant John Doe.
      */
     private static final BigInteger FIDE_ID_JOHN = BigInteger.valueOf(1234567);
-
     /**
      * FIDE ID for the participant Jane Smith.
      */
@@ -66,6 +66,12 @@ class TournamentParticipantControllerTest {
      * Birth date for the participant Alice Johnson.
      */
     private static final LocalDate BIRTH_DATE_ALICE = LocalDate.of(2005, 10, 30);
+
+    /**
+     * The email service mocked implementation.
+     */
+    @MockBean
+    private DefaultEmailService defaultEmailService;
 
     /** MockMvc for making HTTP requests in tests. */
     @Autowired

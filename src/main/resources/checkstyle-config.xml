@@ -117,7 +117,10 @@
 		<!-- See https://checkstyle.org/checks/coding/index.html -->
 		<module name="EmptyStatement" />
 		<module name="EqualsHashCode" />
-		<module name="HiddenField" />
+		<module name="HiddenField">
+            <!-- Set ignoreConstructorParameter to true -->
+            <property name="ignoreConstructorParameter" value="true"/>
+        </module>
 		<module name="IllegalInstantiation" />
 		<module name="InnerAssignment" />
 		<module name="MagicNumber" />

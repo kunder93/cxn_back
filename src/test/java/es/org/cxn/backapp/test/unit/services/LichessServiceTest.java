@@ -558,11 +558,15 @@ class LichessServiceTest {
         // Mocking the repository methods
         when(lichessEntityRepository.findAll()).thenReturn(lichessProfilesEntitiesList);
 
+        final int yearOfBirth = 1991;
+        final int monthOfBirth = 02;
+        final int dayOfBirth = 4;
+
         UserProfile userProfile1 = new UserProfile();
         userProfile1.setName("User name");
         userProfile1.setFirstSurname("first surname");
         userProfile1.setSecondSurname("second surname");
-        userProfile1.setBirthDate(LocalDate.of(1991, 02, 4));
+        userProfile1.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
         userProfile1.setGender("Male");
         PersistentUserEntity userEntity1 = new PersistentUserEntity();
         userEntity1.setDni("123456");
@@ -572,7 +576,7 @@ class LichessServiceTest {
         userProfile1.setName("User name2");
         userProfile1.setFirstSurname("first surname2");
         userProfile1.setSecondSurname("second surname2");
-        userProfile1.setBirthDate(LocalDate.of(1991, 02, 4));
+        userProfile1.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
         userProfile1.setGender("Male");
         PersistentUserEntity userEntity2 = new PersistentUserEntity();
         userEntity2.setDni("654321");

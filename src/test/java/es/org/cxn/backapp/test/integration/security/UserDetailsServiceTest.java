@@ -21,6 +21,7 @@ import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import jakarta.transaction.Transactional;
 
 /**
@@ -46,6 +47,11 @@ class UserDetailsServiceTest {
     @Autowired
     private MyUserDetailsService myUserDetailsService;
 
+    /**
+     * The email service mocked implementation.
+     */
+    @MockBean
+    private DefaultEmailService defaultEmailService;
     /**
      * Mocked mail sender.
      */

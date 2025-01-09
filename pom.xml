@@ -15,10 +15,16 @@
             <url>http://www.opensource.org/licenses/mit-license.php</url>
             <distribution>manual</distribution>
         </license>
+        <license><!-- H2 database -->
+            <name>BSD-3 License</name>
+            <url>https://opensource.org/licenses/BSD-3-Clause</url>
+            <distribution>manual</distribution>
+        </license>
     </licenses>
     <!-- ********************************************** -->
     <!-- *********** ORGANIZATION AND MEMBERS ********* -->
     <!-- ********************************************** -->
+    
     <organization>
         <name>Circulo Xadrez Naron</name>
         <url>https://xadreznaron.es</url>
@@ -50,49 +56,52 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
 
+        <tomcat.embed.version>10.1.33</tomcat.embed.version>
+
         <!-- Spring  Versions -->
-        <spring.test.version>6.1.15</spring.test.version>
-        <spring.boot.version>3.3.6</spring.boot.version>
-        <spring.version>6.1.15</spring.version>
-        <spring.security.version>6.3.5</spring.security.version>
-        <spring.web.version>6.1.15</spring.web.version>
-        <springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
+        <spring.boot.version>3.3.7</spring.boot.version>
+        <spring.data.jpa.version>3.3.7</spring.data.jpa.version>
+        <spring.context.version>6.2.1</spring.context.version>
+        <spring.web.version>6.1.16</spring.web.version>
+        <spring.version>6.1.16</spring.version>
+        <spring.security.version>6.3.6</spring.security.version>
         <spring.tx.version>6.1.15</spring.tx.version>
+        <springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
         <spring.data.version>3.3.6</spring.data.version>
         <therapi.runtime.version>0.15.0</therapi.runtime.version>
-        <jackson.version>2.18.1</jackson.version>
+        <jackson.version>2.18.2</jackson.version>
+        <gson.version>2.11.0</gson.version>
+        <json.path.version>2.9.0</json.path.version>
         <jjwt.version>0.12.6</jjwt.version>
         <hikariCP.version>6.2.1</hikariCP.version>
-        <mockito.version>5.14.2</mockito.version>
+        <mockito.version>5.15.2</mockito.version>
+        <assertj.version>3.27.2</assertj.version>
+        <junit.jupiter.version>5.11.4</junit.jupiter.version>
+        <jakarta.mail.version>2.0.3</jakarta.mail.version>
         <jakarta.validation.version>3.1.0</jakarta.validation.version>
-        <jakarta.persistence.version>3.1.0</jakarta.persistence.version>
-        <log4j.version>2.24.0</log4j.version>
-        <hamcrest.version>3.0</hamcrest.version>
-        <junit.jupiter.version>5.11.3</junit.jupiter.version>
+        <log4j.version>2.24.3</log4j.version>
         <slf4j.version>2.0.16</slf4j.version>
-        <hibernate.validator.version>8.0.1.Final</hibernate.validator.version>
-        <hibernate.version>6.6.2.Final</hibernate.version>
+        <logback.version>1.5.16</logback.version>
+        <hibernate.validator.version>8.0.2.Final</hibernate.validator.version>
+        <hibernate.version>6.6.4.Final</hibernate.version>   
         <h2.version>2.3.232</h2.version>
         <lombok.version>1.18.36</lombok.version>
         <postgresql.version>42.7.4</postgresql.version>
-        <logback.version>1.5.12</logback.version>
         <pmd.plugin.version>3.26.0</pmd.plugin.version>
-        <assertj.version>3.26.3</assertj.version>
-        <gson.version>2.11.0</gson.version>
-        <guava.version>33.3.1-jre</guava.version>
-        <liquibase.version>4.30.0</liquibase.version>
+        <guava.version>33.4.0-jre</guava.version>
+        <liquibase.version>4.30.0</liquibase.version> 
         <maven.dependency.plugin.version>3.8.1</maven.dependency.plugin.version>
         <maven.compiler.plugin.version>3.13.0</maven.compiler.plugin.version>
         <maven.jacoco.plugin.version>0.8.12</maven.jacoco.plugin.version>
-        <maven.javadoc.plugin.version>3.11.1</maven.javadoc.plugin.version>
-        <maven.site.plugin.version>3.21.0</maven.site.plugin.version>
+        <maven.javadoc.plugin.version>3.11.2</maven.javadoc.plugin.version>    
+        <maven.site.plugin.version>3.21.0</maven.site.plugin.version> 
         <maven.surefire.plugin.version>3.5.2</maven.surefire.plugin.version>
         <maven.jxr.plugin.version>3.6.0</maven.jxr.plugin.version>
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
         <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
         <maven.info.reports.plugin.version>3.8.0</maven.info.reports.plugin.version>
         <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
-        <json.path.version>2.9.0</json.path.version>
+        <maven.plugin.report.version>3.15.1</maven.plugin.report.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -121,7 +130,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>6.1.14</version>
+            <version>${spring.context.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -159,18 +168,18 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-jpa</artifactId>
-            <version>3.3.5</version>
+            <version>${spring.data.jpa.version}</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-params</artifactId>
-            <version>5.11.3</version>
+            <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.eclipse.angus</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>2.0.3</version>
+            <version>${jakarta.mail.version}</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -302,7 +311,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
-            <version>${spring.test.version}</version>
+            <version>${spring.version}</version>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -313,12 +322,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>${hamcrest.version}</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -334,13 +337,7 @@
             <artifactId>aspectjrt</artifactId>
             <version>1.9.19</version> <!-- You can use the latest stable version -->
         </dependency>
-        <dependency>
-            <!-- AspectJ Weaver -->
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.9.22.1</version>
-            <scope>runtime</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -363,11 +360,7 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
-            <version>${jakarta.persistence.version}</version>
-        </dependency>
+
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
@@ -384,12 +377,6 @@
             <groupId>com.jayway.jsonpath</groupId>
             <artifactId>json-path</artifactId>
             <version>${json.path.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>jakarta.transaction</groupId>
-            <artifactId>jakarta.transaction-api</artifactId>
-            <version>2.0.1</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -427,11 +414,7 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
-        <dependency>
-            <groupId>jakarta.el</groupId>
-            <artifactId>jakarta.el-api</artifactId>
-            <version>6.0.1</version>
-        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -458,7 +441,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.18.1</version>
+            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate.validator</groupId>
@@ -468,7 +451,7 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-            <version>10.1.33</version>
+            <version>${tomcat.embed.version}</version>
         </dependency>
         <!-- ============================================== -->
         <!-- ================ LIQUIBASE =================== -->
@@ -747,7 +730,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-plugin-report-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>${maven.plugin.report.version}</version>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -755,6 +738,16 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.8.6.6</version>
+                <configuration>
+                  <xmlOutput>true</xmlOutput>
+                  <!-- Optional directory to put spotbugs xdoc xml report -->
+                  <xmlOutputDirectory>target/site</xmlOutputDirectory>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>

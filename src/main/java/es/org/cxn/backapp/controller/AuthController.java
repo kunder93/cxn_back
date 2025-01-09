@@ -202,7 +202,7 @@ public class AuthController {
             final var createdUser = userService.changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
             final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
 
-            emailService.sendSignUpEmail(signUpRequestForm.email(), signUpRequestForm.name(),
+            emailService.sendSignUp(signUpRequestForm.email(), signUpRequestForm.name(),
                     "Te damos la bienvenida a Círculo Xadrez Narón.");
 
             return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);

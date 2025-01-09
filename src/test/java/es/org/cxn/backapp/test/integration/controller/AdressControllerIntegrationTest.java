@@ -18,6 +18,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
+
 /**
  * Integration tests for the AddressController.
  *
@@ -49,7 +51,6 @@ class AdressControllerIntegrationTest {
      * </p>
      */
     private static final String GET_COUNTRIES_URL = "/api/address/getCountries";
-
     /**
      * The expected number of countries returned by the API.
      *
@@ -69,6 +70,12 @@ class AdressControllerIntegrationTest {
      * </p>
      */
     private static final int SPAIN_SUBDIVISIONS = 50;
+
+    /**
+     * The email service mocked implementation.
+     */
+    @MockBean
+    private DefaultEmailService defaultEmailService;
 
     /**
      * Mocked mail sender.

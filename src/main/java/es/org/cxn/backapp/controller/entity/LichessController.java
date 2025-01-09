@@ -344,9 +344,7 @@ public class LichessController {
      * @return true if the response status code is in the 2xx range, false otherwise
      */
     private boolean isResponseSuccessful(final ResponseEntity<String> response) {
-        final var statusCode = response.getStatusCode();
-
-        return response != null && statusCode.is2xxSuccessful();
+        return response != null && response.getStatusCode().is2xxSuccessful();
     }
 
     /**

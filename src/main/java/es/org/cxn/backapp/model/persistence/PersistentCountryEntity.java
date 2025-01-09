@@ -24,18 +24,19 @@
 
 package es.org.cxn.backapp.model.persistence;
 
-import es.org.cxn.backapp.model.CountryEntity;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import es.org.cxn.backapp.model.CountryEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -52,53 +53,69 @@ import lombok.NoArgsConstructor;
 @Data
 public class PersistentCountryEntity implements CountryEntity {
 
-  /**
-   * Serialization ID.
-   */
-  @Transient
-  private static final long serialVersionUID = 1419348811150111291L;
+    /**
+     * Serialization ID.
+     */
+    @Transient
+    private static final long serialVersionUID = 1419348811150111291L;
 
-  /**
-   * Numeric code use as Country PK.
-   */
-  @Id
-  @Column(name = "numeric_code", nullable = false, unique = true)
-  private Integer numericCode;
+    /**
+     * Numeric code use as Country PK.
+     */
+    @Id
+    @Column(name = "numeric_code", nullable = false, unique = true)
+    private Integer numericCode;
 
-  /**
-   * Country full name.
-   */
-  @Column(name = "full_name", nullable = false, unique = false)
-  private String fullName = "";
+    /**
+     * Country full name.
+     */
+    @Column(name = "full_name", nullable = false, unique = false)
+    private String fullName = "";
 
-  /**
-   * Country short name.
-   */
-  @Column(name = "short_name", nullable = false, unique = false)
-  private String shortName = "";
+    /**
+     * Country short name.
+     */
+    @Column(name = "short_name", nullable = false, unique = false)
+    private String shortName = "";
 
-  /**
-   * Country 2 characters code.
-   */
-  @Column(name = "alpha_2_code", nullable = false, unique = false)
-  private String alpha2Code = "";
+    /**
+     * Country 2 characters code.
+     */
+    @Column(name = "alpha_2_code", nullable = false, unique = false)
+    private String alpha2Code = "";
 
-  /**
-   * Country 3 characters code.
-   */
-  @Column(name = "alpha_3_code", nullable = false, unique = false)
-  private String alpha3Code = "";
+    /**
+     * Country 3 characters code.
+     */
+    @Column(name = "alpha_3_code", nullable = false, unique = false)
+    private String alpha3Code = "";
 
-  /**
-   * Country subdivisions.
-   */
-  @OneToMany(mappedBy = "country")
-  private List<PersistentCountrySubdivisionEntity> subdivisions =
-        new ArrayList<>();
+    /**
+     * Country subdivisions.
+     */
+    @OneToMany(mappedBy = "country")
+    private List<PersistentCountrySubdivisionEntity> subdivisions = new ArrayList<>();
 
-  /**
-   * List of addresses with this country.
-   */
-  @OneToMany(mappedBy = "country")
-  private List<PersistentAddressEntity> addressList = new ArrayList<>();
+    /**
+     * Set of addresses with this country.
+     */
+    @OneToMany(mappedBy = "country")
+    private Set<PersistentAddressEntity> addressList = new HashSet<>();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Set<PersistentAddressEntity> getAddressList() {
+        return Collections.unmodifiableSet(addressList);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void setAddressList(final Set<PersistentAddressEntity> value) {
+        addressList = Collections.unmodifiableSet(value);
+    }
+
 }

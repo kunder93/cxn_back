@@ -3,6 +3,7 @@ package es.org.cxn.backapp.model.form.responses;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 
 import es.org.cxn.backapp.model.UserEntity;
@@ -46,6 +47,42 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
         Set<UserRoleName> userRoles) {
 
     /**
+     * Constructs a {@code UserDataResponse} record from all parameters.
+     * <p>
+     * This constructor initializes all the fields of the record based on the
+     * provided values for each of the parameters.
+     * </p>
+     *
+     * @param dni           The user's DNI (identification number).
+     * @param name          The user's first name.
+     * @param firstSurname  The user's first surname.
+     * @param secondSurname The user's second surname.
+     * @param gender        The user's gender.
+     * @param birthDate     The user's birth date.
+     * @param email         The user's email address.
+     * @param kindMember    The type of membership the user holds, represented by
+     *                      {@link UserType}.
+     * @param userAddress   The user's address, represented by
+     *                      {@link AddressResponse}.
+     * @param userRoles     The set of role names associated with the user,
+     *                      represented by {@link UserRoleName}.
+     */
+    public UserDataResponse(final String dni, final String name, final String firstSurname, final String secondSurname,
+            final String gender, final LocalDate birthDate, final String email, final UserType kindMember,
+            final AddressResponse userAddress, final Set<UserRoleName> userRoles) {
+        this.dni = dni;
+        this.name = name;
+        this.firstSurname = firstSurname;
+        this.secondSurname = secondSurname;
+        this.gender = gender;
+        this.birthDate = birthDate;
+        this.email = email;
+        this.kindMember = kindMember;
+        this.userAddress = userAddress;
+        this.userRoles = EnumSet.copyOf(userRoles);
+    }
+
+    /**
      * Constructs a {@code UserDataResponse} record from a {@link UserEntity}.
      * <p>
      * This constructor initializes all the fields of the record based on the values
@@ -74,4 +111,18 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
         }
         return roles;
     }
+
+    /**
+     * Returns a new {@link Set} containing the user's roles.
+     * <p>
+     * This method creates a new {@code HashSet} of the user's roles, ensuring that
+     * the set can be modified independently from the original {@code userRoles}.
+     * </p>
+     *
+     * @return A new {@code Set<UserRoleName>} containing the user's roles.
+     */
+    public Set<UserRoleName> userRoles() {
+        return new HashSet<>(userRoles);
+    }
+
 }
