@@ -15,6 +15,11 @@
             <url>http://www.opensource.org/licenses/mit-license.php</url>
             <distribution>manual</distribution>
         </license>
+        <license><!-- H2 database -->
+            <name>BSD-3 License</name>
+            <url>https://opensource.org/licenses/BSD-3-Clause</url>
+            <distribution>manual</distribution>
+        </license>
     </licenses>
     <!-- ********************************************** -->
     <!-- *********** ORGANIZATION AND MEMBERS ********* -->
@@ -432,11 +437,7 @@
             <artifactId>logback-classic</artifactId>
             <version>${logback.version}</version>
         </dependency>
-        <dependency>
-            <groupId>jakarta.el</groupId>
-            <artifactId>jakarta.el-api</artifactId>
-            <version>6.0.1</version>
-        </dependency>
+
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
