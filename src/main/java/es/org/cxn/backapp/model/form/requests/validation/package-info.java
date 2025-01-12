@@ -9,10 +9,11 @@
  * </p>
  *
  * <ul>
- * <li>{@link ValidImageFile} - Annotation to validate image file format and
- * size constraints.</li>
- * <li>{@link ImageFileValidator} - Implements the logic for the
- * {@code ValidImageFile} annotation, validating the file type and size.</li>
+ * <li>{@link es.org.cxn.backapp.model.form.requests.validation.ValidImageFile}
+ * - Annotation to validate image file format and size constraints.</li>
+ * <li>{@link es.org.cxn.backapp.model.form.requests.validation.ImageFileValidator}
+ * - Implements the logic for the {@code ValidImageFile} annotation, validating
+ * the file type and size.</li>
  * </ul>
  *
  *
@@ -31,10 +32,10 @@ package es.org.cxn.backapp.model.form.requests.validation;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE

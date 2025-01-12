@@ -8,54 +8,50 @@
  * specific to the entity.
  * </p>
  * <ul>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentAddressEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.PersistentAddressEntity}
- *    class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentAuthorEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.PersistentAuthorEntity}
- *     class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.
- *   PersistentChessQuestionEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity}
- *     class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentCompanyEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.PersistentCompanyEntity}
- *     class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentCountryEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.PersistentCountryEntity}
- *     class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.
- *   PersistentCountrySubdivisionEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.
- *    PersistentCountrySubdivisionEntity} class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.
- *   PersistentFoodHousingEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity}
- *     class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.
- *   PersistentPaymentSheetEntityTest} -
- *   Tests for the {@link es.org.cxn.backapp.model.persistence.
- *   PersistentPaymentSheetEntity} class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.
- *   PersistentRegularTransportEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.
- *    PersistentRegularTransportEntity} class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.
- *   PersistentSelfVehicleEntityTest} - Tests for the
- *   {@link es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity}
- *   class.</li>
- *   <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentUserEntityTest}
- *    - Tests for the
- *    {@link es.org.cxn.backapp.model.persistence.user.PersistentUserEntity}
- *    class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentAddressEntityTest} -
+ * Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentAddressEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentAuthorEntityTest} -
+ * Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentAuthorEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentChessQuestionEntityTest}
+ * - Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentCompanyEntityTest} -
+ * Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentCompanyEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentCountryEntityTest} -
+ * Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentCountryEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentCountrySubdivisionEntityTest}
+ * - Tests for the
+ * {@link es.org.cxn.backapp.test.unit.entity.PersistentCountrySubdivisionEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentFoodHousingEntityTest}
+ * - Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentFoodHousingEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentPaymentSheetEntityTest}
+ * - Tests for the
+ * {@link es.org.cxn.backapp.test.unit.entity.PersistentPaymentSheetEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentRegularTransportEntityTest}
+ * - Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentRegularTransportEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentSelfVehicleEntityTest}
+ * - Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.PersistentSelfVehicleEntity}
+ * class.</li>
+ * <li>{@link es.org.cxn.backapp.test.unit.entity.PersistentUserEntityTest} -
+ * Tests for the
+ * {@link es.org.cxn.backapp.model.persistence.user.PersistentUserEntity}
+ * class.</li>
  * </ul>
  */
 
@@ -73,10 +69,10 @@ package es.org.cxn.backapp.test.unit.entity;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
