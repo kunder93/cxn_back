@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.services;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,7 +35,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,15 +131,9 @@ class FederateStateServiceTest {
     @Value("${image.location.dnis}")
     private String imageLocationDnis;
 
-    // Mocking saveFile method (you can also mock it as part of the service if
-    // needed)
-    private String saveFile(final MultipartFile file, final String dni, final String type) throws IOException {
-        return "path/to/" + type + dni + ".jpg"; // Simulate saving the file and returning a path
-    }
-
     @BeforeEach
     public void setup() {
-
+        // Empty constructor
     }
 
     @Test

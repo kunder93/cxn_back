@@ -38,6 +38,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 
+import java.io.Serial;
+
 /**
  * PersistentProfileImageEntity represents the image profile data of a user, to
  * be persisted in the database. This class is a JPA entity that maps to the
@@ -87,6 +89,7 @@ public class PersistentProfileImageEntity implements ProfileImageEntity {
     /**
      * The serialization version UID. This is not persisted in the database.
      */
+    @Serial
     @Transient
     private static final long serialVersionUID = 1314429995556611251L;
 

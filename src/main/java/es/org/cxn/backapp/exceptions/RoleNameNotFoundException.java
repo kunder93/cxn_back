@@ -29,6 +29,8 @@ package es.org.cxn.backapp.exceptions;
 
 import es.org.cxn.backapp.model.UserRoleName;
 
+import java.io.Serial;
+
 /**
  * Exception thrown by service when role with provided name not found.
  *
@@ -36,10 +38,11 @@ import es.org.cxn.backapp.model.UserRoleName;
  *
  */
 public final class RoleNameNotFoundException extends Exception {
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 7474112384810484613L;
+    /**
+     * Serial UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 7474112384810484613L;
 
   /**
    * The role name field.

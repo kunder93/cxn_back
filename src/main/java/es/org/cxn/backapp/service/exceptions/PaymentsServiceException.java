@@ -1,5 +1,7 @@
 package es.org.cxn.backapp.service.exceptions;
 
+import java.io.Serial;
+
 /*-
  * #%L
  * back-app
@@ -41,6 +43,7 @@ package es.org.cxn.backapp.service.exceptions;
 public final class PaymentsServiceException extends Exception {
 
     /** Serial version UID for serialization compatibility. */
+    @Serial
     private static final long serialVersionUID = 1385589232224464048L;
 
     /**

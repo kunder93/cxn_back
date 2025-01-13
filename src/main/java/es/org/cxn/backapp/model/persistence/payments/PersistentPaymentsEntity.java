@@ -2,9 +2,9 @@ package es.org.cxn.backapp.model.persistence.payments;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package es.org.cxn.backapp.model.persistence.payments;
  * #L%
  */
 
+import java.io.Serial;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -97,6 +98,7 @@ public class PersistentPaymentsEntity implements PaymentsEntity {
     /**
      * Serial version UID for serialization compatibility.
      */
+    @Serial
     @Transient
     private static final long serialVersionUID = -6782220123937248455L;
 

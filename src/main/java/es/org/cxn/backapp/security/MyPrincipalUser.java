@@ -3,9 +3,9 @@ package es.org.cxn.backapp.security;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package es.org.cxn.backapp.security;
  * #L%
  */
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -52,6 +53,7 @@ public final class MyPrincipalUser implements UserDetails {
     /**
      * Serial UID.
      */
+    @Serial
     private static final long serialVersionUID = 2055653610418609601L;
 
     /**

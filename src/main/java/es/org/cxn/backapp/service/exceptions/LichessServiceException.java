@@ -1,5 +1,7 @@
 package es.org.cxn.backapp.service.exceptions;
 
+import java.io.Serial;
+
 /*-
  * #%L
  * back-app
@@ -42,6 +44,7 @@ public final class LichessServiceException extends Exception {
     /**
      * Serial version UID for serialization.
      */
+    @Serial
     private static final long serialVersionUID = -2343250182475869712L;
 
     /**

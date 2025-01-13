@@ -29,6 +29,8 @@ package es.org.cxn.backapp.exceptions;
 
 import es.org.cxn.backapp.model.UserRoleName;
 
+import java.io.Serial;
+
 /**
  * Exception thrown by service when role with this name is found Cannot exist
  * more than one role with same name.
@@ -38,10 +40,11 @@ import es.org.cxn.backapp.model.UserRoleName;
  */
 public final class RoleNameExistsException extends Exception {
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 204929958575646602L;
+    /**
+     * Serial UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 204929958575646602L;
 
   /**
    * The role name field.

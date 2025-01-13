@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
@@ -240,7 +239,7 @@ public final class DefaultFederateStateService implements FederateStateService {
 
         final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
         final var baseDirectory = imageLocationDnis;
-        final Path userDirectoryPath = Paths.get(baseDirectory, userDni);
+        final Path userDirectoryPath = Path.of(baseDirectory, userDni);
 
         if (!Files.exists(userDirectoryPath)) {
             try {
@@ -341,7 +340,7 @@ public final class DefaultFederateStateService implements FederateStateService {
         }
 
         // Create the directory using Paths and File.separator
-        final Path userDirectoryPath = Paths.get(imageLocationDnis, dni);
+        final Path userDirectoryPath = Path.of(imageLocationDnis, dni);
         if (!Files.exists(userDirectoryPath)) {
             Files.createDirectories(userDirectoryPath);
         }

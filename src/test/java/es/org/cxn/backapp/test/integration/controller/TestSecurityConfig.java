@@ -53,24 +53,24 @@ import org.springframework.security.web.SecurityFilterChain;
 @TestConfiguration
 public class TestSecurityConfig {
 
-  /**
-   * Configura el {@link SecurityFilterChain} para desactivar la seguridad
-   * durante las pruebas.
-   * <p>
-   * Esta configuración desactiva la protección CSRF, permite todas las
-   * solicitudes sin restricciones y establece la política de creación de
-   * sesiones como sin estado.
-   * </p>
-   *
-   * @param http La instancia de {@link HttpSecurity} utilizada para configurar
+    /**
+     * Configura el {@link SecurityFilterChain} para desactivar la seguridad
+     * durante las pruebas.
+     * <p>
+     * Esta configuración desactiva la protección CSRF, permite todas las
+     * solicitudes sin restricciones y establece la política de creación de
+     * sesiones como sin estado.
+     * </p>
+     *
+     * @param http La instancia de {@link HttpSecurity} utilizada para configurar
    * la seguridad.
-   * @return La instancia de {@link SecurityFilterChain} construida con la
+     * @return La instancia de {@link SecurityFilterChain} construida con la
    * configuración de seguridad.
-   * @throws Exception Si ocurre un error durante la configuración de seguridad.
-   */
-  @Bean
-  public SecurityFilterChain filterChain(final HttpSecurity http)
-        throws Exception {
+     * @throws Exception Si ocurre un error durante la configuración de seguridad.
+     */
+    @Bean
+    SecurityFilterChain filterChain(final HttpSecurity http)
+            throws Exception {
       // Desactiva la seguridad para las pruebas
       http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(requests -> requests.anyRequest().permitAll())
               .sessionManagement(management -> management

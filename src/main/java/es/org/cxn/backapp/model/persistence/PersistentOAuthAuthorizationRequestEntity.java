@@ -2,9 +2,9 @@ package es.org.cxn.backapp.model.persistence;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package es.org.cxn.backapp.model.persistence;
  * #L%
  */
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 
 import es.org.cxn.backapp.model.OAuthAuthorizationRequestEntity;
@@ -47,6 +48,7 @@ public class PersistentOAuthAuthorizationRequestEntity implements OAuthAuthoriza
     /**
      * The serial version UID.
      */
+    @Serial
     private static final long serialVersionUID = 3828841937570827646L;
 
     /**

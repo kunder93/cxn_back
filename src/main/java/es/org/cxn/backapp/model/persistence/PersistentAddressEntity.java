@@ -41,6 +41,8 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
 
+import java.io.Serial;
+
 /**
  * Entity representing an address in the system.
  * <p>
@@ -59,6 +61,7 @@ public class PersistentAddressEntity implements AddressEntity {
     /**
      * Serialization ID.
      */
+    @Serial
     @Transient
     private static final long serialVersionUID = 1396772919450111291L;
 

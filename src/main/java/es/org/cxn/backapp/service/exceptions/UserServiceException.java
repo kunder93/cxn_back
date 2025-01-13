@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.service.exceptions;
 
+import java.io.Serial;
+
 /*-
  * #%L
  * back-app
@@ -35,10 +37,11 @@ package es.org.cxn.backapp.service.exceptions;
  */
 public final class UserServiceException extends Exception {
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = 4621625583628223252L;
+    /**
+     * Serial UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 4621625583628223252L;
 
   /**
    * Main constructor.
