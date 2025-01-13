@@ -19,11 +19,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.7</version>
-        <relativePath/>
-    </parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.4.1</version>
+		<relativePath />
+	</parent>
 
 	<groupId>es.org.cxn</groupId>
 	<artifactId>back-app</artifactId>
@@ -351,7 +351,6 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>33.4.0-jre</version>
 		</dependency>
 		<!-- Java JWT -->
 		<dependency>
@@ -407,23 +406,55 @@
 
 	<build>
 		<plugins>
+
+      <plugin>
+        <groupId>org.openrewrite.maven</groupId>
+        <artifactId>rewrite-maven-plugin</artifactId>
+        <version>6.0.0</version>
+        <configuration>
+          <exportDatatables>true</exportDatatables>
+          <activeRecipes>
+            <recipe>org.openrewrite.java.boot3.ReplaceMockBeanAndSpyBean</recipe>
+            <recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe>
+            <recipe>org.openrewrite.java.spring.boot3.SpringBootProperties_3_3</recipe>
+            <recipe>org.openrewrite.java.spring.boot3.SpringBoot3BestPractices</recipe>
+            <recipe>org.openrewrite.java.spring.NoRepoAnnotationOnRepoInterface</recipe>
+            <recipe>org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_1</recipe>
+            <recipe>org.openrewrite.java.logging.PrintStackTraceToLogError</recipe>
+            <recipe>com.cxn.UseMavenCompilerPluginReleaseConfigurationExample</recipe>
+            <recipe>com.cxn.UpdateMavenProjectPropertyJavaVersionExample</recipe>
+            <recipe>org.openrewrite.java.migrate.UpgradePluginsForJava21</recipe>
+            <recipe>org.openrewrite.java.migrate.UpgradeBuildToJava21</recipe>
+          </activeRecipes>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-spring</artifactId>
+            <version>6.0.0</version>
+          </dependency>
+                    <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-logging-frameworks</artifactId>
+            <version>3.0.0</version>
+          </dependency>
+           <dependency>
+            <groupId>org.openrewrite.recipe</groupId>
+            <artifactId>rewrite-migrate-java</artifactId>
+            <version>3.0.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+
+
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
 				<executions>
-				<!-- ============================================== 
-					<execution>
-						<id>enforce</id>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<dependencyConvergence />
-							</rules>
-						</configuration>
-					</execution>
-					-->
+					<!-- ============================================== <execution> <id>enforce</id> 
+						<goals> <goal>enforce</goal> </goals> <configuration> <rules> <dependencyConvergence 
+						/> </rules> </configuration> </execution> -->
 				</executions>
 			</plugin>
 			<plugin>
@@ -447,6 +478,9 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<version>2.5.0</version>
 				<configuration>
+					
+					<excludedArtifacts>swagger-ui</excludedArtifacts>
+					<!-- For avoid warnings <errorRemedy>ignore</errorRemedy> -->
 					<licenseName>mit</licenseName>
 					<licenseFile>${basedir}/LICENSE</licenseFile>
 					<!-- Specify the output directory for the generated license files -->
@@ -628,9 +662,23 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-project-info-reports-plugin</artifactId>
 				<version>${maven.info.reports.plugin.version}</version>
+				<configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>
+
+								</goal>
+							</goals>
+						</execution>
+					</executions>
+
+				</configuration>
+
 				<reportSets>
 					<reportSet>
 						<reports>
+
 							<report>summary</report>
 							<report>licenses</report>
 							<report>modules</report>
@@ -639,7 +687,6 @@
 							<report>dependency-info</report>
 							<report>dependency-management</report>
 							<report>distribution-management</report>
-							<report>plugins</report>
 							<report>plugin-management</report>
 						</reports>
 					</reportSet>

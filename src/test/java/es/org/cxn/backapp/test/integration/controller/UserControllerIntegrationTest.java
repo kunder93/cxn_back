@@ -43,7 +43,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -53,6 +52,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -128,7 +128,7 @@ class UserControllerIntegrationTest {
     /**
      * The email service mocked implementation.
      */
-    @MockBean
+    @MockitoBean
     private DefaultEmailService defaultEmailService;
 
     /**
@@ -136,7 +136,7 @@ class UserControllerIntegrationTest {
      * context for authentication. It represents the context for a specific user's
      * security information, such as authentication and authorization details.
      */
-    @MockBean
+    @MockitoBean
     private SecurityContext securityContext;
 
     /**
@@ -144,7 +144,7 @@ class UserControllerIntegrationTest {
      * user information. This object contains details about the currently
      * authenticated user, such as the username, roles, and credentials.
      */
-    @MockBean
+    @MockitoBean
     private Authentication authentication;
 
     /**
@@ -158,7 +158,7 @@ class UserControllerIntegrationTest {
     /**
      * Mocked mail sender.
      */
-    @MockBean
+    @MockitoBean
     private JavaMailSender javaMailSender;
 
     /**

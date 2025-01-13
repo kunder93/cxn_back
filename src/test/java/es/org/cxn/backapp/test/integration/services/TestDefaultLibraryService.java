@@ -48,8 +48,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
 import es.org.cxn.backapp.model.form.requests.AuthorRequest;
@@ -201,7 +201,7 @@ final class TestDefaultLibraryService {
      * invoking the actual data access layer.
      * </p>
      */
-    @MockBean
+    @MockitoBean
     private BookEntityRepository libraryRepository;
 
     /**
@@ -211,7 +211,7 @@ final class TestDefaultLibraryService {
      * invoking the actual data access layer.
      * </p>
      */
-    @MockBean
+    @MockitoBean
     private AuthorEntityRepository authorRepository;
 
     /**

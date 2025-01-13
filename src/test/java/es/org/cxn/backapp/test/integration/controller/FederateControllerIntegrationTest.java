@@ -42,12 +42,12 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +100,7 @@ class FederateControllerIntegrationTest {
     /**
      * The email service mocked implementation.
      */
-    @MockBean
+    @MockitoBean
     private DefaultEmailService defaultEmailService;
 
     /**
@@ -128,7 +128,7 @@ class FederateControllerIntegrationTest {
      * The JavaMailSender mock used to mock email-related functionality in the
      * integration tests.
      */
-    @MockBean
+    @MockitoBean
     private JavaMailSender javaMailSender;
 
     /**
