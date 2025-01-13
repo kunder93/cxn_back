@@ -159,6 +159,7 @@ public final class DefaultUserService implements UserService {
      *
      * @param emailServ         The email service.
      *
+     *
      * @throws NullPointerException if any of the provided repositories or services
      *                              are null.
      */
@@ -222,10 +223,12 @@ public final class DefaultUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public UserEntity acceptUserAsMember(final String userDni) throws UserServiceException {
         final var userEntity = findByDni(userDni);
         final var userRoles = userEntity.getRoles();
         final Integer numberRolesExpected = Integer.valueOf(1);
+        final String exMessage = "User with dni: " + userDni;
         if (numberRolesExpected.equals(userRoles.size())) {
             // Get the only one role.
             final var roleName = userRoles.iterator().next();
@@ -240,21 +243,17 @@ public final class DefaultUserService implements UserService {
                     generatePaymentForAcceptedUser(result);
                     return result;
                 } catch (MessagingException e) {
-                    throw new UserServiceException("User with dni: " + userDni + "cannot send email.", e);
+                    throw new UserServiceException(exMessage + "cannot send email.", e);
                 } catch (IOException e) {
-                    throw new UserServiceException(
-                            "User with dni: " + userDni + "cannot send email: cannot load template.", e);
+                    throw new UserServiceException(exMessage + "cannot send email: cannot load template.", e);
                 } catch (PaymentsServiceException e) {
-                    throw new UserServiceException(
-                            "User with dni: " + userDni + "cannot generate payment for this user.", e);
+                    throw new UserServiceException(exMessage + "cannot generate payment for this user.", e);
                 }
             } else {
-                throw new UserServiceException(
-                        "User with dni: " + userDni + "no have " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
+                throw new UserServiceException(exMessage + "no have " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
             }
         } else {
-            throw new UserServiceException(
-                    "User with dni: " + userDni + "have no only " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
+            throw new UserServiceException(exMessage + "have no only " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
         }
     }
 

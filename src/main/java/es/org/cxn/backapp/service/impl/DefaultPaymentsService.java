@@ -12,10 +12,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -139,7 +139,7 @@ public final class DefaultPaymentsService implements PaymentsService {
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
 
         if (paymentOptional.isEmpty()) {
-            throw new PaymentsServiceException("No payment with id: " + paymentId + " found.");
+            throw new PaymentsServiceException(getPaymentNotFoundMessage(paymentId));
         }
         final var paymentEntity = paymentOptional.get();
         if (paymentEntity.getState().equals(PaymentsState.CANCELLED)) {
@@ -231,7 +231,7 @@ public final class DefaultPaymentsService implements PaymentsService {
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
 
         if (paymentOptional.isEmpty()) {
-            throw new PaymentsServiceException("No payment with id: " + paymentId + " found.");
+            throw new PaymentsServiceException(getPaymentNotFoundMessage(paymentId));
         }
         return paymentOptional.get();
     }
@@ -249,6 +249,16 @@ public final class DefaultPaymentsService implements PaymentsService {
         // Create a map of user DNI to their list of payments
         return users.stream().collect(Collectors.toMap(UserEntity::getDni,
                 user -> transformToPaymentDetails(getUserPayments(user.getDni()))));
+    }
+
+    /**
+     * Return payment not found message.
+     *
+     * @param paymentId The payment identifier.
+     * @return The string with message.
+     */
+    private String getPaymentNotFoundMessage(final UUID paymentId) {
+        return ("No payment with id: " + paymentId + " found.");
     }
 
     /**
@@ -296,7 +306,7 @@ public final class DefaultPaymentsService implements PaymentsService {
         Objects.requireNonNull(paymentDate, "Payment date must not be null.");
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
         if (paymentOptional.isEmpty()) {
-            throw new PaymentsServiceException("No payment with id: " + paymentId + " found.");
+            throw new PaymentsServiceException(getPaymentNotFoundMessage(paymentId));
         }
         final var paymentEntity = paymentOptional.get();
         if (paymentEntity.getState().equals(PaymentsState.UNPAID)) {
@@ -339,7 +349,7 @@ public final class DefaultPaymentsService implements PaymentsService {
     public void remove(final UUID paymentId) throws PaymentsServiceException {
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
         if (paymentOptional.isEmpty()) {
-            throw new PaymentsServiceException("No payment with id: " + paymentId + " found.");
+            throw new PaymentsServiceException(getPaymentNotFoundMessage(paymentId));
         }
         paymentsRepository.deleteById(paymentId);
     }
