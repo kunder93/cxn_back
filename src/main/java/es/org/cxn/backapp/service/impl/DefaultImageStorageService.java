@@ -51,6 +51,19 @@ import es.org.cxn.backapp.service.ImageStorageService;
 public final class DefaultImageStorageService implements ImageStorageService {
 
     /**
+     * Constructor for DefaultImageStorageService class. This constructor is needed
+     * for Spring Framework's dependency injection.
+     * <p>
+     * The default constructor is implicitly used by Spring to inject dependencies,
+     * if any are required.
+     * </p>
+     */
+    public DefaultImageStorageService() {
+        super();
+        // No need for explicit constructor logic if no dependencies are being injected.
+    }
+
+    /**
      * Deletes an image file at the specified path within a base directory.
      *
      * @param baseDirectory the root directory for storing images, specified by the

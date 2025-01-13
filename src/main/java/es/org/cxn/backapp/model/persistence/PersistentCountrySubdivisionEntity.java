@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.persistence;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -43,7 +43,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Country subdivision Entity.
@@ -55,7 +54,6 @@ import lombok.NoArgsConstructor;
 @Entity(name = "CountrySubdivision")
 @Table(name = "country_subdivision")
 @Data
-@NoArgsConstructor
 public class PersistentCountrySubdivisionEntity implements CountrySubdivisionEntity {
 
     /**
@@ -103,5 +101,17 @@ public class PersistentCountrySubdivisionEntity implements CountrySubdivisionEnt
      */
     @OneToMany(mappedBy = "countrySubdivision")
     private List<PersistentAddressEntity> addressList = new ArrayList<>();
+
+    /**
+     * Default constructor for the PersistentCountrySubdivisionEntity class.
+     * <p>
+     * This constructor initializes a new instance of the
+     * PersistentCountrySubdivisionEntity class. It is required by JPA and other
+     * frameworks that rely on reflection for object creation.
+     * </p>
+     */
+    public PersistentCountrySubdivisionEntity() {
+        addressList = new ArrayList<>();
+    }
 
 }

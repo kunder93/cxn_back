@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.persistence.payments;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -41,7 +41,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * PersistentPaymentsEntity is a JPA entity representing a payment record in the
@@ -65,7 +64,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "payments")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class PersistentPaymentsEntity implements PaymentsEntity {
 
@@ -157,4 +155,16 @@ public class PersistentPaymentsEntity implements PaymentsEntity {
      */
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
+
+    /**
+     * Default constructor for PersistentPaymentsEntity.
+     * <p>
+     * This constructor initializes a new instance of the PersistentPaymentsEntity
+     * class. It is required by JPA and other frameworks that use reflection for
+     * object creation.
+     * </p>
+     */
+    public PersistentPaymentsEntity() {
+        // Default constructor
+    }
 }

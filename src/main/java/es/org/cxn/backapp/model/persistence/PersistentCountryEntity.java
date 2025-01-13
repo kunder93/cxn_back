@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.persistence;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Country Entity.
@@ -53,7 +52,6 @@ import lombok.NoArgsConstructor;
  */
 @Entity(name = "CountryEntity")
 @Table(name = "country")
-@NoArgsConstructor
 @Data
 public class PersistentCountryEntity implements CountryEntity {
 
@@ -106,6 +104,18 @@ public class PersistentCountryEntity implements CountryEntity {
      */
     @OneToMany(mappedBy = "country")
     private Set<PersistentAddressEntity> addressList = new HashSet<>();
+
+    /**
+     * Default constructor for the PersistentCountryEntity class.
+     * <p>
+     * This constructor initializes a new instance of the PersistentCountryEntity
+     * class. It is required for frameworks like JPA that rely on reflection to
+     * create objects.
+     * </p>
+     */
+    public PersistentCountryEntity() {
+        // Default constructor
+    }
 
     /**
      * {@inheritDoc}

@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.persistence;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,7 +45,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Book Entity.
@@ -60,7 +59,6 @@ import lombok.NoArgsConstructor;
  * @author Santiago Paz Perez.
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity(name = "Book")
@@ -113,6 +111,19 @@ public class PersistentBookEntity implements BookEntity, Comparable<PersistentBo
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     @Builder.Default
     private Set<PersistentAuthorEntity> authors = new HashSet<>();
+
+    /**
+     * Default constructor for the PersistentBookEntity class.
+     * <p>
+     * This constructor initializes a new instance of the PersistentBookEntity
+     * class. It is required for frameworks like JPA that rely on reflection to
+     * create objects.
+     * </p>
+     */
+    public PersistentBookEntity() {
+        authors = new HashSet<>();
+        // Default constructor
+    }
 
     /**
      * Compares this book to another book based on their titles.

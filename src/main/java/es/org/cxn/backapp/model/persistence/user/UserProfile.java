@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.persistence.user;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,7 +34,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Encapsulates basic user profile details.
@@ -42,11 +41,10 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class UserProfile implements Serializable {
 
     /**
-     *
+     * Serial UID.
      */
     @Serial
     private static final long serialVersionUID = -3546611758551963766L;
@@ -90,5 +88,16 @@ public class UserProfile implements Serializable {
      */
     @Column(name = "gender", nullable = false, unique = false)
     private String gender;
+
+    /**
+     * Default constructor for UserProfile.
+     * <p>
+     * This constructor initializes a new instance of the UserProfile class. It is
+     * required by JPA and other frameworks that use reflection for object creation.
+     * </p>
+     */
+    public UserProfile() {
+        // Default constructor
+    }
 
 }

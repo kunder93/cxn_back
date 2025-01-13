@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.persistence;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -62,13 +62,13 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Column(name = "username")
     private String username;
 
-    // Blitz statistics
-
     /**
      * The number of blitz games played by the user.
      */
     @Column(name = "blitz_games")
     private Integer blitzGames;
+
+    // Blitz statistics
 
     /**
      * The user's blitz rating.
@@ -94,13 +94,13 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Column(name = "blitz_prov")
     private Boolean blitzProv;
 
-    // Bullet statistics
-
     /**
      * The number of bullet games played by the user.
      */
     @Column(name = "bullet_games")
     private Integer bulletGames;
+
+    // Bullet statistics
 
     /**
      * The user's bullet rating.
@@ -126,13 +126,13 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Column(name = "bullet_prov")
     private Boolean bulletProv;
 
-    // Classical statistics
-
     /**
      * The number of classical games played by the user.
      */
     @Column(name = "classical_games")
     private Integer classicalGames;
+
+    // Classical statistics
 
     /**
      * The user's classical rating.
@@ -159,13 +159,13 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Column(name = "classical_prov")
     private Boolean classicalProv;
 
-    // Rapid statistics
-
     /**
      * The number of rapid games played by the user.
      */
     @Column(name = "rapid_games")
     private Integer rapidGames;
+
+    // Rapid statistics
 
     /**
      * The user's rapid rating.
@@ -191,13 +191,13 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
     @Column(name = "rapid_prov")
     private Boolean rapidProv;
 
-    // Puzzle statistics
-
     /**
      * The number of puzzle games played by the user.
      */
     @Column(name = "puzzle_games")
     private Integer puzzleGames;
+
+    // Puzzle statistics
 
     /**
      * The user's puzzle rating.
@@ -229,6 +229,18 @@ public class PersistentLichessProfileEntity implements LichessProfileEntity {
      */
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    /**
+     * Default constructor for the PersistentLichessProfileEntity class.
+     * <p>
+     * This constructor initializes a new instance of the
+     * PersistentLichessProfileEntity class. It is required by JPA and other
+     * frameworks that use reflection for object creation.
+     * </p>
+     */
+    public PersistentLichessProfileEntity() {
+        // Default constructor
+    }
 
     // Blitz games getters.
     /**
