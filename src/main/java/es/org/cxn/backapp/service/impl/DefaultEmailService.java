@@ -12,10 +12,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -118,7 +118,7 @@ public class DefaultEmailService implements EmailService {
     private void sendEmail(final String toEmail, final String subject, final String templatePath,
             final Map<String, String> placeholders) throws MessagingException, IOException {
         final var message = mailSender.createMimeMessage();
-        message.setFrom(new InternetAddress(senderAddress));
+        message.setFrom(new InternetAddress(senderAddress, "Xadrez Narón"));
         message.setRecipients(RecipientType.TO, toEmail);
         message.setSubject(subject);
 
