@@ -46,7 +46,6 @@ import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
  *
  * @author Santiago Paz Perez
  */
-@Repository
 public interface FederateStateEntityRepository extends JpaRepository<PersistentFederateStateEntity, String> {
 
 }

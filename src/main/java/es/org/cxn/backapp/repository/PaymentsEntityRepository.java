@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 
@@ -51,7 +50,6 @@ import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
  *
  * @see PersistentPaymentsEntity
  */
-@Repository
 public interface PaymentsEntityRepository extends JpaRepository<PersistentPaymentsEntity, UUID> {
 
     /**

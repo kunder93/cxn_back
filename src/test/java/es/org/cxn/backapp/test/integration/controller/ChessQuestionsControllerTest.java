@@ -262,7 +262,7 @@ class ChessQuestionsControllerTest {
         List<ChessQuestionResponse> chessQuestionsList = new ArrayList<>(response.chessQuestionList());
 
         // Perform delete of first question
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/chessQuestion/" + chessQuestionsList.get(0).id()))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/chessQuestion/" + chessQuestionsList.getFirst().id()))
                 .andExpect(status().isNoContent());
 
         // Get all chess questions after deletion

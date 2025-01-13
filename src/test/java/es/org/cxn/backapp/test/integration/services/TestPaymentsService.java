@@ -687,7 +687,7 @@ final class TestPaymentsService {
                 "The number of payments retrieved does not match the expected.");
 
         // Assert: Verify that the payments in the list match the created payments
-        PersistentPaymentsEntity retrievedFirstPayment = paymentsList.get(0);
+        PersistentPaymentsEntity retrievedFirstPayment = paymentsList.getFirst();
         PersistentPaymentsEntity retrievedSecondPayment = paymentsList.get(1);
         PersistentPaymentsEntity retrievedThirdPayment = paymentsList.get(2);
 

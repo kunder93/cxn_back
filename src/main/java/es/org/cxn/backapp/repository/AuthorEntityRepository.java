@@ -30,7 +30,6 @@ package es.org.cxn.backapp.repository;
 import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 /**
  * Spring-JPA repository for {@link PersistentAuthorEntity}.
@@ -41,7 +40,6 @@ import org.springframework.stereotype.Repository;
  *
  * @author Santiago Paz Perez.
  */
-@Repository
 public interface AuthorEntityRepository
       extends JpaRepository<PersistentAuthorEntity, Long> {
 

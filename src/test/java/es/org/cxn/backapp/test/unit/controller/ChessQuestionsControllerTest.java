@@ -262,7 +262,7 @@ class ChessQuestionsControllerTest {
 
         Assertions.assertEquals(2, chessQuestionsList.size(), "list should have 2 questions.");
 
-        var firstElement = chessQuestionsList.get(0);
+        var firstElement = chessQuestionsList.getFirst();
         var secondElement = chessQuestionsList.get(1);
 
         Assertions.assertEquals("Topic1", firstElement.topic(), "first element topic");
