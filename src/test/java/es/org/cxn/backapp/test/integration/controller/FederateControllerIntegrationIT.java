@@ -77,7 +77,7 @@ import jakarta.mail.internet.MimeMessage;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
-class FederateControllerIntegrationTest {
+class FederateControllerIntegrationIT {
 
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
@@ -137,7 +137,7 @@ class FederateControllerIntegrationTest {
      */
     private String userAJwtToken;
 
-    FederateControllerIntegrationTest() {
+    FederateControllerIntegrationIT() {
         super();
     }
 

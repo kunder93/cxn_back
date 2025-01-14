@@ -59,7 +59,7 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-class UserDetailsServiceTest {
+class UserDetailsServiceIT {
 
     /**
      * The user service.

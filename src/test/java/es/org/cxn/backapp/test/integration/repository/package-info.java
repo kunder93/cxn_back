@@ -9,7 +9,7 @@
  * <p>
  * Classes included:
  * <ul>
- *   <li>{@link ChessQuestionEntityRepositoryTest}</li>
+ *   <li>{@link ChessQuestionEntityRepositoryIT}</li>
  *   <li>{@link InvoiceEntityRepositoryTest}</li>
  * </ul>
  * </p>

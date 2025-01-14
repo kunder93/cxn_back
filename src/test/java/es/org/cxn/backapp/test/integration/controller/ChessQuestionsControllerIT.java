@@ -63,7 +63,7 @@ import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
 @ActiveProfiles("test")
-class ChessQuestionsControllerTest {
+class ChessQuestionsControllerIT {
 
     /**
      * Gson instance for serializing and deserializing JSON objects during tests.

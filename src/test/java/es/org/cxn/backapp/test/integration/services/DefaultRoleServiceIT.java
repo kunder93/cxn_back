@@ -62,7 +62,7 @@ import es.org.cxn.backapp.service.impl.DefaultRoleService;
 @SpringBootTest(classes = { UserEntityRepository.class, RoleEntityRepository.class, RoleService.class,
         DefaultRoleService.class })
 @ActiveProfiles("test")
-final class TestDefaultRoleService {
+final class DefaultRoleServiceIT {
 
     /**
      * The default role ID used in tests.
@@ -125,7 +125,7 @@ final class TestDefaultRoleService {
     /**
      * Default constructor.
      */
-    TestDefaultRoleService() {
+    DefaultRoleServiceIT() {
         super();
     }
 

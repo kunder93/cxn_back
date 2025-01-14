@@ -79,7 +79,7 @@ import jakarta.mail.internet.MimeMessage;
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
 @TestPropertySource("/application.properties")
-class PaymentsControllerIntegrationTest {
+class PaymentsControllerIntegrationIT {
 
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
@@ -143,7 +143,7 @@ class PaymentsControllerIntegrationTest {
     /**
      * Main class constructor.
      */
-    PaymentsControllerIntegrationTest() {
+    PaymentsControllerIntegrationIT() {
         super();
 
     }

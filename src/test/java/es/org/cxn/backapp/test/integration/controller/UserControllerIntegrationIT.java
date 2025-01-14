@@ -81,7 +81,7 @@ import jakarta.transaction.Transactional;
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
 @TestPropertySource("/application.properties")
-class UserControllerIntegrationTest {
+class UserControllerIntegrationIT {
 
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
@@ -169,7 +169,7 @@ class UserControllerIntegrationTest {
     /**
      * Main class constructor.
      */
-    UserControllerIntegrationTest() {
+    UserControllerIntegrationIT() {
         super();
     }
 

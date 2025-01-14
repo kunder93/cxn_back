@@ -68,7 +68,7 @@ import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
-class RoleControllerIntegrationTest {
+class RoleControllerIntegrationIT {
 
     /**
      * URL endpoint for user signup.
@@ -105,7 +105,7 @@ class RoleControllerIntegrationTest {
     /**
      * Main class constructor.
      */
-    RoleControllerIntegrationTest() {
+    RoleControllerIntegrationIT() {
         super();
     }
 

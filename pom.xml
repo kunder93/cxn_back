@@ -406,45 +406,88 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<goals>
+							<goal>integration-test</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>verify</id>
+						<goals>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.jetty.ee10</groupId>
+				<artifactId>jetty-ee10-maven-plugin</artifactId>
+				<version>12.0.16</version>
+				<configuration>
+					<stopPort>8005</stopPort>
+					<stopKey>STOP</stopKey>
+				</configuration>
+				<executions>
+					<execution>
+						<id>start-jetty</id>
+						<phase>pre-integration-test</phase>
+						<goals>
+							<goal>start</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>stop-jetty</id>
+						<phase>post-integration-test</phase>
+						<goals>
+							<goal>stop</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 
-      <plugin>
-        <groupId>org.openrewrite.maven</groupId>
-        <artifactId>rewrite-maven-plugin</artifactId>
-        <version>6.0.0</version>
-        <configuration>
-          <exportDatatables>true</exportDatatables>
-          <activeRecipes>
-            <recipe>org.openrewrite.java.boot3.ReplaceMockBeanAndSpyBean</recipe>
-            <recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe>
-            <recipe>org.openrewrite.java.spring.boot3.SpringBootProperties_3_3</recipe>
-            <recipe>org.openrewrite.java.spring.boot3.SpringBoot3BestPractices</recipe>
-            <recipe>org.openrewrite.java.spring.NoRepoAnnotationOnRepoInterface</recipe>
-            <recipe>org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_1</recipe>
-            <recipe>org.openrewrite.java.logging.PrintStackTraceToLogError</recipe>
-            <recipe>com.cxn.UseMavenCompilerPluginReleaseConfigurationExample</recipe>
-            <recipe>com.cxn.UpdateMavenProjectPropertyJavaVersionExample</recipe>
-            <recipe>org.openrewrite.java.migrate.UpgradePluginsForJava21</recipe>
-            <recipe>org.openrewrite.java.migrate.UpgradeBuildToJava21</recipe>
-          </activeRecipes>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.openrewrite.recipe</groupId>
-            <artifactId>rewrite-spring</artifactId>
-            <version>6.0.0</version>
-          </dependency>
-                    <dependency>
-            <groupId>org.openrewrite.recipe</groupId>
-            <artifactId>rewrite-logging-frameworks</artifactId>
-            <version>3.0.0</version>
-          </dependency>
-           <dependency>
-            <groupId>org.openrewrite.recipe</groupId>
-            <artifactId>rewrite-migrate-java</artifactId>
-            <version>3.0.0</version>
-          </dependency>
-        </dependencies>
-      </plugin>
+			<plugin>
+				<groupId>org.openrewrite.maven</groupId>
+				<artifactId>rewrite-maven-plugin</artifactId>
+				<version>6.0.0</version>
+				<configuration>
+					<exportDatatables>true</exportDatatables>
+					<activeRecipes>
+						<recipe>org.openrewrite.java.boot3.ReplaceMockBeanAndSpyBean</recipe>
+						<recipe>org.openrewrite.java.spring.boot3.UpgradeSpringBoot_3_3</recipe>
+						<recipe>org.openrewrite.java.spring.boot3.SpringBootProperties_3_3</recipe>
+						<recipe>org.openrewrite.java.spring.boot3.SpringBoot3BestPractices</recipe>
+						<recipe>org.openrewrite.java.spring.NoRepoAnnotationOnRepoInterface</recipe>
+						<recipe>org.openrewrite.java.spring.framework.UpgradeSpringFramework_6_1</recipe>
+						<recipe>org.openrewrite.java.logging.PrintStackTraceToLogError</recipe>
+						<recipe>com.cxn.UseMavenCompilerPluginReleaseConfigurationExample</recipe>
+						<recipe>com.cxn.UpdateMavenProjectPropertyJavaVersionExample</recipe>
+						<recipe>org.openrewrite.java.migrate.UpgradePluginsForJava21</recipe>
+						<recipe>org.openrewrite.java.migrate.UpgradeBuildToJava21</recipe>
+					</activeRecipes>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.openrewrite.recipe</groupId>
+						<artifactId>rewrite-spring</artifactId>
+						<version>6.0.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite.recipe</groupId>
+						<artifactId>rewrite-logging-frameworks</artifactId>
+						<version>3.0.0</version>
+					</dependency>
+					<dependency>
+						<groupId>org.openrewrite.recipe</groupId>
+						<artifactId>rewrite-migrate-java</artifactId>
+						<version>3.0.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 
 
 
@@ -478,7 +521,7 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<version>2.5.0</version>
 				<configuration>
-					
+
 					<excludedArtifacts>swagger-ui</excludedArtifacts>
 					<!-- For avoid warnings <errorRemedy>ignore</errorRemedy> -->
 					<licenseName>mit</licenseName>
@@ -817,6 +860,25 @@
 					</excludes>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<reportSets>
+					<reportSet>
+						<id>integration-tests</id>
+						<reports>
+							<report>failsafe-report-only</report>
+						</reports>
+					</reportSet>
+				</reportSets>
+				 <configuration>
+                <skipSurefireReport>true</skipSurefireReport>
+                <reportsDirectories>
+                    <reportsDirectory>${basedir}/target/failsafe-reports</reportsDirectory>
+                </reportsDirectories>
+            </configuration>
+			</plugin>
+
 		</plugins>
 	</reporting>
 

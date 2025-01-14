@@ -62,7 +62,7 @@ import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
-class TournamentParticipantControllerTest {
+class TournamentParticipantControllerIT {
 
     /**
      * FIDE ID for the participant John Doe.

@@ -57,7 +57,7 @@ import jakarta.mail.internet.MimeMessage;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class DeletePermanentlyUserTest {
+class DeletePermanentlyUserIT {
 
     /**
      * URL endpoint for user registration (sign-up). This static final string

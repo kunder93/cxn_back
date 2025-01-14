@@ -264,7 +264,6 @@ public final class DefaultUserService implements UserService {
     public UserEntity add(final UserRegistrationDetailsDto userDetails) throws UserServiceException {
         final var dni = userDetails.dni();
         final var noVeridicDniDate = LocalDate.of(1900, 2, 2);
-
         if (userRepository.findByDni(dni).isPresent()) {
             throw new UserServiceException(USER_DNI_EXISTS_MESSAGE);
         }

@@ -89,7 +89,7 @@ import jakarta.mail.internet.MimeMessage;
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
 @ActiveProfiles("test")
-class AuthControllerIntegrationTest {
+class AuthControllerIntegrationIT {
 
     /**
      * URL endpoint for user sign-up.
@@ -131,7 +131,7 @@ class AuthControllerIntegrationTest {
     /**
      * Main class constructor.
      */
-    AuthControllerIntegrationTest() {
+    AuthControllerIntegrationIT() {
         super();
     }
 

@@ -74,7 +74,7 @@ import es.org.cxn.backapp.service.impl.DefaultLibraryService;
  */
 @SpringBootTest(classes = { BookEntityRepository.class, LibraryService.class, DefaultLibraryService.class })
 @ActiveProfiles("test")
-final class TestDefaultLibraryService {
+final class DefaultLibraryServiceIT {
     /**
      * ISBN number for the first book used in test cases.
      * <p>

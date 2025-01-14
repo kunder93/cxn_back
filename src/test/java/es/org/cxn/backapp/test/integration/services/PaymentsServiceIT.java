@@ -68,7 +68,7 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest()
 @ActiveProfiles("test")
-final class TestPaymentsService {
+final class PaymentsServiceIT {
 
     /**
      * The service for managing payments. Used to test the functionality of

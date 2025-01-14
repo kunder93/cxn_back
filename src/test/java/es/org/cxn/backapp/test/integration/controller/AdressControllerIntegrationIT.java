@@ -66,7 +66,7 @@ import es.org.cxn.backapp.service.impl.DefaultEmailService;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
-class AdressControllerIntegrationTest {
+class AdressControllerIntegrationIT {
 
     /**
      * The URL endpoint for retrieving the list of countries.
@@ -124,7 +124,7 @@ class AdressControllerIntegrationTest {
     /**
      * Default constructor.
      */
-    AdressControllerIntegrationTest() {
+    AdressControllerIntegrationIT() {
         super();
     }
 

@@ -51,7 +51,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * @author Santi
  */
 @TestConfiguration
-public class TestSecurityConfig {
+public class SecurityConfigIT {
 
     /**
      * Configura el {@link SecurityFilterChain} para desactivar la seguridad
