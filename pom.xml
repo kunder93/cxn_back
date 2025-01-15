@@ -75,6 +75,7 @@
 			<id>local-repo</id>
 			<url>file://${project.basedir}/target/repo</url>
 		</repository>
+
 	</distributionManagement>
 
 	<properties>
@@ -401,6 +402,15 @@
 		<repository>
 			<id>central</id>
 			<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
+			<id>repository.spring.release</id>
+			<name>Spring GA Repository</name>
+			<url>http://repo.spring.io/release</url>
+		</repository>
+		<repository>
+			<id>apache-releases</id>
+			<url>https://repository.apache.org/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 
@@ -863,6 +873,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>${maven.surefire.plugin.version}</version>
 				<reportSets>
 					<reportSet>
 						<id>integration-tests</id>
@@ -871,12 +882,12 @@
 						</reports>
 					</reportSet>
 				</reportSets>
-				 <configuration>
-                <skipSurefireReport>true</skipSurefireReport>
-                <reportsDirectories>
-                    <reportsDirectory>${basedir}/target/failsafe-reports</reportsDirectory>
-                </reportsDirectories>
-            </configuration>
+				<configuration>
+					<skipSurefireReport>true</skipSurefireReport>
+					<reportsDirectories>
+						<reportsDirectory>${basedir}/target/failsafe-reports</reportsDirectory>
+					</reportsDirectories>
+				</configuration>
 			</plugin>
 
 		</plugins>
