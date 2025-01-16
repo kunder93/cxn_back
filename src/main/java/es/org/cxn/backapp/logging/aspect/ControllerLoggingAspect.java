@@ -1,7 +1,34 @@
 
 package es.org.cxn.backapp.logging.aspect;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
@@ -29,21 +56,20 @@ public class ControllerLoggingAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerLoggingAspect.class);
 
     /**
-     * Helper method to retrieve the name of the method being executed.
-     *
-     * @param joinPoint the join point providing reflective access to the method
-     * @return the name of the method being executed
-     */
-    private static String getMethodName(final JoinPoint joinPoint) {
-        final var joinPointSignature = joinPoint.getSignature();
-        return joinPointSignature.getName();
-    }
-
-    /**
      * Default constructor.
      */
     public ControllerLoggingAspect() {
         // Default constructor.
+    }
+
+    /**
+     * Get the method name.
+     *
+     * @param signature the joinpoint signature.
+     * @return the signature name.
+     */
+    private static String getMethodName(final Signature signature) {
+        return signature.getName();
     }
 
     /**
@@ -61,7 +87,7 @@ public class ControllerLoggingAspect {
     @AfterReturning(pointcut = "execution(* es.org.cxn.backapp.controller.*.*(..))", returning = "result")
     public void logAfterReturning(final JoinPoint joinPoint, final Object result) {
         if (LOGGER.isInfoEnabled()) {
-            final var methodName = getMethodName(joinPoint);
+            final var methodName = getMethodName(joinPoint.getSignature());
             LOGGER.info("Exiting method: {} with return value: {}", methodName, result);
         }
     }
@@ -81,7 +107,7 @@ public class ControllerLoggingAspect {
     @AfterThrowing(pointcut = "execution(* es.org.cxn.backapp.controller.*.*(..))", throwing = "error")
     public void logAfterThrowing(final JoinPoint joinPoint, final Throwable error) {
         if (LOGGER.isErrorEnabled()) {
-            final var methodName = getMethodName(joinPoint);
+            final var methodName = getMethodName(joinPoint.getSignature());
             LOGGER.error("Exception in method: {} with message: {}", methodName, error.getMessage());
         }
     }

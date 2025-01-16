@@ -1,5 +1,31 @@
 package es.org.cxn.backapp.test.unit.controller;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -20,17 +46,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import es.org.cxn.backapp.controller.entity.UserController;
-import es.org.cxn.backapp.exceptions.UserServiceException;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
-import es.org.cxn.backapp.service.DefaultUserService;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.UserProfile;
+import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
+import es.org.cxn.backapp.service.impl.DefaultUserService;
 
 /**
  * Unit test class for {@link UserController}. This class tests the behavior of
@@ -56,15 +84,21 @@ class UserControllerTest {
      * The {@link UserService} mock bean used to simulate the behavior of the user
      * service in tests.
      * <p>
-     * This field is annotated with {@link MockBean}, which creates a mock
+     * This field is annotated with {@link MockitoBean}, which creates a mock
      * implementation of {@link UserService} that can be injected into the
      * controller being tested. It allows us to simulate interactions with the
      * service layer, such as calling the delete method, without invoking real
      * logic.
      * </p>
      */
-    @MockBean
+    @MockitoBean
     private UserService userService;
+
+    /**
+     * Mock user profile image service for build userController.
+     */
+    @MockitoBean
+    private UserProfileImageService userProfileImageService;
 
     /**
      * Test case to verify the successful deletion of a user when the user exists.
@@ -163,15 +197,20 @@ class UserControllerTest {
     void updateUserDataValidDataReturnsSuccess() throws Exception {
         // Arrange
         String userName = "testuser@example.com";
+        final int yearOfBirth = 2000;
+        final int monthOfBirth = 1;
+        final int dayOfBirth = 1;
 
         // Create a mock UserEntity to return from the update method
         PersistentUserEntity userEntity = new PersistentUserEntity();
         userEntity.setEmail(userName); // Assuming userName is the email
-        userEntity.setName("John");
-        userEntity.setFirstSurname("Doe");
-        userEntity.setSecondSurname("Smith");
-        userEntity.setBirthDate(LocalDate.of(2000, 1, 1));
-        userEntity.setGender("M");
+        UserProfile profile = new UserProfile();
+        profile.setName("John");
+        profile.setFirstSurname("Doe");
+        profile.setSecondSurname("Smith");
+        profile.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
+        profile.setGender("M");
+        userEntity.setProfile(profile);
 
         // Mock the service method to return the userEntity
         when(userService.update(any(UserServiceUpdateDto.class), anyString())).thenReturn(userEntity);
@@ -188,7 +227,8 @@ class UserControllerTest {
 
         // Verify that the update method was called with the expected parameters
         verify(userService).update(argThat(dto -> dto.name().equals("John") && dto.firstSurname().equals("Doe")
-                && dto.secondSurname().equals("Smith") && dto.birthDate().equals(LocalDate.of(2000, 1, 1))
+                && dto.secondSurname().equals("Smith")
+                && dto.birthDate().equals(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth))
                 && dto.gender().equals("M")), anyString());
     }
 

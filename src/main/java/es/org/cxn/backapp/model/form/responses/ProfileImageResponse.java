@@ -1,5 +1,31 @@
 package es.org.cxn.backapp.model.form.responses;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 
 /**
@@ -15,7 +41,7 @@ import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
  * @param url            the URL where the image can be accessed.
  * @param file           optional data representing the image file content.
  */
-public record ProfileImageResponse(String imageExtension, boolean stored, String url, String file) {
+public record ProfileImageResponse(String imageExtension, Boolean stored, String url, String file) {
 
     /**
      * Constructs a ProfileImageResponse from a PersistentProfileImageEntity.
@@ -25,7 +51,7 @@ public record ProfileImageResponse(String imageExtension, boolean stored, String
      */
     public ProfileImageResponse(final PersistentProfileImageEntity profileImageEntity) {
         // Convert the ImageExtension enum to a string using name() or toString()
-        this(profileImageEntity.getExtension().name(), profileImageEntity.getStored(), profileImageEntity.getUrl(),
+        this(profileImageEntity.getExtension().name(), profileImageEntity.isStored(), profileImageEntity.getUrl(),
                 null);
     }
 
@@ -39,7 +65,7 @@ public record ProfileImageResponse(String imageExtension, boolean stored, String
      */
     public ProfileImageResponse(final PersistentProfileImageEntity profileImageEntity, final String imageFileData) {
         // Convert the ImageExtension enum to a string using name() or toString()
-        this(profileImageEntity.getExtension().name(), profileImageEntity.getStored(), profileImageEntity.getUrl(),
+        this(profileImageEntity.getExtension().name(), profileImageEntity.isStored(), profileImageEntity.getUrl(),
                 imageFileData);
     }
 

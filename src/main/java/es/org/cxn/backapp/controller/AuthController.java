@@ -1,28 +1,31 @@
-/**
- * The MIT License (MIT)
+
+package es.org.cxn.backapp.controller;
+
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * <p>Copyright (c) 2020 the original author or authors.
- *
- * <p>Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * <p>The above copyright notice and this permission notice shall be included in
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
  */
-
-package es.org.cxn.backapp.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -47,18 +50,18 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.google.common.base.Preconditions;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.service.DefaultEmailService;
-import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.MyPrincipalUser;
+import es.org.cxn.backapp.security.DefaultJwtUtils;
+import es.org.cxn.backapp.security.MyPrincipalUser;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
+import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
@@ -70,37 +73,6 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-    /**
-     * Creates an address details object from the provided sign-up request form.
-     *
-     * @param signUpRequestForm the sign-up request form containing address
-     *                          information.
-     * @return an {@link AddressRegistrationDetailsDto} containing address details.
-     */
-    private static AddressRegistrationDetailsDto createAddressDetails(final SignUpRequestForm signUpRequestForm) {
-        return new AddressRegistrationDetailsDto(signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
-                signUpRequestForm.city(), signUpRequestForm.postalCode(), signUpRequestForm.street(),
-                signUpRequestForm.countryNumericCode(), signUpRequestForm.countrySubdivisionName());
-    }
-
-    /**
-     * Creates a user details object from the provided sign-up request form and
-     * address details.
-     *
-     * @param signUpRequestForm the sign-up request form containing user
-     *                          information.
-     * @param addressDetails    the address details for the user.
-     * @return a {@link UserRegistrationDetailsDto} containing user and address
-     *         details.
-     */
-    private static UserRegistrationDetailsDto createUserDetails(final SignUpRequestForm signUpRequestForm,
-            final AddressRegistrationDetailsDto addressDetails) {
-        return new UserRegistrationDetailsDto(signUpRequestForm.dni(), signUpRequestForm.name(),
-                signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
-                signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
-                signUpRequestForm.kindMember());
-    }
-
     /**
      * The user service for handling user-related operations.
      */
@@ -140,6 +112,37 @@ public class AuthController {
         this.usrDtlsSrv = Preconditions.checkNotNull(userDetailsServ, "Received a null pointer as userDetailsService");
         this.emailService = Preconditions.checkNotNull(emailServ, "Received a null pointer as email service.");
         Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
+    }
+
+    /**
+     * Creates an address details object from the provided sign-up request form.
+     *
+     * @param signUpRequestForm the sign-up request form containing address
+     *                          information.
+     * @return an {@link AddressRegistrationDetailsDto} containing address details.
+     */
+    private static AddressRegistrationDetailsDto createAddressDetails(final SignUpRequestForm signUpRequestForm) {
+        return new AddressRegistrationDetailsDto(signUpRequestForm.apartmentNumber(), signUpRequestForm.building(),
+                signUpRequestForm.city(), signUpRequestForm.postalCode(), signUpRequestForm.street(),
+                signUpRequestForm.countryNumericCode(), signUpRequestForm.countrySubdivisionName());
+    }
+
+    /**
+     * Creates a user details object from the provided sign-up request form and
+     * address details.
+     *
+     * @param signUpRequestForm the sign-up request form containing user
+     *                          information.
+     * @param addressDetails    the address details for the user.
+     * @return a {@link UserRegistrationDetailsDto} containing user and address
+     *         details.
+     */
+    private static UserRegistrationDetailsDto createUserDetails(final SignUpRequestForm signUpRequestForm,
+            final AddressRegistrationDetailsDto addressDetails) {
+        return new UserRegistrationDetailsDto(signUpRequestForm.dni(), signUpRequestForm.name(),
+                signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
+                signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
+                signUpRequestForm.kindMember());
     }
 
     /**
@@ -202,7 +205,7 @@ public class AuthController {
             final var createdUser = userService.changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
             final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
 
-            emailService.sendSignUpEmail(signUpRequestForm.email(), signUpRequestForm.name(),
+            emailService.sendSignUp(signUpRequestForm.email(), signUpRequestForm.name(),
                     "Te damos la bienvenida a Círculo Xadrez Narón.");
 
             return new ResponseEntity<>(signUpRspnsFrm, HttpStatus.CREATED);

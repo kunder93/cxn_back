@@ -1,6 +1,32 @@
 
 package es.org.cxn.backapp.config;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.time.LocalDate;
@@ -8,12 +34,12 @@ import java.util.ArrayList;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
@@ -22,9 +48,30 @@ import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 /**
  * Initialize a user with admin privileges for start using app.
  */
-@Component
+@Configuration
 @Profile("!test")
 public class UserDataInitializer {
+
+    /**
+     * The user service.
+     */
+    private final UserService userService;
+
+    /**
+     * The user repository.
+     */
+    private final UserEntityRepository userRepository;
+
+    /**
+     * Default public constructor.
+     *
+     * @param userServ The user service for use in this class.
+     * @param userRepo user repository for use in this class.
+     */
+    public UserDataInitializer(final UserService userServ, final UserEntityRepository userRepo) {
+        userService = checkNotNull(userServ, "Received user service as null.");
+        userRepository = checkNotNull(userRepo, "Received user repository as null.");
+    }
 
     /**
      * Creates an address details object from the provided sign-up request form.
@@ -55,27 +102,6 @@ public class UserDataInitializer {
                 signUpRequestForm.firstSurname(), signUpRequestForm.secondSurname(), signUpRequestForm.birthDate(),
                 signUpRequestForm.gender(), signUpRequestForm.password(), signUpRequestForm.email(), addressDetails,
                 signUpRequestForm.kindMember());
-    }
-
-    /**
-     * The user service.
-     */
-    private final UserService userService;
-
-    /**
-     * The user repository.
-     */
-    private final UserEntityRepository userRepository;
-
-    /**
-     * Default public constructor.
-     *
-     * @param userServ The user service for use in this class.
-     * @param userRepo user repository for use in this class.
-     */
-    public UserDataInitializer(final UserService userServ, final UserEntityRepository userRepo) {
-        userService = checkNotNull(userServ, "Received user service as null.");
-        userRepository = checkNotNull(userRepo, "Received user repository as null.");
     }
 
     /**

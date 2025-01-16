@@ -1,0 +1,2 @@
+text/plain;; x-java-content-handler=jakarta.mail.handlers.text_plain
+application/octet-stream;; x-java-content-handler=jakarta.mail.handlers.application_octet_stream

@@ -1,28 +1,31 @@
-/**
- * The MIT License (MIT)
+
+package es.org.cxn.backapp.controller.entity;
+
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * <p>Copyright (c) 2020 the original author or authors.
- *
- * <p>Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * <p>The above copyright notice and this permission notice shall be included in
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
  */
-
-package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -41,13 +44,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.ChessQuestionServiceException;
 import es.org.cxn.backapp.model.form.requests.ChangeChessQuestionHasSeenRequest;
 import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.service.ChessQuestionsService;
+import es.org.cxn.backapp.service.exceptions.ChessQuestionServiceException;
 import jakarta.validation.Valid;
 
 /**
@@ -67,7 +70,7 @@ public class ChessQuestionsController {
     /**
      * Constructs a controller with the specified dependencies.
      *
-     * @param service company service.
+     * @param service chess questions service.
      */
     public ChessQuestionsController(final ChessQuestionsService service) {
         super();
@@ -84,8 +87,8 @@ public class ChessQuestionsController {
      */
     @PostMapping("/changeChessQuestionHasSeen")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<ChessQuestionResponse> changeChessQuestionHasSeen(
-            @RequestBody @Valid final ChangeChessQuestionHasSeenRequest chessQuestionHasSeenRequestForm) {
+    public ResponseEntity<ChessQuestionResponse> changeChessQuestionHasSeen(@RequestBody
+    @Valid final ChangeChessQuestionHasSeenRequest chessQuestionHasSeenRequestForm) {
         try {
             final var result = chessQuestionsService.changeChessQuestionSeen(chessQuestionHasSeenRequestForm.id());
             final var response = new ChessQuestionResponse(result.getIdentifier(), result.getEmail(),
@@ -105,8 +108,8 @@ public class ChessQuestionsController {
      * @return form with the created chess question data.
      */
     @PostMapping()
-    public ResponseEntity<ChessQuestionResponse> createChessQuestion(
-            @RequestBody @Valid final CreateChessQuestionRequest createChessQuestionRequestForm) {
+    public ResponseEntity<ChessQuestionResponse> createChessQuestion(@RequestBody
+    @Valid final CreateChessQuestionRequest createChessQuestionRequestForm) {
         try {
             final var result = chessQuestionsService.add(createChessQuestionRequestForm.email(),
                     createChessQuestionRequestForm.category(), createChessQuestionRequestForm.topic(),
@@ -122,14 +125,14 @@ public class ChessQuestionsController {
     /**
      * Delete chess question by ID.
      *
-     * @param id the identifier of the chess question to delete.
+     * @param identifier the identifier of the chess question to delete.
      * @return response OK if delete is successful.
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{identifier}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<Void> deleteChessQuestion(@PathVariable final Integer id) {
+    public ResponseEntity<Void> deleteChessQuestion(@PathVariable final Integer identifier) {
         try {
-            chessQuestionsService.delete(id);
+            chessQuestionsService.delete(identifier);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (ChessQuestionServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

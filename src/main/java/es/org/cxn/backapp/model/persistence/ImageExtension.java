@@ -1,6 +1,32 @@
 
 package es.org.cxn.backapp.model.persistence;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 /**
  * Enum representing the various image extensions that can be used for profile
  * images.
@@ -49,36 +75,6 @@ public enum ImageExtension {
     PROVIDED("provided");
 
     /**
-     * Get the ImageExtension corresponding to a given string.
-     *
-     * @param extension the extension string to convert.
-     * @return the corresponding ImageExtension, or null if invalid.
-     */
-    public static ImageExtension fromString(final String extension) {
-        for (final ImageExtension imgExt : values()) {
-            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
-                return imgExt;
-            }
-        }
-        return null; // Return null if no match found
-    }
-
-    /**
-     * Check if the provided extension is valid.
-     *
-     * @param extension the extension to check.
-     * @return true if the extension is valid, false otherwise.
-     */
-    public static boolean isValidExtension(final String extension) {
-        for (final ImageExtension imgExt : values()) {
-            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * The string representation of the image extension.
      * <p>
      * This field stores the specific file extension associated with each image
@@ -95,6 +91,40 @@ public enum ImageExtension {
      */
     ImageExtension(final String value) {
         this.extension = value;
+    }
+
+    /**
+     * Get the ImageExtension corresponding to a given string.
+     *
+     * @param extension the extension string to convert.
+     * @return the corresponding ImageExtension, or null if invalid.
+     */
+    public static ImageExtension fromString(final String extension) {
+        ImageExtension result = null; // Initialize result with null
+        for (final ImageExtension imgExt : values()) {
+            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
+                result = imgExt;
+                break; // Exit the loop once a match is found
+            }
+        }
+        return result; // Return result at the end
+    }
+
+    /**
+     * Check if the provided extension is valid.
+     *
+     * @param extension the extension to check.
+     * @return true if the extension is valid, false otherwise.
+     */
+    public static boolean isValidExtension(final String extension) {
+        boolean isValid = false; // Initialize the result as false
+        for (final ImageExtension imgExt : values()) {
+            if (imgExt.getExtension().equalsIgnoreCase(extension)) {
+                isValid = true; // Update the result if a match is found
+                break; // Exit the loop early
+            }
+        }
+        return isValid; // Return the result at the end
     }
 
     /**

@@ -1,20 +1,45 @@
 
 package es.org.cxn.backapp.test.unit.services;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -22,35 +47,40 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity.UserType;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
+import es.org.cxn.backapp.model.persistence.user.UserProfile;
+import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
 import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
-import es.org.cxn.backapp.service.DefaultImageStorageService;
-import es.org.cxn.backapp.service.DefaultUserService;
-import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.EmailService;
+import es.org.cxn.backapp.service.PaymentsService;
+import es.org.cxn.backapp.service.RoleService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
+import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.DefaultUserService;
+import jakarta.mail.MessagingException;
 
 /**
  * Unit test class for {@link DefaultUserService}.
@@ -125,6 +155,24 @@ class UserServiceTest {
     private DefaultImageStorageService imageStorageService;
 
     /**
+     * The email service used by user service.
+     */
+    @Mock
+    private EmailService emailService;
+
+    /**
+     * The role service used by user service.
+     */
+    @Mock
+    private RoleService roleService;
+
+    /**
+     * The payments service used by user service.
+     */
+    @Mock
+    private PaymentsService paymentsService;
+
+    /**
      * Service instance being tested.
      *
      * This instance is created with the mocked repositories and contains the
@@ -147,136 +195,6 @@ class UserServiceTest {
     private PersistentProfileImageEntity profileImageEntity;
 
     /**
-     * Tests {@code getProfileImage} to verify that an exception is thrown when the
-     * profile image has an unsupported file extension.
-     * <p>
-     * Mocks and Setup:
-     * <ul>
-     * <li>Mocks the user repository to return a user with a profile image having an
-     * unsupported extension.</li>
-     * <li>Sets the profile image as stored and with an unsupported file
-     * extension.</li>
-     * </ul>
-     *
-     * Assertions:
-     * <ul>
-     * <li>Asserts that {@code UserServiceException} is thrown with a message
-     * indicating an unsupported image extension.</li>
-     * </ul>
-     */
-    @Test
-    void getProfileImageWhenImageExtensionUnsupportedShouldThrowException() {
-        String dni = "123456789";
-        profileImageEntity.setStored(true);
-        profileImageEntity.setUrl("path/to/image.unsupported");
-        profileImageEntity.setExtension(ImageExtension.PROVIDED);
-
-        // Mock findByDni to return user with profile image
-        when(userRepository.findByDni(dni)).thenReturn(Optional.of(persistentUserEntity));
-
-        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-            userService.getProfileImage(dni);
-        });
-
-        assertEquals("Profile image file not found at path: path/to/image.unsupported", exception.getMessage());
-    }
-
-    /**
-     * Tests {@code getProfileImage} to verify that an exception is thrown when the
-     * profile image file does not exist.
-     * <p>
-     * Mocks and Setup:
-     * <ul>
-     * <li>Mocks the user repository to return a user with a profile image URL
-     * pointing to a nonexistent file.</li>
-     * <li>Sets the profile image as stored to simulate its expected presence in the
-     * file system.</li>
-     * </ul>
-     *
-     * Assertions:
-     * <ul>
-     * <li>Asserts that {@code UserServiceException} is thrown with an appropriate
-     * message indicating the file path.</li>
-     * </ul>
-     */
-    @Test
-    void getProfileImageWhenImageFileNotFoundShouldThrowException() {
-        String dni = "123456789";
-        profileImageEntity.setStored(true);
-        profileImageEntity.setUrl("path/to/nonexistent_image.jpg");
-
-        // Mock findByDni to return user with profile image
-        when(userRepository.findByDni(dni)).thenReturn(Optional.of(persistentUserEntity));
-
-        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-            userService.getProfileImage(dni);
-        });
-
-        assertEquals("Profile image file not found at path: " + profileImageEntity.getUrl(), exception.getMessage());
-    }
-
-    /**
-     * Tests {@code saveProfileImage} to verify behavior when an existing profile
-     * image needs to be replaced.
-     * <p>
-     * Mocks and Setup:
-     * <ul>
-     * <li>Mocks the user and profile image repositories to return an existing user
-     * and stored profile image.</li>
-     * <li>Sets the profile image as stored and prepares it for deletion.</li>
-     * <li>Mimics file deletion as successful and mocks the new profile image save
-     * process.</li>
-     * </ul>
-     *
-     * Assertions and Verifications:
-     * <ul>
-     * <li>Verifies that the old image file is deleted when a new image is
-     * uploaded.</li>
-     * <li>Checks that the new profile image URL is saved in the user's profile
-     * image field.</li>
-     * </ul>
-     */
-    @Test
-    void saveProfileImageWhenImageExistsShouldDeleteAndSaveNewImage() throws UserServiceException {
-        String userEmail = "test@example.com";
-        String newImageUrl = "path/to/upload/new_image.jpg";
-
-        // Mock findByEmail to return existing user
-        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(persistentUserEntity));
-        when(userRepository.findByDni("123456789")).thenReturn(Optional.of(persistentUserEntity));
-
-        // Set up existing profile image with 'stored' set to true
-        profileImageEntity.setStored(true); // Ensure stored is true so deletion is triggered
-        profileImageEntity.setUrl("path/to/upload/old_image.jpg");
-        profileImageEntity.setUserDni("123456789");
-
-        // Mock image repository to return existing image
-        when(imageProfileRepository.findById("123456789")).thenReturn(Optional.of(profileImageEntity));
-
-        // Mock file deletion behavior
-        File existingFile = mock(File.class);
-        when(existingFile.exists()).thenReturn(true);
-        when(existingFile.delete()).thenReturn(true);
-
-        // Mock image save
-        PersistentProfileImageEntity newProfileImageEntity = new PersistentProfileImageEntity();
-        newProfileImageEntity.setUrl(newImageUrl);
-        newProfileImageEntity.setUserDni("123456789");
-        when(imageProfileRepository.save(any(PersistentProfileImageEntity.class))).thenReturn(newProfileImageEntity);
-        when(userRepository.save(any(PersistentUserEntity.class))).thenReturn(persistentUserEntity);
-
-        // Perform the save operation
-        PersistentUserEntity updatedUserEntity = userService.saveProfileImage(userEmail, newImageUrl);
-
-        // Verify file deletion and new save
-        verify(imageProfileRepository).save(any(PersistentProfileImageEntity.class));
-        verify(userRepository).save(persistentUserEntity);
-
-        // Assert the new URL is set in the user entity's profile image
-        assertEquals(newImageUrl, updatedUserEntity.getProfileImage().getUrl());
-    }
-
-    /**
      * Initializes the test environment before each test is run.
      *
      * This method sets up the mocks and initializes the user entity with test data
@@ -285,13 +203,22 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        final int yearOfBirth = 1991;
+        final int monthOfBirth = 5;
+        final int dayOfBirth = 5;
 
         // Initialize the PersistentUserEntity with necessary fields
         persistentUserEntity = new PersistentUserEntity();
         persistentUserEntity.setEmail("test@example.com");
         persistentUserEntity.setPassword(new BCryptPasswordEncoder().encode("password123"));
         persistentUserEntity.setDni("123456789");
-
+        UserProfile userProfile = new UserProfile();
+        userProfile.setName("UserName");
+        userProfile.setFirstSurname("First name");
+        userProfile.setSecondSurname("SecondSurname");
+        userProfile.setGender("Male");
+        userProfile.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
+        persistentUserEntity.setProfile(userProfile);
         // Initialize the profile image entity with a placeholder URL
         profileImageEntity = new PersistentProfileImageEntity();
         profileImageEntity.setUrl("path/to/upload/123456789.jpg"); // Placeholder URL
@@ -299,6 +226,11 @@ class UserServiceTest {
 
         // Set the profile image to the user entity
         persistentUserEntity.setProfileImage(profileImageEntity);
+    }
+
+    @AfterEach
+    void tearDown() {
+        Mockito.reset(userRepository, roleRepository, emailService, paymentsService, roleService);
     }
 
     /**
@@ -444,9 +376,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#add(UserRegistrationDetailsDto)} method to
-     * ensure that a {@link UserServiceException} is thrown when attempting to add a
-     * user with a DNI that already exists in the database.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#add(UserRegistrationDetailsDto)}
+     * method to ensure that a {@link UserServiceException} is thrown when
+     * attempting to add a user with a DNI that already exists in the database.
      *
      * <p>
      * This test simulates a user registration where the DNI already exists in the
@@ -509,9 +442,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#add(UserRegistrationDetailsDto)} method to
-     * ensure that a new user is successfully added to the system when the provided
-     * DNI and email do not already exist in the database.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#add(UserRegistrationDetailsDto)}
+     * method to ensure that a new user is successfully added to the system when the
+     * provided DNI and email do not already exist in the database.
      *
      * <p>
      * This test case verifies the successful addition of a user by simulating the
@@ -528,8 +462,8 @@ class UserServiceTest {
      * registration, and mock repository responses.</li>
      * <li>Act: Call {@code userService.add(userDetails)} with valid data.</li>
      * <li>Assert: Verify that the user is saved successfully and that
-     * {@link UserService#add(UserRegistrationDetailsDto)} returns the persisted
-     * user entity.</li>
+     * {@link es.org.cxn.backapp.service.UserService#add(UserRegistrationDetailsDto)}
+     * returns the persisted user entity.</li>
      * </ul>
      *
      * @throws UserServiceException if there is an issue adding the user
@@ -617,19 +551,20 @@ class UserServiceTest {
         // Declare a valid birth date for the user
         final var validBirthDate = LocalDate.of(2000, 1, 1);
         // Set the user's birth date to ensure they are over 18 years old
-        persistentUserEntity.setBirthDate(validBirthDate);
-
+        final var userProfile = persistentUserEntity.getProfile();
+        userProfile.setBirthDate(validBirthDate);
+        persistentUserEntity.setProfile(userProfile);
         // Mock repository to return the existing user when searching by email
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(persistentUserEntity));
         // Mock repository to return the updated user after saving
         when(userRepository.save(any(PersistentUserEntity.class))).thenReturn(persistentUserEntity);
 
         // Call the method to change the user's type
-        var result = userService.changeKindMember("test@example.com", PersistentUserEntity.UserType.SOCIO_HONORARIO);
+        var result = userService.changeKindMember("test@example.com", UserType.SOCIO_HONORARIO);
 
         // Verify that the user type has been updated to SOCIO_HONORARIO
         assertThat(result.getKindMember()).as("Checking that the kind member is set to SOCIO_HONORARIO")
-                .isEqualTo(PersistentUserEntity.UserType.SOCIO_HONORARIO);
+                .isEqualTo(UserType.SOCIO_HONORARIO);
     }
 
     /**
@@ -666,7 +601,7 @@ class UserServiceTest {
 
         // Verify that the expected exception is thrown with a clear message
         var exception = assertThrows(UserServiceException.class,
-                () -> userService.changeKindMember("test@example.com", PersistentUserEntity.UserType.SOCIO_ASPIRANTE),
+                () -> userService.changeKindMember("test@example.com", UserType.SOCIO_ASPIRANTE),
                 "Expected changeKindMember to throw UserServiceException " + "when user is not found.");
 
         // Optional: Verify the exception message, if relevant
@@ -674,10 +609,128 @@ class UserServiceTest {
                 "The exception message should indicate that the user was not found.");
     }
 
+    @Test
+    void testChangeUserEmailDataAccessException() {
+
+        // Given
+        final String email = "test@example.com";
+        final String newEmail = "new-email@example.com";
+        final int yearOfBirth = 1990;
+        final int monthOfBirth = 1;
+        final int dayOfBirth = 1;
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setName("John");
+        userProfile.setFirstSurname("Doe");
+        userProfile.setSecondSurname("Smith");
+        userProfile.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
+        userProfile.setGender("Male");
+        // Create a mock PersistentUserEntity and set the UserProfile
+        PersistentUserEntity mockUserEntity = new PersistentUserEntity();
+        mockUserEntity.setProfile(userProfile);
+        mockUserEntity.setEmail(email);
+
+        // Mock the behavior of the userRepository to throw DataAccessException
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUserEntity));
+        when(userRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
+        doThrow(new DataAccessException("Database save error") {
+
+            /**
+             * Serial UID.
+             */
+            private static final long serialVersionUID = 1L;
+        }).when(userRepository).save(any(PersistentUserEntity.class));
+
+        // When & Then
+        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
+            userService.changeUserEmail(email, newEmail);
+        });
+
+        // Assert
+        assertEquals("Failed to save user entity after changing email.", exception.getMessage());
+    }
+
+    @Test
+    void testChangeUserEmailIOException() throws MessagingException, IOException {
+        // Given
+        final String email = "test@example.com";
+        final String newEmail = "new-email@example.com";
+        final int yearOfBirth = 1990;
+        final int monthOfBirth = 1;
+        final int dayOfBirth = 1;
+        UserProfile userProfile = new UserProfile();
+        userProfile.setName("John");
+        userProfile.setFirstSurname("Doe");
+        userProfile.setSecondSurname("Smith");
+        userProfile.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
+        userProfile.setGender("Male");
+
+        // Create a mock PersistentUserEntity and set the UserProfile
+        PersistentUserEntity mockUserEntity = new PersistentUserEntity();
+        mockUserEntity.setProfile(userProfile);
+        mockUserEntity.setEmail(email);
+
+        // Mock the behavior of the userRepository to return an existing user
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUserEntity));
+        when(userRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
+        when(userRepository.save(any(PersistentUserEntity.class))).thenReturn(mockUserEntity);
+
+        // Mock the email service to throw an IOException
+        doThrow(new IOException("Email template loading failed")).when(emailService).sendChangeEmail(anyString(),
+                anyString(), anyString());
+
+        // When & Then
+        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
+            userService.changeUserEmail(email, newEmail);
+        });
+
+        // Assert
+        assertEquals("Cannot send email to: test@example.com or new-email@example.com.", exception.getMessage());
+    }
+
+    @Test
+    void testChangeUserEmailMessagingException() throws MessagingException, IOException {
+        // Given
+        String email = "test@example.com";
+        String newEmail = "new-email@example.com";
+        final int yearOfBirth = 1990;
+        final int monthOfBirth = 1;
+        final int dayOfBirth = 1;
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setName("John");
+        userProfile.setFirstSurname("Doe");
+        userProfile.setSecondSurname("Smith");
+        userProfile.setBirthDate(LocalDate.of(yearOfBirth, monthOfBirth, dayOfBirth));
+        userProfile.setGender("Male");
+        // Create a mock PersistentUserEntity and set the UserProfile
+        PersistentUserEntity mockUserEntity = new PersistentUserEntity();
+        mockUserEntity.setProfile(userProfile);
+        mockUserEntity.setEmail(email);
+
+        // Mock the behavior of the userRepository to return an existing user
+        when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUserEntity));
+        when(userRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
+        when(userRepository.save(any(PersistentUserEntity.class))).thenReturn(mockUserEntity);
+
+        // Mock the email service to throw a MessagingException
+        doThrow(new MessagingException("Email sending failed")).when(emailService).sendChangeEmail(anyString(),
+                anyString(), anyString());
+
+        // When & Then
+        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
+            userService.changeUserEmail(email, newEmail);
+        });
+
+        // Assert
+        assertEquals("Cannot send email to: " + email + " or " + newEmail + ".", exception.getMessage());
+    }
+
     /**
-     * Tests the {@link UserService#changeUserEmail(String, String)} method to
-     * ensure that a user's email is successfully updated when a valid email change
-     * request is made.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserEmail(String, String)}
+     * method to ensure that a user's email is successfully updated when a valid
+     * email change request is made.
      *
      * <p>
      * This test case verifies the successful update of the user's email by
@@ -716,10 +769,35 @@ class UserServiceTest {
                 .isEqualTo("newemail@example.com");
     }
 
+    @Test
+    void testChangeUserEmailUserExists() {
+        // Arrange
+        String currentEmail = "current@example.com";
+        String newEmail = "existing@example.com";
+
+        // Mock the scenario where a user already exists with the new email
+        PersistentUserEntity mockExistingUser = new PersistentUserEntity();
+        mockExistingUser.setEmail(newEmail);
+        when(userRepository.findByEmail(newEmail)).thenReturn(Optional.of(mockExistingUser)); // Simulating an existing
+                                                                                              // user with the new email
+
+        // Act & Assert
+        UserServiceException exception = assertThrows(UserServiceException.class,
+                () -> userService.changeUserEmail(currentEmail, newEmail));
+
+        // Verify the exception message
+        assertEquals("User with email: " + newEmail + " exists.", exception.getMessage());
+
+        // Verify interactions
+        verify(userRepository).findByEmail(newEmail); // Ensure findByEmail was called with the newEmail
+        verifyNoInteractions(emailService); // Ensure emailService was not called
+    }
+
     /**
-     * Tests the {@link UserService#changeUserEmail(String, String)} method to
-     * ensure that an exception is thrown when attempting to change the email for a
-     * non-existent user.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserEmail(String, String)}
+     * method to ensure that an exception is thrown when attempting to change the
+     * email for a non-existent user.
      *
      * <p>
      * This test case simulates a scenario where the specified user is not found in
@@ -762,7 +840,8 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserPassword(String, String, String)}
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserPassword(String, String, String)}
      * method to ensure that a user's password is successfully updated and stored in
      * encrypted form.
      *
@@ -824,7 +903,8 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserPassword(String, String, String)}
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserPassword(String, String, String)}
      * method to verify that an exception is thrown when the provided current
      * password does not match the user's stored password.
      *
@@ -872,9 +952,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserRoles(String, List)} method to ensure
-     * that an exception is thrown when attempting to assign a role to a user, but
-     * one of the specified roles does not exist.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
+     * method to ensure that an exception is thrown when attempting to assign a role
+     * to a user, but one of the specified roles does not exist.
      *
      * <p>
      * This test simulates the scenario where a user is assigned new roles, but one
@@ -933,8 +1014,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserRoles(String, List)} method to verify
-     * that user roles are successfully changed when valid role names are provided.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
+     * method to verify that user roles are successfully changed when valid role
+     * names are provided.
      *
      * <p>
      * This test simulates a scenario where the user has an email in the repository,
@@ -984,26 +1067,11 @@ class UserServiceTest {
                 .isNotEmpty();
     }
 
-//    @Test
-//    void testSaveProfileImageFileErrorSavingImage() throws IOException {
-//        // Arrange
-//        MultipartFile file = mock(MultipartFile.class);
-//        when(file.getOriginalFilename()).thenReturn("profile.jpg");
-//        when(userRepository.findByDni("123456789")).thenReturn(Optional.of(persistentUserEntity));
-//        when(imageStorageService.saveImage(file, "path/to/upload", "profile", "123456789"))
-//                .thenThrow(new IOException("File save error"));
-//
-//        // Act & Assert
-//        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-//            userService.saveProfileImageFile("123456789", file);
-//        });
-//        assertEquals("Error saving profile image: File save error", exception.getMessage());
-//    }
-
     /**
-     * Tests the {@link UserService#changeUserRoles(String, List)} method to verify
-     * that an exception is thrown when attempting to change roles for a user that
-     * does not exist.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
+     * method to verify that an exception is thrown when attempting to change roles
+     * for a user that does not exist.
      *
      * <p>
      * This test simulates a scenario where no user is found with the specified
@@ -1047,13 +1115,15 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#findByDni(String)} method to ensure that it
-     * throws an exception when the user is not found by their DNI.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#findByDni(String)}
+     * method to ensure that it throws an exception when the user is not found by
+     * their DNI.
      *
      * <p>
-     * This test verifies that the {@code findByDni} method in {@link UserService}
-     * throws a {@link UserServiceException} when the given DNI does not correspond
-     * to any existing user in the repository.
+     * This test verifies that the {@code findByDni} method in
+     * {@link es.org.cxn.backapp.service.UserService} throws a
+     * {@link UserServiceException} when the given DNI does not correspond to any
+     * existing user in the repository.
      * </p>
      *
      * <p>
@@ -1090,14 +1160,15 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#findByDni(String)} method to ensure that it
-     * retrieves a user by their DNI.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#findByDni(String)}
+     * method to ensure that it retrieves a user by their DNI.
      *
      * <p>
-     * This test verifies that the {@code findByDni} method in {@link UserService}
-     * correctly returns a user when a valid DNI is provided. It mocks the user
-     * repository to return a predefined user entity when the specified DNI is
-     * searched, and asserts that the result is the expected user.
+     * This test verifies that the {@code findByDni} method in
+     * {@link es.org.cxn.backapp.service.UserService} correctly returns a user when
+     * a valid DNI is provided. It mocks the user repository to return a predefined
+     * user entity when the specified DNI is searched, and asserts that the result
+     * is the expected user.
      * </p>
      *
      * <p>
@@ -1132,14 +1203,15 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#findByEmail(String)} method to ensure that it
-     * retrieves a user by their email.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#findByEmail(String)}
+     * method to ensure that it retrieves a user by their email.
      *
      * <p>
-     * This test verifies that the {@code findByEmail} method in {@link UserService}
-     * returns the correct user when a valid email is provided. It mocks the user
-     * repository to return a predefined user and ensures that the email of the
-     * retrieved user matches the expected value.
+     * This test verifies that the {@code findByEmail} method in
+     * {@link es.org.cxn.backapp.service.UserService} returns the correct user when
+     * a valid email is provided. It mocks the user repository to return a
+     * predefined user and ensures that the email of the retrieved user matches the
+     * expected value.
      * </p>
      *
      * <p>
@@ -1183,14 +1255,14 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#getAll()} method to ensure that it retrieves all
-     * users from the repository.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#getAll()} method to
+     * ensure that it retrieves all users from the repository.
      *
      * <p>
-     * This test verifies that the {@code getAll} method in {@link UserService}
-     * correctly fetches the list of users from the repository. It mocks the
-     * repository to return a list of users and ensures that the method returns the
-     * expected result.
+     * This test verifies that the {@code getAll} method in
+     * {@link es.org.cxn.backapp.service.UserService} correctly fetches the list of
+     * users from the repository. It mocks the repository to return a list of users
+     * and ensures that the method returns the expected result.
      * </p>
      *
      * <p>
@@ -1226,269 +1298,37 @@ class UserServiceTest {
                 .containsExactly(persistentUserEntity);
     }
 
-    /**
-     * Tests the {@link UserService#remove(String)} method to ensure that it throws
-     * a {@link UserServiceException} when attempting to remove a user who does not
-     * exist.
-     *
-     * <p>
-     * This test simulates the scenario where a user with the specified email does
-     * not exist in the repository. It ensures that when attempting to remove a
-     * non-existent user, a {@code UserServiceException} is thrown with the
-     * appropriate error message.
-     * </p>
-     *
-     * <p>
-     * Steps:
-     * </p>
-     * <ul>
-     * <li>Arrange: Mock the {@code userRepository} to return
-     * {@code Optional.empty()} for the specified email, indicating that the user is
-     * not found.</li>
-     * <li>Act: Call {@code userService.remove} with the email of the user that does
-     * not exist.</li>
-     * <li>Assert: Verify that a {@code UserServiceException} is thrown and check
-     * the exception message to ensure that it indicates the user was not
-     * found.</li>
-     * </ul>
-     *
-     * <p>
-     * Expected Result:
-     * </p>
-     * The test should pass if a {@code UserServiceException} is thrown with the
-     * message "User not found.", confirming that the system behaves as expected
-     * when attempting to remove a non-existent user.
-     */
     @Test
-    void testRemoveUserNotFound() {
-        // Configura el mock para devolver vacío al buscar por email
+    void testUnsubscribeUserFound() throws UserServiceException {
+        PersistentUserEntity userEntity = new PersistentUserEntity();
+        userEntity.setEmail("test@example.com");
+        userEntity.setEnabled(true);
+        // Arrange: Mock the findByEmail to return the user entity
+        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(userEntity));
+
+        // Act: Call the unsubscribe method
+        userService.unsubscribe("test@example.com");
+
+        // Assert: Verify that save was called and the user's enabled status is set to
+        // false
+        verify(userRepository, times(1)).save(userEntity);
+        assertFalse(userEntity.isEnabled(), "User should be unsubscribed (enabled = false)");
+    }
+
+    @Test
+    void testUnsubscribeUserNotFound() {
+        PersistentUserEntity userEntity = new PersistentUserEntity();
+        userEntity.setEmail("test@example.com");
+        userEntity.setEnabled(true);
+        // Arrange: Mock the findByEmail to return an empty Optional
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
-        // Verifica que se lanza la excepción esperada y añade un mensaje
-        var exception = assertThrows(UserServiceException.class, () -> userService.remove("test@example.com"),
-                "Expected UserServiceException to be thrown when trying to " + "remove a non-existent user");
-
-        // Opcional: Verifica el mensaje de la excepción, si es relevante
-        assertEquals("User not found.", exception.getMessage(),
-                "Expected exception message to be 'User not found' but was '" + exception.getMessage() + "'");
-    }
-
-    /**
-     * Tests the {@link UserService#remove(String)} method to verify that a user is
-     * successfully removed from the system when the user exists.
-     *
-     * <p>
-     * This test simulates the process of deleting a user by their email address. It
-     * ensures that when the user is found in the repository, the {@code delete}
-     * method is called once to remove the user from the database.
-     * </p>
-     *
-     * <p>
-     * Steps:
-     * </p>
-     * <ul>
-     * <li>Arrange: Mock the {@code userRepository} to return the user entity for
-     * the specified email.</li>
-     * <li>Act: Call {@code userService.remove} with the email of the user to be
-     * deleted.</li>
-     * <li>Assert: Verify that the {@code delete} method of the repository is called
-     * once, ensuring that the user is removed from the database.</li>
-     * </ul>
-     *
-     * <p>
-     * Expected Result:
-     * </p>
-     * The test should pass if the {@code delete} method is called exactly once,
-     * confirming that the user was successfully removed from the repository.
-     */
-    @Test
-    void testRemoveUserSuccess() throws UserServiceException {
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(persistentUserEntity));
-        doNothing().when(userRepository).delete(persistentUserEntity);
-
-        userService.remove("test@example.com");
-        verify(userRepository, times(1)).delete(persistentUserEntity);
-    }
-
-    /**
-     * Tests {@code saveProfileImageFile} to ensure an exception is thrown for an
-     * unsupported file extension.
-     * <p>
-     * Mocks:
-     * <ul>
-     * <li>File name is mocked as "profile.txt" to simulate an unsupported
-     * extension.</li>
-     * <li>Finds a user by DNI.</li>
-     * </ul>
-     *
-     * Assertions:
-     * <ul>
-     * <li>Asserts that a {@code UserServiceException} is thrown due to the invalid
-     * image extension.</li>
-     * <li>Verifies the exception message is "Invalid image extension: txt".</li>
-     * </ul>
-     */
-    @Test
-    void testSaveProfileImageFileInvalidExtension() {
-        // Arrange
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.getOriginalFilename()).thenReturn("profile.txt"); // Invalid extension
-        when(userRepository.findByDni("123456789")).thenReturn(Optional.of(persistentUserEntity));
-
-        // Act & Assert
+        // Act and Assert: Verify that UserServiceException is thrown
         UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-            userService.saveProfileImageFile("123456789", file);
+            userService.unsubscribe("test@example.com");
         });
-        assertEquals("Invalid image extension: txt", exception.getMessage());
-    }
 
-    /**
-     * Tests {@code saveProfileImageFile} to ensure an exception is thrown for an
-     * invalid file name format.
-     * <p>
-     * Mocks:
-     * <ul>
-     * <li>File name is mocked to "profile" (missing an extension).</li>
-     * <li>Finds a user by DNI.</li>
-     * </ul>
-     *
-     * Assertions:
-     * <ul>
-     * <li>Asserts that a {@code UserServiceException} is thrown due to an invalid
-     * file extension.</li>
-     * <li>Verifies the exception message matches "Invalid image extension:
-     * profile".</li>
-     * </ul>
-     */
-    @Test
-    void testSaveProfileImageFileInvalidFileNameFormat() {
-        // Arrange
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.getOriginalFilename()).thenReturn("profile"); // Missing extension
-        when(userRepository.findByDni("123456789")).thenReturn(Optional.of(persistentUserEntity));
-
-        // Act & Assert
-        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-            userService.saveProfileImageFile("123456789", file);
-        });
-        assertEquals("Invalid image extension: profile", exception.getMessage());
-    }
-
-    /**
-     * Tests the {@code saveProfileImageFile} method when the provided file has a
-     * missing or null file name.
-     *
-     * <p>
-     * This test verifies that the method throws a {@link UserServiceException} with
-     * the expected message when attempting to save a profile image with a
-     * {@code MultipartFile} that has a {@code null} file name.
-     *
-     * <p>
-     * Steps:
-     * <ol>
-     * <li>Mocks a {@code MultipartFile} with a {@code null} file name.</li>
-     * <li>Makes {@code findByDni} return a valid user.</li>
-     * <li>Invokes {@code saveProfileImageFile} with the mocked file and asserts
-     * that a {@code UserServiceException} is thrown with the message "Invalid file
-     * name".</li>
-     * </ol>
-     *
-     */
-    @Test
-    void testSaveProfileImageFileMissingFileName() {
-        // Arrange
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.getOriginalFilename()).thenReturn(null); // Null file name
-        when(userRepository.findByDni("123456789")).thenReturn(Optional.of(persistentUserEntity));
-
-        // Act & Assert
-        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-            userService.saveProfileImageFile("123456789", file);
-        });
-        assertEquals("Invalid file name", exception.getMessage());
-    }
-
-    /**
-     * Tests the successful saving of a profile image for a user by
-     * {@code saveProfileImageFile}.
-     * <p>
-     * Mocks:
-     * <ul>
-     * <li>File name is mocked to "profile.jpg".</li>
-     * <li>{@code saveImage} method of {@code imageStorageService} returns a mocked
-     * file path.</li>
-     * <li>Finds a user by DNI and simulates saving the profile image and user
-     * entity in their respective repositories.</li>
-     * </ul>
-     *
-     * Assertions:
-     * <ul>
-     * <li>Confirms that the profile image is not null after saving.</li>
-     * <li>Checks that the saved image URL matches the expected path.</li>
-     * <li>Verifies that the image and user repositories are called once to save the
-     * respective entities.</li>
-     * </ul>
-     *
-     * @throws IOException          if an error occurs while processing the file.
-     * @throws UserServiceException if an error occurs during profile image save.
-     */
-    @Test
-    void testSaveProfileImageFileSuccess() throws IOException, UserServiceException {
-        // Arrange
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.getOriginalFilename()).thenReturn("profile.jpg"); // Mocking the file name
-        when(imageStorageService.saveImage(file, "path/to/upload", "profile", "123456789"))
-                .thenReturn("path/to/upload/123456789.jpg"); // Mocking the saved image path
-        when(userRepository.findByDni("123456789")).thenReturn(Optional.of(persistentUserEntity)); // Mocking the
-        when(imageProfileRepository.save(any())).thenReturn(profileImageEntity); // repository call
-        when(userRepository.save(any())).thenReturn(persistentUserEntity);
-        // Act
-        PersistentUserEntity result = userService.saveProfileImageFile("123456789", file); // Calling the method
-
-        // Assert
-        assertNotNull(result.getProfileImage()); // Ensure the profile image is not null
-        assertEquals("path/to/upload/123456789.jpg", result.getProfileImage().getUrl()); // Check the image URL
-        verify(imageProfileRepository, times(1)).save(any(PersistentProfileImageEntity.class)); // Verify image entity
-                                                                                                // save
-        verify(userRepository, times(1)).save(any(PersistentUserEntity.class)); // Verify user entity save
-    }
-
-    /**
-     * Tests the successful execution of {@code saveProfileImageFile} when a valid
-     * file is provided. Verifies that the image file is saved and the user's
-     * profile image URL is correctly updated.
-     *
-     * <p>
-     * Mocks:
-     * <ul>
-     * <li>Mocks a {@code MultipartFile} with a filename {@code "profile.jpg"}.</li>
-     * <li>Simulates image storage by returning
-     * {@code "path/to/upload/123456789.jpg"}.</li>
-     * <li>Mocks user and image entity save operations.</li>
-     * </ul>
-     *
-     * <p>
-     * Assertions:
-     * <ul>
-     * <li>Checks that the profile image URL is updated to the expected path.</li>
-     * <li>Verifies save operations for the image and user entities.</li>
-     * </ul>
-     *
-     * @throws IOException          if an I/O error occurs.
-     * @throws UserServiceException if a user service error occurs.
-     */
-    @Test
-    void testSaveProfileImageFileUserNotFound() {
-        // Arrange
-        MultipartFile file = mock(MultipartFile.class);
-        when(file.getOriginalFilename()).thenReturn("profile.jpg");
-        when(userRepository.findByDni("123456789")).thenReturn(Optional.empty()); // User not found
-
-        // Act & Assert
-        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-            userService.saveProfileImageFile("123456789", file);
-        });
-        assertEquals("User not found.", exception.getMessage());
+        assertEquals("User not found.", exception.getMessage(), "Exception message should match");
     }
 
     /**
@@ -1594,21 +1434,26 @@ class UserServiceTest {
         var result = (PersistentUserEntity) userService.update(userForm, testEmail);
 
         // Verify that user fields are updated correctly
-        assertThat(result.getName()).as("Checking updated user name").isEqualTo(testName);
+        assertThat(result.getProfile().getName()).as("Checking updated user name").isEqualTo(testName);
 
-        assertThat(result.getFirstSurname()).as("Checking updated user's first surname").isEqualTo(testFirstSurname);
+        assertThat(result.getProfile().getFirstSurname()).as("Checking updated user's first surname")
+                .isEqualTo(testFirstSurname);
 
-        assertThat(result.getSecondSurname()).as("Checking updated user's second surname").isEqualTo(testSecondSurname);
+        assertThat(result.getProfile().getSecondSurname()).as("Checking updated user's second surname")
+                .isEqualTo(testSecondSurname);
 
-        assertThat(result.getBirthDate()).as("Checking updated user's birth date").isEqualTo(testBirthDate);
+        assertThat(result.getProfile().getBirthDate()).as("Checking updated user's birth date")
+                .isEqualTo(testBirthDate);
 
-        assertThat(result.getGender()).as("Checking updated user's gender").isEqualTo(testGender);
+        assertThat(result.getProfile().getGender()).as("Checking updated user's gender").isEqualTo(testGender);
 
         // Additional assertion to ensure all properties match
         assertThat(result).as("Checking the updated user").matches(
-                user -> user.getName().equals(testName) && user.getFirstSurname().equals(testFirstSurname)
-                        && user.getSecondSurname().equals(testSecondSurname)
-                        && user.getBirthDate().equals(testBirthDate) && user.getGender().equals(testGender),
+                user -> user.getProfile().getName().equals(testName)
+                        && user.getProfile().getFirstSurname().equals(testFirstSurname)
+                        && user.getProfile().getSecondSurname().equals(testSecondSurname)
+                        && user.getProfile().getBirthDate().equals(testBirthDate)
+                        && user.getProfile().getGender().equals(testGender),
                 "User properties should match the updated values");
 
         // Verify that save was called once with the updated user

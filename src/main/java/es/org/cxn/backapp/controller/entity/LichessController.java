@@ -1,5 +1,31 @@
 package es.org.cxn.backapp.controller.entity;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -35,13 +61,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.org.cxn.backapp.exceptions.LichessServiceException;
 import es.org.cxn.backapp.model.form.responses.LichessProfileListResponse;
 import es.org.cxn.backapp.model.form.responses.LichessProfileResponse;
 import es.org.cxn.backapp.service.LichessService;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto.SaveGameStatistics;
+import es.org.cxn.backapp.service.exceptions.LichessServiceException;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -169,7 +195,7 @@ public class LichessController {
     private LichessProfileListResponse fromServiceDtoToControllerResponseList(
             final List<LichessProfileDto> profilesListDto) {
         final var responsesList = profilesListDto.stream().map(dto -> new LichessProfileResponse(dto.completeUserName(),
-                dto.id(), dto.updatedAt(),
+                dto.identifier(), dto.updatedAt(),
                 new LichessProfileResponse.Game(dto.blitz().rating(), dto.blitz().games(), dto.blitz().prov()),
                 new LichessProfileResponse.Game(dto.bullet().rating(), dto.bullet().games(), dto.bullet().prov()),
                 new LichessProfileResponse.Game(dto.rapid().rating(), dto.rapid().games(), dto.rapid().prov()),
@@ -201,7 +227,7 @@ public class LichessController {
                 final JsonNode rootNode = objectMapper.readTree(response.getBody());
 
                 // Extraer y mapear los campos necesarios al DTO
-                final String id = rootNode.path("id").asText();
+                final String identifier = rootNode.path("id").asText();
                 final String username = rootNode.path("username").asText();
                 // Obtener estadísticas de diferentes modalidades
                 final SaveGameStatistics blitz = mapSaveGameStatistics(rootNode.path("perfs").path("blitz"));
@@ -210,13 +236,13 @@ public class LichessController {
                 final SaveGameStatistics rapid = mapSaveGameStatistics(rootNode.path("perfs").path("rapid"));
                 final SaveGameStatistics puzzle = mapSaveGameStatistics(rootNode.path("perfs").path("puzzle"));
                 // Crear el DTO con la información mapeada
-                return new LichessSaveProfileDto(userDni, id, username, LocalDateTime.now(), blitz, bullet, classical,
-                        rapid, puzzle);
+                return new LichessSaveProfileDto(userDni, identifier, username, LocalDateTime.now(), blitz, bullet,
+                        classical, rapid, puzzle);
             } else {
                 throw new LichessServiceException("Error al obtener el perfil de Lichess.");
             }
         } catch (RestClientException | JsonProcessingException e) {
-            throw new LichessServiceException("Error en la llamada a la API de Lichess.");
+            throw new LichessServiceException("Error en la llamada a la API de Lichess.", e);
         }
     }
 

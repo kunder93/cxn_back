@@ -29,6 +29,12 @@ databaseChangeLog:
 -  include:
       file: structure/activities_tables.yaml
       relativeToChangelogFile: true
+-  include:
+      file: structure/payments_tables.yaml
+      relativeToChangelogFile: true
+-  include:
+      file: structure/payment_sheet_tables_drop_remove.yaml
+      relativeToChangelogFile: true      
 -  changeSet:
       id: initial_data
       author: Santiago

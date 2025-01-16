@@ -1,5 +1,31 @@
 package es.org.cxn.backapp.model;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.time.LocalDateTime;
 
 /**
@@ -22,13 +48,6 @@ public interface LichessProfileEntity {
      * @return the blitz progress
      */
     Integer getBlitzProg();
-
-    /**
-     * Checks if the user's blitz rating is provisional.
-     *
-     * @return true if the blitz rating is provisional, false otherwise
-     */
-    Boolean getBlitzProv();
 
     /**
      * Gets the user's blitz rating.
@@ -60,13 +79,6 @@ public interface LichessProfileEntity {
     Integer getBulletProg();
 
     /**
-     * Checks if the user's bullet rating is provisional.
-     *
-     * @return true if the bullet rating is provisional, false otherwise
-     */
-    Boolean getBulletProv();
-
-    /**
      * Gets the user's bullet rating.
      *
      * @return the bullet rating
@@ -96,13 +108,6 @@ public interface LichessProfileEntity {
     Integer getClassicalProg();
 
     /**
-     * Checks if the user's classical rating is provisional.
-     *
-     * @return true if the classical rating is provisional, false otherwise
-     */
-    Boolean getClassicalProv();
-
-    /**
      * Gets the user's classical rating.
      *
      * @return the classical rating
@@ -122,7 +127,7 @@ public interface LichessProfileEntity {
      *
      * @return the profile's unique identifier (ID)
      */
-    String getId();
+    String getIdentifier();
 
     /**
      * Gets the number of puzzle games solved by the user.
@@ -138,13 +143,6 @@ public interface LichessProfileEntity {
      * @return the puzzle progress
      */
     Integer getPuzzleProg();
-
-    /**
-     * Checks if the user's puzzle rating is provisional.
-     *
-     * @return true if the puzzle rating is provisional, false otherwise
-     */
-    Boolean getPuzzleProv();
 
     /**
      * Gets the user's puzzle rating.
@@ -174,13 +172,6 @@ public interface LichessProfileEntity {
      * @return the rapid progress
      */
     Integer getRapidProg();
-
-    /**
-     * Checks if the user's rapid rating is provisional.
-     *
-     * @return true if the rapid rating is provisional, false otherwise
-     */
-    Boolean getRapidProv();
 
     /**
      * Gets the user's rapid rating.
@@ -217,6 +208,41 @@ public interface LichessProfileEntity {
      * @return the username
      */
     String getUsername();
+
+    /**
+     * Checks if the user's blitz rating is provisional.
+     *
+     * @return true if the blitz rating is provisional, false otherwise
+     */
+    Boolean isBlitzProv();
+
+    /**
+     * Checks if the user's bullet rating is provisional.
+     *
+     * @return true if the bullet rating is provisional, false otherwise
+     */
+    Boolean isBulletProv();
+
+    /**
+     * Checks if the user's classical rating is provisional.
+     *
+     * @return true if the classical rating is provisional, false otherwise
+     */
+    Boolean isClassicalProv();
+
+    /**
+     * Checks if the user's puzzle rating is provisional.
+     *
+     * @return true if the puzzle rating is provisional, false otherwise
+     */
+    Boolean isPuzzleProv();
+
+    /**
+     * Checks if the user's rapid rating is provisional.
+     *
+     * @return true if the rapid rating is provisional, false otherwise
+     */
+    Boolean isRapidProv();
 
     /**
      * Sets the number of blitz games played by the user.
@@ -331,7 +357,7 @@ public interface LichessProfileEntity {
      *
      * @param value the profile's unique identifier (ID)
      */
-    void setId(String value);
+    void setIdentifier(String value);
 
     /**
      * Sets the number of puzzle games solved by the user.

@@ -1,36 +1,40 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
+
+package es.org.cxn.backapp.service;
+
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * <p>
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * <p>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
  */
-
-package es.org.cxn.backapp.service;
 
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.exceptions.FederateStateServiceException;
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
+import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Service interface for managing federate state operations.
@@ -87,12 +91,14 @@ public interface FederateStateService {
      *                                       confirmation process
      * @throws UserServiceException          if there is an error related to the
      *                                       user service
+     * @throws PaymentsServiceException      if payment cannot be deleted.
      */
     PersistentFederateStateEntity confirmCancelFederate(String userDni)
-            throws FederateStateServiceException, UserServiceException;
+            throws FederateStateServiceException, UserServiceException, PaymentsServiceException;
 
     /**
-     * Federates a member by processing the provided DNI documents.
+     * Federate a member by processing the provided DNI documents. When federate
+     * member it also generates a new payment for the user.
      *
      * @param userEmail    the email of the user being federated
      * @param frontDniFile the front image of the DNI document
@@ -104,9 +110,11 @@ public interface FederateStateService {
      *                                       user service
      * @throws FederateStateServiceException if there is an error during the
      *                                       federate process
+     * @throws PaymentsServiceException      When payment cannot be generated.
      */
     PersistentFederateStateEntity federateMember(String userEmail, MultipartFile frontDniFile,
-            MultipartFile backDniFile, boolean autoRenewal) throws UserServiceException, FederateStateServiceException;
+            MultipartFile backDniFile, boolean autoRenewal)
+            throws UserServiceException, FederateStateServiceException, PaymentsServiceException;
 
     /**
      * Retrieves a list of all federate state entities.
