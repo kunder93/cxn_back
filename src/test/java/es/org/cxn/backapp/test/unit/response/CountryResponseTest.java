@@ -39,7 +39,23 @@ import org.junit.jupiter.api.Test;
 import es.org.cxn.backapp.model.form.responses.CountryResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
+/**
+ * Unit tests for the CountryResponse class. This test class ensures that the
+ * CountryResponse object accurately represents the country data retrieved from
+ * the persistence layer.
+ */
 class CountryResponseTest {
+
+    /**
+     * Constant representing the numeric code for Spain. Used in tests to validate
+     * the proper handling of country numeric codes in the response.
+     */
+    private static final int SPAIN_COUNTRY_NUMERIC_CODE = 724;
+
+    /**
+     * Mock object for the PersistentCountryEntity class. Used to simulate the
+     * behavior of the persistence layer and to verify response creation.
+     */
     private PersistentCountryEntity mockCountryEntity;
 
     @BeforeEach
@@ -48,7 +64,7 @@ class CountryResponseTest {
 
         when(mockCountryEntity.getShortName()).thenReturn("ES");
         when(mockCountryEntity.getFullName()).thenReturn("Spain");
-        when(mockCountryEntity.getNumericCode()).thenReturn(724);
+        when(mockCountryEntity.getNumericCode()).thenReturn(SPAIN_COUNTRY_NUMERIC_CODE);
         when(mockCountryEntity.getAlpha2Code()).thenReturn("ES");
         when(mockCountryEntity.getAlpha3Code()).thenReturn("ESP");
     }
@@ -73,7 +89,7 @@ class CountryResponseTest {
         assertNotNull(response, "CountryResponse should not be null");
         assertEquals("ES", response.shortName(), "Short name should match");
         assertEquals("Spain", response.fullName(), "Full name should match");
-        assertEquals(724, response.numericCode(), "Numeric code should match");
+        assertEquals(SPAIN_COUNTRY_NUMERIC_CODE, response.numericCode(), "Numeric code should match");
         assertEquals("ES", response.alpha2Code(), "Alpha2 code should match");
         assertEquals("ESP", response.alpha3Code(), "Alpha3 code should match");
     }
@@ -105,7 +121,8 @@ class CountryResponseTest {
         CountryResponse response = new CountryResponse(mockCountryEntity);
 
         // Assert
-        String expectedString = "CountryResponse[shortName=ES, fullName=Spain, numericCode=724, alpha2Code=ES, alpha3Code=ESP]";
+        String expectedString = "CountryResponse[shortName=ES, fullName=Spain, numericCode=724,"
+                + " alpha2Code=ES, alpha3Code=ESP]";
         assertEquals(expectedString, response.toString(),
                 "The toString() representation should match the expected format");
     }

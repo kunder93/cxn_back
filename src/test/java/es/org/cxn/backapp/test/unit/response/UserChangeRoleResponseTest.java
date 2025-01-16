@@ -40,35 +40,55 @@ import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
 
 class UserChangeRoleResponseTest {
+
+    /**
+     * The user name.
+     */
+    private static final String USER_NAME = "john_doe";
+
+    /**
+     * Helper method to attempt adding a role, throwing an exception if the list is
+     * unmodifiable.
+     *
+     * @param userRoles the list of user roles
+     */
+    private void attemptToAddRole(final List<UserRoleName> userRoles) {
+        userRoles.add(UserRoleName.ROLE_PRESIDENTE);
+    }
+
     @Test
     void testConstructorAndImmutability() {
+        final int sizeRolesList = 2;
+
         // Creating a sample user role list
         List<UserRoleName> roles = List.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
-        UserChangeRoleResponse response = new UserChangeRoleResponse("john_doe", roles);
+        UserChangeRoleResponse response = new UserChangeRoleResponse(USER_NAME, roles);
 
         // Ensure the user name is correct
-        assertEquals("john_doe", response.userName());
+        assertEquals(USER_NAME, response.userName());
 
-        // Ensure the roles list is unmodifiable
-        assertThrows(UnsupportedOperationException.class, () -> response.userRoles().add(UserRoleName.ROLE_PRESIDENTE));
+        // Check immutability of the roles list by validating it outside the lambda
+        List<UserRoleName> userRoles = response.userRoles();
+        assertThrows(UnsupportedOperationException.class, () -> attemptToAddRole(userRoles));
 
         // Verify the original roles list
-        assertEquals(2, response.userRoles().size());
-        assertTrue(response.userRoles().contains(UserRoleName.ROLE_ADMIN));
-        assertTrue(response.userRoles().contains(UserRoleName.ROLE_SOCIO));
+        assertEquals(sizeRolesList, userRoles.size());
+        assertTrue(userRoles.contains(UserRoleName.ROLE_ADMIN));
+        assertTrue(userRoles.contains(UserRoleName.ROLE_SOCIO));
     }
 
     @Test
     void testConstructorWithEmptyRoles() {
+        final int sizeRolesList = 0;
         // Creating an empty roles list
         List<UserRoleName> roles = List.of();
-        UserChangeRoleResponse response = new UserChangeRoleResponse("john_doe", roles);
+        UserChangeRoleResponse response = new UserChangeRoleResponse(USER_NAME, roles);
 
         // Ensure the user name is correct
-        assertEquals("john_doe", response.userName());
+        assertEquals(USER_NAME, response.userName());
 
         // Ensure the roles list is empty
-        assertEquals(0, response.userRoles().size());
+        assertEquals(sizeRolesList, response.userRoles().size());
     }
 
     @Test
@@ -76,10 +96,10 @@ class UserChangeRoleResponseTest {
         // Creating a list of multiple roles
         List<UserRoleName> roles = List.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO,
                 UserRoleName.ROLE_PRESIDENTE);
-        UserChangeRoleResponse response = new UserChangeRoleResponse("john_doe", roles);
+        UserChangeRoleResponse response = new UserChangeRoleResponse(USER_NAME, roles);
 
         // Ensure the user name is correct
-        assertEquals("john_doe", response.userName());
+        assertEquals(USER_NAME, response.userName());
 
         // Ensure the roles list is properly set
         assertEquals(3, response.userRoles().size());
@@ -90,38 +110,42 @@ class UserChangeRoleResponseTest {
 
     @Test
     void testConstructorWithOneRole() {
+        final int sizeRolesList = 1;
         // Creating a list with a single role
         List<UserRoleName> roles = List.of(UserRoleName.ROLE_ADMIN);
-        UserChangeRoleResponse response = new UserChangeRoleResponse("john_doe", roles);
+        UserChangeRoleResponse response = new UserChangeRoleResponse(USER_NAME, roles);
 
         // Ensure the user name is correct
-        assertEquals("john_doe", response.userName());
+        assertEquals(USER_NAME, response.userName());
 
         // Ensure the roles list contains the correct single element
-        assertEquals(1, response.userRoles().size());
+        assertEquals(sizeRolesList, response.userRoles().size());
         assertTrue(response.userRoles().contains(UserRoleName.ROLE_ADMIN));
     }
 
     @Test
     void testUserRoleModificationDoesNotAffectOriginal() {
+        final int sizeNotModifiedRolesList = 2;
         // Creating a sample user role list
         List<UserRoleName> roles = List.of(UserRoleName.ROLE_PRESIDENTE, UserRoleName.ROLE_CANDIDATO_SOCIO);
-        UserChangeRoleResponse response = new UserChangeRoleResponse("john_doe", roles);
+        UserChangeRoleResponse response = new UserChangeRoleResponse(USER_NAME, roles);
 
         // Getting the mutable list
         List<UserRoleName> userRoleCopy = response.userRole();
         userRoleCopy.add(UserRoleName.ROLE_ADMIN);
 
         // Ensure that modifying the copy doesn't affect the original list
-        assertEquals(2, response.userRoles().size());
+        assertEquals(sizeNotModifiedRolesList, response.userRoles().size());
         assertFalse(response.userRoles().contains(UserRoleName.ROLE_ADMIN));
     }
 
     @Test
     void testUserRoleReturnsCopy() {
+        final int sizeNotModifiedRolesList = 2;
+        final int sizeModifiedRolesList = 3;
         // Creating a sample user role list
         List<UserRoleName> roles = List.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
-        UserChangeRoleResponse response = new UserChangeRoleResponse("john_doe", roles);
+        UserChangeRoleResponse response = new UserChangeRoleResponse(USER_NAME, roles);
 
         // Getting a mutable copy of the roles list
         List<UserRoleName> copiedList = response.userRole();
@@ -130,11 +154,11 @@ class UserChangeRoleResponseTest {
         copiedList.add(UserRoleName.ROLE_PRESIDENTE);
 
         // Ensure the copied list is modified
-        assertEquals(3, copiedList.size());
+        assertEquals(sizeModifiedRolesList, copiedList.size());
         assertTrue(copiedList.contains(UserRoleName.ROLE_PRESIDENTE));
 
         // Ensure the original list is unchanged
-        assertEquals(2, response.userRoles().size());
+        assertEquals(sizeNotModifiedRolesList, response.userRoles().size());
         assertFalse(response.userRoles().contains(UserRoleName.ROLE_PRESIDENTE));
     }
 }

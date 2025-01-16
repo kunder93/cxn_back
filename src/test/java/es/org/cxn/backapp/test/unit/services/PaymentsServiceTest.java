@@ -67,22 +67,51 @@ import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.impl.DefaultPaymentsService;
 import jakarta.mail.MessagingException;
 
+/**
+ * Unit tests for the {@link DefaultPaymentsService}.
+ *
+ * This test class verifies the functionality of the payment service, including
+ * scenarios for handling payments, validating inputs, and ensuring proper
+ * interaction with dependencies such as repositories and email services.
+ *
+ * @see DefaultPaymentsService
+ */
 class PaymentsServiceTest {
 
+    /**
+     * Mocked repository for managing payment entities.
+     *
+     * @see PaymentsEntityRepository
+     */
     @Mock
     private PaymentsEntityRepository paymentsRepository;
 
+    /**
+     * Mocked repository for managing user entities.
+     *
+     * @see UserEntityRepository
+     */
     @Mock
     private UserEntityRepository userRepository;
 
+    /**
+     * Mocked email service for sending payment-related notifications.
+     *
+     * @see EmailService
+     */
     @Mock
     private EmailService emailService;
 
+    /**
+     * Service under test that handles payment operations.
+     *
+     * @see DefaultPaymentsService
+     */
     @InjectMocks
     private DefaultPaymentsService defaultPaymentsService;
 
     @Test
-    void cancelPayment_paymentAlreadyCancelled_throwsException() {
+    void cancelPaymentPaymentAlreadyCancelledThrowsException() {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
@@ -98,7 +127,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void cancelPayment_paymentDoesNotExist_throwsException() {
+    void cancelPaymentPaymentDoesNotExistThrowsException() {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         when(paymentsRepository.findById(paymentId)).thenReturn(Optional.empty());
@@ -110,7 +139,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void cancelPayment_paymentExists_updatesStateToCancelled() throws PaymentsServiceException {
+    void cancelPaymentPaymentExistsUpdatesStateToCancelled() throws PaymentsServiceException {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
@@ -129,7 +158,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void createPayment_amountGreaterThan100_throwsException() {
+    void createPaymentAmountGreaterThan100ThrowsException() {
         // Arrange
         BigDecimal amount = new BigDecimal("150"); // Amount greater than 100
         PaymentsCategory category = PaymentsCategory.MEMBERSHIP_PAYMENT;
@@ -144,7 +173,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void createPayment_invalidAmount_throwsException() {
+    void createPaymentInvalidAmountThrowsException() {
         // Arrange
         BigDecimal amount = new BigDecimal("-50"); // Invalid amount
         PaymentsCategory category = PaymentsCategory.MEMBERSHIP_PAYMENT;
@@ -159,7 +188,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void createPayment_validInput_createsPayment() throws PaymentsServiceException {
+    void createPaymentValidInputCreatesPayment() throws PaymentsServiceException {
         // Arrange
         BigDecimal amount = new BigDecimal("50");
         PaymentsCategory category = PaymentsCategory.MEMBERSHIP_PAYMENT;
@@ -192,7 +221,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void findPayment_paymentDoesNotExist_throwsPaymentsServiceException() {
+    void findPaymentPaymentDoesNotExistThrowsPaymentsServiceException() {
         // Arrange
         UUID paymentId = UUID.randomUUID();
 
@@ -209,7 +238,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void findPayment_paymentExists_returnsPaymentEntity() throws PaymentsServiceException {
+    void findPaymentPaymentExistsReturnsPaymentEntity() throws PaymentsServiceException {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
@@ -230,46 +259,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void getAllUsersWithPayments_usersExist_returnsMapWithPayments() {
-        // Arrange
-        PersistentUserEntity user1 = new PersistentUserEntity();
-        user1.setDni("12345");
-        PersistentUserEntity user2 = new PersistentUserEntity();
-        user2.setDni("67890");
-
-        PersistentPaymentsEntity payment1 = new PersistentPaymentsEntity();
-        payment1.setUserDni("12345");
-        payment1.setAmount(BigDecimal.valueOf(100.0));
-
-        PersistentPaymentsEntity payment2 = new PersistentPaymentsEntity();
-        payment2.setUserDni("67890");
-        payment2.setAmount(BigDecimal.valueOf(200.0));
-
-        // Mock the repositories
-        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
-        when(paymentsRepository.findByUserDni("12345")).thenReturn(List.of(payment1));
-        when(paymentsRepository.findByUserDni("67890")).thenReturn(List.of(payment2));
-
-        // Act
-        Map<String, List<PaymentDetails>> result = defaultPaymentsService.getAllUsersWithPayments();
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertTrue(result.containsKey("12345"));
-        assertTrue(result.containsKey("67890"));
-        assertEquals(1, result.get("12345").size());
-        assertEquals(1, result.get("67890").size());
-        assertEquals(BigDecimal.valueOf(100.0), result.get("12345").get(0).amount());
-        assertEquals(BigDecimal.valueOf(200.0), result.get("67890").get(0).amount());
-
-        verify(userRepository, times(1)).findAll();
-        verify(paymentsRepository, times(1)).findByUserDni("12345");
-        verify(paymentsRepository, times(1)).findByUserDni("67890");
-    }
-
-    @Test
-    void getAllUsersWithPayments_usersExistNoPayments_returnsMapWithEmptyLists() {
+    void getAllUsersWithPaymentsUsersExistNoPaymentsReturnsMapWithEmptyLists() {
         // Arrange
         PersistentUserEntity user1 = new PersistentUserEntity();
         user1.setDni("12345");
@@ -298,8 +288,48 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void makePayment_ioException_throwsPaymentsServiceException()
-            throws PaymentsServiceException, MessagingException, IOException {
+    void getAllUsersWithPaymentsUsersExistReturnsMapWithPayments() {
+        // Arrange
+        final var payment1Amount = 100.0;
+        final var payment2Amount = 200.0;
+        PersistentUserEntity user1 = new PersistentUserEntity();
+        user1.setDni("12345");
+        PersistentUserEntity user2 = new PersistentUserEntity();
+        user2.setDni("67890");
+
+        PersistentPaymentsEntity payment1 = new PersistentPaymentsEntity();
+        payment1.setUserDni("12345");
+        payment1.setAmount(BigDecimal.valueOf(payment1Amount));
+
+        PersistentPaymentsEntity payment2 = new PersistentPaymentsEntity();
+        payment2.setUserDni("67890");
+        payment2.setAmount(BigDecimal.valueOf(payment2Amount));
+
+        // Mock the repositories
+        when(userRepository.findAll()).thenReturn(List.of(user1, user2));
+        when(paymentsRepository.findByUserDni("12345")).thenReturn(List.of(payment1));
+        when(paymentsRepository.findByUserDni("67890")).thenReturn(List.of(payment2));
+
+        // Act
+        Map<String, List<PaymentDetails>> result = defaultPaymentsService.getAllUsersWithPayments();
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertTrue(result.containsKey("12345"));
+        assertTrue(result.containsKey("67890"));
+        assertEquals(1, result.get("12345").size());
+        assertEquals(1, result.get("67890").size());
+        assertEquals(BigDecimal.valueOf(payment1Amount), result.get("12345").get(0).amount());
+        assertEquals(BigDecimal.valueOf(payment2Amount), result.get("67890").get(0).amount());
+
+        verify(userRepository, times(1)).findAll();
+        verify(paymentsRepository, times(1)).findByUserDni("12345");
+        verify(paymentsRepository, times(1)).findByUserDni("67890");
+    }
+
+    @Test
+    void makePaymentIoExceptionThrowsPaymentsServiceException() throws MessagingException, IOException {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         LocalDateTime paymentDate = LocalDateTime.now();
@@ -345,7 +375,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void makePayment_messagingException_throwsPaymentsServiceException() throws MessagingException, IOException {
+    void makePaymentMessagingExceptionThrowsPaymentsServiceException() throws MessagingException, IOException {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         LocalDateTime paymentDate = LocalDateTime.now();
@@ -391,7 +421,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void makePayment_noUserFoundForDni_throwsPaymentsServiceException() throws PaymentsServiceException {
+    void makePaymentNoUserFoundForDniThrowsPaymentsServiceException() {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         LocalDateTime paymentDate = LocalDateTime.now();
@@ -422,7 +452,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void makePayment_paymentAlreadyPaid_throwsException() {
+    void makePaymentPaymentAlreadyPaidThrowsException() {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         LocalDateTime paymentDate = LocalDateTime.now();
@@ -439,8 +469,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void makePayment_paymentExists_updatesStateToPaid()
-            throws PaymentsServiceException, MessagingException, IOException {
+    void makePaymentPaymentExistsUpdatesStateToPaid() throws PaymentsServiceException, MessagingException, IOException {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         LocalDateTime paymentDate = LocalDateTime.now();
@@ -481,7 +510,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void makePayment_paymentNotFound_throwsException() {
+    void makePaymentPaymentNotFoundThrowsException() {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         LocalDateTime paymentDate = LocalDateTime.now();
@@ -495,7 +524,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void remove_paymentDoesNotExist_throwsPaymentsServiceException() {
+    void removePaymentDoesNotExistThrowsPaymentsServiceException() {
         // Arrange
         UUID paymentId = UUID.randomUUID();
 
@@ -510,7 +539,7 @@ class PaymentsServiceTest {
     }
 
     @Test
-    void remove_paymentExists_paymentIsRemoved() throws PaymentsServiceException {
+    void removePaymentExistsPaymentIsRemoved() throws PaymentsServiceException {
         // Arrange
         UUID paymentId = UUID.randomUUID();
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
@@ -526,8 +555,11 @@ class PaymentsServiceTest {
         verify(paymentsRepository, times(1)).deleteById(paymentId);
     }
 
+    /**
+     * Initializes mocks before each test method is executed.
+     */
     @BeforeEach
-    void setUp() {
+    void setup() {
         MockitoAnnotations.openMocks(this);
     }
 

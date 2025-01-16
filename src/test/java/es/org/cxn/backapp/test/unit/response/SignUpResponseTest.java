@@ -46,32 +46,74 @@ import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 
+/**
+ * Unit tests for the SignUpResponse class. This test class validates the
+ * behavior and functionality of the SignUpResponse object, ensuring it meets
+ * the expected requirements.
+ */
 class SignUpResponseTest {
+
+    /**
+     * Constant representing the user's date of birth. Used in test cases to verify
+     * birth date handling.
+     */
+    private static final LocalDate USER_BIRTH_DATE = LocalDate.of(1990, 1, 1);
+
+    /**
+     * Constant representing the user's DNI (Documento Nacional de Identidad). Used
+     * in test cases to validate DNI handling.
+     */
+    private static final String USER_DNI = "12345678";
+
+    /**
+     * Constant representing the user's name. Used in test cases to verify name
+     * handling.
+     */
+    private static final String USER_NAME = "John";
+
+    /**
+     * Constant representing the user's first surname. Used in test cases to verify
+     * first surname handling.
+     */
+    private static final String USER_FIRST_SURNAME = "Doe";
+
+    /**
+     * Constant representing the user's second surname. Used in test cases to verify
+     * second surname handling.
+     */
+    private static final String USER_SECOND_SURNAME = "Smith";
+
+    /**
+     * Constant representing the user's email address. Used in test cases to
+     * validate email handling.
+     */
+    private static final String USER_EMAIL = "john.doe@example.com";
+
+    /**
+     * Constant representing the user's gender. Used in test cases to validate
+     * gender handling.
+     */
+    private static final String USER_GENDER = "Male";
+
     @Test
     void testConstructor() {
         // Arrange
         Set<UserRoleName> roles = Set.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
-        String dni = "12345678";
-        String name = "John";
-        String firstSurname = "Doe";
-        String secondSurname = "Smith";
-        LocalDate birthDate = LocalDate.of(1990, 1, 1);
-        String gender = "Male";
-        String email = "john.doe@example.com";
+
         UserType kindMember = UserType.SOCIO_NUMERO;
 
         // Act
-        SignUpResponseForm form = new SignUpResponseForm(dni, name, firstSurname, secondSurname, birthDate, gender,
-                email, kindMember, roles);
+        SignUpResponseForm form = new SignUpResponseForm(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
+                USER_BIRTH_DATE, USER_GENDER, USER_EMAIL, kindMember, roles);
 
         // Assert
-        assertEquals(dni, form.dni());
-        assertEquals(name, form.name());
-        assertEquals(firstSurname, form.firstSurname());
-        assertEquals(secondSurname, form.secondSurname());
-        assertEquals(birthDate, form.birthDate());
-        assertEquals(gender, form.gender());
-        assertEquals(email, form.email());
+        assertEquals(USER_DNI, form.dni());
+        assertEquals(USER_NAME, form.name());
+        assertEquals(USER_FIRST_SURNAME, form.firstSurname());
+        assertEquals(USER_SECOND_SURNAME, form.secondSurname());
+        assertEquals(USER_BIRTH_DATE, form.birthDate());
+        assertEquals(USER_GENDER, form.gender());
+        assertEquals(USER_EMAIL, form.email());
         assertEquals(kindMember, form.kindMember());
         assertEquals(roles, form.userRoles());
         // Verify immutability of userRoles
@@ -83,7 +125,7 @@ class SignUpResponseTest {
     void testEmptyRolesInEntity() {
         // Arrange
         PersistentUserEntity userEntity = mock(PersistentUserEntity.class);
-        when(userEntity.getDni()).thenReturn("12345678");
+        when(userEntity.getDni()).thenReturn(USER_DNI);
         when(userEntity.getProfile()).thenReturn(mock(UserProfile.class));
         when(userEntity.getRoles()).thenReturn(Set.of());
 
@@ -105,14 +147,14 @@ class SignUpResponseTest {
         PersistentRoleEntity roleEntityMock = mock(PersistentRoleEntity.class);
         Set<PersistentRoleEntity> roleEntities = Set.of(roleEntityMock);
 
-        when(userEntity.getDni()).thenReturn("12345678");
+        when(userEntity.getDni()).thenReturn(USER_DNI);
         when(userEntity.getProfile()).thenReturn(userProfile);
-        when(userProfile.getName()).thenReturn("John");
-        when(userProfile.getFirstSurname()).thenReturn("Doe");
-        when(userProfile.getSecondSurname()).thenReturn("Smith");
-        when(userProfile.getBirthDate()).thenReturn(LocalDate.of(1990, 1, 1));
-        when(userProfile.getGender()).thenReturn("Male");
-        when(userEntity.getEmail()).thenReturn("john.doe@example.com");
+        when(userProfile.getName()).thenReturn(USER_NAME);
+        when(userProfile.getFirstSurname()).thenReturn(USER_FIRST_SURNAME);
+        when(userProfile.getSecondSurname()).thenReturn(USER_SECOND_SURNAME);
+        when(userProfile.getBirthDate()).thenReturn(USER_BIRTH_DATE);
+        when(userProfile.getGender()).thenReturn(USER_GENDER);
+        when(userEntity.getEmail()).thenReturn(USER_EMAIL);
         when(userEntity.getKindMember()).thenReturn(UserType.SOCIO_NUMERO);
         when(userEntity.getRoles()).thenReturn(roleEntities);
 
@@ -123,13 +165,13 @@ class SignUpResponseTest {
         SignUpResponseForm form = SignUpResponseForm.fromEntity(userEntity);
 
         // Assert
-        assertEquals("12345678", form.dni());
-        assertEquals("John", form.name());
-        assertEquals("Doe", form.firstSurname());
-        assertEquals("Smith", form.secondSurname());
-        assertEquals(LocalDate.of(1990, 1, 1), form.birthDate());
-        assertEquals("Male", form.gender());
-        assertEquals("john.doe@example.com", form.email());
+        assertEquals(USER_DNI, form.dni());
+        assertEquals(USER_NAME, form.name());
+        assertEquals(USER_FIRST_SURNAME, form.firstSurname());
+        assertEquals(USER_SECOND_SURNAME, form.secondSurname());
+        assertEquals(USER_BIRTH_DATE, form.birthDate());
+        assertEquals(USER_GENDER, form.gender());
+        assertEquals(USER_EMAIL, form.email());
         assertEquals(UserType.SOCIO_NUMERO, form.kindMember());
         assertTrue(form.userRoles().contains(UserRoleName.ROLE_ADMIN));
 
@@ -142,8 +184,8 @@ class SignUpResponseTest {
     void testImmutabilityOfUserRoles() {
         // Arrange
         Set<UserRoleName> roles = Set.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
-        SignUpResponseForm form = new SignUpResponseForm("12345678", "John", "Doe", "Smith", LocalDate.of(1990, 1, 1),
-                "Male", "john.doe@example.com", UserType.SOCIO_NUMERO, roles);
+        SignUpResponseForm form = new SignUpResponseForm(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
+                USER_BIRTH_DATE, USER_GENDER, USER_EMAIL, UserType.SOCIO_NUMERO, roles);
 
         // Act & Assert
         assertThrows(UnsupportedOperationException.class, () -> form.userRoles().clear(),

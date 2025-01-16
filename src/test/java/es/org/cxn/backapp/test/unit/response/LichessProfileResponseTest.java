@@ -37,12 +37,97 @@ import org.junit.jupiter.api.Test;
 
 import es.org.cxn.backapp.model.form.responses.LichessProfileResponse;
 
+/**
+ * Unit tests for the LichessProfileResponse class. This test class validates
+ * the functionality and behavior of the LichessProfileResponse object, ensuring
+ * that user data and game-related attributes are correctly handled.
+ */
 class LichessProfileResponseTest {
+
+    /**
+     * Constant representing the Elo rating for Game 1. Used in test cases to
+     * validate the Elo rating for the first game type.
+     */
+    private static final int GAME_1_ELO = 1800;
+
+    /**
+     * Constant representing the number of games played for Game 1. Used in test
+     * cases to validate the number of games for the first game type.
+     */
+    private static final int GAME_1_AMOUNT_GAMES = 50;
+
+    /**
+     * Constant representing the Elo rating for Game 2. Used in test cases to
+     * validate the Elo rating for the second game type.
+     */
+    private static final int GAME_2_ELO = 1800;
+
+    /**
+     * Constant representing the number of games played for Game 2. Used in test
+     * cases to validate the number of games for the second game type.
+     */
+    private static final int GAME_2_AMOUNT_GAMES = 50;
+
+    /**
+     * Constant representing the user's real name. Used in test cases to verify the
+     * handling of the user's name.
+     */
+    private static final String USER_NAME = "John Doe";
+
+    /**
+     * Constant representing the Lichess username of the user. Used in test cases to
+     * validate the handling of the Lichess username.
+     */
+    private static final String LICHESS_USER_NAME = "JD123";
+
+    /**
+     * Constant representing the timestamp of the last update to the Lichess
+     * profile. Used in test cases to validate the handling of profile update
+     * timestamps.
+     */
+    private static final LocalDateTime LICHESS_PROFILE_LAST_UPDATE = LocalDateTime.now();
+
+    /**
+     * Constant representing the Elo rating for Blitz games. Used in test cases to
+     * validate the Elo rating for Blitz game type.
+     */
+    private static final int BLITZ_GAME_ELO = 2000;
+
+    /**
+     * Constant representing the Elo rating for other games. Used in test cases to
+     * validate the Elo rating for general game types.
+     */
+    private static final int OTHER_GAME_ELO = 1500;
+
+    /**
+     * Constant representing the Elo rating for Bullet games. Used in test cases to
+     * validate the Elo rating for Bullet game type.
+     */
+    private static final int BULLET_GAME_ELO = 1900;
+
+    /**
+     * Constant representing the Elo rating for Rapid games. Used in test cases to
+     * validate the Elo rating for Rapid game type.
+     */
+    private static final int RAPID_GAME_ELO = 2100;
+
+    /**
+     * Constant representing the Elo rating for Classical games. Used in test cases
+     * to validate the Elo rating for Classical game type.
+     */
+    private static final int CLASSICAL_GAME_ELO = 1800;
+
+    /**
+     * Constant representing the Elo rating for Puzzle games. Used in test cases to
+     * validate the Elo rating for Puzzle game type.
+     */
+    private static final int PUZZLE_GAME_ELO = 2200;
+
     @Test
     void testEqualsAndHashCodeForGame() {
         // Arrange
-        LichessProfileResponse.Game game1 = new LichessProfileResponse.Game(1800, 50, false);
-        LichessProfileResponse.Game game2 = new LichessProfileResponse.Game(1800, 50, false);
+        LichessProfileResponse.Game game1 = new LichessProfileResponse.Game(GAME_1_ELO, GAME_1_AMOUNT_GAMES, false);
+        LichessProfileResponse.Game game2 = new LichessProfileResponse.Game(GAME_2_ELO, GAME_2_AMOUNT_GAMES, false);
 
         // Act & Assert
         assertEquals(game1, game2, "Game records with the same data should be equal");
@@ -52,14 +137,14 @@ class LichessProfileResponseTest {
     @Test
     void testEqualsAndHashCodeForLichessProfileResponse() {
         // Arrange
-        LocalDateTime now = LocalDateTime.now();
-        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(2000, 50, false);
+        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(BLITZ_GAME_ELO, GAME_1_AMOUNT_GAMES,
+                false);
 
-        LichessProfileResponse profile1 = new LichessProfileResponse("John Doe", "JD123", now, blitzGame, blitzGame,
-                blitzGame, blitzGame, blitzGame);
+        LichessProfileResponse profile1 = new LichessProfileResponse(USER_NAME, LICHESS_USER_NAME,
+                LICHESS_PROFILE_LAST_UPDATE, blitzGame, blitzGame, blitzGame, blitzGame, blitzGame);
 
-        LichessProfileResponse profile2 = new LichessProfileResponse("John Doe", "JD123", now, blitzGame, blitzGame,
-                blitzGame, blitzGame, blitzGame);
+        LichessProfileResponse profile2 = new LichessProfileResponse(USER_NAME, LICHESS_USER_NAME,
+                LICHESS_PROFILE_LAST_UPDATE, blitzGame, blitzGame, blitzGame, blitzGame, blitzGame);
 
         // Act & Assert
         assertEquals(profile1, profile2, "Profiles with the same data should be equal");
@@ -80,32 +165,36 @@ class LichessProfileResponseTest {
     @Test
     void testGameRecordCreation() {
         // Act
-        LichessProfileResponse.Game game = new LichessProfileResponse.Game(1500, 25, true);
+        LichessProfileResponse.Game game = new LichessProfileResponse.Game(OTHER_GAME_ELO, GAME_1_AMOUNT_GAMES, true);
 
         // Assert
-        assertEquals(1500, game.elo());
-        assertEquals(25, game.amountOfGames());
+        assertEquals(OTHER_GAME_ELO, game.elo());
+        assertEquals(GAME_1_AMOUNT_GAMES, game.amountOfGames());
         assertTrue(game.isProvisional());
     }
 
     @Test
     void testLichessProfileResponseCreation() {
         // Arrange
-        LocalDateTime now = LocalDateTime.now();
-        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(2000, 50, false);
-        LichessProfileResponse.Game bulletGame = new LichessProfileResponse.Game(1900, 100, true);
-        LichessProfileResponse.Game rapidGame = new LichessProfileResponse.Game(2100, 30, false);
-        LichessProfileResponse.Game classicalGame = new LichessProfileResponse.Game(1800, 10, false);
-        LichessProfileResponse.Game puzzleGame = new LichessProfileResponse.Game(2200, 200, false);
+        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(BLITZ_GAME_ELO, GAME_1_AMOUNT_GAMES,
+                false);
+        LichessProfileResponse.Game bulletGame = new LichessProfileResponse.Game(BULLET_GAME_ELO, GAME_1_AMOUNT_GAMES,
+                true);
+        LichessProfileResponse.Game rapidGame = new LichessProfileResponse.Game(RAPID_GAME_ELO, GAME_1_AMOUNT_GAMES,
+                false);
+        LichessProfileResponse.Game classicalGame = new LichessProfileResponse.Game(CLASSICAL_GAME_ELO,
+                GAME_1_AMOUNT_GAMES, false);
+        LichessProfileResponse.Game puzzleGame = new LichessProfileResponse.Game(PUZZLE_GAME_ELO, GAME_1_AMOUNT_GAMES,
+                false);
 
         // Act
-        LichessProfileResponse profile = new LichessProfileResponse("John Doe", "JD123", now, blitzGame, bulletGame,
-                rapidGame, classicalGame, puzzleGame);
+        LichessProfileResponse profile = new LichessProfileResponse(USER_NAME, LICHESS_USER_NAME,
+                LICHESS_PROFILE_LAST_UPDATE, blitzGame, bulletGame, rapidGame, classicalGame, puzzleGame);
 
         // Assert
-        assertEquals("John Doe", profile.userName());
-        assertEquals("JD123", profile.lichessUserName());
-        assertEquals(now, profile.lastUpdate());
+        assertEquals(USER_NAME, profile.userName());
+        assertEquals(LICHESS_USER_NAME, profile.lichessUserName());
+        assertEquals(LICHESS_PROFILE_LAST_UPDATE, profile.lastUpdate());
         assertEquals(blitzGame, profile.blitzGame());
         assertEquals(bulletGame, profile.bulletGame());
         assertEquals(rapidGame, profile.rapidGame());
@@ -132,17 +221,18 @@ class LichessProfileResponseTest {
     @Test
     void testToStringForLichessProfileResponse() {
         // Arrange
-        LocalDateTime now = LocalDateTime.now();
-        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(2000, 50, false);
-        LichessProfileResponse profile = new LichessProfileResponse("John Doe", "JD123", now, blitzGame, blitzGame,
-                blitzGame, blitzGame, blitzGame);
+        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(BLITZ_GAME_ELO, GAME_1_AMOUNT_GAMES,
+                false);
+        LichessProfileResponse profile = new LichessProfileResponse(USER_NAME, LICHESS_USER_NAME,
+                LICHESS_PROFILE_LAST_UPDATE, blitzGame, blitzGame, blitzGame, blitzGame, blitzGame);
 
         // Act
         String profileString = profile.toString();
 
         // Assert
-        assertTrue(profileString.contains("John Doe"), "ToString should include the user name");
-        assertTrue(profileString.contains("JD123"), "ToString should include the Lichess user name");
-        assertTrue(profileString.contains(now.toString()), "ToString should include the last update");
+        assertTrue(profileString.contains(USER_NAME), "ToString should include the user name");
+        assertTrue(profileString.contains(LICHESS_USER_NAME), "ToString should include the Lichess user name");
+        assertTrue(profileString.contains(LICHESS_PROFILE_LAST_UPDATE.toString()),
+                "ToString should include the last update");
     }
 }

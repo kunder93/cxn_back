@@ -41,7 +41,41 @@ import org.junit.jupiter.api.Test;
 import es.org.cxn.backapp.model.form.responses.CreatedActivityResponse;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 
+/**
+ * Unit tests for the CreatedActivityResponse class. This test class validates
+ * the proper functionality of the CreatedActivityResponse object, ensuring that
+ * it accurately represents the response structure for created activities.
+ */
 class CreatedActivityResponseTest {
+
+    /**
+     * Constant representing the start date and time of the activity. Used to test
+     * the proper handling of the activity's start date and time in the response.
+     */
+    private static final LocalDateTime ACTIVITY_START_DATE = LocalDateTime.of(2025, 5, 15, 9, 0);
+
+    /**
+     * Constant representing the end date and time of the activity. Used to test the
+     * proper handling of the activity's end date and time in the response.
+     */
+    private static final LocalDateTime ACTIVITY_END_DATE = LocalDateTime.of(2025, 5, 15, 18, 0);
+
+    /**
+     * Constant representing the title of the activity. Used to test the accurate
+     * representation of the activity's title in the response.
+     */
+    private static final String ACTIVITY_TITLE = "Chess Tournament";
+
+    /**
+     * Constant representing the description of the activity. Used to test the
+     * accurate representation of the activity's description in the response.
+     */
+    private static final String ACTIVITY_DESCRIPTION = "A chess competition for beginners.";
+
+    /**
+     * Mock object for the PersistentActivityEntity class. Used to simulate the
+     * persistence layer behavior and to validate response creation.
+     */
     private PersistentActivityEntity activityEntityMock;
 
     @BeforeEach
@@ -52,18 +86,15 @@ class CreatedActivityResponseTest {
     @Test
     void testCreatedActivityResponseConstructor() {
         // Arrange
-        String title = "Chess Tournament";
-        String description = "A chess competition for beginners.";
-        LocalDateTime startDate = LocalDateTime.of(2025, 5, 15, 9, 0);
-        LocalDateTime endDate = LocalDateTime.of(2025, 5, 15, 18, 0);
+
         String category = "Tournament";
         LocalDateTime createdAt = LocalDateTime.now();
 
         // Mock behavior
-        when(activityEntityMock.getTitle()).thenReturn(title);
-        when(activityEntityMock.getDescription()).thenReturn(description);
-        when(activityEntityMock.getStartDate()).thenReturn(startDate);
-        when(activityEntityMock.getEndDate()).thenReturn(endDate);
+        when(activityEntityMock.getTitle()).thenReturn(ACTIVITY_TITLE);
+        when(activityEntityMock.getDescription()).thenReturn(ACTIVITY_DESCRIPTION);
+        when(activityEntityMock.getStartDate()).thenReturn(ACTIVITY_START_DATE);
+        when(activityEntityMock.getEndDate()).thenReturn(ACTIVITY_END_DATE);
         when(activityEntityMock.getCategory()).thenReturn(category);
         when(activityEntityMock.getCreatedAt()).thenReturn(createdAt);
 
@@ -71,10 +102,10 @@ class CreatedActivityResponseTest {
         CreatedActivityResponse response = new CreatedActivityResponse(activityEntityMock);
 
         // Assert
-        assertEquals(title, response.title());
-        assertEquals(description, response.description());
-        assertEquals(startDate, response.startDate());
-        assertEquals(endDate, response.endDate());
+        assertEquals(ACTIVITY_TITLE, response.title());
+        assertEquals(ACTIVITY_DESCRIPTION, response.description());
+        assertEquals(ACTIVITY_START_DATE, response.startDate());
+        assertEquals(ACTIVITY_END_DATE, response.endDate());
         assertEquals(category, response.category());
         assertEquals(createdAt, response.createdAt());
     }
@@ -82,18 +113,15 @@ class CreatedActivityResponseTest {
     @Test
     void testCreatedActivityResponseEmptyDescription() {
         // Arrange
-        String title = "Chess Workshop";
-        String description = "";
-        LocalDateTime startDate = LocalDateTime.of(2025, 6, 1, 10, 0);
-        LocalDateTime endDate = LocalDateTime.of(2025, 6, 1, 12, 0);
+
         String category = "Workshop";
         LocalDateTime createdAt = LocalDateTime.now();
 
         // Mock behavior
-        when(activityEntityMock.getTitle()).thenReturn(title);
-        when(activityEntityMock.getDescription()).thenReturn(description);
-        when(activityEntityMock.getStartDate()).thenReturn(startDate);
-        when(activityEntityMock.getEndDate()).thenReturn(endDate);
+        when(activityEntityMock.getTitle()).thenReturn(ACTIVITY_TITLE);
+        when(activityEntityMock.getDescription()).thenReturn(ACTIVITY_DESCRIPTION);
+        when(activityEntityMock.getStartDate()).thenReturn(ACTIVITY_START_DATE);
+        when(activityEntityMock.getEndDate()).thenReturn(ACTIVITY_END_DATE);
         when(activityEntityMock.getCategory()).thenReturn(category);
         when(activityEntityMock.getCreatedAt()).thenReturn(createdAt);
 
@@ -101,10 +129,10 @@ class CreatedActivityResponseTest {
         CreatedActivityResponse response = new CreatedActivityResponse(activityEntityMock);
 
         // Assert
-        assertEquals(title, response.title());
-        assertEquals(description, response.description()); // Description should be empty
-        assertEquals(startDate, response.startDate());
-        assertEquals(endDate, response.endDate());
+        assertEquals(ACTIVITY_TITLE, response.title());
+        assertEquals(ACTIVITY_DESCRIPTION, response.description()); // Description should be empty
+        assertEquals(ACTIVITY_START_DATE, response.startDate());
+        assertEquals(ACTIVITY_END_DATE, response.endDate());
         assertEquals(category, response.category());
         assertEquals(createdAt, response.createdAt());
     }
@@ -112,18 +140,15 @@ class CreatedActivityResponseTest {
     @Test
     void testCreatedActivityResponseNullCategory() {
         // Arrange
-        String title = "Chess Show";
-        String description = "An exhibition of chess matches.";
-        LocalDateTime startDate = LocalDateTime.of(2025, 7, 1, 15, 0);
-        LocalDateTime endDate = LocalDateTime.of(2025, 7, 1, 17, 0);
+
         String category = null;
         LocalDateTime createdAt = LocalDateTime.now();
 
         // Mock behavior
-        when(activityEntityMock.getTitle()).thenReturn(title);
-        when(activityEntityMock.getDescription()).thenReturn(description);
-        when(activityEntityMock.getStartDate()).thenReturn(startDate);
-        when(activityEntityMock.getEndDate()).thenReturn(endDate);
+        when(activityEntityMock.getTitle()).thenReturn(ACTIVITY_TITLE);
+        when(activityEntityMock.getDescription()).thenReturn(ACTIVITY_DESCRIPTION);
+        when(activityEntityMock.getStartDate()).thenReturn(ACTIVITY_START_DATE);
+        when(activityEntityMock.getEndDate()).thenReturn(ACTIVITY_END_DATE);
         when(activityEntityMock.getCategory()).thenReturn(category);
         when(activityEntityMock.getCreatedAt()).thenReturn(createdAt);
 
@@ -131,10 +156,10 @@ class CreatedActivityResponseTest {
         CreatedActivityResponse response = new CreatedActivityResponse(activityEntityMock);
 
         // Assert
-        assertEquals(title, response.title());
-        assertEquals(description, response.description());
-        assertEquals(startDate, response.startDate());
-        assertEquals(endDate, response.endDate());
+        assertEquals(ACTIVITY_TITLE, response.title());
+        assertEquals(ACTIVITY_DESCRIPTION, response.description());
+        assertEquals(ACTIVITY_START_DATE, response.startDate());
+        assertEquals(ACTIVITY_END_DATE, response.endDate());
         assertNull(response.category()); // Category should be null
         assertEquals(createdAt, response.createdAt());
     }
@@ -149,18 +174,16 @@ class CreatedActivityResponseTest {
     @Test
     void testCreatedActivityResponseNullStartDate() {
         // Arrange
-        String title = "Chess Class";
-        String description = "A class for chess enthusiasts.";
+
         LocalDateTime startDate = null;
-        LocalDateTime endDate = LocalDateTime.of(2025, 5, 20, 16, 0);
         String category = "Class";
         LocalDateTime createdAt = LocalDateTime.now();
 
         // Mock behavior
-        when(activityEntityMock.getTitle()).thenReturn(title);
-        when(activityEntityMock.getDescription()).thenReturn(description);
+        when(activityEntityMock.getTitle()).thenReturn(ACTIVITY_TITLE);
+        when(activityEntityMock.getDescription()).thenReturn(ACTIVITY_DESCRIPTION);
         when(activityEntityMock.getStartDate()).thenReturn(startDate);
-        when(activityEntityMock.getEndDate()).thenReturn(endDate);
+        when(activityEntityMock.getEndDate()).thenReturn(ACTIVITY_END_DATE);
         when(activityEntityMock.getCategory()).thenReturn(category);
         when(activityEntityMock.getCreatedAt()).thenReturn(createdAt);
 
@@ -168,10 +191,10 @@ class CreatedActivityResponseTest {
         CreatedActivityResponse response = new CreatedActivityResponse(activityEntityMock);
 
         // Assert
-        assertEquals(title, response.title());
-        assertEquals(description, response.description());
+        assertEquals(ACTIVITY_TITLE, response.title());
+        assertEquals(ACTIVITY_DESCRIPTION, response.description());
         assertNull(response.startDate()); // Start date should be null
-        assertEquals(endDate, response.endDate());
+        assertEquals(ACTIVITY_END_DATE, response.endDate());
         assertEquals(category, response.category());
         assertEquals(createdAt, response.createdAt());
     }

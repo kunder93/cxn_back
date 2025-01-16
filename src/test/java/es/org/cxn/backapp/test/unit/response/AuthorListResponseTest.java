@@ -45,9 +45,36 @@ import es.org.cxn.backapp.model.form.responses.AuthorListResponse;
 import es.org.cxn.backapp.model.form.responses.AuthorResponse;
 import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 
+/**
+ * Unit tests for the {@link AuthorListResponse} class.
+ *
+ * This class contains tests that validate the behavior and functionality of the
+ * {@link AuthorListResponse} class. It ensures that the class correctly handles
+ * a list of authors and their associated entities. The tests focus on verifying
+ * the data processing, transformation, and response generation for multiple
+ * authors.
+ */
 class AuthorListResponseTest {
+
+    /**
+     * A mock instance of {@link PersistentAuthorEntity} representing the first
+     * author. This mock is used in tests to simulate an author entity and verify
+     * the behavior of the response class.
+     */
     private PersistentAuthorEntity authorEntityMock1;
+
+    /**
+     * A mock instance of {@link PersistentAuthorEntity} representing the second
+     * author. This mock is used in tests to simulate a second author entity and
+     * validate how the list of authors is processed.
+     */
     private PersistentAuthorEntity authorEntityMock2;
+
+    /**
+     * A list of {@link AuthorEntity} objects representing the authors to be tested.
+     * This list is used to test the handling of multiple authors and ensure correct
+     * processing of author data.
+     */
     private List<AuthorEntity> authorEntities;
 
     @BeforeEach

@@ -43,6 +43,19 @@ import es.org.cxn.backapp.model.form.responses.CountryResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
 class CountryListResponseTest {
+
+    /**
+     * Constant representing the numeric code for Spain. Used in tests to validate
+     * the proper handling of country numeric codes in the response.
+     */
+    private static final int SPAIN_COUNTRY_NUMERIC_CODE = 724;
+
+    /**
+     * Constant representing the numeric code for United States. Used in tests to
+     * validate the proper handling of country numeric codes in the response.
+     */
+    private static final int US_COUNTRY_NUMERIC_CODE = 840;
+
     @Test
     void testConstructorWithEmptyList() {
         // Arrange
@@ -68,66 +81,71 @@ class CountryListResponseTest {
 
     @Test
     void testConstructorWithValidList() {
+        final int countryListSize = 2;
         // Arrange
         List<CountryResponse> validList = new ArrayList<>();
-        validList.add(new CountryResponse("US", "United States", 840, "US", "USA"));
-        validList.add(new CountryResponse("ES", "Spain", 724, "ES", "ESP"));
+        validList.add(new CountryResponse("US", "United States", US_COUNTRY_NUMERIC_CODE, "US", "USA"));
+        validList.add(new CountryResponse("ES", "Spain", SPAIN_COUNTRY_NUMERIC_CODE, "ES", "ESP"));
 
         // Act
         CountryListResponse response = new CountryListResponse(validList);
 
         // Assert
-        assertEquals(2, response.countryList().size());
+        assertEquals(countryListSize, response.countryList().size());
         assertEquals("US", response.countryList().get(0).shortName());
         assertEquals("United States", response.countryList().get(0).fullName());
-        assertEquals(840, response.countryList().get(0).numericCode());
+        assertEquals(US_COUNTRY_NUMERIC_CODE, response.countryList().get(0).numericCode());
         assertEquals("US", response.countryList().get(0).alpha2Code());
         assertEquals("USA", response.countryList().get(0).alpha3Code());
     }
 
     @Test
     void testDefensiveCopyInConstructor() {
+        final int countryListSize = 1;
+
         // Arrange
         List<CountryResponse> modifiableList = new ArrayList<>();
-        modifiableList.add(new CountryResponse("US", "United States", 840, "US", "USA"));
+        modifiableList.add(new CountryResponse("US", "United States", US_COUNTRY_NUMERIC_CODE, "US", "USA"));
 
         CountryListResponse response = new CountryListResponse(modifiableList);
 
         // Act
-        modifiableList.add(new CountryResponse("ES", "Spain", 724, "ES", "ESP"));
+        modifiableList.add(new CountryResponse("ES", "Spain", SPAIN_COUNTRY_NUMERIC_CODE, "ES", "ESP"));
 
         // Assert
-        assertEquals(1, response.countryList().size()); // Original list remains unchanged
+        assertEquals(countryListSize, response.countryList().size()); // Original list remains unchanged
     }
 
     @Test
     void testDefensiveCopyInGetter() {
         // Arrange
         List<CountryResponse> validList = new ArrayList<>();
-        validList.add(new CountryResponse("US", "United States", 840, "US", "USA"));
+        validList.add(new CountryResponse("US", "United States", US_COUNTRY_NUMERIC_CODE, "US", "USA"));
 
         CountryListResponse response = new CountryListResponse(validList);
 
         // Act & Assert
-        assertThrows(UnsupportedOperationException.class, () -> {
-            response.countryList().add(new CountryResponse("ES", "Spain", 724, "ES", "ESP"));
-        });
+        assertThrows(UnsupportedOperationException.class, () -> 
+            response.countryList().add(new CountryResponse("ES", "Spain", SPAIN_COUNTRY_NUMERIC_CODE, "ES", "ESP"))
+        );
     }
+
 
     @Test
     void testFromPersistentCountryEntity() {
+        final int countryListSize = 2;
         // Arrange
         PersistentCountryEntity entity1 = new PersistentCountryEntity();
         entity1.setShortName("US");
         entity1.setFullName("United States");
-        entity1.setNumericCode(840);
+        entity1.setNumericCode(US_COUNTRY_NUMERIC_CODE);
         entity1.setAlpha2Code("US");
         entity1.setAlpha3Code("USA");
 
         PersistentCountryEntity entity2 = new PersistentCountryEntity();
         entity2.setShortName("ES");
         entity2.setFullName("Spain");
-        entity2.setNumericCode(724);
+        entity2.setNumericCode(SPAIN_COUNTRY_NUMERIC_CODE);
         entity2.setAlpha2Code("ES");
         entity2.setAlpha3Code("ESP");
 
@@ -138,17 +156,17 @@ class CountryListResponseTest {
 
         // Assert
         assertNotNull(response.countryList());
-        assertEquals(2, response.countryList().size());
+        assertEquals(countryListSize, response.countryList().size());
 
         assertEquals("US", response.countryList().get(0).shortName());
         assertEquals("United States", response.countryList().get(0).fullName());
-        assertEquals(840, response.countryList().get(0).numericCode());
+        assertEquals(US_COUNTRY_NUMERIC_CODE, response.countryList().get(0).numericCode());
         assertEquals("US", response.countryList().get(0).alpha2Code());
         assertEquals("USA", response.countryList().get(0).alpha3Code());
 
         assertEquals("ES", response.countryList().get(1).shortName());
         assertEquals("Spain", response.countryList().get(1).fullName());
-        assertEquals(724, response.countryList().get(1).numericCode());
+        assertEquals(SPAIN_COUNTRY_NUMERIC_CODE, response.countryList().get(1).numericCode());
         assertEquals("ES", response.countryList().get(1).alpha2Code());
         assertEquals("ESP", response.countryList().get(1).alpha3Code());
     }

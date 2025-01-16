@@ -375,13 +375,13 @@ class LichessServiceTest {
     private PersistentOAuthAuthorizationRequestEntity authRequestEntity;
 
     @Test
-    void getAuthToken_noLichessAuth_throwsLichessServiceException() throws LichessServiceException {
+    void getAuthTokenNoLichessAuthThrowsLichessServiceException() {
         // Arrange
         String userEmail = "user@example.com";
 
         // Mock the getUserByEmail method to return a user entity without Lichess
         // authentication data
-        PersistentUserEntity userEntity = mock(PersistentUserEntity.class);
+        userEntity = mock(PersistentUserEntity.class);
         when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(userEntity));
         when(userEntity.getLichessAuth()).thenReturn(null);
 
@@ -395,12 +395,12 @@ class LichessServiceTest {
     }
 
     @Test
-    void getAuthToken_tokenExpired_throwsLichessServiceException() throws LichessServiceException {
+    void getAuthTokenTokenExpiredThrowsLichessServiceException() {
         // Arrange
         String userEmail = "user@example.com";
 
         // Mock the user entity with expired authentication data
-        PersistentUserEntity userEntity = mock(PersistentUserEntity.class);
+        userEntity = mock(PersistentUserEntity.class);
         PersistentLichessAuthEntity userAuth = mock(PersistentLichessAuthEntity.class);
         LocalDateTime expiredDate = LocalDateTime.now().minusDays(1); // Expired token
         when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(userEntity));
@@ -419,13 +419,13 @@ class LichessServiceTest {
     }
 
     @Test
-    void getAuthToken_validToken_returnsAccessToken() throws LichessServiceException {
+    void getAuthTokenValidTokenReturnsAccessToken() throws LichessServiceException {
         // Arrange
         String userEmail = "user@example.com";
         String expectedToken = "valid-access-token";
 
         // Mock the user entity with valid authentication data
-        PersistentUserEntity userEntity = mock(PersistentUserEntity.class);
+        userEntity = mock(PersistentUserEntity.class);
         PersistentLichessAuthEntity userAuth = mock(PersistentLichessAuthEntity.class);
         LocalDateTime validExpirationDate = LocalDateTime.now().plusDays(1); // Valid expiration date (in the future)
 

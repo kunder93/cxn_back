@@ -188,7 +188,7 @@ final class PaymentsServiceIT {
                 "Cancelling a non-existing payment should throw a PaymentsServiceException.");
 
         // Assert: Verify the exception message
-        final String expectedMessage = "No payment with id: " + notExistingPaymentId + " found.";
+        final String expectedMessage = "Payment with id: " + notExistingPaymentId + " not found.";
         Assertions.assertEquals(expectedMessage, exception.getMessage(),
                 "The exception message should indicate the payment ID was not found.");
     }
@@ -848,7 +848,7 @@ final class PaymentsServiceIT {
                 "Expected exception thrown when trying to make payment with non-existing payment ID.");
 
         // Assert: Verify the exception message is correct
-        final String expectedMessage = "No payment with id: " + notExistingPaymentId + " found.";
+        final String expectedMessage = "Payment with id: " + notExistingPaymentId + " not found.";
         Assertions.assertEquals(expectedMessage, exception.getMessage(),
                 "The exception message for non-existing payment ID.");
     }

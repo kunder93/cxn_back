@@ -51,6 +51,85 @@ import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 
 class UserListDataResponseTest {
+
+    /**
+     * Constant representing the first name of the first user. This value is used
+     * for testing purposes, specifically to create the user's full name.
+     */
+    private static final String USER_NAME = "John";
+
+    /**
+     * Constant representing the first surname of the first user. This value is used
+     * for testing purposes to complete the user's full name.
+     */
+    private static final String USER_FIRST_SURNAME = "Doe";
+
+    /**
+     * Constant representing the second surname of the first user. This value is
+     * used for testing purposes to complete the user's full name.
+     */
+    private static final String USER_SECOND_SURNAME = "Doe";
+
+    /**
+     * Constant representing the first name of the second user. This value is used
+     * for testing purposes, specifically to create the second user's full name.
+     */
+    private static final String SEC_USER_NAME = "Jane";
+
+    /**
+     * Constant representing the first surname of the second user. This value is
+     * used for testing purposes to complete the second user's full name.
+     */
+    private static final String SEC_USER_FIRST_SURNAME = "Smith";
+
+    /**
+     * Constant representing the second surname of the second user. This value is
+     * used for testing purposes to complete the second user's full name.
+     */
+    private static final String SEC_USER_SECOND_SURNAME = "Faer";
+
+    /**
+     * Constant representing the birth date of the first user. This value is used to
+     * simulate the user's birth date for testing.
+     */
+    private static final LocalDate USER_BIRTH_DATE = LocalDate.of(1990, 1, 1);
+
+    /**
+     * Constant representing the birth date of the second user. This value is used
+     * to simulate the second user's birth date for testing.
+     */
+    private static final LocalDate SEC_USER_BIRTH_DATE = LocalDate.of(1992, 2, 22);
+
+    /**
+     * Constant representing the email address of the first user. This value is used
+     * for testing purposes to simulate the user's email.
+     */
+    private static final String USER_EMAIL = "john.doe@example.com";
+
+    /**
+     * Constant representing the email address of the second user. This value is
+     * used for testing purposes to simulate the second user's email.
+     */
+    private static final String SEC_USER_EMAIL = "jane.smith@example.com";
+
+    /**
+     * Constant representing the DNI (National Identity Number) of the first user.
+     * This value is used to simulate the user's DNI for testing.
+     */
+    private static final String USER_DNI = "12345678A";
+
+    /**
+     * Constant representing the DNI (National Identity Number) of the second user.
+     * This value is used to simulate the second user's DNI for testing.
+     */
+    private static final String SEC_USER_DNI = "98765432B";
+
+    /**
+     * Constant representing the password of the first user. This value is used for
+     * testing purposes to simulate the user's password.
+     */
+    private static final String USER_PSSW = "absdwd123";
+
     @Test
     void testConstructorWithEmptyList() {
         UserListDataResponse response = new UserListDataResponse(Collections.emptyList());
@@ -61,18 +140,19 @@ class UserListDataResponseTest {
     @Test
     void testFromUserEntities() {
         // Mock UserEntities with required parameters
-        UserProfile profile1 = new UserProfile("John", "Doe", "M", LocalDate.of(1990, 1, 1), "john.doe@example.com");
-        UserProfile profile2 = new UserProfile("Jane", "Smith", "F", LocalDate.of(1992, 2, 2),
-                "jane.smith@example.com");
+        UserProfile profile1 = new UserProfile(USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME, USER_BIRTH_DATE,
+                USER_EMAIL);
+        UserProfile profile2 = new UserProfile(SEC_USER_NAME, SEC_USER_FIRST_SURNAME, SEC_USER_SECOND_SURNAME,
+                SEC_USER_BIRTH_DATE, SEC_USER_EMAIL);
 
         PersistentRoleEntity role = new PersistentRoleEntity(); // Mock role
 
         // Create PersistentUserEntity instances
-        PersistentUserEntity user1 = new PersistentUserEntity("12345678A", profile1, "password123",
-                "john.doe@example.com", UserType.SOCIO_NUMERO, true, Set.of(role));
+        PersistentUserEntity user1 = new PersistentUserEntity(USER_DNI, profile1, USER_PSSW, USER_EMAIL,
+                UserType.SOCIO_NUMERO, true, Set.of(role));
 
-        PersistentUserEntity user2 = new PersistentUserEntity("98765432B", profile2, "password456",
-                "jane.smith@example.com", UserType.SOCIO_NUMERO, true, Set.of(role));
+        PersistentUserEntity user2 = new PersistentUserEntity(SEC_USER_DNI, profile2, "password456", SEC_USER_EMAIL,
+                UserType.SOCIO_NUMERO, true, Set.of(role));
 
         List<UserEntity> userEntities = List.of(user1, user2);
         var address = new PersistentAddressEntity();
@@ -89,24 +169,25 @@ class UserListDataResponseTest {
         // Assertions
         assertNotNull(response);
         assertEquals(2, response.usersList().size());
-        assertEquals("John", response.usersList().get(0).name()); // Assuming 'getFirstName()' exists
-        assertEquals("Jane", response.usersList().get(1).name()); // Assuming 'getFirstName()' exists
+        assertEquals(USER_NAME, response.usersList().get(0).name()); // Assuming 'getFirstName()' exists
+        assertEquals(SEC_USER_NAME, response.usersList().get(1).name()); // Assuming 'getFirstName()' exists
     }
 
     @Test
     void testUserEntityToUserDataResponseMapping() {
         // Mock UserProfile with required parameters
-        UserProfile profile = new UserProfile("John", "Doe", "M", LocalDate.of(1990, 1, 1), "john.doe@example.com");
+        UserProfile profile = new UserProfile(USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME, USER_BIRTH_DATE,
+                USER_EMAIL);
 
         // Mock PersistentRoleEntity (add necessary constructor arguments based on your
         // entity structure)
         PersistentRoleEntity role = new PersistentRoleEntity(); // Replace with proper constructor if needed
 
         // Create a PersistentUserEntity with all required fields
-        PersistentUserEntity user = new PersistentUserEntity("12345678A", // dni
+        PersistentUserEntity user = new PersistentUserEntity(USER_DNI, // dni
                 profile, // usrProfile
-                "password123", // password
-                "john.doe@example.com", // email
+                USER_PSSW, // password
+                USER_EMAIL, // email
                 UserType.SOCIO_NUMERO, // kindMember
                 true, // enabled
                 Set.of(role) // rolesEntity
@@ -123,23 +204,23 @@ class UserListDataResponseTest {
 
         // Verifying the mapping
         assertNotNull(userDataResponse);
-        assertEquals("John", userDataResponse.name());
-        assertEquals("Doe", userDataResponse.firstSurname());
-        assertEquals("M", userDataResponse.secondSurname());
-        assertEquals("12345678A", userDataResponse.dni()); // Verify DNI field
-        assertEquals("john.doe@example.com", userDataResponse.email()); // Verify email field
+        assertEquals(USER_NAME, userDataResponse.name());
+        assertEquals(USER_FIRST_SURNAME, userDataResponse.firstSurname());
+        assertEquals(USER_SECOND_SURNAME, userDataResponse.secondSurname());
+        assertEquals(USER_DNI, userDataResponse.dni()); // Verify DNI field
+        assertEquals(USER_EMAIL, userDataResponse.email()); // Verify email field
     }
 
     @Test
     void testUsersListMethodReturnsCopy() {
         // Providing all required fields for UserDataResponse constructor
-        UserDataResponse user1 = new UserDataResponse("12345678A", // dni
-                "John", // name
-                "Doe", // firstSurname
-                "Smith", // secondSurname (mocked value)
-                "M", // gender (mocked value)
-                LocalDate.of(1990, 1, 1), // birthDate (mocked value)
-                "john.doe@example.com", // email (mocked value)
+        UserDataResponse user1 = new UserDataResponse(USER_DNI, // dni
+                USER_NAME, // name
+                USER_FIRST_SURNAME, // firstSurname
+                SEC_USER_FIRST_SURNAME, // secondSurname (mocked value)
+                USER_SECOND_SURNAME, // gender (mocked value)
+                USER_BIRTH_DATE, // birthDate (mocked value)
+                USER_EMAIL, // email (mocked value)
                 UserType.SOCIO_NUMERO, // kindMember (mocked value)
                 new AddressResponse("12345", // postalCode
                         "Apt 1", // apartmentNumber (mocked value)
@@ -157,12 +238,12 @@ class UserListDataResponseTest {
 
         // Modifying the copy of the list should not affect the original list
         List<UserDataResponse> copiedList = response.usersList();
-        copiedList.add(new UserDataResponse("98765432B", // dni
-                "Jane", // name
-                "Doe", // firstSurname
-                "Johnson", // secondSurname (mocked value)
-                "F", // gender (mocked value)
-                LocalDate.of(1992, 2, 2), // birthDate (mocked value)
+        copiedList.add(new UserDataResponse(SEC_USER_DNI, // dni
+                SEC_USER_NAME, // name
+                USER_FIRST_SURNAME, // firstSurname
+                USER_SECOND_SURNAME, // secondSurname (mocked value)
+                SEC_USER_SECOND_SURNAME, // gender (mocked value)
+                SEC_USER_BIRTH_DATE, // birthDate (mocked value)
                 "jane.doe@example.com", // email (mocked value)
                 UserType.SOCIO_FAMILIAR, // kindMember (mocked value)
                 new AddressResponse("54321", // postalCode

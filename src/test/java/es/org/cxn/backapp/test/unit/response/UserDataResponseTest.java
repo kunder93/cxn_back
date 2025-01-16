@@ -52,34 +52,93 @@ import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 
+/**
+ * Unit test class for verifying the behavior of UserDataResponse.
+ *
+ * This class contains constants representing sample user data and can include
+ * test methods to validate the functionality of UserDataResponse or related
+ * components. It is designed to ensure that the UserDataResponse behaves as
+ * expected under various conditions.
+ *
+ * <p>
+ * Example constants included:
+ * <ul>
+ * <li>{@link #USER_DNI}: The sample DNI (National Identity Number) for a
+ * user.</li>
+ * <li>{@link #USER_NAME}: The first name of the user.</li>
+ * <li>{@link #USER_FIRST_SURNAME}: The first surname of the user.</li>
+ * <li>{@link #USER_SECOND_SURNAME}: The second surname of the user.</li>
+ * <li>{@link #USER_GENDER}: The gender of the user.</li>
+ * <li>{@link #USER_BIRTH_DATE}: The birth date of the user, represented as a
+ * {@link LocalDate}.</li>
+ * <li>{@link #USER_EMAIL}: The email address of the user.</li>
+ * </ul>
+ *
+ * <p>
+ * These constants can be used to set up user-related test scenarios for
+ * verifying the correctness of the application's functionality related to user
+ * data processing.
+ *
+ * @author Santiago Paz
+ */
 class UserDataResponseTest {
+
+    /**
+     * Constant representing the sample DNI (National Identity Number) for a user.
+     */
+    private static final String USER_DNI = "12345678";
+
+    /**
+     * Constant representing the first name of the user.
+     */
+    private static final String USER_NAME = "John";
+
+    /**
+     * Constant representing the first surname of the user.
+     */
+    private static final String USER_FIRST_SURNAME = "Doe";
+
+    /**
+     * Constant representing the second surname of the user.
+     */
+    private static final String USER_SECOND_SURNAME = "Smith";
+
+    /**
+     * Constant representing the gender of the user.
+     */
+    private static final String USER_GENDER = "Male";
+
+    /**
+     * Constant representing the birth date of the user.
+     */
+    private static final LocalDate USER_BIRTH_DATE = LocalDate.of(1990, 1, 1);
+
+    /**
+     * Constant representing the email address of the user.
+     */
+    private static final String USER_EMAIL = "john.doe@example.com";
+
     @Test
     void testConstructorWithParameters() {
         // Arrange
-        String dni = "12345678";
-        String name = "John";
-        String firstSurname = "Doe";
-        String secondSurname = "Smith";
-        String gender = "Male";
-        LocalDate birthDate = LocalDate.of(1990, 1, 1);
-        String email = "john.doe@example.com";
+
         UserType kindMember = UserType.SOCIO_NUMERO;
         AddressResponse address = new AddressResponse("PostalCode", "Apartment", "Building", "Street", "City",
                 "Country", "SubCountry");
         Set<UserRoleName> roles = EnumSet.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_PRESIDENTE);
 
         // Act
-        UserDataResponse response = new UserDataResponse(dni, name, firstSurname, secondSurname, gender, birthDate,
-                email, kindMember, address, roles);
+        UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
+                USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, kindMember, address, roles);
 
         // Assert
-        assertEquals(dni, response.dni());
-        assertEquals(name, response.name());
-        assertEquals(firstSurname, response.firstSurname());
-        assertEquals(secondSurname, response.secondSurname());
-        assertEquals(gender, response.gender());
-        assertEquals(birthDate, response.birthDate());
-        assertEquals(email, response.email());
+        assertEquals(USER_DNI, response.dni());
+        assertEquals(USER_NAME, response.name());
+        assertEquals(USER_FIRST_SURNAME, response.firstSurname());
+        assertEquals(USER_SECOND_SURNAME, response.secondSurname());
+        assertEquals(USER_GENDER, response.gender());
+        assertEquals(USER_BIRTH_DATE, response.birthDate());
+        assertEquals(USER_EMAIL, response.email());
         assertEquals(kindMember, response.kindMember());
         assertEquals(address, response.userAddress());
         assertEquals(roles, response.userRoles());
@@ -99,14 +158,14 @@ class UserDataResponseTest {
         when(addressEntity.getCountrySubdivision()).thenReturn(countrySubdivision);
 
         // Mock the behavior of the UserEntity
-        when(user.getDni()).thenReturn("12345678");
+        when(user.getDni()).thenReturn(USER_DNI);
         when(user.getProfile()).thenReturn(userProfile);
-        when(user.getProfile().getName()).thenReturn("John");
-        when(userProfile.getFirstSurname()).thenReturn("Doe");
-        when(userProfile.getSecondSurname()).thenReturn("Smith");
-        when(userProfile.getGender()).thenReturn("Male");
-        when(userProfile.getBirthDate()).thenReturn(LocalDate.of(1990, 1, 1));
-        when(user.getEmail()).thenReturn("john.doe@example.com");
+        when(user.getProfile().getName()).thenReturn(USER_NAME);
+        when(userProfile.getFirstSurname()).thenReturn(USER_FIRST_SURNAME);
+        when(userProfile.getSecondSurname()).thenReturn(USER_SECOND_SURNAME);
+        when(userProfile.getGender()).thenReturn(USER_GENDER);
+        when(userProfile.getBirthDate()).thenReturn(USER_BIRTH_DATE);
+        when(user.getEmail()).thenReturn(USER_EMAIL);
         when(user.getKindMember()).thenReturn(UserType.SOCIO_NUMERO);
         when(user.getAddress()).thenReturn(addressEntity);
 
@@ -120,13 +179,13 @@ class UserDataResponseTest {
         UserDataResponse response = new UserDataResponse(user);
 
         // Assert
-        assertEquals("12345678", response.dni());
-        assertEquals("John", response.name());
-        assertEquals("Doe", response.firstSurname());
-        assertEquals("Smith", response.secondSurname());
-        assertEquals("Male", response.gender());
-        assertEquals(LocalDate.of(1990, 1, 1), response.birthDate());
-        assertEquals("john.doe@example.com", response.email());
+        assertEquals(USER_DNI, response.dni());
+        assertEquals(USER_NAME, response.name());
+        assertEquals(USER_FIRST_SURNAME, response.firstSurname());
+        assertEquals(USER_SECOND_SURNAME, response.secondSurname());
+        assertEquals(USER_GENDER, response.gender());
+        assertEquals(USER_BIRTH_DATE, response.birthDate());
+        assertEquals(USER_EMAIL, response.email());
         assertEquals(UserType.SOCIO_NUMERO, response.kindMember());
 
         // Test AddressResponse
@@ -143,8 +202,8 @@ class UserDataResponseTest {
     void testUserRolesDefensiveCopy() {
         // Arrange
         Set<UserRoleName> roles = EnumSet.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
-        UserDataResponse response = new UserDataResponse("12345678", "John", "Doe", "Smith", "Male",
-                LocalDate.of(1990, 1, 1), "john.doe@example.com", UserType.SOCIO_NUMERO,
+        UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
+                USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, UserType.SOCIO_NUMERO,
                 new AddressResponse("PostalCode", "Apartment", "Building", "Street", "City", "Country", "SubCountry"),
                 roles);
 

@@ -41,6 +41,9 @@ import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 
 class ProfileImageResponseTest {
+    /**
+     * The ProfileImage mocked entity.
+     */
     private PersistentProfileImageEntity profileImageEntityMock;
 
     @BeforeEach

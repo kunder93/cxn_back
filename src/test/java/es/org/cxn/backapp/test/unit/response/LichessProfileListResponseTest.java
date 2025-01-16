@@ -40,7 +40,37 @@ import org.junit.jupiter.api.Test;
 import es.org.cxn.backapp.model.form.responses.LichessProfileListResponse;
 import es.org.cxn.backapp.model.form.responses.LichessProfileResponse;
 
+/**
+ * Unit tests for the LichessProfileListResponse class. This test class ensures
+ * the proper functionality of the LichessProfileListResponse object, validating
+ * its handling of game-related attributes and responses in a list format.
+ */
 class LichessProfileListResponseTest {
+
+    /**
+     * Constant representing the Elo rating for Game 1. Used to test the accuracy of
+     * Elo ratings for the first game type in the response.
+     */
+    private static final int GAME_1_ELO = 1500;
+
+    /**
+     * Constant representing the number of games played for Game 1. Used to test the
+     * total number of games played for the first game type in the response.
+     */
+    private static final int GAME_1_AMOUNT_GAMES = 200;
+
+    /**
+     * Constant representing the Elo rating for Game 2. Used to test the accuracy of
+     * Elo ratings for the second game type in the response.
+     */
+    private static final int GAME_2_ELO = 1400;
+
+    /**
+     * Constant representing the number of games played for Game 2. Used to test the
+     * total number of games played for the second game type in the response.
+     */
+    private static final int GAME_2_AMOUT_GAMES = 150;
+
     @Test
     void testConstructorWithEmptyList() {
         LichessProfileListResponse response = new LichessProfileListResponse(List.of());
@@ -52,8 +82,9 @@ class LichessProfileListResponseTest {
 
     @Test
     void testConstructorWithLargeList() {
+        final int amountOfProfiles = 4;
         // Creating Game instances with sample data
-        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(1500, 200, false);
+        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(GAME_1_ELO, GAME_1_AMOUNT_GAMES, false);
         List<LichessProfileResponse> profiles = List.of(
                 new LichessProfileResponse("John Doe", "john_doe", LocalDateTime.now(), blitzGame, null, null, null,
                         null),
@@ -68,14 +99,15 @@ class LichessProfileListResponseTest {
 
         // Ensure the list has the expected number of elements
         assertNotNull(response.profilesList());
-        assertEquals(4, response.profilesList().size());
+        assertEquals(amountOfProfiles, response.profilesList().size());
     }
 
     @Test
     void testConstructorWithNonNullList() {
+        final int amountOfProfiles = 2;
         // Creating Game instances with sample data
-        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(1500, 200, false);
-        LichessProfileResponse.Game bulletGame = new LichessProfileResponse.Game(1400, 150, true);
+        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(GAME_1_ELO, GAME_1_AMOUNT_GAMES, false);
+        LichessProfileResponse.Game bulletGame = new LichessProfileResponse.Game(GAME_2_ELO, GAME_2_AMOUT_GAMES, true);
 
         // Creating LichessProfileResponse instances
         LichessProfileResponse profile1 = new LichessProfileResponse("John Doe", "john_doe", LocalDateTime.now(),
@@ -89,9 +121,9 @@ class LichessProfileListResponseTest {
 
         // Ensure the list contains the correct profiles
         assertNotNull(response.profilesList());
-        assertEquals(2, response.profilesList().size());
+        assertEquals(amountOfProfiles, response.profilesList().size());
         assertEquals("john_doe", response.profilesList().get(0).lichessUserName());
-        assertEquals(1500, response.profilesList().get(0).blitzGame().elo());
+        assertEquals(GAME_1_ELO, response.profilesList().get(0).blitzGame().elo());
         assertEquals("jane_smith", response.profilesList().get(1).lichessUserName());
     }
 
@@ -106,8 +138,9 @@ class LichessProfileListResponseTest {
 
     @Test
     void testListImmutability() {
+        final int amountOfProfiles = 1;
         // Creating Game instances with sample data
-        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(1500, 200, false);
+        LichessProfileResponse.Game blitzGame = new LichessProfileResponse.Game(GAME_1_ELO, GAME_1_AMOUNT_GAMES, false);
         LichessProfileResponse profile1 = new LichessProfileResponse("John Doe", "john_doe", LocalDateTime.now(),
                 blitzGame, null, null, null, null);
         List<LichessProfileResponse> profiles = List.of(profile1);
@@ -121,7 +154,7 @@ class LichessProfileListResponseTest {
                 null, null, null));
 
         // Ensure the original list inside response is unchanged
-        assertEquals(1, response.profilesList().size()); // Original list should still have 1 item
+        assertEquals(amountOfProfiles, response.profilesList().size()); // Original list should still have 1 item
         assertEquals("john_doe", response.profilesList().get(0).lichessUserName()); // Verify the original profile
     }
 

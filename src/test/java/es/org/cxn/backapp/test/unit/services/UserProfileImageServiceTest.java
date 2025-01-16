@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.services;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,33 +48,73 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 import es.org.cxn.backapp.service.impl.DefaultUserProfileImageService;
 
-class UserProfileImageServiceTest {
+/**
+ * Unit tests for the {@link DefaultUserProfileImageService}. This class tests
+ * various functionalities related to saving user profile images, including
+ * handling invalid file extensions.
+ *
+ * @see DefaultUserProfileImageService
+ */
+public class UserProfileImageServiceTest {
 
+    /**
+     * Mocked repository for managing {@link PersistentUserEntity}.
+     */
     @Mock
     private UserEntityRepository userRepository;
 
+    /**
+     * Mocked repository for managing {@link PersistentProfileImageEntity}.
+     */
     @Mock
     private ImageProfileEntityRepository imageProfileEntityRepository;
 
+    /**
+     * Mocked service for managing user operations.
+     */
     @Mock
     private UserService userService;
 
+    /**
+     * Mocked service for handling image storage operations.
+     */
     @Mock
     private DefaultImageStorageService imageStorageService;
 
+    /**
+     * Service under test that handles user profile image operations.
+     */
     @InjectMocks
     private DefaultUserProfileImageService userProfileImageService;
 
+    /**
+     * Mocked entity representing a profile image.
+     */
     @Mock
     private PersistentProfileImageEntity profileImageEntity;
 
+    /**
+     * Initializes mocks before each test method is executed.
+     */
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
 
+    /**
+     * Tests that saving a profile image file with an invalid extension throws a
+     * {@link UserServiceException}.
+     *
+     * <p>
+     * This test ensures that the
+     * {@link DefaultUserProfileImageService#saveProfileImageFile(String, MockMultipartFile)}
+     * method correctly identifies and rejects files with unsupported extensions.
+     * </p>
+     *
+     * @throws UserServiceException if the save operation fails.
+     */
     @Test
-    void testSaveProfileImageFile_invalidExtension_throwsUserServiceException() throws UserServiceException {
+    void testSaveProfileImageFileInvalidExtensionThrowsUserServiceException() throws UserServiceException {
         // Arrange
         String userDni = "123456789";
         MockMultipartFile file = new MockMultipartFile("file", "image.txt", "text/plain", "image content".getBytes());
@@ -86,5 +126,4 @@ class UserProfileImageServiceTest {
                 () -> userProfileImageService.saveProfileImageFile(userDni, file));
         assertEquals("Invalid image extension: txt", thrown.getMessage());
     }
-
 }

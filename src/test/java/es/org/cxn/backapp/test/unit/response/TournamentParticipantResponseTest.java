@@ -39,20 +39,29 @@ import es.org.cxn.backapp.model.form.responses.TournamentParticipantResponse;
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity.TournamentCategory;
 
 class TournamentParticipantResponseTest {
+    /**
+     * The participant birth date.
+     */
+    private static final LocalDate BIRTH_DATE = LocalDate.of(1990, 5, 15);
+
+    /**
+     * The participant Fide id.
+     */
+    private static final BigInteger FIDE_ID = new BigInteger("12345");
+
     @Test
     void testDifferentTournamentCategories() {
-        BigInteger fideId = new BigInteger("12345");
+
         String name = "John Doe";
         String club = "Chess Club";
-        LocalDate birthDate = LocalDate.of(1990, 5, 15);
 
         TournamentCategory categorySUB10 = TournamentCategory.SUB10;
         TournamentCategory categorySUB12 = TournamentCategory.SUB12;
         String byes = "2";
 
-        TournamentParticipantResponse responseSUB10 = new TournamentParticipantResponse(fideId, name, club, birthDate,
+        TournamentParticipantResponse responseSUB10 = new TournamentParticipantResponse(FIDE_ID, name, club, BIRTH_DATE,
                 categorySUB10, byes);
-        TournamentParticipantResponse responseSUB12 = new TournamentParticipantResponse(fideId, name, club, birthDate,
+        TournamentParticipantResponse responseSUB12 = new TournamentParticipantResponse(FIDE_ID, name, club, BIRTH_DATE,
                 categorySUB12, byes);
 
         // Ensure that different categories are handled correctly
