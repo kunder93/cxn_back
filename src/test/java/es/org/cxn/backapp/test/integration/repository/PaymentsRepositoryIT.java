@@ -71,7 +71,7 @@ import jakarta.transaction.Transactional;
  */
 @DataJpaTest
 @ActiveProfiles("test")
-class PaymentsRepositoryTest {
+class PaymentsRepositoryIT {
 
     /**
      * Repository for managing persistence operations related to payment entities.

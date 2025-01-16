@@ -3,9 +3,9 @@ package es.org.cxn.backapp.model.persistence;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package es.org.cxn.backapp.model.persistence;
  * #L%
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,7 +42,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Country Entity.
@@ -52,13 +52,13 @@ import lombok.NoArgsConstructor;
  */
 @Entity(name = "CountryEntity")
 @Table(name = "country")
-@NoArgsConstructor
 @Data
 public class PersistentCountryEntity implements CountryEntity {
 
     /**
      * Serialization ID.
      */
+    @Serial
     @Transient
     private static final long serialVersionUID = 1419348811150111291L;
 
@@ -104,6 +104,18 @@ public class PersistentCountryEntity implements CountryEntity {
      */
     @OneToMany(mappedBy = "country")
     private Set<PersistentAddressEntity> addressList = new HashSet<>();
+
+    /**
+     * Default constructor for the PersistentCountryEntity class.
+     * <p>
+     * This constructor initializes a new instance of the PersistentCountryEntity
+     * class. It is required for frameworks like JPA that rely on reflection to
+     * create objects.
+     * </p>
+     */
+    public PersistentCountryEntity() {
+        // Default constructor
+    }
 
     /**
      * {@inheritDoc}

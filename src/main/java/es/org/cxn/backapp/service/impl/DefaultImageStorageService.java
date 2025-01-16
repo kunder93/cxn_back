@@ -30,7 +30,6 @@ package es.org.cxn.backapp.service.impl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +51,19 @@ import es.org.cxn.backapp.service.ImageStorageService;
 public final class DefaultImageStorageService implements ImageStorageService {
 
     /**
+     * Constructor for DefaultImageStorageService class. This constructor is needed
+     * for Spring Framework's dependency injection.
+     * <p>
+     * The default constructor is implicitly used by Spring to inject dependencies,
+     * if any are required.
+     * </p>
+     */
+    public DefaultImageStorageService() {
+        super();
+        // No need for explicit constructor logic if no dependencies are being injected.
+    }
+
+    /**
      * Deletes an image file at the specified path within a base directory.
      *
      * @param baseDirectory the root directory for storing images, specified by the
@@ -61,7 +73,7 @@ public final class DefaultImageStorageService implements ImageStorageService {
      */
     @Override
     public void deleteImage(final String baseDirectory, final String imagePath) throws IOException {
-        final Path path = Paths.get(baseDirectory, imagePath);
+        final Path path = Path.of(baseDirectory, imagePath);
         Files.deleteIfExists(path);
     }
 
@@ -75,7 +87,7 @@ public final class DefaultImageStorageService implements ImageStorageService {
      */
     @Override
     public byte[] loadImage(final String imagePath) throws IOException {
-        final Path path = Paths.get(imagePath);
+        final Path path = Path.of(imagePath);
         return Files.readAllBytes(path);
     }
 
@@ -95,7 +107,7 @@ public final class DefaultImageStorageService implements ImageStorageService {
     @Override
     public String saveImage(final MultipartFile file, final String baseDirectory, final String entityType,
             final String entityId) throws IOException {
-        final Path directoryPath = Paths.get(baseDirectory, entityType, entityId);
+        final Path directoryPath = Path.of(baseDirectory, entityType, entityId);
         Files.createDirectories(directoryPath);
         final Path filePath = directoryPath.resolve(file.getOriginalFilename());
         file.transferTo(filePath.toFile());

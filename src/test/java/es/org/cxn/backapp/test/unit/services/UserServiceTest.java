@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.services;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -74,7 +74,6 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.EmailService;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.RoleService;
-import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
@@ -377,9 +376,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#add(UserRegistrationDetailsDto)} method to
-     * ensure that a {@link UserServiceException} is thrown when attempting to add a
-     * user with a DNI that already exists in the database.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#add(UserRegistrationDetailsDto)}
+     * method to ensure that a {@link UserServiceException} is thrown when
+     * attempting to add a user with a DNI that already exists in the database.
      *
      * <p>
      * This test simulates a user registration where the DNI already exists in the
@@ -442,9 +442,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#add(UserRegistrationDetailsDto)} method to
-     * ensure that a new user is successfully added to the system when the provided
-     * DNI and email do not already exist in the database.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#add(UserRegistrationDetailsDto)}
+     * method to ensure that a new user is successfully added to the system when the
+     * provided DNI and email do not already exist in the database.
      *
      * <p>
      * This test case verifies the successful addition of a user by simulating the
@@ -461,8 +462,8 @@ class UserServiceTest {
      * registration, and mock repository responses.</li>
      * <li>Act: Call {@code userService.add(userDetails)} with valid data.</li>
      * <li>Assert: Verify that the user is saved successfully and that
-     * {@link UserService#add(UserRegistrationDetailsDto)} returns the persisted
-     * user entity.</li>
+     * {@link es.org.cxn.backapp.service.UserService#add(UserRegistrationDetailsDto)}
+     * returns the persisted user entity.</li>
      * </ul>
      *
      * @throws UserServiceException if there is an issue adding the user
@@ -633,6 +634,11 @@ class UserServiceTest {
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(mockUserEntity));
         when(userRepository.findByEmail(newEmail)).thenReturn(Optional.empty());
         doThrow(new DataAccessException("Database save error") {
+
+            /**
+             * Serial UID.
+             */
+            private static final long serialVersionUID = 1L;
         }).when(userRepository).save(any(PersistentUserEntity.class));
 
         // When & Then
@@ -721,9 +727,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserEmail(String, String)} method to
-     * ensure that a user's email is successfully updated when a valid email change
-     * request is made.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserEmail(String, String)}
+     * method to ensure that a user's email is successfully updated when a valid
+     * email change request is made.
      *
      * <p>
      * This test case verifies the successful update of the user's email by
@@ -786,26 +793,11 @@ class UserServiceTest {
         verifyNoInteractions(emailService); // Ensure emailService was not called
     }
 
-//    @Test
-//    void testSaveProfileImageFileErrorSavingImage() throws IOException {
-//        // Arrange
-//        MultipartFile file = mock(MultipartFile.class);
-//        when(file.getOriginalFilename()).thenReturn("profile.jpg");
-//        when(userRepository.findByDni("123456789")).thenReturn(Optional.of(persistentUserEntity));
-//        when(imageStorageService.saveImage(file, "path/to/upload", "profile", "123456789"))
-//                .thenThrow(new IOException("File save error"));
-//
-//        // Act & Assert
-//        UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-//            userService.saveProfileImageFile("123456789", file);
-//        });
-//        assertEquals("Error saving profile image: File save error", exception.getMessage());
-//    }
-
     /**
-     * Tests the {@link UserService#changeUserEmail(String, String)} method to
-     * ensure that an exception is thrown when attempting to change the email for a
-     * non-existent user.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserEmail(String, String)}
+     * method to ensure that an exception is thrown when attempting to change the
+     * email for a non-existent user.
      *
      * <p>
      * This test case simulates a scenario where the specified user is not found in
@@ -848,7 +840,8 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserPassword(String, String, String)}
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserPassword(String, String, String)}
      * method to ensure that a user's password is successfully updated and stored in
      * encrypted form.
      *
@@ -910,7 +903,8 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserPassword(String, String, String)}
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserPassword(String, String, String)}
      * method to verify that an exception is thrown when the provided current
      * password does not match the user's stored password.
      *
@@ -958,9 +952,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserRoles(String, List)} method to ensure
-     * that an exception is thrown when attempting to assign a role to a user, but
-     * one of the specified roles does not exist.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
+     * method to ensure that an exception is thrown when attempting to assign a role
+     * to a user, but one of the specified roles does not exist.
      *
      * <p>
      * This test simulates the scenario where a user is assigned new roles, but one
@@ -1019,8 +1014,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserRoles(String, List)} method to verify
-     * that user roles are successfully changed when valid role names are provided.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
+     * method to verify that user roles are successfully changed when valid role
+     * names are provided.
      *
      * <p>
      * This test simulates a scenario where the user has an email in the repository,
@@ -1071,9 +1068,10 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#changeUserRoles(String, List)} method to verify
-     * that an exception is thrown when attempting to change roles for a user that
-     * does not exist.
+     * Tests the
+     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
+     * method to verify that an exception is thrown when attempting to change roles
+     * for a user that does not exist.
      *
      * <p>
      * This test simulates a scenario where no user is found with the specified
@@ -1117,13 +1115,15 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#findByDni(String)} method to ensure that it
-     * throws an exception when the user is not found by their DNI.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#findByDni(String)}
+     * method to ensure that it throws an exception when the user is not found by
+     * their DNI.
      *
      * <p>
-     * This test verifies that the {@code findByDni} method in {@link UserService}
-     * throws a {@link UserServiceException} when the given DNI does not correspond
-     * to any existing user in the repository.
+     * This test verifies that the {@code findByDni} method in
+     * {@link es.org.cxn.backapp.service.UserService} throws a
+     * {@link UserServiceException} when the given DNI does not correspond to any
+     * existing user in the repository.
      * </p>
      *
      * <p>
@@ -1160,14 +1160,15 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#findByDni(String)} method to ensure that it
-     * retrieves a user by their DNI.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#findByDni(String)}
+     * method to ensure that it retrieves a user by their DNI.
      *
      * <p>
-     * This test verifies that the {@code findByDni} method in {@link UserService}
-     * correctly returns a user when a valid DNI is provided. It mocks the user
-     * repository to return a predefined user entity when the specified DNI is
-     * searched, and asserts that the result is the expected user.
+     * This test verifies that the {@code findByDni} method in
+     * {@link es.org.cxn.backapp.service.UserService} correctly returns a user when
+     * a valid DNI is provided. It mocks the user repository to return a predefined
+     * user entity when the specified DNI is searched, and asserts that the result
+     * is the expected user.
      * </p>
      *
      * <p>
@@ -1202,14 +1203,15 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#findByEmail(String)} method to ensure that it
-     * retrieves a user by their email.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#findByEmail(String)}
+     * method to ensure that it retrieves a user by their email.
      *
      * <p>
-     * This test verifies that the {@code findByEmail} method in {@link UserService}
-     * returns the correct user when a valid email is provided. It mocks the user
-     * repository to return a predefined user and ensures that the email of the
-     * retrieved user matches the expected value.
+     * This test verifies that the {@code findByEmail} method in
+     * {@link es.org.cxn.backapp.service.UserService} returns the correct user when
+     * a valid email is provided. It mocks the user repository to return a
+     * predefined user and ensures that the email of the retrieved user matches the
+     * expected value.
      * </p>
      *
      * <p>
@@ -1253,14 +1255,14 @@ class UserServiceTest {
     }
 
     /**
-     * Tests the {@link UserService#getAll()} method to ensure that it retrieves all
-     * users from the repository.
+     * Tests the {@link es.org.cxn.backapp.service.UserService#getAll()} method to
+     * ensure that it retrieves all users from the repository.
      *
      * <p>
-     * This test verifies that the {@code getAll} method in {@link UserService}
-     * correctly fetches the list of users from the repository. It mocks the
-     * repository to return a list of users and ensures that the method returns the
-     * expected result.
+     * This test verifies that the {@code getAll} method in
+     * {@link es.org.cxn.backapp.service.UserService} correctly fetches the list of
+     * users from the repository. It mocks the repository to return a list of users
+     * and ensures that the method returns the expected result.
      * </p>
      *
      * <p>

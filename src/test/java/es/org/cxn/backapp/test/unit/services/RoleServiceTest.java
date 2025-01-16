@@ -240,7 +240,7 @@ class RoleServiceTest {
 
         assertNotNull(result, "Expected non-null role list");
         assertEquals(1, result.size(), "Expected role list size to be 1");
-        assertEquals(ROLE_NAME, result.get(0).getName(), "Expected role name to match");
+        assertEquals(ROLE_NAME, result.getFirst().getName(), "Expected role name to match");
     }
 
     /**

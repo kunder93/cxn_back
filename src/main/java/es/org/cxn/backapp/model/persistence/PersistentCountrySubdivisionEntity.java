@@ -2,9 +2,9 @@ package es.org.cxn.backapp.model.persistence;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package es.org.cxn.backapp.model.persistence;
  * #L%
  */
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Country subdivision Entity.
@@ -54,12 +54,12 @@ import lombok.NoArgsConstructor;
 @Entity(name = "CountrySubdivision")
 @Table(name = "country_subdivision")
 @Data
-@NoArgsConstructor
 public class PersistentCountrySubdivisionEntity implements CountrySubdivisionEntity {
 
     /**
      * Serialization ID.
      */
+    @Serial
     @Transient
     private static final long serialVersionUID = 1719788841150729211L;
 
@@ -101,5 +101,17 @@ public class PersistentCountrySubdivisionEntity implements CountrySubdivisionEnt
      */
     @OneToMany(mappedBy = "countrySubdivision")
     private List<PersistentAddressEntity> addressList = new ArrayList<>();
+
+    /**
+     * Default constructor for the PersistentCountrySubdivisionEntity class.
+     * <p>
+     * This constructor initializes a new instance of the
+     * PersistentCountrySubdivisionEntity class. It is required by JPA and other
+     * frameworks that rely on reflection for object creation.
+     * </p>
+     */
+    public PersistentCountrySubdivisionEntity() {
+        addressList = new ArrayList<>();
+    }
 
 }

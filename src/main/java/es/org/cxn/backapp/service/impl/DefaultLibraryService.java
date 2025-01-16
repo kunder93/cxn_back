@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,6 +29,11 @@ package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.List;
+
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.stereotype.Service;
+
 import es.org.cxn.backapp.model.AuthorEntity;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
@@ -40,11 +45,6 @@ import es.org.cxn.backapp.repository.BookEntityRepository;
 import es.org.cxn.backapp.service.LibraryService;
 import es.org.cxn.backapp.service.exceptions.LibraryServiceException;
 
-import java.util.List;
-
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.stereotype.Service;
-
 /**
  * Default implementation of the {@link LibraryService}.
  *
@@ -54,132 +54,122 @@ import org.springframework.stereotype.Service;
 @Service
 public class DefaultLibraryService implements LibraryService {
 
-  /**
-   * Repository for the book entities handled by the service.
-   */
-  private final BookEntityRepository libraryRepository;
+    /**
+     * Repository for the book entities handled by the service.
+     */
+    private final BookEntityRepository libraryRepository;
 
-  /**
-   * Repository for the author entities handled by the service.
-   */
-  private final AuthorEntityRepository authorRepository;
+    /**
+     * Repository for the author entities handled by the service.
+     */
+    private final AuthorEntityRepository authorRepository;
 
-  /**
-   * Constructs an entities service with the specified repositories.
-   *
-   * @param repoLibr The book repository{@link BookEntityRepository}
-   * @param repoAuth The author repository{@link AuthorEntityRepository}
-   *
-   */
-  public DefaultLibraryService(
-        final BookEntityRepository repoLibr,
-        final AuthorEntityRepository repoAuth
-  ) {
-    super();
+    /**
+     * Constructs an entities service with the specified repositories.
+     *
+     * @param repoLibr The book repository{@link BookEntityRepository}
+     * @param repoAuth The author repository{@link AuthorEntityRepository}
+     *
+     */
+    public DefaultLibraryService(final BookEntityRepository repoLibr, final AuthorEntityRepository repoAuth) {
+        super();
 
-    libraryRepository = checkNotNull(
-          repoLibr, "Received a null pointer as library repository"
-    );
-    authorRepository = checkNotNull(
-          repoAuth, "Received a null pointer as author repository"
-    );
-  }
+        libraryRepository = checkNotNull(repoLibr, "Received a null pointer as library repository");
+        authorRepository = checkNotNull(repoAuth, "Received a null pointer as author repository");
+    }
 
-  /**
-   * Get all books.
-   */
-  @Override
-  public List<BookEntity> getAllBooks() {
-    final var persistentBooks = libraryRepository.findAll();
+    /**
+     * Add new book. Authors list in AddBookRequestDto cannot be null.
+     *
+     * @throws LibraryServiceException When cannot add book.
+     */
+    @Override
+    public BookEntity addBook(final AddBookRequestDto bookRequest) throws LibraryServiceException {
+        final var book = new PersistentBookEntity();
+        book.setTitle(bookRequest.title());
+        book.setIsbn(bookRequest.isbn());
+        book.setGender(bookRequest.gender());
+        book.setLanguage(bookRequest.language());
+        book.setPublishYear(bookRequest.publishYear());
 
-    // PersistentBookEntity a BookEntity
-    return persistentBooks.stream().map(BookEntity.class::cast).toList();
-  }
+        final var authorsList = bookRequest.authorsList();
+        authorsList.forEach((AuthorRequest authorRequestDto) -> {
+            final var existingAuthor = authorRepository.findByFirstNameAndLastNameAndNationality(
+                    authorRequestDto.firstName(), authorRequestDto.lastName(), authorRequestDto.nationality());
+            if (existingAuthor != null) {
+                final var bookAuthors = book.getAuthors();
+                bookAuthors.add(existingAuthor);
+                book.setAuthors(bookAuthors);
 
-  /**
-   * Add new book.
-   * @throws LibraryServiceException When cannot add book.
-   */
-  @Override
-  public BookEntity addBook(final AddBookRequestDto bookRequest)
-        throws LibraryServiceException {
-    final var book = new PersistentBookEntity();
-    book.setTitle(bookRequest.title());
-    book.setIsbn(bookRequest.isbn());
-    book.setGender(bookRequest.gender());
-    book.setLanguage(bookRequest.language());
-    book.setPublishYear(bookRequest.publishYear());
-    final var authorsList = bookRequest.authorsList();
-    if (authorsList != null) {
-      authorsList.forEach((AuthorRequest authorRequestDto) -> {
-        final var existingAuthor =
-              authorRepository.findByFirstNameAndLastNameAndNationality(
-                    authorRequestDto.firstName(), authorRequestDto.lastName(),
-                    authorRequestDto.nationality()
-              );
-        if (existingAuthor != null) {
-          final var bookAuthors = book.getAuthors();
-          bookAuthors.add(existingAuthor);
-          book.setAuthors(bookAuthors);
+            } else {
+                final var authorEntity = new PersistentAuthorEntity();
+                authorEntity.setFirstName(authorRequestDto.firstName());
+                authorEntity.setLastName(authorRequestDto.lastName());
+                authorEntity.setNationality(authorRequestDto.nationality());
+                final var authorSaved = authorRepository.save(authorEntity);
+                final var bookAuthors = book.getAuthors();
+                bookAuthors.add(authorSaved);
+                book.setAuthors(bookAuthors);
+            }
+        });
 
-        } else {
-          final var authorEntity = new PersistentAuthorEntity();
-          authorEntity.setFirstName(authorRequestDto.firstName());
-          authorEntity.setLastName(authorRequestDto.lastName());
-          authorEntity.setNationality(authorRequestDto.nationality());
-          final var authorSaved = authorRepository.save(authorEntity);
-          final var bookAuthors = book.getAuthors();
-          bookAuthors.add(authorSaved);
-          book.setAuthors(bookAuthors);
+        try {
+            return libraryRepository.save(book);
+        } catch (DataIntegrityViolationException e) {
+            throw new LibraryServiceException(e.getMessage(), e);
         }
-      });
     }
-    try {
-      return libraryRepository.save(book);
-    } catch (DataIntegrityViolationException e) {
-      throw new LibraryServiceException(e.getMessage(), e);
-    }
-  }
 
-  /**
-   * Find book using isbn.
-   */
-  @Override
-  public BookEntity findByIsbn(final long val) throws LibraryServiceException {
-    checkNotNull(val, "Received a null val as book identifier isbn.");
-    final var optionalBook = libraryRepository.findById(val);
-    if (optionalBook.isPresent()) {
-      return optionalBook.get();
-    } else {
-      throw new LibraryServiceException("aa");
+    /**
+     * Find book using isbn.
+     */
+    @Override
+    public BookEntity findByIsbn(final long val) throws LibraryServiceException {
+        checkNotNull(val, "Received a null val as book identifier isbn.");
+        final var optionalBook = libraryRepository.findById(val);
+        if (optionalBook.isPresent()) {
+            return optionalBook.get();
+        } else {
+            throw new LibraryServiceException("aa");
+        }
     }
-  }
 
-  /**
-   * Remove book using isbn.
-   */
-  @Override
-  public void removeBookByIsbn(final long isbn) throws LibraryServiceException {
-    try {
-      // Check if the book exists
-      if (libraryRepository.existsById(isbn)) {
-        // If it exists, remove the book
-        libraryRepository.deleteById(isbn);
-      } else {
-        throw new LibraryServiceException("Book not found");
-      }
-    } catch (IllegalArgumentException e) {
-      throw new LibraryServiceException("Failed to remove the book", e);
+    /**
+     * Get all authors.
+     */
+    @Override
+    public List<AuthorEntity> getAllAuthors() {
+        final var persistentAuthors = authorRepository.findAll();
+        // Convertir cada PersistentAuthorEntity a AuthorEntity
+        return persistentAuthors.stream().map(AuthorEntity.class::cast).toList();
     }
-  }
 
-  /**
-   * Get all authors.
-   */
-  @Override
-  public List<AuthorEntity> getAllAuthors() {
-    final var persistentAuthors = authorRepository.findAll();
-    // Convertir cada PersistentAuthorEntity a AuthorEntity
-    return persistentAuthors.stream().map(AuthorEntity.class::cast).toList();
-  }
+    /**
+     * Get all books.
+     */
+    @Override
+    public List<BookEntity> getAllBooks() {
+        final var persistentBooks = libraryRepository.findAll();
+
+        // PersistentBookEntity a BookEntity
+        return persistentBooks.stream().map(BookEntity.class::cast).toList();
+    }
+
+    /**
+     * Remove book using isbn.
+     */
+    @Override
+    public void removeBookByIsbn(final long isbn) throws LibraryServiceException {
+        try {
+            // Check if the book exists
+            if (libraryRepository.existsById(isbn)) {
+                // If it exists, remove the book
+                libraryRepository.deleteById(isbn);
+            } else {
+                throw new LibraryServiceException("Book not found");
+            }
+        } catch (IllegalArgumentException e) {
+            throw new LibraryServiceException("Failed to remove the book", e);
+        }
+    }
 }

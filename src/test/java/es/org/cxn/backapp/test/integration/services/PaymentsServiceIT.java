@@ -38,9 +38,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
@@ -68,7 +68,7 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest()
 @ActiveProfiles("test")
-final class TestPaymentsService {
+final class PaymentsServiceIT {
 
     /**
      * The service for managing payments. Used to test the functionality of
@@ -88,14 +88,14 @@ final class TestPaymentsService {
      * Mocked mail sender to avoid sending actual emails during tests. Simulates
      * email sending functionality.
      */
-    @MockBean
+    @MockitoBean
     private JavaMailSender mailSender;
 
     /**
      * Mocked email service to test email-related functionality without triggering
      * real email-sending operations.
      */
-    @MockBean
+    @MockitoBean
     private DefaultEmailService emailService;
 
     /**
@@ -188,7 +188,7 @@ final class TestPaymentsService {
                 "Cancelling a non-existing payment should throw a PaymentsServiceException.");
 
         // Assert: Verify the exception message
-        final String expectedMessage = "No payment with id: " + notExistingPaymentId + " found.";
+        final String expectedMessage = "Payment with id: " + notExistingPaymentId + " not found.";
         Assertions.assertEquals(expectedMessage, exception.getMessage(),
                 "The exception message should indicate the payment ID was not found.");
     }
@@ -687,7 +687,7 @@ final class TestPaymentsService {
                 "The number of payments retrieved does not match the expected.");
 
         // Assert: Verify that the payments in the list match the created payments
-        PersistentPaymentsEntity retrievedFirstPayment = paymentsList.get(0);
+        PersistentPaymentsEntity retrievedFirstPayment = paymentsList.getFirst();
         PersistentPaymentsEntity retrievedSecondPayment = paymentsList.get(1);
         PersistentPaymentsEntity retrievedThirdPayment = paymentsList.get(2);
 
@@ -848,7 +848,7 @@ final class TestPaymentsService {
                 "Expected exception thrown when trying to make payment with non-existing payment ID.");
 
         // Assert: Verify the exception message is correct
-        final String expectedMessage = "No payment with id: " + notExistingPaymentId + " found.";
+        final String expectedMessage = "Payment with id: " + notExistingPaymentId + " not found.";
         Assertions.assertEquals(expectedMessage, exception.getMessage(),
                 "The exception message for non-existing payment ID.");
     }

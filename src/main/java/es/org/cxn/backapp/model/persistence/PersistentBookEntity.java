@@ -3,9 +3,9 @@ package es.org.cxn.backapp.model.persistence;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.persistence;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,6 +27,7 @@ package es.org.cxn.backapp.model.persistence;
  * #L%
  */
 
+import java.io.Serial;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -44,7 +45,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Book Entity.
@@ -59,7 +59,6 @@ import lombok.NoArgsConstructor;
  * @author Santiago Paz Perez.
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity(name = "Book")
@@ -69,6 +68,7 @@ public class PersistentBookEntity implements BookEntity, Comparable<PersistentBo
     /**
      * Serial UID for serialization.
      */
+    @Serial
     private static final long serialVersionUID = 5749496625209170661L;
 
     /**
@@ -111,6 +111,19 @@ public class PersistentBookEntity implements BookEntity, Comparable<PersistentBo
             inverseJoinColumns = @JoinColumn(name = "author_id"))
     @Builder.Default
     private Set<PersistentAuthorEntity> authors = new HashSet<>();
+
+    /**
+     * Default constructor for the PersistentBookEntity class.
+     * <p>
+     * This constructor initializes a new instance of the PersistentBookEntity
+     * class. It is required for frameworks like JPA that rely on reflection to
+     * create objects.
+     * </p>
+     */
+    public PersistentBookEntity() {
+        authors = new HashSet<>();
+        // Default constructor
+    }
 
     /**
      * Compares this book to another book based on their titles.

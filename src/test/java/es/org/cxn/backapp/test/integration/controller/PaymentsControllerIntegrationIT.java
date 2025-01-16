@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.integration.controller;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,7 +48,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
@@ -56,6 +55,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +79,7 @@ import jakarta.mail.internet.MimeMessage;
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
 @TestPropertySource("/application.properties")
-class PaymentsControllerIntegrationTest {
+class PaymentsControllerIntegrationIT {
 
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
@@ -102,7 +102,7 @@ class PaymentsControllerIntegrationTest {
     /**
      * The email service mocked implementation.
      */
-    @MockBean
+    @MockitoBean
     private DefaultEmailService defaultEmailService;
 
     /**
@@ -110,7 +110,7 @@ class PaymentsControllerIntegrationTest {
      * context for authentication. It represents the context for a specific user's
      * security information, such as authentication and authorization details.
      */
-    @MockBean
+    @MockitoBean
     private SecurityContext securityContext;
 
     /**
@@ -118,7 +118,7 @@ class PaymentsControllerIntegrationTest {
      * user information. This object contains details about the currently
      * authenticated user, such as the username, roles, and credentials.
      */
-    @MockBean
+    @MockitoBean
     private Authentication authentication;
 
     /**
@@ -132,7 +132,7 @@ class PaymentsControllerIntegrationTest {
     /**
      * Mocked mail sender.
      */
-    @MockBean
+    @MockitoBean
     private JavaMailSender javaMailSender;
 
     /**
@@ -143,7 +143,7 @@ class PaymentsControllerIntegrationTest {
     /**
      * Main class constructor.
      */
-    PaymentsControllerIntegrationTest() {
+    PaymentsControllerIntegrationIT() {
         super();
 
     }
@@ -372,6 +372,7 @@ class PaymentsControllerIntegrationTest {
     @Test
     @DisplayName("Test for retrieving payment info with a non-existent payment ID")
     @Transactional
+    @WithMockUser(username = "tesorero", roles = { "TESORERO" })
     void testGetPaymentInfoWithNonExistentId() throws Exception {
         // Generate a random UUID for the non-existent payment ID
         UUID nonExistentPaymentId = UUID.randomUUID();

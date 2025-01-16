@@ -3,9 +3,9 @@ package es.org.cxn.backapp.model.persistence;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ package es.org.cxn.backapp.model.persistence;
  * #L%
  */
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 
 import es.org.cxn.backapp.model.ChessQuestionEntity;
@@ -39,7 +40,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Self vehicle entity.
@@ -51,7 +51,6 @@ import lombok.NoArgsConstructor;
 @Entity(name = "ChessQuestion")
 @Table(name = "chess_questions")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PersistentChessQuestionEntity implements ChessQuestionEntity {
@@ -59,6 +58,7 @@ public class PersistentChessQuestionEntity implements ChessQuestionEntity {
     /**
      * Serial UID.
      */
+    @Serial
     private static final long serialVersionUID = 2897644409670798725L;
 
     /**
@@ -110,5 +110,17 @@ public class PersistentChessQuestionEntity implements ChessQuestionEntity {
      */
     @Column(name = "seen", nullable = false, unique = false)
     private boolean seen;
+
+    /**
+     * Default constructor for the PersistentChessQuestionEntity class.
+     * <p>
+     * This constructor initializes a new instance of the
+     * PersistentChessQuestionEntity class. It is required for frameworks like JPA
+     * that rely on reflection to create objects.
+     * </p>
+     */
+    public PersistentChessQuestionEntity() {
+        // Default constructor
+    }
 
 }

@@ -1,5 +1,7 @@
 package es.org.cxn.backapp.service.exceptions;
 
+import java.io.Serial;
+
 /*-
  * #%L
  * back-app
@@ -37,6 +39,7 @@ public final class FederateStateServiceException extends Exception {
     /**
      * Serial UID.
      */
+    @Serial
     private static final long serialVersionUID = 4511128362621185622L;
 
     /**

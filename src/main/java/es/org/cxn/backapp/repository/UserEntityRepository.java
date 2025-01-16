@@ -32,7 +32,6 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
@@ -44,7 +43,6 @@ import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
  *
  * @author Santiago Paz.
  */
-@Repository
 public interface UserEntityRepository extends JpaRepository<PersistentUserEntity, String> {
 
     /**

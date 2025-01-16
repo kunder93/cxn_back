@@ -2,9 +2,9 @@ package es.org.cxn.backapp.model.persistence;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.persistence;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,6 +26,7 @@ package es.org.cxn.backapp.model.persistence;
  * #L%
  */
 
+import java.io.Serial;
 import java.time.LocalDateTime;
 
 import es.org.cxn.backapp.model.OAuthAuthorizationRequestEntity;
@@ -47,6 +48,7 @@ public class PersistentOAuthAuthorizationRequestEntity implements OAuthAuthoriza
     /**
      * The serial version UID.
      */
+    @Serial
     private static final long serialVersionUID = 3828841937570827646L;
 
     /**
@@ -80,6 +82,18 @@ public class PersistentOAuthAuthorizationRequestEntity implements OAuthAuthoriza
      */
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    /**
+     * Default constructor for the PersistentOAuthAuthorizationRequestEntity class.
+     * <p>
+     * This constructor initializes a new instance of the
+     * PersistentOAuthAuthorizationRequestEntity class. It is required by JPA and
+     * other frameworks that use reflection for object creation.
+     * </p>
+     */
+    public PersistentOAuthAuthorizationRequestEntity() {
+        // Default constructor
+    }
 
     /**
      * Gets the code verifier used for the OAuth flow.

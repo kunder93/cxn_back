@@ -196,7 +196,6 @@ public final class DefaultUserProfileImageService implements UserProfileImageSer
                 }
             }
         }
-        userEntity = (PersistentUserEntity) userService.findByDni(userDni);
         final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
         profileImageEntity.setExtension(ImageExtension.PROVIDED);
         profileImageEntity.setStored(false);

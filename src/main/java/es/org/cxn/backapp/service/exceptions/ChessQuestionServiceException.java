@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.service.exceptions;
 
+import java.io.Serial;
+
 /*-
  * #%L
  * back-app
@@ -34,10 +36,11 @@ package es.org.cxn.backapp.service.exceptions;
  */
 public class ChessQuestionServiceException extends Exception {
 
-  /**
-   * Serial UID.
-   */
-  private static final long serialVersionUID = -5312915913395705691L;
+    /**
+     * Serial UID.
+     */
+    @Serial
+    private static final long serialVersionUID = -5312915913395705691L;
 
   /**
    * Main constructor.

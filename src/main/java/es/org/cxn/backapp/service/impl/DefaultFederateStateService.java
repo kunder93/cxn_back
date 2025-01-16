@@ -12,10 +12,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,15 +28,10 @@ package es.org.cxn.backapp.service.impl;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -45,12 +40,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
@@ -105,22 +100,30 @@ public final class DefaultFederateStateService implements FederateStateService {
     private final PaymentsService paymentsService;
 
     /**
+     * The image storage service used for load and save images.
+     */
+    private final ImageStorageService imageStorageService;
+
+    /**
      * Constructs the DefaultFederateStateService with a repository and user
      * service.
      *
-     * @param repoFederate The repository for managing federate states.
-     * @param userServ     The user service for retrieving user details.
-     * @param paymentsServ The payments service for manage payments when federate or
-     *                     cancel federate states.
+     * @param repoFederate     The repository for managing federate states.
+     * @param userServ         The user service for retrieving user details.
+     * @param paymentsServ     The payments service for manage payments when
+     *                         federate or cancel federate states.
+     * @param imageStorageServ The image storage service, load and delete image
+     *                         files.
      * @throws NullPointerException if the provided repository or user service is
      *                              null.
      */
     public DefaultFederateStateService(final FederateStateEntityRepository repoFederate, final UserService userServ,
-            final PaymentsService paymentsServ) {
+            final PaymentsService paymentsServ, final ImageStorageService imageStorageServ) {
         super();
         federateStateRepository = checkNotNull(repoFederate, "Received a null pointer as federate state repository.");
         userService = checkNotNull(userServ, "Received a null pointer as user service.");
         paymentsService = checkNotNull(paymentsServ, "Receivec a null pointer as payments service.");
+        imageStorageService = checkNotNull(imageStorageServ, "Receivec a null pointer as image storage service.");
     }
 
     /**
@@ -240,15 +243,7 @@ public final class DefaultFederateStateService implements FederateStateService {
 
         final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
         final var baseDirectory = imageLocationDnis;
-        final Path userDirectoryPath = Paths.get(baseDirectory, userDni);
 
-        if (!Files.exists(userDirectoryPath)) {
-            try {
-                Files.createDirectories(userDirectoryPath);
-            } catch (IOException e) {
-                throw new FederateStateServiceException("Error creating directory: " + e.getMessage(), e);
-            }
-        }
         final PersistentFederateStateEntity updatedEntity;
         if (federateStateEntity.getState() == FederateState.NO_FEDERATE
                 || federateStateEntity.getState() == FederateState.FEDERATE) {
@@ -257,8 +252,9 @@ public final class DefaultFederateStateService implements FederateStateService {
             federateStateEntity.setDniLastUpdate(LocalDate.now());
 
             try {
-                final String frontUrl = saveFile(frontDniFile, userDni, "frontal");
-                final String backUrl = saveFile(backDniFile, userDni, "trasera");
+                // Use ImageStorageService to save the front and back DNI images
+                final String frontUrl = imageStorageService.saveImage(frontDniFile, baseDirectory, "user-dni", userDni);
+                final String backUrl = imageStorageService.saveImage(backDniFile, baseDirectory, "user-dni", userDni);
 
                 federateStateEntity.setDniFrontImageUrl(frontUrl);
                 federateStateEntity.setDniBackImageUrl(backUrl);
@@ -314,49 +310,6 @@ public final class DefaultFederateStateService implements FederateStateService {
     }
 
     /**
-     * Saves a DNI image file to the specified location.
-     *
-     * @param file         The MultipartFile representing the DNI image.
-     * @param dni          The DNI of the user.
-     * @param kindDniImage A descriptor (e.g., "frontal", "trasera") indicating the
-     *                     type of image.
-     * @return The URL of the saved file.
-     * @throws IOException          If there is an error while saving the file.
-     * @throws UserServiceException If the file name or extension is invalid.
-     */
-    public String saveFile(final MultipartFile file, final String dni, final String kindDniImage)
-            throws IOException, UserServiceException {
-
-        final String originalFileName = file.getOriginalFilename();
-        if (originalFileName == null || !originalFileName.contains(".")) {
-            throw new UserServiceException("Invalid file name: " + originalFileName);
-        }
-
-        final String[] tokens = originalFileName.split("\\.");
-        final String fileExtension = tokens[tokens.length - 1].toLowerCase(Locale.ROOT); // Specify Locale
-
-        final ImageExtension imageExtension = ImageExtension.fromString(fileExtension);
-        if (imageExtension == null) {
-            throw new UserServiceException("Invalid image extension: " + fileExtension);
-        }
-
-        // Create the directory using Paths and File.separator
-        final Path userDirectoryPath = Paths.get(imageLocationDnis, dni);
-        if (!Files.exists(userDirectoryPath)) {
-            Files.createDirectories(userDirectoryPath);
-        }
-
-        final String sanitizedFileName = kindDniImage + "." + fileExtension;
-
-        final Path filePath = userDirectoryPath.resolve(sanitizedFileName);
-
-        final File dest = filePath.toFile();
-        file.transferTo(dest);
-
-        return filePath.toString();
-    }
-
-    /**
      * Updates the DNI images for a federated user.
      *
      * @param userEmail    The email of the user.
@@ -375,14 +328,18 @@ public final class DefaultFederateStateService implements FederateStateService {
         final var userDni = userEntity.getDni();
 
         final var federateStateOptional = federateStateRepository.findById(userDni);
-
         final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
+
         final var state = federateStateEntity.getState();
         if (state.equals(FederateState.FEDERATE)) {
             federateStateEntity.setDniLastUpdate(LocalDate.now());
+
             try {
-                final String frontUrl = saveFile(frontDniFile, userDni, "frontal");
-                final String backUrl = saveFile(backDniFile, userDni, "trasera");
+                // Use ImageStorageService to save the front and back DNI images
+                final String frontUrl = imageStorageService.saveImage(frontDniFile, imageLocationDnis, "user-dni",
+                        userDni);
+                final String backUrl = imageStorageService.saveImage(backDniFile, imageLocationDnis, "user-dni",
+                        userDni);
 
                 federateStateEntity.setDniFrontImageUrl(frontUrl);
                 federateStateEntity.setDniBackImageUrl(backUrl);
@@ -394,7 +351,6 @@ public final class DefaultFederateStateService implements FederateStateService {
         } else {
             throw new FederateStateServiceException("User is not in a federate state.");
         }
-
     }
 
 }

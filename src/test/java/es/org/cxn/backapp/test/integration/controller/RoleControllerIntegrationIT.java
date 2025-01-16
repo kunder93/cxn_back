@@ -41,11 +41,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,7 +56,7 @@ import com.google.gson.GsonBuilder;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
+import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
@@ -68,7 +68,7 @@ import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
-class RoleControllerIntegrationTest {
+class RoleControllerIntegrationIT {
 
     /**
      * URL endpoint for user signup.
@@ -99,13 +99,13 @@ class RoleControllerIntegrationTest {
     /**
      * Mocked email service.
      */
-    @MockBean
+    @MockitoBean
     private DefaultEmailService emailService;
 
     /**
      * Main class constructor.
      */
-    RoleControllerIntegrationTest() {
+    RoleControllerIntegrationIT() {
         super();
     }
 
@@ -161,7 +161,7 @@ class RoleControllerIntegrationTest {
                 .perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
 
-        var rolesFinalResponse = gson.fromJson(rolesFinalResponseJson, UserChangeRoleResponseForm.class);
+        var rolesFinalResponse = gson.fromJson(rolesFinalResponseJson, UserChangeRoleResponse.class);
 
         Assertions.assertEquals(UsersControllerFactory.USER_A_EMAIL, rolesFinalResponse.userName(),
                 "userName with roles is user A email.");
@@ -217,7 +217,7 @@ class RoleControllerIntegrationTest {
         var addRoleResponseJson = mockMvc
                 .perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
-        var addRoleResponse = gson.fromJson(addRoleResponseJson, UserChangeRoleResponseForm.class);
+        var addRoleResponse = gson.fromJson(addRoleResponseJson, UserChangeRoleResponse.class);
 
         Assertions.assertEquals(addRoleResponse.userRoles().size(), Integer.valueOf(2), "User have 2 roles.");
         Assertions.assertTrue(addRoleResponse.userRoles().contains(UserRoleName.ROLE_TESORERO),

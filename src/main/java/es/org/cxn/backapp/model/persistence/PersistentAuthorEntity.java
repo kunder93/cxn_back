@@ -3,9 +3,9 @@ package es.org.cxn.backapp.model.persistence;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.persistence;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,6 +27,7 @@ package es.org.cxn.backapp.model.persistence;
  * #L%
  */
 
+import java.io.Serial;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,7 +42,6 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  * Book Entity.
@@ -55,7 +55,6 @@ import lombok.NoArgsConstructor;
  * @author Santiago Paz Perez.
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity(name = "Author")
@@ -65,6 +64,7 @@ public class PersistentAuthorEntity implements AuthorEntity {
     /**
      * Serial UID.
      */
+    @Serial
     private static final long serialVersionUID = 5777796129999170661L;
 
     /**
@@ -98,4 +98,16 @@ public class PersistentAuthorEntity implements AuthorEntity {
     @ManyToMany(mappedBy = "authors")
     @Builder.Default
     private Set<PersistentBookEntity> books = new HashSet<>();
+
+    /**
+     * Default constructor for the PersistentAuthorEntity class.
+     * <p>
+     * This constructor initializes the PersistentAuthorEntity class, which is used
+     * for the Spring Boot application.
+     * </p>
+     */
+    public PersistentAuthorEntity() {
+        books = new HashSet<>();
+        // Default constructor
+    }
 }

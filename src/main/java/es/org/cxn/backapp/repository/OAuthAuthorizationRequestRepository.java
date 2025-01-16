@@ -28,7 +28,6 @@ package es.org.cxn.backapp.repository;
  */
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
 
@@ -40,7 +39,6 @@ import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestE
  *
  * @author Santiago Paz.
  */
-@Repository
 public interface OAuthAuthorizationRequestRepository
         extends JpaRepository<PersistentOAuthAuthorizationRequestEntity, String> {
 

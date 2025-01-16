@@ -46,9 +46,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import es.org.cxn.backapp.controller.entity.UserController;
@@ -84,20 +84,20 @@ class UserControllerTest {
      * The {@link UserService} mock bean used to simulate the behavior of the user
      * service in tests.
      * <p>
-     * This field is annotated with {@link MockBean}, which creates a mock
+     * This field is annotated with {@link MockitoBean}, which creates a mock
      * implementation of {@link UserService} that can be injected into the
      * controller being tested. It allows us to simulate interactions with the
      * service layer, such as calling the delete method, without invoking real
      * logic.
      * </p>
      */
-    @MockBean
+    @MockitoBean
     private UserService userService;
 
     /**
      * Mock user profile image service for build userController.
      */
-    @MockBean
+    @MockitoBean
     private UserProfileImageService userProfileImageService;
 
     /**

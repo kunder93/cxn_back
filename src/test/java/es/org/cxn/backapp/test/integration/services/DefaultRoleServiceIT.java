@@ -38,8 +38,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
@@ -62,7 +62,7 @@ import es.org.cxn.backapp.service.impl.DefaultRoleService;
 @SpringBootTest(classes = { UserEntityRepository.class, RoleEntityRepository.class, RoleService.class,
         DefaultRoleService.class })
 @ActiveProfiles("test")
-final class TestDefaultRoleService {
+final class DefaultRoleServiceIT {
 
     /**
      * The default role ID used in tests.
@@ -119,13 +119,13 @@ final class TestDefaultRoleService {
      * actual database.
      * </p>
      */
-    @MockBean
+    @MockitoBean
     private RoleEntityRepository roleEntityRepository;
 
     /**
      * Default constructor.
      */
-    TestDefaultRoleService() {
+    DefaultRoleServiceIT() {
         super();
     }
 

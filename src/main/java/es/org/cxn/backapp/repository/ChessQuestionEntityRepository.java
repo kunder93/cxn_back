@@ -2,7 +2,6 @@
 package es.org.cxn.backapp.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 /*-
  * #%L
@@ -40,7 +39,6 @@ import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
  *
  * @author Santiago Paz Perez.
  */
-@Repository
 public interface ChessQuestionEntityRepository extends JpaRepository<PersistentChessQuestionEntity, Integer> {
 
 }

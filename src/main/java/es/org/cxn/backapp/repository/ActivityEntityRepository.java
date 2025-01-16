@@ -28,7 +28,6 @@ package es.org.cxn.backapp.repository;
  */
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 
@@ -48,7 +47,6 @@ import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
  *
  * @see PersistentActivityEntity
  */
-@Repository
 public interface ActivityEntityRepository extends JpaRepository<PersistentActivityEntity, String> {
 
 }

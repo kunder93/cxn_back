@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.controller;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,12 +45,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,7 +66,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 @WebMvcTest(FederateController.class)
-@Import(TestSecurityConfiguration.class)
 @AutoConfigureMockMvc(addFilters = false)
 class FederateControllerTest {
 
@@ -106,14 +104,14 @@ class FederateControllerTest {
      * The mock service used to simulate interactions with the FederateStateService
      * in the test context.
      */
-    @MockBean
+    @MockitoBean
     private FederateStateService federateStateService;
 
     /**
      * The mock object that holds the SecurityContext for the current security
      * context, used in tests to simulate user authentication and authorization.
      */
-    @MockBean
+    @MockitoBean
     private SecurityContextHolder securityContextHolder;
 
     /**

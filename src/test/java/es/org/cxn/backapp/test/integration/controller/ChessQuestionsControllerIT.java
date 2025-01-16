@@ -39,12 +39,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -63,7 +63,7 @@ import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource("/application.properties")
 @ActiveProfiles("test")
-class ChessQuestionsControllerTest {
+class ChessQuestionsControllerIT {
 
     /**
      * Gson instance for serializing and deserializing JSON objects during tests.
@@ -80,13 +80,13 @@ class ChessQuestionsControllerTest {
     /**
      * The email service mocked implementation.
      */
-    @MockBean
+    @MockitoBean
     private DefaultEmailService defaultEmailService;
 
     /**
      * Mocked mail sender.
      */
-    @MockBean
+    @MockitoBean
     private JavaMailSender javaMailSender;
 
     /**
@@ -262,7 +262,7 @@ class ChessQuestionsControllerTest {
         List<ChessQuestionResponse> chessQuestionsList = new ArrayList<>(response.chessQuestionList());
 
         // Perform delete of first question
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/chessQuestion/" + chessQuestionsList.get(0).id()))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/chessQuestion/" + chessQuestionsList.getFirst().id()))
                 .andExpect(status().isNoContent());
 
         // Get all chess questions after deletion

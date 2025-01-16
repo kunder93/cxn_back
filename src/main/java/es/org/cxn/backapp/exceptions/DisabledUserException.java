@@ -1,5 +1,7 @@
 package es.org.cxn.backapp.exceptions;
 
+import java.io.Serial;
+
 /*-
  * #%L
  * back-app
@@ -33,6 +35,7 @@ public class DisabledUserException extends RuntimeException {
     /**
      * Serial UID.
      */
+    @Serial
     private static final long serialVersionUID = -5921693429906987707L;
 
     /**

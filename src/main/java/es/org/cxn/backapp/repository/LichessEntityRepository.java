@@ -28,7 +28,6 @@ package es.org.cxn.backapp.repository;
  */
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
 
@@ -40,7 +39,6 @@ import es.org.cxn.backapp.model.persistence.PersistentLichessProfileEntity;
  *
  * @author Santiago Paz Perez.
  */
-@Repository
 public interface LichessEntityRepository extends JpaRepository<PersistentLichessProfileEntity, String> {
 
 }

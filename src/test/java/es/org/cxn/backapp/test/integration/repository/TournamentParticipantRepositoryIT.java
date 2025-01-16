@@ -61,7 +61,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
  * @author Santi
  */
 @DataJpaTest
-class TournamentParticipantRepositoryTest {
+class TournamentParticipantRepositoryIT {
 
   /**
    * The repository.

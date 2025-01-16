@@ -62,7 +62,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
  * @author Santi
  */
 @DataJpaTest
-class ChessQuestionEntityRepositoryTest {
+class ChessQuestionEntityRepositoryIT {
 
   /**
    * The repository for managing {@link PersistentChessQuestionEntity}

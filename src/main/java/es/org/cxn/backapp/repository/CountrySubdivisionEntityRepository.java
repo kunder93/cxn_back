@@ -30,7 +30,6 @@ package es.org.cxn.backapp.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 
@@ -42,7 +41,6 @@ import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
  *
  * @author Santiago Paz Perez.
  */
-@Repository
 public interface CountrySubdivisionEntityRepository extends JpaRepository<PersistentCountrySubdivisionEntity, Integer> {
 
     /**

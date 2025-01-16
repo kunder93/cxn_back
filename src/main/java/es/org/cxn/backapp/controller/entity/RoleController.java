@@ -39,7 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
-import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
+import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
@@ -81,7 +81,7 @@ public class RoleController {
      */
     @PatchMapping()
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
-    public ResponseEntity<UserChangeRoleResponseForm> changeUserRoles(
+    public ResponseEntity<UserChangeRoleResponse> changeUserRoles(
             @RequestBody final UserChangeRoleRequest userChangeRoleRequestForm) {
 
         final var roles = userChangeRoleRequestForm.userRoles();
@@ -90,7 +90,7 @@ public class RoleController {
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-        return new ResponseEntity<>(new UserChangeRoleResponseForm(userChangeRoleRequestForm.email(),
+        return new ResponseEntity<>(new UserChangeRoleResponse(userChangeRoleRequestForm.email(),
                 userChangeRoleRequestForm.userRoles()), HttpStatus.OK);
     }
 
