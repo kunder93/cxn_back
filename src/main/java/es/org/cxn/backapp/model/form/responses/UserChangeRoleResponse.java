@@ -56,10 +56,10 @@ import es.org.cxn.backapp.model.UserRoleName;
  *
  * @author Santiago Paz Perez
  */
-public record UserChangeRoleResponseForm(String userName, List<UserRoleName> userRoles) {
+public record UserChangeRoleResponse(String userName, List<UserRoleName> userRoles) {
 
     /**
-     * Constructor for creating a new {@link UserChangeRoleResponseForm}.
+     * Constructor for creating a new {@link UserChangeRoleResponse}.
      * <p>
      * This constructor accepts a username and a list of user roles, creating an
      * unmodifiable list of roles to ensure that the roles cannot be modified after
@@ -70,7 +70,7 @@ public record UserChangeRoleResponseForm(String userName, List<UserRoleName> use
      * @param userRoles the list of {@link UserRoleName} objects representing the
      *                  roles assigned to the user after the change.
      */
-    public UserChangeRoleResponseForm(final String userName, final List<UserRoleName> userRoles) {
+    public UserChangeRoleResponse(final String userName, final List<UserRoleName> userRoles) {
         this.userName = userName;
         this.userRoles = Collections.unmodifiableList(new ArrayList<>(userRoles));
     }

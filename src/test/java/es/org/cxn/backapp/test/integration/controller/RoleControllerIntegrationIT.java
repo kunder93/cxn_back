@@ -56,7 +56,7 @@ import com.google.gson.GsonBuilder;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponseForm;
+import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
@@ -161,7 +161,7 @@ class RoleControllerIntegrationIT {
                 .perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
 
-        var rolesFinalResponse = gson.fromJson(rolesFinalResponseJson, UserChangeRoleResponseForm.class);
+        var rolesFinalResponse = gson.fromJson(rolesFinalResponseJson, UserChangeRoleResponse.class);
 
         Assertions.assertEquals(UsersControllerFactory.USER_A_EMAIL, rolesFinalResponse.userName(),
                 "userName with roles is user A email.");
@@ -217,7 +217,7 @@ class RoleControllerIntegrationIT {
         var addRoleResponseJson = mockMvc
                 .perform(patch(ROLES_URL).contentType(MediaType.APPLICATION_JSON).content(userChangeRoleRequestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
-        var addRoleResponse = gson.fromJson(addRoleResponseJson, UserChangeRoleResponseForm.class);
+        var addRoleResponse = gson.fromJson(addRoleResponseJson, UserChangeRoleResponse.class);
 
         Assertions.assertEquals(addRoleResponse.userRoles().size(), Integer.valueOf(2), "User have 2 roles.");
         Assertions.assertTrue(addRoleResponse.userRoles().contains(UserRoleName.ROLE_TESORERO),

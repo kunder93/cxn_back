@@ -53,6 +53,7 @@ import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 
 /**
  * DefaultPaymentsService is an implementation of the PaymentsService interface
@@ -258,7 +259,7 @@ public final class DefaultPaymentsService implements PaymentsService {
      * @return The string with message.
      */
     private String getPaymentNotFoundMessage(final UUID paymentId) {
-        return ("No payment with id: " + paymentId + " found.");
+        return ("Payment with id: " + paymentId + " not found.");
     }
 
     /**
@@ -301,6 +302,7 @@ public final class DefaultPaymentsService implements PaymentsService {
      *                                  {@link PaymentsState#UNPAID} state.
      */
     @Override
+    @Transactional
     public PaymentsEntity makePayment(final UUID paymentId, final LocalDateTime paymentDate)
             throws PaymentsServiceException {
         Objects.requireNonNull(paymentDate, "Payment date must not be null.");

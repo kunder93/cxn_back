@@ -12,10 +12,10 @@ package es.org.cxn.backapp.test.unit.services;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,7 +29,9 @@ package es.org.cxn.backapp.test.unit.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -371,6 +373,74 @@ class LichessServiceTest {
      * simulate OAuth authorization request.
      */
     private PersistentOAuthAuthorizationRequestEntity authRequestEntity;
+
+    @Test
+    void getAuthToken_noLichessAuth_throwsLichessServiceException() throws LichessServiceException {
+        // Arrange
+        String userEmail = "user@example.com";
+
+        // Mock the getUserByEmail method to return a user entity without Lichess
+        // authentication data
+        PersistentUserEntity userEntity = mock(PersistentUserEntity.class);
+        when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(userEntity));
+        when(userEntity.getLichessAuth()).thenReturn(null);
+
+        // Act & Assert
+        LichessServiceException exception = assertThrows(LichessServiceException.class, () -> {
+            lichessService.getAuthToken(userEmail);
+        });
+
+        // Assert that the exception message contains the expected message
+        assertEquals("User with email: " + userEmail + " no have lichess auth.", exception.getMessage());
+    }
+
+    @Test
+    void getAuthToken_tokenExpired_throwsLichessServiceException() throws LichessServiceException {
+        // Arrange
+        String userEmail = "user@example.com";
+
+        // Mock the user entity with expired authentication data
+        PersistentUserEntity userEntity = mock(PersistentUserEntity.class);
+        PersistentLichessAuthEntity userAuth = mock(PersistentLichessAuthEntity.class);
+        LocalDateTime expiredDate = LocalDateTime.now().minusDays(1); // Expired token
+        when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(userEntity));
+        when(userEntity.getLichessAuth()).thenReturn(userAuth);
+        when(userAuth.getExpirationDate()).thenReturn(expiredDate);
+
+        // Act & Assert
+        LichessServiceException exception = assertThrows(LichessServiceException.class, () -> {
+            lichessService.getAuthToken(userEmail);
+        });
+
+        // Assert that the exception message contains the expected message about
+        // expiration
+        assertTrue(exception.getMessage().contains("Token is expired."));
+        assertTrue(exception.getMessage().contains(expiredDate.toString()));
+    }
+
+    @Test
+    void getAuthToken_validToken_returnsAccessToken() throws LichessServiceException {
+        // Arrange
+        String userEmail = "user@example.com";
+        String expectedToken = "valid-access-token";
+
+        // Mock the user entity with valid authentication data
+        PersistentUserEntity userEntity = mock(PersistentUserEntity.class);
+        PersistentLichessAuthEntity userAuth = mock(PersistentLichessAuthEntity.class);
+        LocalDateTime validExpirationDate = LocalDateTime.now().plusDays(1); // Valid expiration date (in the future)
+
+        // Set up mock behavior for repositories and the user authentication
+        when(userEntityRepository.findByEmail(userEmail)).thenReturn(Optional.of(userEntity));
+        when(userEntity.getLichessAuth()).thenReturn(userAuth);
+        when(userAuth.getExpirationDate()).thenReturn(validExpirationDate);
+        when(userAuth.getAccessToken()).thenReturn(expectedToken);
+
+        // Act
+        String actualToken = lichessService.getAuthToken(userEmail);
+
+        // Assert
+        assertEquals(expectedToken, actualToken, "The access token returned should be the expected one.");
+    }
 
     @BeforeEach
     void setUp() {

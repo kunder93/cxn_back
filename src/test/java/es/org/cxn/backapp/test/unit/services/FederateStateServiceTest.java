@@ -29,12 +29,22 @@ package es.org.cxn.backapp.test.unit.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,18 +57,22 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.FederateStateEntity;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
+import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
+import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
 import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultFederateStateService;
 
@@ -135,9 +149,162 @@ class FederateStateServiceTest {
     @Value("${image.location.dnis}")
     private String imageLocationDnis;
 
+    @Test
+    void federateMemberShouldSaveImagesAndUpdateStateWhenStateIsFederate() throws Exception {
+        // Arrange
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setEmail("test@example.com");
+        user.setDni("12345678A");
+
+        // Mock federate state as FEDERATE
+        PersistentFederateStateEntity federateState = new PersistentFederateStateEntity();
+        federateState.setState(FederateState.FEDERATE);
+
+        // Mock return values for dependencies
+        when(userService.findByEmail("test@example.com")).thenReturn(user);
+        when(federateStateRepository.findById("12345678A")).thenReturn(Optional.of(federateState));
+        when(imageStorageService.saveImage(frontDniFile, "base-directory", "user-dni", "12345678A"))
+                .thenReturn("front-image-url");
+        when(imageStorageService.saveImage(backDniFile, "base-directory", "user-dni", "12345678A"))
+                .thenReturn("back-image-url");
+
+        PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
+        when(paymentsService.createPayment(BigDecimal.valueOf(15.00), PaymentsCategory.FEDERATE_PAYMENT,
+                "Coste ficha federativa.", "Pago federar usuario", "12345678A")).thenReturn(paymentEntity);
+
+        PersistentFederateStateEntity updatedEntity = new PersistentFederateStateEntity();
+        updatedEntity.setUserDni("12345678A");
+        updatedEntity.setState(FederateState.IN_PROGRESS);
+        when(federateStateRepository.save(any(PersistentFederateStateEntity.class))).thenReturn(updatedEntity);
+
+        // Act
+        PersistentFederateStateEntity result = federateStateService.federateMember("test@example.com", frontDniFile,
+                backDniFile, true);
+
+        // Assert
+        assertNotNull(result);
+
+        verify(imageStorageService, times(1)).saveImage(frontDniFile, "base-directory", "user-dni", "12345678A");
+        verify(imageStorageService, times(1)).saveImage(backDniFile, "base-directory", "user-dni", "12345678A");
+        verify(paymentsService, times(1)).createPayment(BigDecimal.valueOf(15.00), PaymentsCategory.FEDERATE_PAYMENT,
+                "Coste ficha federativa.", "Pago federar usuario", "12345678A");
+        verify(federateStateRepository, times(1)).save(any(PersistentFederateStateEntity.class));
+    }
+
+    @Test
+    void federateMemberShouldSaveImagesAndUpdateStateWhenStateIsNoFederate() throws Exception {
+        // Arrange
+        // Mock user and its details
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setEmail("test@example.com");
+        user.setDni("12345678A");
+
+        // Mock existing federate state
+        PersistentFederateStateEntity federateState = new PersistentFederateStateEntity();
+        federateState.setState(FederateState.NO_FEDERATE);
+
+        // Mock return values for dependencies
+        when(userService.findByEmail("test@example.com")).thenReturn(user);
+        when(federateStateRepository.findById("12345678A")).thenReturn(Optional.of(federateState));
+        when(imageStorageService.saveImage(frontDniFile, "base-directory", "user-dni", "12345678A"))
+                .thenReturn("front-image-url");
+        when(imageStorageService.saveImage(backDniFile, "base-directory", "user-dni", "12345678A"))
+                .thenReturn("back-image-url");
+
+        PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
+        when(paymentsService.createPayment(BigDecimal.valueOf(15.00), PaymentsCategory.FEDERATE_PAYMENT,
+                "Coste ficha federativa.", "Pago federar usuario", "12345678A")).thenReturn(paymentEntity);
+
+        PersistentFederateStateEntity updatedEntity = new PersistentFederateStateEntity();
+        updatedEntity.setUserDni("12345678A");
+        updatedEntity.setState(FederateState.IN_PROGRESS);
+        when(federateStateRepository.save(any(PersistentFederateStateEntity.class))).thenReturn(updatedEntity);
+
+        // Act
+        PersistentFederateStateEntity result = federateStateService.federateMember("test@example.com", frontDniFile,
+                backDniFile, true);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(FederateState.IN_PROGRESS, result.getState());
+
+        verify(imageStorageService, times(1)).saveImage(frontDniFile, "base-directory", "user-dni", "12345678A");
+        verify(imageStorageService, times(1)).saveImage(backDniFile, "base-directory", "user-dni", "12345678A");
+        verify(paymentsService, times(1)).createPayment(BigDecimal.valueOf(15.00), PaymentsCategory.FEDERATE_PAYMENT,
+                "Coste ficha federativa.", "Pago federar usuario", "12345678A");
+        verify(federateStateRepository, times(1)).save(any(PersistentFederateStateEntity.class));
+    }
+
+    @Test
+    void federateMemberShouldThrowExceptionWhenImageSavingFails() throws Exception {
+        // Arrange
+        final String userEmail = "test@example.com";
+        final String userDni = "12345678A";
+
+        final PersistentUserEntity user = new PersistentUserEntity();
+        user.setEmail(userEmail);
+        user.setDni(userDni);
+
+        final PersistentFederateStateEntity federateStateEntity = new PersistentFederateStateEntity();
+        federateStateEntity.setState(FederateState.NO_FEDERATE);
+
+        when(userService.findByEmail(userEmail)).thenReturn(user);
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(federateStateEntity));
+        when(imageStorageService.saveImage(frontDniFile, "base-directory", "user-dni", userDni))
+                .thenThrow(new IOException("Disk full"));
+
+        // Act & Assert
+        FederateStateServiceException exception = assertThrows(FederateStateServiceException.class,
+                () -> federateStateService.federateMember(userEmail, frontDniFile, backDniFile, true));
+        assertEquals("Error saving DNI images: Disk full", exception.getMessage());
+        verify(imageStorageService, times(1)).saveImage(frontDniFile, "base-directory", "user-dni", userDni);
+        verifyNoMoreInteractions(imageStorageService);
+    }
+
+    @Test
+    void federateMemberShouldThrowExceptionWhenStateIsInvalid() throws UserServiceException {
+        // Arrange
+        final String userEmail = "test@example.com";
+        final String userDni = "12345678A";
+
+        final PersistentUserEntity user = new PersistentUserEntity();
+        user.setEmail(userEmail);
+        user.setDni(userDni);
+
+        final PersistentFederateStateEntity federateStateEntity = new PersistentFederateStateEntity();
+        federateStateEntity.setState(FederateState.IN_PROGRESS);
+
+        when(userService.findByEmail(userEmail)).thenReturn(user);
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(federateStateEntity));
+
+        // Act & Assert
+        FederateStateServiceException exception = assertThrows(FederateStateServiceException.class,
+                () -> federateStateService.federateMember(userEmail, frontDniFile, backDniFile, true));
+        assertEquals("Bad state. User dni: " + userDni, exception.getMessage());
+        verifyNoInteractions(imageStorageService);
+    }
+
+    @Test
+    void federateMemberShouldThrowExceptionWhenUserNotFound() throws UserServiceException {
+        // Arrange
+        final String userEmail = "nonexistent@example.com";
+
+        when(userService.findByEmail(userEmail)).thenThrow(new UserServiceException("User not found"));
+
+        // Act & Assert
+        assertThrows(UserServiceException.class,
+                () -> federateStateService.federateMember(userEmail, frontDniFile, backDniFile, true));
+        verifyNoInteractions(federateStateRepository);
+    }
+
     @BeforeEach
     public void setup() {
         // Empty constructor
+    }
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(federateStateService, "imageLocationDnis", "base-directory");
     }
 
     @Test
@@ -145,16 +312,45 @@ class FederateStateServiceTest {
         // Arrange
         final String userEmail = "test@example.com";
         final String userDni = "12345678X";
-        UserEntity mockUser = new PersistentUserEntity(); // Create a mock UserEntity
+        // Create a mock UserEntity
+        UserEntity mockUser = new PersistentUserEntity();
         mockUser.setDni(userDni); // Set the DNI of the mock user to match your test scenario
-
+        // Mock the behavior of the userService and federateStateRepository
         when(userService.findByEmail(userEmail)).thenReturn(mockUser);
         when(federateStateRepository.findById(userDni)).thenReturn(Optional.empty());
-
         // Act & Assert
         assertThrows(FederateStateServiceException.class, () -> {
             federateStateService.changeAutoRenew(userEmail);
         });
+    }
+
+    @Test
+    void testChangeAutoRenewSuccess() throws Exception {
+        // Arrange
+        String userEmail = "user@example.com";
+        String userDni = "12345";
+
+        // Mocking the UserEntity and federateStateEntity
+        UserEntity userEntity = mock(UserEntity.class);
+        when(userService.findByEmail(userEmail)).thenReturn(userEntity);
+        when(userEntity.getDni()).thenReturn(userDni);
+
+        PersistentFederateStateEntity federateStateEntity = new PersistentFederateStateEntity();
+        federateStateEntity.setState(FederateState.FEDERATE);
+        federateStateEntity.setAutomaticRenewal(false); // Assume initial state is false
+
+        // Mocking the federateStateRepository
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(federateStateEntity));
+
+        // Mock the save method to return the updated federate state
+        when(federateStateRepository.save(federateStateEntity)).thenReturn(federateStateEntity);
+
+        // Act
+        PersistentFederateStateEntity updatedFederateState = federateStateService.changeAutoRenew(userEmail);
+
+        // Assert
+        assertTrue(updatedFederateState.isAutomaticRenewal()); // Assert that the automatic renewal was toggled to true
+        verify(federateStateRepository).save(federateStateEntity); // Ensure that save was called
     }
 
     @Test
@@ -206,9 +402,106 @@ class FederateStateServiceTest {
     }
 
     @Test
-    void testConfirmCancelFederateNoFederateStateFound() {
+    void testConfirmCancelFederateFederate()
+            throws FederateStateServiceException, UserServiceException, PaymentsServiceException {
         // Arrange
-        final String userDni = "12345678X";
+        String userDni = "12345";
+        PersistentFederateStateEntity federateStateEntity = new PersistentFederateStateEntity(); // Ensure it's a real
+                                                                                                 // instance
+        federateStateEntity.setState(FederateState.FEDERATE);
+        federateStateEntity.setPayment(new PersistentPaymentsEntity()); // Assuming Payment class exists
+
+        // Mock the repository to return the federateStateEntity when finding by ID
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(federateStateEntity));
+
+        // Mock the save method to return the federateStateEntity after it's saved
+        when(federateStateRepository.save(federateStateEntity)).thenReturn(federateStateEntity);
+
+        // Act
+        PersistentFederateStateEntity result = federateStateService.confirmCancelFederate(userDni);
+
+        // Assert
+        assertNotNull(result, "The result should not be null");
+        assertEquals(FederateState.NO_FEDERATE, result.getState());
+        assertNull(result.getPayment());
+        verify(paymentsService).remove(any());
+        verify(federateStateRepository).save(federateStateEntity); // Verify that save was called
+    }
+
+    @Test
+    void testConfirmCancelFederateInProgress()
+            throws FederateStateServiceException, UserServiceException, PaymentsServiceException {
+        // Arrange
+        String userDni = "12345";
+
+        // Create an instance of PersistentFederateStateEntity (the correct type)
+        PersistentFederateStateEntity persistentFederateStateEntity = new PersistentFederateStateEntity();
+        persistentFederateStateEntity.setState(FederateState.IN_PROGRESS);
+
+        // Mock repository to return the correct entity type when findById is called
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(persistentFederateStateEntity));
+
+        // Mock the save method to return the entity being saved
+        when(federateStateRepository.save(any(PersistentFederateStateEntity.class)))
+                .thenReturn(persistentFederateStateEntity);
+
+        // Act
+        PersistentFederateStateEntity result = federateStateService.confirmCancelFederate(userDni);
+
+        // Check if result is null
+        assertNotNull(result, "Expected non-null result, but got null");
+
+        // Assert that the state has been changed to FEDERATE
+        assertEquals(FederateState.FEDERATE, result.getState());
+
+        // Verify that save was called on the repository with the correct entity
+        verify(federateStateRepository).save(persistentFederateStateEntity);
+    }
+
+    @Test
+    void testConfirmCancelFederateNoFederate() {
+        // Arrange
+        String userDni = "12345";
+
+        // Ensure that federateStateEntity is of type PersistentFederateStateEntity
+        PersistentFederateStateEntity persistentFederateStateEntity = new PersistentFederateStateEntity();
+        persistentFederateStateEntity.setState(FederateState.NO_FEDERATE);
+
+        // Stub the repository call to return the persistentFederateStateEntity
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(persistentFederateStateEntity));
+
+        // Act & Assert
+        assertThrows(FederateStateServiceException.class, () -> {
+            federateStateService.confirmCancelFederate(userDni);
+        });
+    }
+
+    @Test
+    void testConfirmCancelFederatePaymentRemovalError() throws PaymentsServiceException {
+        // Arrange
+        String userDni = "12345";
+        // Create an instance of PersistentFederateStateEntity instead of
+        // FederateStateEntity
+        PersistentFederateStateEntity persistentFederateStateEntity = new PersistentFederateStateEntity();
+        persistentFederateStateEntity.setState(FederateState.FEDERATE);
+        persistentFederateStateEntity.setPayment(new PersistentPaymentsEntity()); // Make sure it's the correct type
+
+        // Mocking the repository to return the correct entity type
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(persistentFederateStateEntity));
+
+        // Throw a PaymentsServiceException when remove is called
+        doThrow(new PaymentsServiceException("Error removing payment")).when(paymentsService).remove(any());
+
+        // Act & Assert
+        assertThrows(PaymentsServiceException.class, () -> {
+            federateStateService.confirmCancelFederate(userDni);
+        });
+    }
+
+    @Test
+    void testConfirmCancelFederateUserNotFound() {
+        // Arrange
+        String userDni = "12345";
         when(federateStateRepository.findById(userDni)).thenReturn(Optional.empty());
 
         // Act & Assert
@@ -308,25 +601,84 @@ class FederateStateServiceTest {
     }
 
     @Test
-    void testUpdateDniUserNotFederate() throws Exception {
-        final String userEmail = "user@example.com";
-        final String userDni = "12345678A";
+    void testUpdateDniIOException() throws Exception {
+        // Arrange
+        String userEmail = "user@example.com";
+        String userDni = "12345";
 
-        // Given
-        UserEntity mockUserEntity = mock(UserEntity.class);
-        when(mockUserEntity.getDni()).thenReturn(userDni);
-        when(userService.findByEmail(userEmail)).thenReturn(mockUserEntity);
+        UserEntity userEntity = mock(UserEntity.class);
+        PersistentFederateStateEntity federateStateEntity = new PersistentFederateStateEntity();
+        federateStateEntity.setState(FederateState.FEDERATE);
 
-        // Mock federate state entity with a non-federate state
-        PersistentFederateStateEntity mockFederateStateEntity = mock(PersistentFederateStateEntity.class);
-        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(mockFederateStateEntity));
-        when(mockFederateStateEntity.getState()).thenReturn(FederateState.NO_FEDERATE);
+        // Mocking the dependencies
+        when(userService.findByEmail(userEmail)).thenReturn(userEntity);
+        when(userEntity.getDni()).thenReturn(userDni);
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(federateStateEntity));
 
-        // When & Then
+        // Match arguments exactly using only raw values
+        doThrow(new IOException("Failed to save image")).when(imageStorageService).saveImage(any(MultipartFile.class),
+                any(), any(), any());
+
+        // Act & Assert
         FederateStateServiceException exception = assertThrows(FederateStateServiceException.class, () -> {
             federateStateService.updateDni(userEmail, frontDniFile, backDniFile);
         });
 
+        assertEquals("Error updating DNI images: Failed to save image", exception.getMessage());
+
+        // Verify behavior
+        verify(imageStorageService).saveImage(any(MultipartFile.class), anyString(), anyString(), anyString());
+        verify(imageStorageService, never()).saveImage(backDniFile, imageLocationDnis, "user-dni", userDni);
+        verify(federateStateRepository, never()).save(any());
+    }
+
+    @Test
+    void testUpdateDniSuccess() throws Exception {
+        // Arrange
+        String userEmail = "user@example.com";
+        String userDni = "12345";
+        UserEntity userEntity = mock(UserEntity.class);
+        PersistentFederateStateEntity federateStateEntity = new PersistentFederateStateEntity();
+        federateStateEntity.setState(FederateState.FEDERATE);
+        // Mocking the dependencies
+        when(userService.findByEmail(userEmail)).thenReturn(userEntity);
+        when(userEntity.getDni()).thenReturn(userDni);
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(federateStateEntity));
+        String frontImageUrl = "frontImageUrl";
+        String backImageUrl = "backImageUrl";
+        // Update stubbing to match base-directory
+        when(imageStorageService.saveImage(frontDniFile, "base-directory", "user-dni", userDni))
+                .thenReturn(frontImageUrl);
+        when(imageStorageService.saveImage(backDniFile, "base-directory", "user-dni", userDni))
+                .thenReturn(backImageUrl);
+        when(federateStateRepository.save(federateStateEntity)).thenReturn(federateStateEntity);
+        // Act
+        PersistentFederateStateEntity result = federateStateService.updateDni(userEmail, frontDniFile, backDniFile);
+        // Assert
+        assertNotNull(result);
+        assertEquals(frontImageUrl, result.getDniFrontImageUrl());
+        assertEquals(backImageUrl, result.getDniBackImageUrl());
+        verify(federateStateRepository).save(federateStateEntity);
+        verify(imageStorageService).saveImage(frontDniFile, "base-directory", "user-dni", userDni);
+        verify(imageStorageService).saveImage(backDniFile, "base-directory", "user-dni", userDni);
+    }
+
+    @Test
+    void testUpdateDniUserNotFederate() throws Exception {
+        final String userEmail = "user@example.com";
+        final String userDni = "12345678A";
+        // Given
+        UserEntity mockUserEntity = mock(UserEntity.class);
+        when(mockUserEntity.getDni()).thenReturn(userDni);
+        when(userService.findByEmail(userEmail)).thenReturn(mockUserEntity);
+        // Mock federate state entity with a non-federate state
+        PersistentFederateStateEntity mockFederateStateEntity = mock(PersistentFederateStateEntity.class);
+        when(federateStateRepository.findById(userDni)).thenReturn(Optional.of(mockFederateStateEntity));
+        when(mockFederateStateEntity.getState()).thenReturn(FederateState.NO_FEDERATE);
+        // When & Then
+        FederateStateServiceException exception = assertThrows(FederateStateServiceException.class, () -> {
+            federateStateService.updateDni(userEmail, frontDniFile, backDniFile);
+        });
         assertEquals("User is not in a federate state.", exception.getMessage());
     }
 
