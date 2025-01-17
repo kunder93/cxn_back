@@ -27,7 +27,7 @@
 
 	<groupId>es.org.cxn</groupId>
 	<artifactId>back-app</artifactId>
-	<version>4.0.0-SNAPSHOT</version>
+	<version>4.0.0-RELEASE</version>
 
 	<name>back-app</name>
 	<description>BackEnd app para CXN naron</description>
@@ -68,7 +68,7 @@
 		<connection>scm:git:https://github.com/kunder93/cxn_back.git</connection>
 		<developerConnection>scm:git:https://github.com/kunder93/cxn_back.git</developerConnection>
 		<url>https://github.com/kunder93/cxn_back</url>
-		<tag>back-app-2.0.1</tag>
+		<tag>back-app-3.0.1</tag>
 	</scm>
 	<distributionManagement>
 		<repository>
@@ -889,7 +889,6 @@
 					</reportsDirectories>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</reporting>
 
