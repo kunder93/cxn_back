@@ -21,7 +21,7 @@ RUN mvn clean install -P${BUILD_PROFILE}
 FROM eclipse-temurin:21-jre-alpine
 
 # Copy the generated JAR file from the builder stage
-COPY --from=builder /usr/src/app/target/back-app-4.0.0-SNAPSHOT.jar /app/app.jar
+COPY --from=builder /usr/src/app/target/back-app-4.0.0-RELEASE.jar /app/app.jar
 
 # Expose ports
 EXPOSE 8080
@@ -40,7 +40,7 @@ RUN if [ "$COPY_CERTIFICATES" = "true" ]; then \
     fi
 
 # Set an environment variable to choose the Spring profile at runtime
-ENV PROFILE=prod
+ENV PROFILE=dev
 
 # Command to run the Spring Boot application with the specified profile
 CMD ["java", "-Dspring.profiles.active=${PROFILE}", "-jar", "/app/app.jar"]
