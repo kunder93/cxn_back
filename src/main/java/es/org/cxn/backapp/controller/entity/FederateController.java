@@ -1,28 +1,31 @@
-/**
- * The MIT License (MIT)
+
+package es.org.cxn.backapp.controller.entity;
+
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * <p>Copyright (c) 2020 the original author or authors.
- *
- * <p>Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * <p>The above copyright notice and this permission notice shall be included in
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
  */
-
-package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,21 +43,22 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.FederateStateServiceException;
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList.FederateStateExtendedResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateResponse;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
+import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * The FederateController class handles HTTP requests related to federate state
- * management. It provides endpoints for confirming a federate state, federating
- * a member, retrieving federate state data for the authenticated user, updating
+ * management. It provides endpoints for confirming a federate state, federate a
+ * member, retrieving federate state data for the authenticated user, updating
  * DNI information, and fetching federate state data for all users.
  *
  * <p>
- * This controller supports methods for confirming federate status, federating
+ * This controller supports methods for confirming federate status, federate
  * members with DNI document uploads, and retrieving federate state information.
  * It uses the {@link FederateStateService} to interact with the federate state
  * business logic.
@@ -167,13 +171,14 @@ public class FederateController {
      *
      * @param request the request containing the user's DNI
      * @return a ResponseEntity containing the updated federate state response
-     * @throws ResponseStatusException if there is an error during the confirmation
-     *                                 process
+     * @throws PaymentsServiceException if associated payment cannot be deleted.
+     * @throws ResponseStatusException  if there is an error during the confirmation
+     *                                  process
      */
     @PatchMapping()
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
     public ResponseEntity<FederateStateExtendedResponse> confirmCancelFederate(
-            @RequestBody final ConfirmCancelFederateRequest request) {
+            @RequestBody final ConfirmCancelFederateRequest request) throws PaymentsServiceException {
         try {
             final var result = federateStateService.confirmCancelFederate(request.userDni);
             return new ResponseEntity<>(new FederateStateExtendedResponse(result), HttpStatus.OK);
@@ -183,7 +188,7 @@ public class FederateController {
     }
 
     /**
-     * Federates a member by uploading their DNI documents and enabling or disabling
+     * Federate a member by uploading their DNI documents and enabling or disabling
      * auto-renewal.
      *
      * <p>
@@ -209,7 +214,7 @@ public class FederateController {
                     autoRenewal);
             return new ResponseEntity<>(new FederateStateResponse(federateStateEntity), HttpStatus.OK);
 
-        } catch (UserServiceException | FederateStateServiceException e) {
+        } catch (UserServiceException | FederateStateServiceException | PaymentsServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }

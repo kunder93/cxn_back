@@ -1,0 +1,134 @@
+
+package es.org.cxn.backapp.service.impl;
+
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import es.org.cxn.backapp.exceptions.RoleNameExistsException;
+import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
+import es.org.cxn.backapp.model.RoleEntity;
+import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.repository.RoleEntityRepository;
+import es.org.cxn.backapp.service.RoleService;
+
+/**
+ * Default implementation of the privilege entity service.
+ *
+ * @author Santiago Paz.
+ *
+ */
+@Service
+public final class DefaultRoleService implements RoleService {
+
+    /**
+     * Repository for the domain entities handled by the service.
+     */
+    private final RoleEntityRepository entityRepository;
+
+    /**
+     * Constructs an entities service with the specified repository.
+     *
+     * @param repository the repository for the entity instances.
+     */
+    public DefaultRoleService(final RoleEntityRepository repository) {
+        super();
+
+        entityRepository = checkNotNull(repository, "Received a null pointer as repository");
+    }
+
+    @Override
+    public RoleEntity add(final UserRoleName name) throws RoleNameExistsException {
+        final PersistentRoleEntity save;
+        final var nameNotNull = checkNotNull(name, "Received a null pointer as name");
+        save = new PersistentRoleEntity();
+        save.setName(nameNotNull);
+        if (entityRepository.existsByName(nameNotNull)) {
+            throw new RoleNameExistsException(nameNotNull);
+        }
+
+        return entityRepository.save(save);
+    }
+
+    /**
+     * Returns an entity with the given id.
+     * <p>
+     * If no instance exists with that id then an entity with a negative id is
+     * returned.
+     *
+     * @param identifier identifier of the entity to find
+     * @return the entity for the given id
+     */
+    @Override
+    public RoleEntity findById(final Integer identifier) {
+        checkNotNull(identifier, "Received a null pointer as identifier");
+
+        final var entityOpt = entityRepository.findById(identifier);
+
+        // Variable para almacenar el resultado
+        final RoleEntity result;
+
+        if (entityOpt.isEmpty()) {
+            result = new PersistentRoleEntity();
+        } else {
+            result = entityOpt.get();
+        }
+
+        return result;
+    }
+
+    @Override
+    public RoleEntity findByName(final UserRoleName name) throws RoleNameNotFoundException {
+        checkNotNull(name, "Received a null pointer as identifier");
+        final var entity = entityRepository.findByName(name);
+        if (entity.isEmpty()) {
+            throw new RoleNameNotFoundException(name);
+        }
+        return entity.get();
+    }
+
+    @Override
+    public List<RoleEntity> getAllRoles() {
+        final var usersList = entityRepository.findAll();
+        return new ArrayList<>(usersList);
+    }
+
+    @Override
+    public void remove(final UserRoleName name) throws RoleNameNotFoundException {
+        final var delete = entityRepository.findByName(name);
+        if (delete.isEmpty()) {
+            throw new RoleNameNotFoundException(name);
+        }
+        entityRepository.delete(delete.get());
+    }
+}

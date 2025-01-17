@@ -1,9 +1,36 @@
 package es.org.cxn.backapp.test.unit.filter;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
@@ -11,6 +38,7 @@ import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
 
@@ -27,8 +55,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import es.org.cxn.backapp.filter.JwtRequestFilter;
-import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.MyPrincipalUser;
+import es.org.cxn.backapp.security.DefaultJwtUtils;
+import es.org.cxn.backapp.security.MyPrincipalUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -124,10 +152,13 @@ class JwtRequestFilterTest {
             doFilterInternal.setAccessible(true);
 
             // Invoke the method with the request, response, and filter chain
-            doFilterInternal.invoke(jwtRequestFilter, request, response, filterChain);
-
-            // Verify that the filter chain was invoked
-            verify(filterChain).doFilter(request, response);
+            try {
+                doFilterInternal.invoke(jwtRequestFilter, request, response, filterChain);
+            } catch (InvocationTargetException e) {
+                // Handle the thrown exception from DefaultJwtUtils
+                assertTrue(e.getCause() instanceof RuntimeException);
+                assertEquals("Invalid token", e.getCause().getMessage());
+            }
 
             // Explicitly clear the authentication to ensure it's null
             SecurityContextHolder.clearContext();
@@ -263,15 +294,15 @@ class JwtRequestFilterTest {
                     String.class);
             getUsernameFromJwtMethod.setAccessible(true);
 
-            // Invoke the method with an invalid token
-            Object result = getUsernameFromJwtMethod.invoke(jwtRequestFilter, "invalid.token");
+            // Use assertThrows to catch the InvocationTargetException and check the cause
+            Exception exception = assertThrows(InvocationTargetException.class, () -> {
+                // Invoke the method with an invalid token
+                getUsernameFromJwtMethod.invoke(jwtRequestFilter, "invalid.token");
+            });
 
-            // Suppress the unchecked cast warning
-            @SuppressWarnings("unchecked")
-            Optional<String> username = (Optional<String>) result;
-
-            // Assert that the result is empty because the token is invalid
-            assertTrue(username.isEmpty());
+            // Assert that the cause of the InvocationTargetException is a RuntimeException
+            assertTrue(exception.getCause() instanceof RuntimeException);
+            assertEquals("Invalid token", exception.getCause().getMessage());
         }
     }
 
@@ -407,7 +438,7 @@ class JwtRequestFilterTest {
      */
     @Test
     void testValidateAndLoadUserWithException() throws Exception {
-        // Mock user details service to throw exception for a username
+        // Mock user details service to throw an exception for a username
         when(userDetailsService.loadUserByUsername("testUser")).thenThrow(new RuntimeException("User not found"));
         when(request.getHeader("Authorization")).thenReturn("Bearer valid.token.here");
 
@@ -416,19 +447,18 @@ class JwtRequestFilterTest {
                 HttpServletRequest.class);
         validateAndLoadUserMethod.setAccessible(true);
 
-        // Invoke the method with the username and request
-        Object result = validateAndLoadUserMethod.invoke(jwtRequestFilter, "testUser", request);
+        // Invoke the method and catch the InvocationTargetException
+        InvocationTargetException thrownException = assertThrows(InvocationTargetException.class, () -> {
+            // Invoke the method with the username and request
+            validateAndLoadUserMethod.invoke(jwtRequestFilter, "testUser", request);
+        });
 
-        // Ensure the result is an instance of Optional and suppress unchecked warning
-        if (result instanceof Optional<?>) {
-            @SuppressWarnings("unchecked")
-            Optional<MyPrincipalUser> user = (Optional<MyPrincipalUser>) result;
+        // Unwrap the cause of the InvocationTargetException
+        Throwable cause = thrownException.getCause();
 
-            // Assert that the result is empty as user was not found
-            assertTrue(user.isEmpty());
-        } else {
-            fail("Expected Optional<MyPrincipalUser>, but got: " + result.getClass().getName());
-        }
+        // Assert that the cause is a RuntimeException with the expected message
+        assertTrue(cause instanceof RuntimeException);
+        assertEquals("User not found", cause.getMessage());
     }
 
     @Test

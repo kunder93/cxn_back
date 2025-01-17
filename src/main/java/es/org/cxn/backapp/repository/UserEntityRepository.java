@@ -1,37 +1,39 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
+
+package es.org.cxn.backapp.repository;
+
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * <p>
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * <p>
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
  */
-
-package es.org.cxn.backapp.repository;
-
-import es.org.cxn.backapp.model.persistence.PersistentUserEntity;
 
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 /**
  * Spring-JPA repository for {@link PersistentUserEntity}.
@@ -41,33 +43,31 @@ import org.springframework.stereotype.Repository;
  *
  * @author Santiago Paz.
  */
-@Repository
-public interface UserEntityRepository
-      extends JpaRepository<PersistentUserEntity, String> {
+public interface UserEntityRepository extends JpaRepository<PersistentUserEntity, String> {
 
-  /**
-   * Returns all entities with a partial match to the name.
-   *
-   * @param name name for searching.
-   * @param page pagination to apply.
-   * @return all entities at least partially matching the name.
-   */
-  Page<PersistentUserEntity> findByNameContaining(String name, Pageable page);
+    /**
+     * Find user entity with provided dni.
+     *
+     * @param dni the user dni.
+     * @return user entity with dni provided.
+     */
+    Optional<PersistentUserEntity> findByDni(String dni);
 
-  /**
-   * Find user entity with provided email.
-   *
-   * @param email the user email.
-   * @return user entity with email provided.
-   */
-  Optional<PersistentUserEntity> findByEmail(String email);
+    /**
+     * Find user entity with provided email.
+     *
+     * @param email the user email.
+     * @return user entity with email provided.
+     */
+    Optional<PersistentUserEntity> findByEmail(String email);
 
-  /**
-   * Find user entity with provided dni.
-   *
-   * @param dni the user dni.
-   * @return user entity with dni provided.
-   */
-  Optional<PersistentUserEntity> findByDni(String dni);
+    /**
+     * Returns all entities with a partial match to the name.
+     *
+     * @param name name for searching.
+     * @param page pagination to apply.
+     * @return all entities at least partially matching the name.
+     */
+    Page<PersistentUserEntity> findByProfileNameContaining(String name, Pageable page);
 
 }

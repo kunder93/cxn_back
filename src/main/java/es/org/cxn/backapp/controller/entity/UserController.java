@@ -1,35 +1,38 @@
 
-/**
- * The MIT License (MIT)
+package es.org.cxn.backapp.controller.entity;
+
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * <p>Copyright (c) 2020 the original author or authors.
- *
- * <p>Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * <p>The above copyright notice and this permission notice shall be included in
+ * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
  *
- * <p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
  */
-
-package es.org.cxn.backapp.controller.entity;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.io.IOException;
 import java.util.Map;
 
+import org.springframework.http.CacheControl;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -46,7 +49,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
-import es.org.cxn.backapp.exceptions.UserServiceException;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
@@ -57,8 +59,10 @@ import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
+import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Rest controller for managing user-related operations.
@@ -95,57 +99,58 @@ import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 public class UserController {
 
     /**
-     * Represents a request to update the profile image URL for a user.
-     *
-     * <p>
-     * This class contains the profile image URL that will be used to update the
-     * user's profile image in the system.
-     * </p>
-     */
-    public class ProfileImageUpdateRequest {
-
-        /** The URL of the new profile image. */
-        private String profileImageUrl;
-
-        /**
-         * Default constructor.
-         */
-        ProfileImageUpdateRequest() {
-            // Default public constructor.
-        }
-
-        /**
-         * Gets the profile image URL.
-         *
-         * @return the URL of the profile image.
-         */
-        public String getProfileImageUrl() {
-            return profileImageUrl;
-        }
-
-        /**
-         * Sets the profile image URL.
-         *
-         * @param value the new URL of the profile image.
-         */
-        public void setProfileImageUrl(final String value) {
-            this.profileImageUrl = value;
-        }
-    }
-
-    /**
      * The user service to handle business logic related to user operations.
      */
     private final UserService userService;
 
     /**
-     * Constructs the controller with a given user service.
-     *
-     * @param service the user service instance, must not be null.
+     * The user profile image service to handle user profile images.
      */
-    public UserController(final UserService service) {
+    private final UserProfileImageService userProfileImageService;
+
+    /**
+     * Constructs a new {@code UserController} instance with the specified services.
+     *
+     * @param service             the {@link UserService} instance used for managing
+     *                            user-related operations. Must not be {@code null}.
+     * @param usrProfileImageServ the {@link UserProfileImageService} instance used
+     *                            for managing user profile image operations. Must
+     *                            not be {@code null}.
+     * @throws NullPointerException if {@code service} or
+     *                              {@code usrProfileImageServ} is {@code null}.
+     */
+    public UserController(final UserService service, final UserProfileImageService usrProfileImageServ) {
         super();
         userService = checkNotNull(service, "Received a null pointer as user service");
+        userProfileImageService = checkNotNull(usrProfileImageServ,
+                "Received a null pointer as user profile image service.");
+    }
+
+    /**
+     * Accepts a user as a member based on their DNI.
+     *
+     * <p>
+     * This method allows administrators or the president to change the status of a
+     * user to a member. The user's DNI is passed as a path variable. If the
+     * operation succeeds, a 200 OK response is returned. If any exception occurs
+     * during the process, a 400 Bad Request response is returned.
+     * </p>
+     *
+     * @param userDni the DNI of the user to be accepted as a member.
+     * @return a {@link ResponseEntity} with an HTTP status of 200 if the operation
+     *         is successful.
+     * @throws ResponseStatusException if a {@link UserServiceException} occurs,
+     *                                 with an HTTP status of 400.
+     */
+    @PatchMapping("/acceptAsMember/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE')")
+    public ResponseEntity<Void> acceptUserAsMember(@PathVariable final String userDni) {
+        try {
+            userService.acceptUserAsMember(userDni);
+            return ResponseEntity.ok().build();
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
     }
 
     /**
@@ -163,12 +168,21 @@ public class UserController {
     public ResponseEntity<UserDataResponse> changeUserEmail(
             @RequestBody final UserChangeEmailRequest userChangeEmailRequest) {
         final UserEntity result;
+
+        final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
+
         try {
-            result = userService.changeUserEmail(userChangeEmailRequest.email(), userChangeEmailRequest.newEmail());
+            final var user = userService.findByEmail(authName);
+            if (user.getEmail().equals(userChangeEmailRequest.email())) {
+                result = userService.changeUserEmail(userChangeEmailRequest.email(), userChangeEmailRequest.newEmail());
+                return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+            } else {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not valid user email");
+            }
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-        return new ResponseEntity<>(new UserDataResponse(result), HttpStatus.OK);
+
     }
 
     /**
@@ -257,8 +271,12 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or " + "hasRole('SECRETARIO')")
     public ResponseEntity<UserListDataResponse> getAllUserData() {
         final var users = userService.getAll();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setCacheControl(CacheControl.noCache().mustRevalidate());
+        headers.setPragma("no-cache");
+        headers.setExpires(0);
         final var response = UserListDataResponse.fromUserEntities(users);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, headers, HttpStatus.OK);
     }
 
     /**
@@ -284,6 +302,27 @@ public class UserController {
     }
 
     /**
+     * Retrieves the profile of a user based on their DNI (Documento Nacional de
+     * Identidad).
+     *
+     * @param userDni the DNI of the user whose profile is to be retrieved.
+     * @return a {@link ResponseEntity} containing a {@link UserDataResponse} object
+     *         with the user's profile information and an HTTP status of 200 (OK).
+     * @throws ResponseStatusException with HTTP status 400 (BAD REQUEST) if the
+     *                                 user cannot be found or if there is an error
+     *                                 in the {@link UserService}.
+     */
+    @GetMapping("/{userDni}")
+    public ResponseEntity<UserDataResponse> getUserProfile(final @PathVariable String userDni) {
+        try {
+            final var userFound = userService.findByDni(userDni);
+            return new ResponseEntity<>(new UserDataResponse(userFound), HttpStatus.OK);
+        } catch (UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
      * Retrieves the profile image of the authenticated user.
      *
      * <p>
@@ -304,7 +343,7 @@ public class UserController {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             final var user = userService.findByEmail(userName);
-            final var imageProfile = userService.getProfileImage(user.getDni());
+            final var imageProfile = userProfileImageService.getProfileImage(user.getDni());
 
             return new ResponseEntity<>(imageProfile, HttpStatus.OK);
         } catch (UserServiceException e) {
@@ -360,11 +399,11 @@ public class UserController {
             // Puedes agregar más validaciones aquí (por ejemplo, tipos MIME permitidos)
 
             // Llama al servicio para guardar la URL o archivo en tu sistema
-            final var updatedUser = userService.saveProfileImageFile(userEntity.getDni(), profileImage);
+            final var updatedUser = userProfileImageService.saveProfileImageFile(userEntity.getDni(), profileImage);
 
             return new ResponseEntity<>(new ProfileImageResponse(updatedUser.getProfileImage()), HttpStatus.OK);
 
-        } catch (IOException | UserServiceException e) {
+        } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
@@ -394,7 +433,7 @@ public class UserController {
         final var userName = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             final String profileImageUrl = requestBody.get("profileImageUrl"); // Extract the value from the map
-            final var userUpdated = userService.saveProfileImage(userName, profileImageUrl);
+            final var userUpdated = userProfileImageService.saveProfileImage(userName, profileImageUrl);
             return new ResponseEntity<>(new ProfileImageResponse(userUpdated.getProfileImage()), HttpStatus.OK);
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

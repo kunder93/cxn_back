@@ -1,33 +1,39 @@
-/**
- * The MIT License (MIT)
- * <p>
- * Copyright (c) 2021 the original author or authors.
- * <p>
+
+package es.org.cxn.backapp.model.persistence;
+
+/*-
+ * #%L
+ * CXN-back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
+ * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * <p>
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * <p>
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
  */
 
-package es.org.cxn.backapp.model.persistence;
-
+import java.io.Serial;
 import java.time.LocalDate;
 
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.FederateStateEntity;
+import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
+import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -79,6 +85,7 @@ public class PersistentFederateStateEntity implements FederateStateEntity {
     /**
      * Serial uid for serialization.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -133,6 +140,14 @@ public class PersistentFederateStateEntity implements FederateStateEntity {
     @OneToOne
     @JoinColumn(name = "user_dni", referencedColumnName = "dni")
     private PersistentUserEntity user;
+
+    /**
+     * The federate state associated payment.
+     *
+     */
+    @OneToOne
+    @JoinColumn(name = "payment_id", referencedColumnName = "id")
+    private PersistentPaymentsEntity payment;
 
     /**
      * Default constructor. This is used by JPA for entity instantiation.

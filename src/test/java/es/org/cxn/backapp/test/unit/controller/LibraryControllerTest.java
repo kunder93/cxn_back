@@ -1,6 +1,32 @@
 
 package es.org.cxn.backapp.test.unit.controller;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -22,9 +48,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -33,15 +58,15 @@ import org.springframework.web.server.ResponseStatusException;
 import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.controller.entity.LibraryController;
-import es.org.cxn.backapp.exceptions.LibraryServiceException;
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
 import es.org.cxn.backapp.model.form.requests.AuthorRequest;
 import es.org.cxn.backapp.model.form.responses.BookListResponse;
 import es.org.cxn.backapp.model.form.responses.BookResponse;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
-import es.org.cxn.backapp.service.DefaultJwtUtils;
-import es.org.cxn.backapp.service.DefaultLibraryService;
+import es.org.cxn.backapp.security.DefaultJwtUtils;
+import es.org.cxn.backapp.service.exceptions.LibraryServiceException;
+import es.org.cxn.backapp.service.impl.DefaultLibraryService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 /**
@@ -58,7 +83,6 @@ import es.org.cxn.backapp.test.utils.LocalDateAdapter;
  * </p>
  */
 @WebMvcTest(LibraryController.class)
-@Import(TestSecurityConfiguration.class)
 @AutoConfigureMockMvc(addFilters = false)
 class LibraryControllerTest {
 
@@ -110,7 +134,7 @@ class LibraryControllerTest {
      * during testing, without invoking the actual service layer logic.
      * </p>
      */
-    @MockBean
+    @MockitoBean
     private DefaultLibraryService libraryService;
 
     /**
@@ -121,7 +145,7 @@ class LibraryControllerTest {
      * may be required for security-related operations in the controller.
      * </p>
      */
-    @MockBean
+    @MockitoBean
     private DefaultJwtUtils jwtUtils;
 
     @BeforeEach

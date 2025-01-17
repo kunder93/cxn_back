@@ -1,5 +1,31 @@
 package es.org.cxn.backapp.model.form.requests.validation;
 
+/*-
+ * #%L
+ * back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
 import java.util.Arrays;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -62,6 +88,14 @@ public class ImageFileValidator implements ConstraintValidator<ValidImageFile, M
     private String[] allowedFormats;
 
     /**
+     * Constructor for ImageFileValidator class.
+     *
+     */
+    public ImageFileValidator() {
+        // No need for explicit constructor.
+    }
+
+    /**
      * Initializes the validator with values from the {@link ValidImageFile}
      * annotation, setting the maximum allowed file size and allowed file formats.
      *
@@ -90,27 +124,28 @@ public class ImageFileValidator implements ConstraintValidator<ValidImageFile, M
      */
     @Override
     public boolean isValid(final MultipartFile file, final ConstraintValidatorContext context) {
-        if (file == null || file.isEmpty()) {
-            return true; // Let @NotNull handle null checks if needed
+        boolean isValid = true; // Default to valid
+
+        if (file != null && !file.isEmpty()) {
+            // Check file size
+            if (file.getSize() > maxFileSize) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate("File size should not exceed " + maxFileSize + " bytes")
+                        .addConstraintViolation();
+                isValid = false; // Update result to false
+            }
+
+            // Check file type
+            final String contentType = file.getContentType();
+            if (contentType == null || Arrays.stream(allowedFormats).noneMatch(contentType::endsWith)) {
+                context.disableDefaultConstraintViolation();
+                context.buildConstraintViolationWithTemplate(
+                        "File type must be one of: " + String.join(", ", allowedFormats)).addConstraintViolation();
+                isValid = false; // Update result to false
+            }
         }
 
-        // Check file size
-        if (file.getSize() > maxFileSize) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate("File size should not exceed " + maxFileSize + " bytes")
-                    .addConstraintViolation();
-            return false;
-        }
-
-        // Check file type
-        final String contentType = file.getContentType();
-        if (contentType == null || Arrays.stream(allowedFormats).noneMatch(format -> contentType.endsWith(format))) {
-            context.disableDefaultConstraintViolation();
-            context.buildConstraintViolationWithTemplate(
-                    "File type must be one of: " + String.join(", ", allowedFormats)).addConstraintViolation();
-            return false;
-        }
-
-        return true;
+        return isValid; // Return the result at the end
     }
+
 }
