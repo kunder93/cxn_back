@@ -21,7 +21,7 @@ RUN mvn clean install -P${BUILD_PROFILE}
 FROM eclipse-temurin:21-jre-alpine
 
 # Copy the generated JAR file from the builder stage
-COPY --from=builder /usr/src/app/target/back-app-4.0.1-SNAPSHOT.jar /app/app.jar
+COPY --from=builder /usr/src/app/target/back-app-4.0.1-RELEASE.jar /app/app.jar
 
 # Expose ports
 EXPOSE 8080
