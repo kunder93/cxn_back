@@ -54,7 +54,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -78,7 +77,6 @@ public class PersistentUserEntity implements UserEntity {
      * Serialization ID.
      */
     @Serial
-    @Transient
     private static final long serialVersionUID = 1328773388450853291L;
 
     /**
@@ -138,7 +136,7 @@ public class PersistentUserEntity implements UserEntity {
     /**
      * Roles associated with this user.
      */
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
     // @formatter:off
     @JoinTable(name = "role_users", joinColumns = @JoinColumn(name = "user_dni"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
