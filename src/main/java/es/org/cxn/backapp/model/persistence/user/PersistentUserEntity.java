@@ -138,7 +138,7 @@ public class PersistentUserEntity implements UserEntity {
     /**
      * Roles associated with this user.
      */
-    @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToMany(fetch = FetchType.LAZY)
     // @formatter:off
     @JoinTable(name = "role_users", joinColumns = @JoinColumn(name = "user_dni"),
     inverseJoinColumns = @JoinColumn(name = "role_id"))
