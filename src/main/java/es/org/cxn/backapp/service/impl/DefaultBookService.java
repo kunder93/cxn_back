@@ -110,9 +110,9 @@ public class DefaultBookService implements BookService {
         final var book = new PersistentBookEntity();
         book.setTitle(bookRequest.title());
         book.setDescription(bookRequest.description());
-        book.setGender(bookRequest.genre());
+        book.setGenre(bookRequest.genre());
         book.setIsbn(bookRequest.isbn());
-        book.setGender(bookRequest.genre());
+        book.setGenre(bookRequest.genre());
         book.setLanguage(bookRequest.language());
         book.setPublishYear(bookRequest.publishDate());
 
@@ -136,8 +136,7 @@ public class DefaultBookService implements BookService {
             }
         });
         try {
-            final var imageSoruce = imageStorageService.saveImage(imageCover, imageLocation, "book",
-                    book.getIsbn().toString());
+            final var imageSoruce = imageStorageService.saveImage(imageCover, imageLocation, "book", book.getIsbn());
             book.setCoverSrc(imageSoruce);
         } catch (IOException ex) {
             throw new BookServiceException("Book cover cannot be saved");
@@ -153,7 +152,7 @@ public class DefaultBookService implements BookService {
      * Find book using isbn.
      */
     @Override
-    public BookEntity find(final long val) throws BookServiceException {
+    public BookEntity find(final String val) throws BookServiceException {
         checkNotNull(val, "Received a null val as book identifier isbn.");
         final var optionalBook = bookRepository.findById(val);
         if (optionalBook.isPresent()) {
@@ -178,7 +177,7 @@ public class DefaultBookService implements BookService {
      * Remove book using isbn.
      */
     @Override
-    public void remove(final long isbn) throws BookServiceException {
+    public void remove(final String isbn) throws BookServiceException {
         try {
             // Check if the book exists
             if (bookRepository.existsById(isbn)) {

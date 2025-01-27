@@ -56,12 +56,12 @@ public final class AddBookRequestDtoTest {
     /**
      * Valid ISBN of 13 digits for testing.
      */
-    private static final long VALID_ISBN_13 = 1234567890123L;
+    private static final String VALID_ISBN_13 = "1231231231231";
 
     /**
      * Valid ISBN of 12 digits for testing.
      */
-    private static final long VALID_ISBN_12 = 123456789012L;
+    private static final String VALID_ISBN_12 = "1231231231";
 
     /**
      * Valid title for testing.
@@ -189,9 +189,9 @@ public final class AddBookRequestDtoTest {
      * @param isbn the ISBN to validate.
      */
     @ParameterizedTest
-    @ValueSource(longs = { VALID_ISBN_13, VALID_ISBN_12 })
+    @ValueSource(strings = { VALID_ISBN_13, VALID_ISBN_12 })
     @DisplayName("Validate ISBN values")
-    void testIsbnValidation(final Long isbn) {
+    void testIsbnValidation(final String isbn) {
         var authRequest = new AddBookRequestDto(isbn, VALID_TITLE, "description", VALID_GENDER, VALID_PUBLISH_DATE,
                 VALID_LANGUAGE, List.of(VALID_AUTHOR));
 

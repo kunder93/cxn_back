@@ -62,14 +62,14 @@ public interface BookEntity extends Serializable {
      *
      * @return The book's genre.
      */
-    String getGender();
+    String getGenre();
 
     /**
      * Gets the ISBN number of the book.
      *
      * @return The book's ISBN number.
      */
-    Long getIsbn();
+    String getIsbn();
 
     /**
      * Gets the language of the book.

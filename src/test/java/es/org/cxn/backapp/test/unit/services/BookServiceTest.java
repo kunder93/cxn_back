@@ -38,6 +38,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
+import es.org.cxn.backapp.service.BookService;
 import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import es.org.cxn.backapp.service.impl.DefaultBookService;
@@ -81,7 +83,7 @@ class BookServiceTest {
      * Constant representing the ISBN of the book. This value is used to identify
      * the book in the system.
      */
-    private static final long BOOK_ISBN = 12345L;
+    private static final String BOOK_ISBN = "1231231231";
 
     /**
      * Constant representing the publication date of the book. The publication date
@@ -102,16 +104,25 @@ class BookServiceTest {
     private static final String AUTHOR_LAST_NAME = "Doe";
 
     /**
-     * Constant representing the nationality of the author of the book. The author's
-     * nationality is set to "USA".
-     */
-    private static final String AUTHOR_NATIONALITY = "USA";
-
-    /**
      * Constant representing the title of the book. The book title is set to "Book
      * Title".
      */
     private static final String BOOK_TITLE = "Book Title";
+
+    /**
+     * Title for book 2.
+     */
+    private static final String SECOND_BOOK_TITLE = "Second title";
+
+    /**
+     * The book description.
+     */
+    private static final String BOOK_DESCRIPTION = "description";
+
+    /**
+     * The book language.
+     */
+    private static final String BOOK_LANGUAGE = "English";
 
     /**
      * Constant representing the gender or genre of the book. The book's genre is
@@ -179,18 +190,32 @@ class BookServiceTest {
      */
     private PersistentBookEntity book2;
 
+    /**
+     * Request for add book by service.
+     */
+    private AddBookRequestDto bookRequest = new AddBookRequestDto(BOOK_ISBN, BOOK_TITLE, BOOK_DESCRIPTION, BOOK_GENDER,
+            BOOK_PUBLISH_DATE, BOOK_LANGUAGE, Arrays.asList(new AuthorRequest(AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME)));
+
+    /**
+     * Tests the behavior of adding a book when the author already exists in the
+     * database.
+     * <p>
+     * This test verifies that when a request to add a book is made with an author
+     * who already exists in the database:
+     * <ul>
+     * <li>The existing author is successfully added to the book's authors
+     * list.</li>
+     * <li>The repository methods for fetching the author and saving the book are
+     * called as expected.</li>
+     * </ul>
+     *
+     * The test mocks the authorRepository to return an existing author based on the
+     * provided first and last name, and then mocks the bookRepository to save the
+     * book with the author included.
+     */
     @Test
     void addBookAuthorAlreadyExistsAddsAuthorToBook() throws BookServiceException {
         // Arrange
-
-        final AddBookRequestDto bookRequest = new AddBookRequestDto(BOOK_ISBN, // ISBN
-                BOOK_TITLE, // Title
-                "description", BOOK_GENDER, // Gender
-                BOOK_PUBLISH_DATE, // Publish Year
-                "English", // Language
-                Arrays.asList(new AuthorRequest(AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME)) // Authors
-                                                                                      // list
-        );
 
         PersistentAuthorEntity existingAuthor = new PersistentAuthorEntity();
         existingAuthor.setFirstName(AUTHOR_FIRST_NAME);
@@ -221,17 +246,15 @@ class BookServiceTest {
         verify(bookRepository, times(1)).save(any(PersistentBookEntity.class));
     }
 
+    /**
+     * Verifies that {@link BookService#add(AddBookRequestDto, MultipartFile)}
+     * throws a {@link BookServiceException} when a
+     * {@link DataIntegrityViolationException} occurs during book saving, preserving
+     * the original exception's message.
+     */
     @Test
     void addBookDataIntegrityViolationThrowsLibraryServiceException() {
         // Arrange
-        AddBookRequestDto bookRequest = new AddBookRequestDto(BOOK_ISBN, // ISBN
-                BOOK_TITLE, // Title
-                BOOK_GENDER, // Gender
-                "description", BOOK_PUBLISH_DATE, // Publish Year
-                "English", // Language
-                Arrays.asList(new AuthorRequest(AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME)) // Authors
-                                                                                      // list
-        );
 
         when(bookRepository.save(any(PersistentBookEntity.class)))
                 .thenThrow(new DataIntegrityViolationException("Data integrity violation"));
@@ -244,12 +267,32 @@ class BookServiceTest {
         assertEquals("Data integrity violation", thrownException.getMessage());
     }
 
+    /**
+     * Ensures {@link BookService#add(AddBookRequestDto, MultipartFile)} throws a
+     * {@link BookServiceException} when the image storage process fails.
+     */
+    @Test
+    void addBookStorageFailureRaisesException() throws java.io.IOException {
+        // Arrange
+
+        PersistentBookEntity book = new PersistentBookEntity();
+        when(bookRepository.save(any(PersistentBookEntity.class))).thenReturn(book);
+        when(authorRepository.findByFirstNameAndLastName(anyString(), anyString())).thenReturn(null);
+        when(authorRepository.save(any(PersistentAuthorEntity.class))).thenReturn(new PersistentAuthorEntity());
+        when(imageStorageService.saveImage(any(), anyString(), anyString(), anyString())).thenThrow(IOException.class);
+
+        // Act & Assert
+        assertThrows(BookServiceException.class, () -> bookService.add(bookRequest, mockFile));
+
+    }
+
+    /**
+     * Verifies that a valid book is added successfully using
+     * {@link BookService#add(AddBookRequestDto, MultipartFile)}.
+     */
     @Test
     void addBookValidBookAddsBookSuccessfully() throws BookServiceException {
         // Arrange
-
-        AddBookRequestDto bookRequest = new AddBookRequestDto(BOOK_ISBN, "Book 1", "description", BOOK_GENDER,
-                BOOK_PUBLISH_DATE, "English", Arrays.asList(new AuthorRequest(AUTHOR_FIRST_NAME, AUTHOR_LAST_NAME)));
 
         PersistentBookEntity book = new PersistentBookEntity();
         when(bookRepository.save(any(PersistentBookEntity.class))).thenReturn(book);
@@ -264,6 +307,11 @@ class BookServiceTest {
         verify(bookRepository, times(1)).save(any(PersistentBookEntity.class));
     }
 
+    /**
+     * Verifies that {@link BookService#find(String)} throws a
+     * {@link BookServiceException} when a book with the given ISBN is not found in
+     * the repository.
+     */
     @Test
     void findByIsbnBookNotFoundThrowsException() {
         // Arrange
@@ -273,6 +321,10 @@ class BookServiceTest {
         assertThrows(BookServiceException.class, () -> bookService.find(BOOK_ISBN));
     }
 
+    /**
+     * Verifies that {@link BookService#find(String)} returns a book when a book
+     * with the given ISBN exists in the repository.
+     */
     @Test
     void findByIsbnExistingBookReturnsBook() throws BookServiceException {
         // Arrange
@@ -286,6 +338,10 @@ class BookServiceTest {
         assertNotNull(foundBook);
     }
 
+    /**
+     * Verifies that {@link BookService#getAll()} retrieves a list of all books from
+     * the repository.
+     */
     @Test
     void getAllBooksReturnsListOfBooks() {
         // Arrange
@@ -296,10 +352,14 @@ class BookServiceTest {
 
         // Assert
         assertEquals(2, books.size());
-        assertEquals("Book 1", books.get(0).getTitle());
-        assertEquals("Book 2", books.get(1).getTitle());
+        assertEquals(BOOK_TITLE, books.get(0).getTitle());
+        assertEquals(SECOND_BOOK_TITLE, books.get(1).getTitle());
     }
 
+    /**
+     * Verifies that {@link BookService#remove(String)} successfully removes a book
+     * when it exists in the repository.
+     */
     @Test
     void removeBookByIsbnBookExistsRemovesBook() throws BookServiceException {
         // Arrange
@@ -313,6 +373,11 @@ class BookServiceTest {
         verify(bookRepository, times(1)).deleteById(BOOK_ISBN);
     }
 
+    /**
+     * Verifies that {@link BookService#remove(String)} throws a
+     * {@link BookServiceException} when attempting to remove a book that does not
+     * exist in the repository.
+     */
     @Test
     void removeBookByIsbnBookNotFoundThrowsException() {
         // Arrange
@@ -322,10 +387,15 @@ class BookServiceTest {
         assertThrows(BookServiceException.class, () -> bookService.remove(BOOK_ISBN));
     }
 
+    /**
+     * Verifies that {@link BookService#remove(String)} throws a
+     * {@link BookServiceException} when an invalid ISBN is provided and the
+     * repository method throws an {@link IllegalArgumentException}.
+     */
     @Test
     void removeBookByIsbnInvalidIsbnThrowsLibraryServiceException() {
         // Arrange
-        long invalidIsbn = BOOK_ISBN;
+        String invalidIsbn = BOOK_ISBN;
 
         // Simulate that the repository method throws an IllegalArgumentException
         when(bookRepository.existsById(invalidIsbn)).thenReturn(true);
@@ -336,24 +406,18 @@ class BookServiceTest {
     }
 
     /**
-     * Initializes test data and mocks before each test method is executed.
-     *
-     * This method can be used to set up common test scenarios, such as initializing
-     * example book entities or configuring mock behavior.
+     * Sets up the test environment before each test method execution. Initializes
+     * mock objects, configures the mock file's original filename, and sets the
+     * image location field in the {@link BookService}.
      */
     @BeforeEach
-    void setup() {
-        when(mockFile.getOriginalFilename()).thenReturn("CoolName");
-        // Placeholder for initializing test data and mocks
-    }
-
-    @BeforeEach
     void setUp() {
+        when(mockFile.getOriginalFilename()).thenReturn("CoolName");
         MockitoAnnotations.openMocks(this);
         book1 = new PersistentBookEntity();
-        book1.setTitle("Book 1");
+        book1.setTitle(BOOK_TITLE);
         book2 = new PersistentBookEntity();
-        book2.setTitle("Book 2");
+        book2.setTitle(SECOND_BOOK_TITLE);
         ReflectionTestUtils.setField(bookService, "imageLocation", MOCK_IMAGE_LOCATION);
     }
 }

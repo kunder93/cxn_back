@@ -60,7 +60,7 @@ public interface BookService {
      * @return The {@link BookEntity} corresponding to the provided ISBN.
      * @throws BookServiceException If the book cannot be found.
      */
-    BookEntity find(long isbn) throws BookServiceException;
+    BookEntity find(String isbn) throws BookServiceException;
 
     /**
      * Retrieves a list of all books.
@@ -76,6 +76,6 @@ public interface BookService {
      * @param val The ISBN of the book to be removed.
      * @throws BookServiceException If the book cannot be found or removed.
      */
-    void remove(long val) throws BookServiceException;
+    void remove(String val) throws BookServiceException;
 
 }

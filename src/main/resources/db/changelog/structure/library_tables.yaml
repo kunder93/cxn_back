@@ -116,4 +116,16 @@ databaseChangeLog:
               - column:
                   name: nationality
                   type: VARCHAR(255)
-         
+  - changeSet:
+      id: modify_book_table_isbn_and_gender
+      author: Santiago
+      changes:
+        - modifyDataType:
+            tableName: book
+            columnName: isbn
+            newDataType: VARCHAR(13)
+        - renameColumn:
+            tableName: book
+            oldColumnName: gender
+            newColumnName: genre
+            columnDataType: VARCHAR(30)

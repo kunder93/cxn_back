@@ -36,32 +36,84 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record AddBookRequestDto(@NotNull(message = ValidationValues.ISBN_NOT_NULL) Long isbn,
+/**
+ * Data transfer object representing a request to add a new book. Contains the
+ * necessary fields for book details, including ISBN, title, description, genre,
+ * publish date, language, and a list of authors.
+ *
+ * @param isbn        The book isbn.
+ * @param title       The book title.
+ * @param description The book description.
+ * @param genre       The book genre.
+ * @param publishDate The book publish date.
+ * @param language    The book language.
+ * @param authors     The book authors set.
+ */
+public record AddBookRequestDto(
 
+        /**
+         * The book isbn.
+         */
+        @NotNull(message = ValidationValues.ISBN_NOT_NULL) String isbn,
+
+        /**
+         * Book title.
+         */
         @NotNull(message = ValidationValues.TITLE_NOT_NULL)
         @Size(min = ValidationValues.MIN_TITLE_LENGTH, max = ValidationValues.MAX_TITLE_LENGTH,
                 message = ValidationValues.TITLE_SIZE) String title,
 
+        /**
+         * Book description.
+         */
         String description,
 
+        /**
+         * Book genre.
+         */
         @Size(min = ValidationValues.MIN_GENDER_LENGTH, max = ValidationValues.MAX_GENDER_LENGTH,
                 message = ValidationValues.GENDER_SIZE) String genre,
 
+        /**
+         * Book publish date.
+         */
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy") LocalDate publishDate,
 
+        /**
+         * Book language.
+         */
         @Size(min = ValidationValues.MIN_LANGUAGE_LENGTH, max = ValidationValues.MAX_LANGUAGE_LENGTH,
                 message = ValidationValues.LANGUAGE_SIZE) String language,
 
+        /**
+         * Book authors set.
+         */
         @NotNull(message = ValidationValues.AUTHORS_LIST_NOT_NULL)
         @Size(min = ValidationValues.MIN_AUTHORS_LIST_SIZE,
                 message = ValidationValues.AUTHORS_LIST_SIZE) List<AuthorRequest> authors) {
 
+    /**
+     * Temporal.
+     *
+     * @param isbn        The isbn field.
+     * @param title       The title field.
+     * @param description The description field.
+     * @param genre       The genre field.
+     * @param publishDate The publish date field.
+     * @param language    The language field.
+     * @param authors     The authors set.
+     */
     public AddBookRequestDto {
         // Create a defensive copy of the authorsList to avoid storing external mutable
         // references
         authors = List.copyOf(authors);
     }
 
+    /**
+     * Return authors.
+     *
+     * @return a unmodifiable list of authors.
+     */
     @Override
     public List<AuthorRequest> authors() {
         // Return an unmodifiable view of the list

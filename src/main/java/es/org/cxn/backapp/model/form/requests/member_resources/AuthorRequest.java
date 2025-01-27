@@ -49,7 +49,6 @@ import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
  *                  representing the given name of the author.
  * @param lastName  The last name of the author. This is a required field
  *                  representing the family name or surname.
- *                  </p>
  *
  * @author Santiago Paz
  */

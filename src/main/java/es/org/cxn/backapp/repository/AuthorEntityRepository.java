@@ -50,9 +50,8 @@ public interface AuthorEntityRepository extends JpaRepository<PersistentAuthorEn
      * the combination of these fields is unique.
      * </p>
      *
-     * @param firstName   The author's first name.
-     * @param lastName    The author's last name.
-     * @param nationality The author's nationality.
+     * @param firstName The author's first name.
+     * @param lastName  The author's last name.
      * @return The {@link PersistentAuthorEntity} matching the provided criteria.
      *         Returns {@code null} if no matching author is found.
      */

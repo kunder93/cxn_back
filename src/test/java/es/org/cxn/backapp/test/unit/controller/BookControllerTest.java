@@ -85,7 +85,7 @@ class BookControllerTest {
     /**
      * ISBN for test book add/remove operations.
      */
-    private static final long TEST_ISBN = 1234567890L;
+    private static final String TEST_ISBN = "1231231231";
 
     /**
      * Book publish year for test.

@@ -29,7 +29,6 @@ package es.org.cxn.backapp.test.integration.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -91,7 +90,7 @@ final class DefaultLibraryServiceIT {
      * test scenarios.
      * </p>
      */
-    private static final Long BOOK_ISBN_1 = 235235234L;
+    private static final String BOOK_ISBN_1 = "1231231231";
 
     /**
      * ISBN number for the second book used in test cases.
@@ -100,7 +99,7 @@ final class DefaultLibraryServiceIT {
      * various test scenarios.
      * </p>
      */
-    private static final Long BOOK_ISBN_2 = 42341232134L;
+    private static final String BOOK_ISBN_2 = "1231231231231";
 
     /**
      * ISBN number for the third book used in test cases.
@@ -109,7 +108,7 @@ final class DefaultLibraryServiceIT {
      * various test scenarios.
      * </p>
      */
-    private static final Long BOOK_ISBN_3 = 41523523352L;
+    private static final String BOOK_ISBN_3 = "3213213211";
 
     /**
      * ISBN number used for adding a new book in test cases.
@@ -118,7 +117,7 @@ final class DefaultLibraryServiceIT {
      * verify that the service handles book creation correctly.
      * </p>
      */
-    private static final Long ADD_BOOK_ISBN = 21321321421L;
+    private static final String ADD_BOOK_ISBN = "3213213214";
 
     /**
      * ISBN number for a non-existing book used in test cases.
@@ -128,7 +127,7 @@ final class DefaultLibraryServiceIT {
      * service handles the removal or retrieval of non-existing books.
      * </p>
      */
-    private static final Long NON_EXISTING_BOOK_ISBN = 1234567890L;
+    private static final String NON_EXISTING_BOOK_ISBN = "1112223331";
 
     /**
      * Title for the book used in test cases.
@@ -276,7 +275,7 @@ final class DefaultLibraryServiceIT {
 
                 authorEntity);
 
-        var book1Entity = PersistentBookEntity.builder().isbn(BOOK_ISBN_1).title(BOOK_TITLE).gender(BOOK_GENDER)
+        var book1Entity = PersistentBookEntity.builder().isbn(BOOK_ISBN_1).title(BOOK_TITLE).genre(BOOK_GENDER)
                 .publishYear(BOOK_PUBLISH_YEAR).language(BOOK_LANGUAGE).authors(authorsSet).build();
 
         // Mock author repository to return the author entity
@@ -378,7 +377,7 @@ final class DefaultLibraryServiceIT {
     @Test
     void testFindByIsbnWithNullValue() {
         // Arrange: Prepare the test scenario
-        var isbn = 0L; // Choose a valid ISBN value here
+        var isbn = ""; // Choose a valid ISBN value here
 
         // Act and Assert: Test the behavior when a null value is passed
         Assertions.assertThrows(BookServiceException.class, () -> {
@@ -421,7 +420,7 @@ final class DefaultLibraryServiceIT {
     @Test
     void testRemoveBookWithNullIsbn() {
         // Arrange
-        Long nullIsbn = 0L;
+        String nullIsbn = "";
 
         // Act and Assert
         Assertions.assertThrows(BookServiceException.class, () -> {
@@ -429,7 +428,7 @@ final class DefaultLibraryServiceIT {
         }, "Null ISBN should raise LibraryServiceException.");
 
         // Ensure that libraryRepository.deleteById is not called
-        verify(libraryRepository, never()).deleteById(anyLong());
+        verify(libraryRepository, never()).deleteById(anyString());
     }
 
     /**
@@ -451,6 +450,6 @@ final class DefaultLibraryServiceIT {
         }, "Removing a non-existing book should raise LibraryServiceException.");
 
         // Ensure that libraryRepository.deleteById is not called
-        verify(libraryRepository, never()).deleteById(anyLong());
+        verify(libraryRepository, never()).deleteById(anyString());
     }
 }

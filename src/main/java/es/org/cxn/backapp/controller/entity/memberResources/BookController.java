@@ -114,7 +114,7 @@ public class BookController {
      * @return Http Ok or Bad Request.
      */
     @GetMapping("/{isbn}")
-    public ResponseEntity<BookResponse> getBook(@PathVariable final Long isbn) {
+    public ResponseEntity<BookResponse> getBook(@PathVariable final String isbn) {
         try {
             // Call the libraryService to remove the book
             final var book = bookService.find(isbn);
@@ -131,7 +131,7 @@ public class BookController {
      * @return Http Ok or Bad Request.
      */
     @DeleteMapping("/{isbn}")
-    public ResponseEntity<String> removeBook(@PathVariable final Long isbn) {
+    public ResponseEntity<String> removeBook(@PathVariable final String isbn) {
         try {
             // Call the libraryService to remove the book
             bookService.remove(isbn);
