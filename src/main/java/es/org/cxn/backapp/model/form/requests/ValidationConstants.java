@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.form.requests;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,41 +35,6 @@ package es.org.cxn.backapp.model.form.requests;
  * </p>
  */
 public final class ValidationConstants {
-
-    /**
-     * The minimum allowed length for the title of a book.
-     */
-    public static final int MIN_TITLE_LENGTH = 1;
-
-    /**
-     * The maximum allowed length for the title of a book.
-     */
-    public static final int MAX_TITLE_LENGTH = 100;
-
-    /**
-     * The minimum allowed length for the gender of a book.
-     */
-    public static final int MIN_GENDER_LENGTH = 1;
-
-    /**
-     * The maximum allowed length for the gender of a book.
-     */
-    public static final int MAX_GENDER_LENGTH = 30;
-
-    /**
-     * The minimum allowed length for the language of a book.
-     */
-    public static final int MIN_LANGUAGE_LENGTH = 1;
-
-    /**
-     * The maximum allowed length for the language of a book.
-     */
-    public static final int MAX_LANGUAGE_LENGTH = 20;
-
-    /**
-     * The minimum number of authors required for the authors list of a book.
-     */
-    public static final int MIN_AUTHORS_LIST_SIZE = 1;
 
     /**
      * The maximum length allowed for the transport category.

@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.model.form.responses;
+package es.org.cxn.backapp.model.form.responses.member_resources;
 
 /*-
  * #%L
@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.form.responses;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,20 +39,17 @@ import es.org.cxn.backapp.model.AuthorEntity;
  *
  * @param firstName The author's first name.
  * @param lastName  The author's last name.
- * @param nationality The author's nationality.
  *
  * @author Santiago Paz.
  */
-public record AuthorResponse(
-      String firstName, String lastName, String nationality
-) {
+public record AuthorResponse(String firstName, String lastName) {
 
-  /**
-   * Constructs an {@link AuthorResponse} from an {@link AuthorEntity}.
-   *
-   * @param author The author entity.
-   */
-  public AuthorResponse(final AuthorEntity author) {
-    this(author.getFirstName(), author.getLastName(), author.getNationality());
-  }
+    /**
+     * Constructs an {@link AuthorResponse} from an {@link AuthorEntity}.
+     *
+     * @param author The author entity.
+     */
+    public AuthorResponse(final AuthorEntity author) {
+        this(author.getFirstName(), author.getLastName());
+    }
 }

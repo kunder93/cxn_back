@@ -67,7 +67,7 @@ import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class RoleControllerIntegrationIT {
 
     /**

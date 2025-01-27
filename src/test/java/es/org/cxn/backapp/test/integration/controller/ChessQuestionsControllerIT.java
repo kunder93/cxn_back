@@ -61,7 +61,7 @@ import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 @ActiveProfiles("test")
 class ChessQuestionsControllerIT {
 

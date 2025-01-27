@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.form.requests;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,53 +36,6 @@ package es.org.cxn.backapp.model.form.requests;
  * </p>
  */
 public final class ValidationMessages {
-
-    /**
-     * Error message for when the ISBN field is null.
-     */
-    public static final String ISBN_NOT_NULL = "ISBN must not be null";
-
-    /**
-     * Error message for when the title field is null.
-     */
-    public static final String TITLE_NOT_NULL = "Title must not be null";
-
-    /**
-     * Error message for when the title length is outside the allowed range. The
-     * allowed length is between {@code ValidationConstants.MIN_TITLE_LENGTH} and
-     * {@code ValidationConstants.MAX_TITLE_LENGTH} characters.
-     */
-    public static final String TITLE_SIZE = "Title must be between " + ValidationConstants.MIN_TITLE_LENGTH + " and "
-            + ValidationConstants.MAX_TITLE_LENGTH + " characters";
-
-    /**
-     * Error message for when the gender length is outside the allowed range. The
-     * allowed length is between {@code ValidationConstants.MIN_GENDER_LENGTH} and
-     * {@code ValidationConstants.MAX_GENDER_LENGTH} characters.
-     */
-    public static final String GENDER_SIZE = "Gender must be between " + ValidationConstants.MIN_GENDER_LENGTH + " and "
-            + ValidationConstants.MAX_GENDER_LENGTH + " characters";
-
-    /**
-     * Error message for when the language length is outside the allowed range. The
-     * allowed length is between {@code ValidationConstants.MIN_LANGUAGE_LENGTH} and
-     * {@code ValidationConstants.MAX_LANGUAGE_LENGTH} characters.
-     */
-    public static final String LANGUAGE_SIZE = "Language must be between " + ValidationConstants.MIN_LANGUAGE_LENGTH
-            + " and " + ValidationConstants.MAX_LANGUAGE_LENGTH + " characters";
-
-    /**
-     * Error message for when the authors list is null.
-     */
-    public static final String AUTHORS_LIST_NOT_NULL = "Authors list must not be null";
-
-    /**
-     * Error message for when the authors list size is smaller than the minimum
-     * allowed. The list must contain at least
-     * {@code ValidationConstants.MIN_AUTHORS_LIST_SIZE} author.
-     */
-    public static final String AUTHORS_LIST_SIZE = "Authors list must contain at least "
-            + ValidationConstants.MIN_AUTHORS_LIST_SIZE + " author";
 
     /**
      * Message indicating that the activity description cannot be null.

@@ -12,10 +12,10 @@ package es.org.cxn.backapp.test.integration.controller;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -76,8 +76,8 @@ import jakarta.mail.internet.MimeMessage;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource("/application.properties")
-class FederateControllerIntegrationIT {
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
+class FederateControllerIT {
 
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
@@ -137,7 +137,7 @@ class FederateControllerIntegrationIT {
      */
     private String userAJwtToken;
 
-    FederateControllerIntegrationIT() {
+    FederateControllerIT() {
         super();
     }
 
@@ -172,6 +172,7 @@ class FederateControllerIntegrationIT {
                 .andExpect(MockMvcResultMatchers.status().isCreated());
         userAJwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
                 UsersControllerFactory.USER_A_PASSWORD);
+
     }
 
 //    @Test

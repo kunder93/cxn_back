@@ -89,3 +89,31 @@ databaseChangeLog:
                 referencedColumnNames: id
                 referencedTableName: author
 
+  - changeSet:
+      id: edit_book_data
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: book
+            columns:
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false   
+              - column:
+                  name: coverSrc
+                  type: varchar(255) 
+                  constraints:
+                    nullable: true      
+  - changeSet:
+      id: edit_author_data
+      author: Santiago
+      changes:
+        - dropColumn:
+            tableName: author
+            columns:
+              - column:
+                  name: nationality
+                  type: VARCHAR(255)
+         

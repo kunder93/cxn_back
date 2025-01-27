@@ -87,7 +87,7 @@ import jakarta.mail.internet.MimeMessage;
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 @ActiveProfiles("test")
 class AuthControllerIntegrationIT {
 

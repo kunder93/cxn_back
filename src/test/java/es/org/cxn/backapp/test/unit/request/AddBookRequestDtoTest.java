@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.request;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,10 +40,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import es.org.cxn.backapp.model.form.requests.AddBookRequestDto;
-import es.org.cxn.backapp.model.form.requests.AuthorRequest;
-import es.org.cxn.backapp.model.form.requests.ValidationConstants;
-import es.org.cxn.backapp.model.form.requests.ValidationMessages;
+import es.org.cxn.backapp.model.form.requests.member_resources.AddBookRequestDto;
+import es.org.cxn.backapp.model.form.requests.member_resources.AuthorRequest;
+import es.org.cxn.backapp.model.form.requests.member_resources.ValidationValues;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -87,7 +86,7 @@ public final class AddBookRequestDtoTest {
     /**
      * Valid author for testing.
      */
-    private static final AuthorRequest VALID_AUTHOR = new AuthorRequest("John", "Doe", "American");
+    private static final AuthorRequest VALID_AUTHOR = new AuthorRequest("John", "Doe");
 
     /**
      * Validator instance for validating the request DTOs.
@@ -102,9 +101,9 @@ public final class AddBookRequestDtoTest {
     private static Stream<String> provideGenderValues() {
         return Stream.of("", // Invalid: too short
                 "a", // Valid: minimum length
-                "a".repeat(ValidationConstants.MAX_GENDER_LENGTH),
+                "a".repeat(ValidationValues.MAX_GENDER_LENGTH),
                 // Valid: maximum length
-                "a".repeat(ValidationConstants.MAX_GENDER_LENGTH + 1)
+                "a".repeat(ValidationValues.MAX_GENDER_LENGTH + 1)
         // Invalid: too long
         );
     }
@@ -117,9 +116,9 @@ public final class AddBookRequestDtoTest {
     private static Stream<String> provideLanguageValues() {
         return Stream.of("", // Invalid: too short
                 "a", // Valid: minimum length
-                "a".repeat(ValidationConstants.MAX_LANGUAGE_LENGTH),
+                "a".repeat(ValidationValues.MAX_LANGUAGE_LENGTH),
                 // Valid: maximum length
-                "a".repeat(ValidationConstants.MAX_LANGUAGE_LENGTH + 1)
+                "a".repeat(ValidationValues.MAX_LANGUAGE_LENGTH + 1)
         // Invalid: too long
         );
     }
@@ -144,15 +143,15 @@ public final class AddBookRequestDtoTest {
     void testAuthorsListSizeValidation(final int authorsListSize) {
         List<AuthorRequest> authorsList = authorsListSize > 0 ? List.of(VALID_AUTHOR) : Collections.emptyList();
 
-        var authRequest = new AddBookRequestDto(VALID_ISBN_13, VALID_TITLE, VALID_GENDER, VALID_PUBLISH_DATE,
-                VALID_LANGUAGE, authorsList);
+        var authRequest = new AddBookRequestDto(VALID_ISBN_13, VALID_TITLE, "description", VALID_GENDER,
+                VALID_PUBLISH_DATE, VALID_LANGUAGE, authorsList);
 
         Set<ConstraintViolation<AddBookRequestDto>> violations = validator.validate(authRequest);
 
-        if (authorsListSize < ValidationConstants.MIN_AUTHORS_LIST_SIZE) {
+        if (authorsListSize < ValidationValues.MIN_AUTHORS_LIST_SIZE) {
             Assertions.assertEquals(1, violations.size(), "One error expected for invalid authors list size.");
             var violation = violations.iterator().next();
-            Assertions.assertEquals(ValidationMessages.AUTHORS_LIST_SIZE, violation.getMessage(),
+            Assertions.assertEquals(ValidationValues.AUTHORS_LIST_SIZE, violation.getMessage(),
                     "The constraint message should indicate authors list size issue.");
         } else {
             Assertions.assertTrue(violations.isEmpty(), "No violations expected for valid authors list size.");
@@ -168,16 +167,16 @@ public final class AddBookRequestDtoTest {
     @MethodSource("provideGenderValues")
     @DisplayName("Validate gender length")
     void testGenderLengthValidation(final String gender) {
-        var authRequest = new AddBookRequestDto(VALID_ISBN_13, VALID_TITLE, gender, VALID_PUBLISH_DATE, VALID_LANGUAGE,
-                List.of(VALID_AUTHOR));
+        var authRequest = new AddBookRequestDto(VALID_ISBN_13, VALID_TITLE, "descriptioN", gender, VALID_PUBLISH_DATE,
+                VALID_LANGUAGE, List.of(VALID_AUTHOR));
 
         Set<ConstraintViolation<AddBookRequestDto>> violations = validator.validate(authRequest);
 
-        if (gender != null && (gender.length() < ValidationConstants.MIN_GENDER_LENGTH
-                || gender.length() > ValidationConstants.MAX_GENDER_LENGTH)) {
+        if (gender != null && (gender.length() < ValidationValues.MIN_GENDER_LENGTH
+                || gender.length() > ValidationValues.MAX_GENDER_LENGTH)) {
             Assertions.assertEquals(1, violations.size(), "One error expected for invalid gender length.");
             var violation = violations.iterator().next();
-            Assertions.assertEquals(ValidationMessages.GENDER_SIZE, violation.getMessage(),
+            Assertions.assertEquals(ValidationValues.GENDER_SIZE, violation.getMessage(),
                     "The constraint message should indicate gender length issue.");
         } else {
             Assertions.assertTrue(violations.isEmpty(), "No violations expected for valid gender length.");
@@ -193,8 +192,8 @@ public final class AddBookRequestDtoTest {
     @ValueSource(longs = { VALID_ISBN_13, VALID_ISBN_12 })
     @DisplayName("Validate ISBN values")
     void testIsbnValidation(final Long isbn) {
-        var authRequest = new AddBookRequestDto(isbn, VALID_TITLE, VALID_GENDER, VALID_PUBLISH_DATE, VALID_LANGUAGE,
-                List.of(VALID_AUTHOR));
+        var authRequest = new AddBookRequestDto(isbn, VALID_TITLE, "description", VALID_GENDER, VALID_PUBLISH_DATE,
+                VALID_LANGUAGE, List.of(VALID_AUTHOR));
 
         Set<ConstraintViolation<AddBookRequestDto>> violations = validator.validate(authRequest);
 
@@ -210,16 +209,16 @@ public final class AddBookRequestDtoTest {
     @MethodSource("provideLanguageValues")
     @DisplayName("Validate language length")
     void testLanguageLengthValidation(final String language) {
-        var authRequest = new AddBookRequestDto(VALID_ISBN_13, VALID_TITLE, VALID_GENDER, VALID_PUBLISH_DATE, language,
-                List.of(VALID_AUTHOR));
+        var authRequest = new AddBookRequestDto(VALID_ISBN_13, VALID_TITLE, "description", VALID_GENDER,
+                VALID_PUBLISH_DATE, language, List.of(VALID_AUTHOR));
 
         Set<ConstraintViolation<AddBookRequestDto>> violations = validator.validate(authRequest);
 
-        if (language != null && (language.length() < ValidationConstants.MIN_LANGUAGE_LENGTH
-                || language.length() > ValidationConstants.MAX_LANGUAGE_LENGTH)) {
+        if (language != null && (language.length() < ValidationValues.MIN_LANGUAGE_LENGTH
+                || language.length() > ValidationValues.MAX_LANGUAGE_LENGTH)) {
             Assertions.assertEquals(1, violations.size(), "One error expected for invalid language length.");
             var violation = violations.iterator().next();
-            Assertions.assertEquals(ValidationMessages.LANGUAGE_SIZE, violation.getMessage(),
+            Assertions.assertEquals(ValidationValues.LANGUAGE_SIZE, violation.getMessage(),
                     "The constraint message should indicate language length issue.");
         } else {
             Assertions.assertTrue(violations.isEmpty(), "No violations expected for valid language length.");
@@ -236,16 +235,16 @@ public final class AddBookRequestDtoTest {
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" })
     @DisplayName("Validate title length")
     void testTitleLengthValidation(final String title) {
-        var authRequest = new AddBookRequestDto(VALID_ISBN_13, title, VALID_GENDER, VALID_PUBLISH_DATE, VALID_LANGUAGE,
-                List.of(VALID_AUTHOR));
+        var authRequest = new AddBookRequestDto(VALID_ISBN_13, title, "description", VALID_GENDER, VALID_PUBLISH_DATE,
+                VALID_LANGUAGE, List.of(VALID_AUTHOR));
 
         Set<ConstraintViolation<AddBookRequestDto>> violations = validator.validate(authRequest);
 
-        if (title.isEmpty() || title.length() < ValidationConstants.MIN_TITLE_LENGTH
-                || title.length() > ValidationConstants.MAX_TITLE_LENGTH) {
+        if (title.isEmpty() || title.length() < ValidationValues.MIN_TITLE_LENGTH
+                || title.length() > ValidationValues.MAX_TITLE_LENGTH) {
             Assertions.assertEquals(1, violations.size(), "One error expected for invalid title length.");
             var violation = violations.iterator().next();
-            Assertions.assertEquals(ValidationMessages.TITLE_SIZE, violation.getMessage(),
+            Assertions.assertEquals(ValidationValues.TITLE_SIZE, violation.getMessage(),
                     "The constraint message should indicate title length issue.");
         } else {
             Assertions.assertTrue(violations.isEmpty(), "No violations expected for valid title length.");

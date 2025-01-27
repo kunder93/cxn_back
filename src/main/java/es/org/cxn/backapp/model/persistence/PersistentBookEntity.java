@@ -103,6 +103,18 @@ public class PersistentBookEntity implements BookEntity, Comparable<PersistentBo
     private String language;
 
     /**
+     * The book's description.
+     */
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    /**
+     * The cover source for book if it have one.
+     */
+    @Column(name = "coverSrc", nullable = true)
+    private String coverSrc;
+
+    /**
      * The authors who wrote this book. This is a many-to-many relationship with the
      * PersistentAuthorEntity.
      */

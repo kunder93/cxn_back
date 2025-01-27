@@ -61,7 +61,7 @@ import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class TournamentParticipantControllerIT {
 
     /**

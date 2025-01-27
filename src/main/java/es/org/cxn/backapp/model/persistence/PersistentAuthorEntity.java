@@ -87,12 +87,6 @@ public class PersistentAuthorEntity implements AuthorEntity {
     private String lastName;
 
     /**
-     * Author nationality.
-     */
-    @Column(name = "nationality", nullable = true, unique = false)
-    private String nationality;
-
-    /**
      * Books written by this author.
      */
     @ManyToMany(mappedBy = "authors")
