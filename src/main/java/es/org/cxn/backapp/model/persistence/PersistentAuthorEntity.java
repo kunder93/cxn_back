@@ -42,6 +42,7 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * Book Entity.
@@ -57,6 +58,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = { "books" })
 @Entity(name = "Author")
 @Table(name = "author")
 public class PersistentAuthorEntity implements AuthorEntity {
@@ -104,4 +106,5 @@ public class PersistentAuthorEntity implements AuthorEntity {
         books = new HashSet<>();
         // Default constructor
     }
+
 }

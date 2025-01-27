@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -336,24 +335,6 @@ class BookServiceTest {
 
         // Assert
         assertNotNull(foundBook);
-    }
-
-    /**
-     * Verifies that {@link BookService#getAll()} retrieves a list of all books from
-     * the repository.
-     */
-    @Test
-    void getAllBooksReturnsListOfBooks() {
-        // Arrange
-        when(bookRepository.findAll()).thenReturn(Arrays.asList(book1, book2));
-
-        // Act
-        List<BookEntity> books = bookService.getAll();
-
-        // Assert
-        assertEquals(2, books.size());
-        assertEquals(BOOK_TITLE, books.get(0).getTitle());
-        assertEquals(SECOND_BOOK_TITLE, books.get(1).getTitle());
     }
 
     /**

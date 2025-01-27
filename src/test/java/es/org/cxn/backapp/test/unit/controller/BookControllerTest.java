@@ -53,7 +53,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.GsonBuilder;
 
-import es.org.cxn.backapp.controller.entity.memberResources.BookController;
+import es.org.cxn.backapp.controller.entity.member_resources.BookController;
 import es.org.cxn.backapp.model.form.requests.member_resources.AddBookRequestDto;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;

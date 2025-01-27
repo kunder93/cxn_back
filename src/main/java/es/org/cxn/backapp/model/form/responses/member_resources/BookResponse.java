@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.form.responses.member_resources;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -53,7 +53,7 @@ import es.org.cxn.backapp.model.BookEntity;
  * @author Santiago Paz
  */
 public record BookResponse(String isbn, String title, String genre, String publishYear, String language,
-        String description, Set<AuthorResponse> authors) {
+        String description, Set<AuthorResponse> authors) implements Comparable<BookResponse> {
 
     /**
      * Constructs a {@link BookResponse} from a {@link BookEntity}.
@@ -67,5 +67,18 @@ public record BookResponse(String isbn, String title, String genre, String publi
     public BookResponse(final BookEntity book) {
         this(book.getIsbn(), book.getTitle(), book.getGenre(), book.getPublishYear().toString(), book.getLanguage(),
                 book.getDescription(), book.getAuthors().stream().map(AuthorResponse::new).collect(Collectors.toSet()));
+    }
+
+    /**
+     * Compares this {@link BookResponse} with another {@link BookResponse} by ISBN.
+     *
+     * @param other The other {@link BookResponse} to compare.
+     * @return A negative integer, zero, or a positive integer as this
+     *         {@link BookResponse} is less than, equal to, or greater than the
+     *         specified {@link BookResponse}.
+     */
+    @Override
+    public int compareTo(BookResponse other) {
+        return this.isbn.compareTo(other.isbn); // Or you can compare by title or any other field
     }
 }

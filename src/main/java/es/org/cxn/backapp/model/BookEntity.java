@@ -51,6 +51,13 @@ public interface BookEntity extends Serializable {
     Set<PersistentAuthorEntity> getAuthors();
 
     /**
+     * Get the book cover image source.
+     *
+     * @return the cover image location.
+     */
+    String getCoverSrc();
+
+    /**
      * Get the book description.
      *
      * @return The book description.
@@ -91,4 +98,5 @@ public interface BookEntity extends Serializable {
      * @return The book's title.
      */
     String getTitle();
+
 }

@@ -30,7 +30,10 @@ package es.org.cxn.backapp.service.impl;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -46,6 +49,8 @@ import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
 import es.org.cxn.backapp.service.BookService;
 import es.org.cxn.backapp.service.ImageStorageService;
+import es.org.cxn.backapp.service.dto.AuthorDataDto;
+import es.org.cxn.backapp.service.dto.BookDataImageDto;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import jakarta.transaction.Transactional;
 
@@ -162,15 +167,39 @@ public class DefaultBookService implements BookService {
         }
     }
 
+    @Override
+    public byte[] findImage(String isbn) throws BookServiceException {
+        final var book = find(isbn);
+        try {
+            return imageStorageService.loadImage(book.getCoverSrc());
+        } catch (IOException e) {
+            throw new BookServiceException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Get all books.
+     */
     /**
      * Get all books.
      */
     @Override
-    public List<BookEntity> getAll() {
+    public List<BookDataImageDto> getAll() {
         final var persistentBooks = bookRepository.findAll();
 
-        // PersistentBookEntity a BookEntity
-        return persistentBooks.stream().map(BookEntity.class::cast).toList();
+        Set<BookDataImageDto> dtoSet = persistentBooks.stream().map((PersistentBookEntity book) -> {
+            // Convert PersistentBookEntity to BookDataImageDto
+            return new BookDataImageDto(book.getIsbn(), book.getTitle(), book.getDescription(),
+                    book.getPublishYear().toString(), book.getLanguage(), book.getGenre(),
+                    book.getAuthors().stream()
+                            .map(author -> new AuthorDataDto(author.getFirstName(), author.getLastName()))
+                            .collect(Collectors.toSet())
+            // Include the image bytes
+            );
+        }).collect(Collectors.toSet()); // Use Collectors.toSet() for immutability
+
+        // Return the result as a list of BookDataImageDto
+        return new ArrayList<>(dtoSet); // Convert Set to List
     }
 
     /**

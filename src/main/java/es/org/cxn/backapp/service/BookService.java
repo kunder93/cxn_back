@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.BookEntity;
 import es.org.cxn.backapp.model.form.requests.member_resources.AddBookRequestDto;
+import es.org.cxn.backapp.service.dto.BookDataImageDto;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
 
 /**
@@ -63,12 +64,21 @@ public interface BookService {
     BookEntity find(String isbn) throws BookServiceException;
 
     /**
+     * Find book's image.
+     *
+     * @param isbn The book isbn aka identifier.
+     * @return The book image that matched provided isbn.
+     * @throws BookServiceException When book image cannot be loaded.
+     */
+    byte[] findImage(String isbn) throws BookServiceException;
+
+    /**
      * Retrieves a list of all books.
      *
-     * @return A list of all {@link BookEntity} objects representing the books in
-     *         the library.
+     * @return A list of all {@link BookDataImageDto} objects representing the books
+     *         in the library.
      */
-    List<BookEntity> getAll();
+    List<BookDataImageDto> getAll();
 
     /**
      * Removes a book using its ISBN number.

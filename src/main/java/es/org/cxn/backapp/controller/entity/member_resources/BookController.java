@@ -1,5 +1,7 @@
 
-package es.org.cxn.backapp.controller.entity.memberResources;
+package es.org.cxn.backapp.controller.entity.member_resources;
+
+import java.util.List;
 
 /*-
  * #%L
@@ -43,9 +45,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.model.form.requests.member_resources.AddBookRequestDto;
-import es.org.cxn.backapp.model.form.responses.member_resources.BookListResponse;
 import es.org.cxn.backapp.model.form.responses.member_resources.BookResponse;
 import es.org.cxn.backapp.service.BookService;
+import es.org.cxn.backapp.service.dto.BookDataImageDto;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import jakarta.validation.Valid;
 
@@ -101,10 +103,9 @@ public class BookController {
      * @return Book list.
      */
     @GetMapping()
-    public ResponseEntity<BookListResponse> getAllBooks() {
+    public ResponseEntity<List<BookDataImageDto>> getAllBooks() {
         final var bookList = bookService.getAll();
-        final var bookListResponse = new BookListResponse(bookList);
-        return new ResponseEntity<>(bookListResponse, HttpStatus.OK);
+        return new ResponseEntity<>(bookList, HttpStatus.OK);
     }
 
     /**
@@ -119,6 +120,33 @@ public class BookController {
             // Call the libraryService to remove the book
             final var book = bookService.find(isbn);
             return new ResponseEntity<>(new BookResponse(book), HttpStatus.OK);
+        } catch (BookServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Endpoint to retrieve the cover image of a book by its ISBN.
+     * <p>
+     * This method accepts a book's ISBN as a path variable, fetches the cover image
+     * for that book from the service layer, and returns the image as a byte array
+     * in the HTTP response. If the image cannot be found or an error occurs, it
+     * throws a {@link ResponseStatusException} with a
+     * {@link HttpStatus#BAD_REQUEST} status.
+     * </p>
+     *
+     * @param isbn The ISBN of the book whose cover image is to be retrieved.
+     * @return A {@link ResponseEntity} containing the cover image as a byte array
+     *         in the response body with an {@link HttpStatus#OK} status.
+     * @throws ResponseStatusException if there is an error fetching the image
+     *                                 (e.g., book not found or other service
+     *                                 exceptions).
+     */
+    @GetMapping("/{isbn}/coverImage")
+    public ResponseEntity<byte[]> getBookImage(@PathVariable final String isbn) {
+        try {
+            final var image = bookService.findImage(isbn);
+            return new ResponseEntity<>(image, HttpStatus.OK);
         } catch (BookServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
