@@ -52,7 +52,7 @@ import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import jakarta.validation.Valid;
 
 /**
- * Controller for handle request related to library.
+ * Controller for handle request related to library books.
  *
  * @author Santiago Paz.
  *
@@ -62,7 +62,7 @@ import jakarta.validation.Valid;
 public class BookController {
 
     /**
-     * The library service.
+     * The book service.
      */
     private final BookService bookService;
 
@@ -72,7 +72,6 @@ public class BookController {
      * @param service books service.
      */
     public BookController(final BookService service) {
-        super();
         bookService = Objects.requireNonNull(service, "Books service must not be null.");
     }
 
