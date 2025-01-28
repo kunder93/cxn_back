@@ -39,6 +39,6 @@ import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
  *
  * @author Santiago Paz Perez.
  */
-public interface BookEntityRepository extends JpaRepository<PersistentBookEntity, Long> {
+public interface BookEntityRepository extends JpaRepository<PersistentBookEntity, String> {
 
 }

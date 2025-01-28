@@ -76,7 +76,7 @@ public class PersistentBookEntity implements BookEntity, Comparable<PersistentBo
      */
     @Id
     @Column(name = "isbn", nullable = false, unique = true)
-    private Long isbn;
+    private String isbn;
 
     /**
      * The title of the book.
@@ -87,8 +87,8 @@ public class PersistentBookEntity implements BookEntity, Comparable<PersistentBo
     /**
      * The genre or category of the book.
      */
-    @Column(name = "gender", nullable = true, unique = false)
-    private String gender;
+    @Column(name = "genre", nullable = true, unique = false)
+    private String genre;
 
     /**
      * The year the book was published.
@@ -101,6 +101,18 @@ public class PersistentBookEntity implements BookEntity, Comparable<PersistentBo
      */
     @Column(name = "language", nullable = true, unique = false)
     private String language;
+
+    /**
+     * The book's description.
+     */
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    /**
+     * The cover source for book if it have one.
+     */
+    @Column(name = "coverSrc", nullable = true)
+    private String coverSrc;
 
     /**
      * The authors who wrote this book. This is a many-to-many relationship with the

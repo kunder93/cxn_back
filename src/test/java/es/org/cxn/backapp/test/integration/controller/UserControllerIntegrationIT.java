@@ -81,7 +81,7 @@ import jakarta.transaction.Transactional;
 @SpringBootTest
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class UserControllerIntegrationIT {
 
     /**

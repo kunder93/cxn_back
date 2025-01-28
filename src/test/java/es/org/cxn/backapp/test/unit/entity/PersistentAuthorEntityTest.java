@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.entity;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -66,13 +66,11 @@ class PersistentAuthorEntityTest {
         author1.setIdentifier(1L);
         author1.setFirstName("John");
         author1.setLastName("Doe");
-        author1.setNationality("American");
 
         var author2 = new PersistentAuthorEntity();
         author2.setIdentifier(1L);
         author2.setFirstName("John");
         author2.setLastName("Doe");
-        author2.setNationality("American");
 
         assertEquals(author1, author2, "author1 y author2 son iguales según equals()");
         assertEquals(author2, author1, "author1 y author2 son iguales según equals()");
@@ -104,14 +102,12 @@ class PersistentAuthorEntityTest {
         author.setIdentifier(1L);
         author.setFirstName("John");
         author.setLastName("Doe");
-        author.setNationality("American");
 
         // Verificar que los valores se establecieron correctamente utilizando
         // los métodos getter
         assertEquals(1L, author.getIdentifier(), "getter");
         assertEquals("John", author.getFirstName(), "getter");
         assertEquals("Doe", author.getLastName(), "getter");
-        assertEquals("American", author.getNationality(), "getter");
     }
 
 }

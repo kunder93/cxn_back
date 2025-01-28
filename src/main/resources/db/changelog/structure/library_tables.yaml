@@ -25,7 +25,6 @@ databaseChangeLog:
               - column:
                   name: nationality
                   type: VARCHAR(255)
-
   - changeSet:
       id: library_books_table
       author: Santiago
@@ -89,3 +88,127 @@ databaseChangeLog:
                 referencedColumnNames: id
                 referencedTableName: author
 
+  - changeSet:
+      id: edit_book_data
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: book
+            columns:
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false   
+              - column:
+                  name: coverSrc
+                  type: varchar(255) 
+                  constraints:
+                    nullable: true      
+  - changeSet:
+      id: edit_author_data
+      author: Santiago
+      changes:
+        - dropColumn:
+            tableName: author
+            columns:
+              - column:
+                  name: nationality
+                  type: VARCHAR(255)
+  - changeSet:
+      id: modify_book_table_isbn_and_gender
+      author: Santiago
+      changes:
+        - modifyDataType:
+            tableName: book
+            columnName: isbn
+            newDataType: VARCHAR(13)
+        - renameColumn:
+            tableName: book
+            oldColumnName: gender
+            newColumnName: genre
+            columnDataType: VARCHAR(30)
+  - changeSet:
+      id: library_magazine_table
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: magazine
+            columns:
+              - column:
+                  name: issn
+                  type: varchar(8)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: title
+                  type: varchar(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: publish_year
+                  type: DATE
+                  constraints:
+                    nullable: true
+              - column: 
+                  name: edition_number
+                  type: integer
+                  constraints:
+                     nullable: false
+              - column:
+                  name: publisher
+                  type: varchar(50)
+                  constraints:
+                     nullable: false
+              - column:
+                  name: pages_amount
+                  type: integer
+                  constraints:
+                      nullable: false
+              - column:
+                  name: language
+                  type: varchar(20)
+                  constraints:
+                    nullable: true   
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false   
+              - column:
+                  name: coverSrc
+                  type: varchar(255) 
+                  constraints:
+                    nullable: true     
+  - changeSet:
+      id: magazine_author_table
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: magazineauthor
+            columns:
+              - column:
+                  name: magazine_issn
+                  type: varchar(8)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: author_id
+                  type: BIGINT
+                  constraints:
+                    primaryKey: true              
+            constraints: 
+            - foreignKey:
+                name: FK_MAGAZINE_AUTHOR_BOOK
+                baseColumnNames: magazine_issn
+                baseTableName: magazine_author
+                referencedColumnNames: issn
+                referencedTableName: magazine
+            - foreignKey:
+                name: FK_MAGAZINE_AUTHOR_AUTHOR
+                baseColumnNames: author_id
+                baseTableName: author
+                referencedColumnNames: id
+                referencedTableName: author 
+            
+            

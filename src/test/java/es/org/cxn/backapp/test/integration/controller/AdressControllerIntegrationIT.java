@@ -65,7 +65,7 @@ import es.org.cxn.backapp.service.impl.DefaultEmailService;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class AdressControllerIntegrationIT {
 
     /**

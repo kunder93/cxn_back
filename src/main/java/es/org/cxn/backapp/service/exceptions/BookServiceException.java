@@ -30,12 +30,12 @@ import java.io.Serial;
  */
 
 /**
- * Exception thrown by library service.
+ * Exception thrown by book service.
  *
  * @author Santiago Paz.
  *
  */
-public final class LibraryServiceException extends Exception {
+public final class BookServiceException extends Exception {
 
     /**
      * Serial UID.
@@ -48,7 +48,7 @@ public final class LibraryServiceException extends Exception {
      *
      * @param value exception message.
      */
-    public LibraryServiceException(final String value) {
+    public BookServiceException(final String value) {
         super(value);
     }
 
@@ -58,7 +58,7 @@ public final class LibraryServiceException extends Exception {
      * @param value     exception message.
      * @param exception The high order exception.
      */
-    public LibraryServiceException(final String value, final Throwable exception) {
+    public BookServiceException(final String value, final Throwable exception) {
         super(value, exception);
     }
 }
