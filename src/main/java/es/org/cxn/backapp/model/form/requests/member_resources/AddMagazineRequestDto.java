@@ -63,9 +63,24 @@ public record AddMagazineRequestDto(
                 message = ValidationValues.TITLE_SIZE) String title,
 
         /**
+         * The magazine publisher.
+         */
+        String publisher,
+
+        /**
+         * The magazine edition number.
+         */
+        int editionNumber,
+
+        /**
          * Magazine description.
          */
         String description,
+
+        /**
+         * The magazine amount of pages.
+         */
+        int pagesAmount,
 
         /**
          * Magazine publish date.

@@ -114,11 +114,14 @@ public class DefaultMagazineService implements MagazineService {
     public MagazineEntity add(final AddMagazineRequestDto magazineRequest, final MultipartFile imageCover)
             throws MagazineServiceException {
         final var magazine = new PersistentMagazineEntity();
-        magazine.setTitle(magazineRequest.title());
-        magazine.setDescription(magazineRequest.description());
         magazine.setIssn(magazineRequest.issn());
+        magazine.setTitle(magazineRequest.title());
+        magazine.setPublisher(magazineRequest.publisher());
+        magazine.setEditionNumber(magazineRequest.editionNumber());
+        magazine.setPublishDate(magazineRequest.publishDate());
+        magazine.setDescription(magazineRequest.description());
+        magazine.setPagesAmount(magazineRequest.pagesAmount());
         magazine.setLanguage(magazineRequest.language());
-        magazine.setPublishYear(magazineRequest.publishDate());
 
         final var authorsList = magazineRequest.authors();
         authorsList.forEach((AuthorRequest authorRequestDto) -> {
@@ -189,8 +192,9 @@ public class DefaultMagazineService implements MagazineService {
 
         Set<MagazineDataImageDto> dtoSet = persistentMagazines.stream().map((PersistentMagazineEntity magazine) -> {
             // Convert PersistentMagazineEntity to MagazineDataImageDto
-            return new MagazineDataImageDto(magazine.getIssn(), magazine.getTitle(), magazine.getDescription(),
-                    magazine.getPublishYear().toString(), magazine.getLanguage(),
+            return new MagazineDataImageDto(magazine.getIssn(), magazine.getTitle(), magazine.getPublisher(),
+                    magazine.getEditionNumber(), magazine.getDescription(), magazine.getPublishDate().toString(),
+                    magazine.getPagesAmount(), magazine.getLanguage(),
                     magazine.getAuthors().stream()
                             .map(author -> new AuthorDataDto(author.getFirstName(), author.getLastName()))
                             .collect(Collectors.toSet())

@@ -83,7 +83,7 @@ public interface MagazineEntity extends Serializable {
      *
      * @return The magazine's publication year as a {@link LocalDate}.
      */
-    LocalDate getPublishYear();
+    LocalDate getPublishDate();
 
     /**
      * Gets the title of the magazine.

@@ -65,7 +65,7 @@ public record MagazineResponse(String issn, String title, String publishYear, St
      * @param magazine The {@link MagazineEntity} containing the magazine data.
      */
     public MagazineResponse(final MagazineEntity magazine) {
-        this(magazine.getIssn(), magazine.getTitle(), magazine.getPublishYear().toString(), magazine.getLanguage(),
+        this(magazine.getIssn(), magazine.getTitle(), magazine.getPublishDate().toString(), magazine.getLanguage(),
                 magazine.getDescription(),
                 magazine.getAuthors().stream().map(AuthorResponse::new).collect(Collectors.toSet()));
     }

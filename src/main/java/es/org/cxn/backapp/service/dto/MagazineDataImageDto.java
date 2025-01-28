@@ -32,23 +32,72 @@ import java.util.Set;
  * Represents a Data Transfer Object (DTO) for transferring magazine data
  * between application layers.
  * <p>
- * This DTO encapsulates core book information along with associated authors,
- * while avoiding direct exposure of persistence entities. It is typically used
- * in API responses or service-layer communication.
+ * This DTO encapsulates key information about magazines, including publication
+ * details, edition-specific data, and associated authors, while avoiding direct
+ * exposure of persistence entities. It is typically used in API responses or
+ * service-layer communication.
  * </p>
  *
- * @param issn        The International Standard Serial Number (ISSN) uniquely
- *                    identifying the magazine
- * @param title       The title of the magazine
- * @param description A brief summary describing the magazine's content
- * @param publishDate The publication date of the magazine (format as String,
- *                    e.g., "YYYY-MM-DD")
- * @param language    The language in which the magazine is written (e.g.,
- *                    "English", "Spanish")
- * @param authors     A set of {@link AuthorDataDto} objects representing the
- *                    magazine's authors
+ * @param issn          The International Standard Serial Number (ISSN) uniquely
+ *                      identifying the magazine. It is an 8-digit code divided
+ *                      into two groups of four digits (e.g., "1234-5678").
+ *                      <p>
+ *                      Example: {@code "2451-0569"}
+ *                      </p>
+ *
+ * @param title         The title of the magazine.
+ *                      <p>
+ *                      Example: {@code "Chess Monthly Digest"}
+ *                      </p>
+ *
+ * @param publisher     The name of the company or organization that publishes
+ *                      the magazine.
+ *                      <p>
+ *                      Example: {@code "CXN Publications"}
+ *                      </p>
+ *
+ * @param editionNumber The edition number of the magazine. Represents the
+ *                      specific release in a series of editions.
+ *                      <p>
+ *                      Example: {@code 15}
+ *                      </p>
+ *
+ * @param description   A brief summary describing the magazine's content. This
+ *                      may include the focus, target audience, or highlights of
+ *                      the issue.
+ *                      <p>
+ *                      Example: {@code "A special edition covering the history
+ *                      of modern chess tournaments."}
+ *                      </p>
+ *
+ * @param publishDate   The publication date of the magazine in the format
+ *                      {@code "YYYY-MM-DD"}.
+ *                      <p>
+ *                      Example: {@code "2025-02-15"}
+ *                      </p>
+ *
+ * @param pagesAmount   The total number of pages in the magazine.
+ *                      <p>
+ *                      Example: {@code 128}
+ *                      </p>
+ *
+ * @param language      The primary language in which the magazine is written.
+ *                      <p>
+ *                      Example: {@code "English"}
+ *                      </p>
+ *
+ * @param authors       A set of {@link AuthorDataDto} objects representing the
+ *                      authors or contributors of the magazine. Each
+ *                      {@link AuthorDataDto} contains detailed information
+ *                      about an individual author.
+ *                      <p>
+ *                      Example: A magazine may have multiple contributors like
+ *                      editors, writers, or illustrators.
+ *                      </p>
+ *
+ * @see AuthorDataDto
  */
-public record MagazineDataImageDto(String issn, String title, String description, String publishDate, String language,
-        Set<AuthorDataDto> authors) {
+public record MagazineDataImageDto(String issn, String title, String publisher, int editionNumber, String description,
+        String publishDate, int pagesAmount, String language, Set<AuthorDataDto> authors) {
 
 }

@@ -88,7 +88,7 @@ public class PersistentMagazineEntity implements MagazineEntity, Comparable<Pers
      * The year the magazine was published.
      */
     @Column(name = "publish_year", nullable = true, unique = false)
-    private LocalDate publishYear;
+    private LocalDate publishDate;
 
     /**
      * The edition number of the magazine.
