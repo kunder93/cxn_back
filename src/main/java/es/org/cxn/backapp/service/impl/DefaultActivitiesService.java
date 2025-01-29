@@ -44,6 +44,7 @@ import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
 import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import jakarta.transaction.Transactional;
 
 /**
  * DefaultActivitiesService is the default implementation of the
@@ -111,6 +112,7 @@ public final class DefaultActivitiesService implements ActivitiesService {
      * @return the saved {@link PersistentActivityEntity} instance
      */
     @Override
+    @Transactional
     public PersistentActivityEntity addActivity(final String title, final String description,
             final LocalDateTime startDate, final LocalDateTime endDate, final String category,
             final MultipartFile imageFile) throws ActivityServiceException {
@@ -126,7 +128,7 @@ public final class DefaultActivitiesService implements ActivitiesService {
         activityEntity.setCategory(category);
         activityEntity.setCreatedAt(LocalDateTime.now());
 
-        if (imageFile.isEmpty()) {
+        if (imageFile == null || imageFile.isEmpty()) {
             activityEntity.setImageSrc(null);
 
         } else {
@@ -204,9 +206,16 @@ public final class DefaultActivitiesService implements ActivitiesService {
 
         return activitiesList.stream().map(activity -> {
             try {
-                final byte[] image = getActivityImage(activity.getTitle());
-                return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(), activity.getStartDate(),
-                        activity.getEndDate(), activity.getCategory(), Base64.getEncoder().encodeToString(image));
+                if (activity.getImageSrc() == null) {
+                    return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(),
+                            activity.getStartDate(), activity.getEndDate(), activity.getCategory(), null);
+                } else {
+                    final byte[] image = getActivityImage(activity.getTitle());
+                    return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(),
+                            activity.getStartDate(), activity.getEndDate(), activity.getCategory(),
+                            Base64.getEncoder().encodeToString(image));
+                }
+
             } catch (ActivityServiceException e) {
                 // Handle exception (e.g., log it, or return a default ActivityWithImageDto)
                 throw new RuntimeException(e); // Wrap in unchecked exception

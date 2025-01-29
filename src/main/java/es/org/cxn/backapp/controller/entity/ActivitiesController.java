@@ -106,15 +106,12 @@ public class ActivitiesController {
     public ResponseEntity<CreatedActivityResponse> addActivity(@RequestPart("data")
     @Valid final AddActivityRequestData activityData, @RequestPart(value = "imageFile", required = false)
     /* @ValidImageFile */ final MultipartFile imageFile) {
-
         try {
             // Call the service with file and other parameters
             final var createdActivityEntity = activitiesService.addActivity(activityData.title(),
                     activityData.description(), activityData.startDate(), activityData.endDate(),
                     activityData.category(), imageFile);
-
             return new ResponseEntity<>(new CreatedActivityResponse(createdActivityEntity), HttpStatus.CREATED);
-
         } catch (ActivityServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
