@@ -48,7 +48,7 @@ import es.org.cxn.backapp.model.form.requests.AddActivityRequestData;
 import es.org.cxn.backapp.model.form.responses.ActivityResponse;
 import es.org.cxn.backapp.model.form.responses.CreatedActivityResponse;
 import es.org.cxn.backapp.service.ActivitiesService;
-import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
+import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
 import jakarta.validation.Valid;
 
@@ -146,22 +146,13 @@ public class ActivitiesController {
     /**
      * Handles the HTTP GET request to retrieve all activities.
      *
-     * @return A {@link ResponseEntity} containing a stream of
-     *         {@link ActivityWithImageDto} representing all activities and HTTP
-     *         status 200 (OK).
-     * @throws ResponseStatusException if there is an error while retrieving the
-     *                                 activities, resulting in an HTTP 400 (Bad
-     *                                 Request) response.
+     * @return A {@link ResponseEntity} containing a stream of {@link ActivityDto}
+     *         representing all activities and HTTP status 200 (OK).
      */
     @GetMapping()
-    public ResponseEntity<Stream<ActivityWithImageDto>> getAllActivities() {
-
-        final Stream<ActivityWithImageDto> activitiesList;
-        try {
-            activitiesList = activitiesService.getAllActivities();
-            return new ResponseEntity<>(activitiesList, HttpStatus.OK);
-        } catch (ActivityServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
+    public ResponseEntity<Stream<ActivityDto>> getAllActivities() {
+        final Stream<ActivityDto> activitiesList;
+        activitiesList = activitiesService.getAllActivities();
+        return new ResponseEntity<>(activitiesList, HttpStatus.OK);
     }
 }

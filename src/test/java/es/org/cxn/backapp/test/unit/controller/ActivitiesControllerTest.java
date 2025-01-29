@@ -51,7 +51,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import es.org.cxn.backapp.controller.entity.ActivitiesController;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.service.ActivitiesService;
-import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
+import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
 
 @WebMvcTest(ActivitiesController.class)
@@ -140,11 +140,9 @@ class ActivitiesControllerTest {
     void getAllActivitiesShouldReturnActivitiesStreamWhenSuccessful() throws Exception {
         // Prepare test data with LocalDateTime values
         LocalDateTime now = LocalDateTime.now();
-        ActivityWithImageDto activity1 = new ActivityWithImageDto("Activity 1", "Description 1", now, now.plusHours(1),
-                "Category 1", "image1.png");
-        ActivityWithImageDto activity2 = new ActivityWithImageDto("Activity 2", "Description 2", now, now.plusHours(2),
-                "Category 2", "image2.png");
-        Stream<ActivityWithImageDto> activitiesStream = Stream.of(activity1, activity2);
+        ActivityDto activity1 = new ActivityDto("Activity 1", "Description 1", now, now.plusHours(1), "Category 1");
+        ActivityDto activity2 = new ActivityDto("Activity 2", "Description 2", now, now.plusHours(2), "Category 2");
+        Stream<ActivityDto> activitiesStream = Stream.of(activity1, activity2);
 
         // Mock the service to return the activities stream
         when(activitiesStateService.getAllActivities()).thenReturn(activitiesStream);
@@ -155,29 +153,10 @@ class ActivitiesControllerTest {
                 .andExpect(jsonPath("$[0].description").value("Description 1"))
                 .andExpect(jsonPath("$[0].startDate").exists()).andExpect(jsonPath("$[0].endDate").exists())
                 .andExpect(jsonPath("$[0].category").value("Category 1"))
-                .andExpect(jsonPath("$[0].image").value("image1.png"))
                 .andExpect(jsonPath("$[1].title").value("Activity 2"))
                 .andExpect(jsonPath("$[1].description").value("Description 2"))
-                .andExpect(jsonPath("$[1].category").value("Category 2"))
-                .andExpect(jsonPath("$[1].image").value("image2.png"));
-
+                .andExpect(jsonPath("$[1].category").value("Category 2"));
         // Verify that the service was called
         verify(activitiesStateService, times(1)).getAllActivities();
     }
-
-    @Test
-    void getAllActivitiesShouldThrowResponseStatusExceptionWhenServiceThrowsException() throws Exception {
-        // Mock the service to throw an ActivityServiceException
-        when(activitiesStateService.getAllActivities())
-                .thenThrow(new ActivityServiceException("Failed to retrieve activities"));
-
-        // Perform the GET request and verify the response status and message
-        mockMvc.perform(get("/api/activities")).andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value("failure"))
-                .andExpect(jsonPath("$.content").value("400 BAD_REQUEST \"Failed to retrieve activities\""));
-
-        // Verify that the service was called once
-        verify(activitiesStateService, times(1)).getAllActivities();
-    }
-
 }

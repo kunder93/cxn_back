@@ -31,7 +31,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,7 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.ActivitiesService;
-import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
+import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
 import jakarta.transaction.Transactional;
 
@@ -198,28 +197,16 @@ public final class DefaultActivitiesService implements ActivitiesService {
      * Retrieves all activities from the database along with their associated
      * images.
      *
-     * @return a {@link Stream} of all {@link ActivityWithImageDto} instances
+     * @return a {@link Stream} with entities data converted in {@link ActivityDto}
+     *         instances
      */
     @Override
-    public Stream<ActivityWithImageDto> getAllActivities() throws ActivityServiceException {
+    public Stream<ActivityDto> getAllActivities() {
         final List<PersistentActivityEntity> activitiesList = activityRepository.findAll();
 
         return activitiesList.stream().map(activity -> {
-            try {
-                if (activity.getImageSrc() == null) {
-                    return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(),
-                            activity.getStartDate(), activity.getEndDate(), activity.getCategory(), null);
-                } else {
-                    final byte[] image = getActivityImage(activity.getTitle());
-                    return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(),
-                            activity.getStartDate(), activity.getEndDate(), activity.getCategory(),
-                            Base64.getEncoder().encodeToString(image));
-                }
-
-            } catch (ActivityServiceException e) {
-                // Handle exception (e.g., log it, or return a default ActivityWithImageDto)
-                throw new RuntimeException(e); // Wrap in unchecked exception
-            }
+            return new ActivityDto(activity.getTitle(), activity.getDescription(), activity.getStartDate(),
+                    activity.getEndDate(), activity.getCategory());
         });
     }
 

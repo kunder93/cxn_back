@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
-import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
+import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
 
 /**
@@ -96,8 +96,7 @@ public interface ActivitiesService {
      *
      * @return a Stream of PersistentActivityEntity instances representing all
      *         activities
-     * @throws ActivityServiceException When cannot load activities images.
      */
-    Stream<ActivityWithImageDto> getAllActivities() throws ActivityServiceException;
+    Stream<ActivityDto> getAllActivities();
 
 }
