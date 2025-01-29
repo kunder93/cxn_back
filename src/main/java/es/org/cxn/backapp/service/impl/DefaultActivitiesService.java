@@ -42,7 +42,9 @@ import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 import jakarta.transaction.Transactional;
 
 /**
@@ -176,22 +178,30 @@ public final class DefaultActivitiesService implements ActivitiesService {
      *
      * @param title the activity title, used to locate the associated image file.
      * @return the {@link MultipartFile} representing the image file.
-     * @throws ActivityServiceException if the image cannot be found or loaded.
+     * @throws ActivityServiceException       Image loading error (I/O, etc.)
+     * @throws ActivityImageNotFoundException Activity exists but no image is
+     *                                        assigned
+     * @throws ActivityNotFoundException      Activity does not exist
      */
     @Override
-    public byte[] getActivityImage(final String title) throws ActivityServiceException {
+    public byte[] getActivityImage(final String title)
+            throws ActivityNotFoundException, ActivityImageNotFoundException, ActivityServiceException {
         final var activityOptional = activityRepository.findById(title);
+
+        // Case 1: Activity does not exist
         if (activityOptional.isEmpty()) {
-            throw new ActivityServiceException("Activity with title: " + title + " not found.");
+            throw new ActivityNotFoundException("Activity with title: " + title + " not found.");
         }
+
         final var activity = activityOptional.get();
 
+        // Case 2: Activity exists but has no image
         if (activity.getImageSrc() == null || activity.getImageSrc().isEmpty()) {
-            throw new ActivityServiceException("No image associated with activity: " + title);
+            throw new ActivityImageNotFoundException("No image associated with activity: " + title);
         }
 
         try {
-            // Load the image bytes using the image storage service
+            // Case 3: Activity exists and has an image
             return imageStorageService.loadImage(activity.getImageSrc());
 
         } catch (IOException e) {

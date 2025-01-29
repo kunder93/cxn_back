@@ -34,7 +34,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.service.dto.ActivityDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 
 /**
  * ActivitiesService defines the contract for operations related to managing
@@ -85,11 +87,13 @@ public interface ActivitiesService {
      *
      * @param title the unique title of the activity whose image is to be retrieved
      * @return a byte array representing the image data
-     * @throws ActivityServiceException if no image is found for the specified
-     *                                  activity, or if an error occurs while
-     *                                  loading the image
+     * @throws ActivityServiceException       Image loading error (I/O, etc.)
+     * @throws ActivityImageNotFoundException Activity exists but no image is
+     *                                        assigned
+     * @throws ActivityNotFoundException      Activity does not exist
      */
-    byte[] getActivityImage(String title) throws ActivityServiceException;
+    byte[] getActivityImage(String title)
+            throws ActivityServiceException, ActivityNotFoundException, ActivityImageNotFoundException;
 
     /**
      * Retrieves all activities available in the system as a Stream.

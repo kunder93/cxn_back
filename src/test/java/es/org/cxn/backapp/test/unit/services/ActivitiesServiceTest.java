@@ -63,7 +63,8 @@ import org.springframework.web.multipart.MultipartFile;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.dto.ActivityDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 import es.org.cxn.backapp.service.impl.DefaultActivitiesService;
 import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 
@@ -302,7 +303,7 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
-        ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
+        ActivityImageNotFoundException exception = assertThrows(ActivityImageNotFoundException.class, () -> {
             activitiesService.getActivityImage(activityTitle);
         });
 
@@ -318,7 +319,7 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
-        ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
+        ActivityImageNotFoundException exception = assertThrows(ActivityImageNotFoundException.class, () -> {
             activitiesService.getActivityImage(activityTitle);
         });
 
@@ -334,7 +335,7 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
-        ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
+        ActivityImageNotFoundException exception = assertThrows(ActivityImageNotFoundException.class, () -> {
             activitiesService.getActivityImage(activityTitle);
         });
 

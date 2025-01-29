@@ -31,6 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.stream.Stream;
 
+import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +49,9 @@ import es.org.cxn.backapp.model.form.requests.AddActivityRequestData;
 import es.org.cxn.backapp.model.form.responses.CreatedActivityResponse;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 import jakarta.validation.Valid;
 
 /**
@@ -136,6 +139,38 @@ public class ActivitiesController {
     }
 
     /**
+     * Handles the HTTP GET request to retrieve the image of an activity by title.
+     *
+     * @param title The title of the activity whose image is to be retrieved.
+     * @return A {@link ResponseEntity} containing the image as a byte array and the
+     *         appropriate content type.
+     * @throws ResponseStatusException if the image is not found, resulting in an
+     *                                 HTTP 404 (Not Found) response.
+     */
+    @GetMapping("/{title}/image")
+    public ResponseEntity<byte[]> getActivityImage(@PathVariable final String title) {
+        try {
+            byte[] image = activitiesService.getActivityImage(title);
+
+            // Detect content type using Apache Tika
+            Tika tika = new Tika();
+            String contentType = tika.detect(image);
+
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(image);
+
+        } catch (ActivityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+
+        } catch (ActivityImageNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, e.getMessage()); // 204 No Content for missing
+                                                                                      // image
+
+        } catch (ActivityServiceException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving image", e);
+        }
+    }
+
+    /**
      * Handles the HTTP GET request to retrieve all activities.
      *
      * @return A {@link ResponseEntity} containing a stream of {@link ActivityDto}
@@ -147,4 +182,5 @@ public class ActivitiesController {
         activitiesList = activitiesService.getAllActivities();
         return new ResponseEntity<>(activitiesList, HttpStatus.OK);
     }
+
 }

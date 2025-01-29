@@ -50,7 +50,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import es.org.cxn.backapp.controller.entity.ActivitiesController;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 
 @WebMvcTest(ActivitiesController.class)
 @AutoConfigureMockMvc(addFilters = false)
