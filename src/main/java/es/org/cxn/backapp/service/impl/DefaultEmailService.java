@@ -144,7 +144,7 @@ public class DefaultEmailService implements EmailService {
     @Override
     public void sendPaymentConfirmation(final String toEmail, final String memberName, final String paymentQuantity,
             final String reason) throws MessagingException, IOException {
-        sendEmail(toEmail, "CXN: Confirmación pago\"", "mailTemplates/PaymentConfirmedEmail.html",
+        sendEmail(toEmail, "CXN: Confirmación de pago", "mailTemplates/PaymentConfirmedEmail.html",
                 Map.of("name", memberName, "motivo", reason, "cantidad", paymentQuantity));
     }
 
