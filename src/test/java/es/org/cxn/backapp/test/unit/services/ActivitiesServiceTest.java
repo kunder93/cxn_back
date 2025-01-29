@@ -389,11 +389,11 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(sampleActivity));
 
         // Act
-        PersistentActivityEntity result = activitiesService.getActivity(activityTitle);
+        ActivityDto result = activitiesService.getActivity(activityTitle);
 
         // Assert
         assertNotNull(result);
-        assertEquals(sampleActivity.getTitle(), result.getTitle());
+        assertEquals(sampleActivity.getTitle(), result.title());
         verify(activityRepository, times(1)).findById(activityTitle);
     }
 

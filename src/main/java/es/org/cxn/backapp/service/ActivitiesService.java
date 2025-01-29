@@ -78,7 +78,7 @@ public interface ActivitiesService {
      * @return the PersistentActivityEntity instance representing the found activity
      * @throws ActivityServiceException When no activity found.
      */
-    PersistentActivityEntity getActivity(String title) throws ActivityServiceException;
+    ActivityDto getActivity(String title) throws ActivityServiceException;
 
     /**
      * Retrieves the image associated with a specified activity.

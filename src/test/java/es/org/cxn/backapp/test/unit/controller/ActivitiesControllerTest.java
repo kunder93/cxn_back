@@ -37,7 +37,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -49,7 +48,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import es.org.cxn.backapp.controller.entity.ActivitiesController;
-import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
@@ -86,32 +84,22 @@ class ActivitiesControllerTest {
     void getActivityShouldReturnActivityResponseWhenActivityExists() throws Exception {
         // Arrange test data
         String title = "Test Activity";
-        PersistentActivityEntity activityEntity = new PersistentActivityEntity();
-        activityEntity.setTitle(title);
-        activityEntity.setDescription("Test Description");
-        activityEntity.setStartDate(LocalDateTime.now());
-        activityEntity.setEndDate(LocalDateTime.now().plusHours(2));
-        activityEntity.setCategory("Test Category");
-
-        byte[] imageBytes = "test-image-content".getBytes(); // Simulate image as byte[]
-        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+        String description = "Test Description";
+        String category = "Test Category";
+        ActivityDto activityDto = new ActivityDto(title, description, LocalDateTime.now(),
+                LocalDateTime.now().plusHours(2), category);
 
         // Mock service responses
-        when(activitiesStateService.getActivity(title)).thenReturn(activityEntity);
-        when(activitiesStateService.getActivityImage(title)).thenReturn(imageBytes);
+        when(activitiesStateService.getActivity(title)).thenReturn(activityDto);
 
         // Act & Assert - Perform GET request and validate response
         mockMvc.perform(get("/api/activities/{title}", title)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test Activity"))
-                .andExpect(jsonPath("$.description").value("Test Description"))
+                .andExpect(jsonPath("$.title").value(title)).andExpect(jsonPath("$.description").value(description))
                 .andExpect(jsonPath("$.startDate").exists()).andExpect(jsonPath("$.endDate").exists())
-                .andExpect(jsonPath("$.category").value("Test Category"))
-                .andExpect(jsonPath("$.image").value(base64Image)); // Validate Base64-encoded image
+                .andExpect(jsonPath("$.category").value(category));
 
         // Verify service interactions
         verify(activitiesStateService, times(1)).getActivity(title);
-        verify(activitiesStateService, times(1)).getActivityImage(title);
-
     }
 
     @Test

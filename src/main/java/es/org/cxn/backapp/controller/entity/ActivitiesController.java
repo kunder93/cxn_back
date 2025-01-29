@@ -45,7 +45,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.model.form.requests.AddActivityRequestData;
-import es.org.cxn.backapp.model.form.responses.ActivityResponse;
 import es.org.cxn.backapp.model.form.responses.CreatedActivityResponse;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityDto;
@@ -127,17 +126,10 @@ public class ActivitiesController {
      *                                 HTTP 404 (Not Found) response.
      */
     @GetMapping("/{title}")
-    public ResponseEntity<ActivityResponse> getActivity(@PathVariable final String title) {
+    public ResponseEntity<ActivityDto> getActivity(@PathVariable final String title) {
         try {
-            final var activityEntity = activitiesService.getActivity(title);
-
-            final var imageFile = activitiesService.getActivityImage(title);
-
-            // Convert activityEntity to ActivityResponse (assuming this mapping exists)
-            final var activityResponse = new ActivityResponse(activityEntity, imageFile);
-
-            return new ResponseEntity<>(activityResponse, HttpStatus.OK);
-
+            final var activity = activitiesService.getActivity(title);
+            return new ResponseEntity<>(activity, HttpStatus.OK);
         } catch (ActivityServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }

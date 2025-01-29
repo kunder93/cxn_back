@@ -160,12 +160,14 @@ public final class DefaultActivitiesService implements ActivitiesService {
      *                                  identifier
      */
     @Override
-    public PersistentActivityEntity getActivity(final String title) throws ActivityServiceException {
+    public ActivityDto getActivity(final String title) throws ActivityServiceException {
         final var optionalActivity = activityRepository.findById(title);
         if (optionalActivity.isEmpty()) {
             throw new ActivityServiceException("Activity with title: " + title + " not found.");
         } else {
-            return optionalActivity.get();
+            final var activityEntity = optionalActivity.get();
+            return new ActivityDto(activityEntity.getTitle(), activityEntity.getDescription(),
+                    activityEntity.getStartDate(), activityEntity.getEndDate(), activityEntity.getCategory());
         }
     }
 
@@ -178,7 +180,11 @@ public final class DefaultActivitiesService implements ActivitiesService {
      */
     @Override
     public byte[] getActivityImage(final String title) throws ActivityServiceException {
-        final PersistentActivityEntity activity = getActivity(title);
+        final var activityOptional = activityRepository.findById(title);
+        if (activityOptional.isEmpty()) {
+            throw new ActivityServiceException("Activity with title: " + title + " not found.");
+        }
+        final var activity = activityOptional.get();
 
         if (activity.getImageSrc() == null || activity.getImageSrc().isEmpty()) {
             throw new ActivityServiceException("No image associated with activity: " + title);
@@ -203,11 +209,8 @@ public final class DefaultActivitiesService implements ActivitiesService {
     @Override
     public Stream<ActivityDto> getAllActivities() {
         final List<PersistentActivityEntity> activitiesList = activityRepository.findAll();
-
-        return activitiesList.stream().map(activity -> {
-            return new ActivityDto(activity.getTitle(), activity.getDescription(), activity.getStartDate(),
-                    activity.getEndDate(), activity.getCategory());
-        });
+        return activitiesList.stream().map(activity -> new ActivityDto(activity.getTitle(), activity.getDescription(),
+                activity.getStartDate(), activity.getEndDate(), activity.getCategory()));
     }
 
 }
