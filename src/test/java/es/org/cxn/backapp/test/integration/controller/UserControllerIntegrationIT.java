@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.integration.controller;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,6 +28,7 @@ package es.org.cxn.backapp.test.integration.controller;
  */
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -80,7 +81,7 @@ import jakarta.transaction.Transactional;
 @SpringBootTest
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class UserControllerIntegrationIT {
 
     /**
@@ -528,6 +529,36 @@ class UserControllerIntegrationIT {
 
         mockMvc.perform(post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON).content(authenticationRequestJson))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Transactional
+    @Test
+    @WithMockUser(username = "userA", roles = { "ADMIN" })
+    void testDeleteUserCreateUserWIthSameDataIsAllowed() throws Exception {
+        // Age under 18.
+        var userARequest = new SignUpRequestForm(UsersControllerFactory.USER_A_DNI, UsersControllerFactory.USER_A_NAME,
+                UsersControllerFactory.USER_A_FIRST_SURNAME, UsersControllerFactory.USER_A_SECOND_SURNAME,
+                UsersControllerFactory.USER_A_BIRTH_DATE, UsersControllerFactory.USER_A_GENDER,
+                UsersControllerFactory.USER_A_PASSWORD, UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_POSTAL_CODE, UsersControllerFactory.USER_A_APARTMENT_NUMBER,
+                UsersControllerFactory.USER_A_BUILDING, UsersControllerFactory.USER_A_STREET,
+                UsersControllerFactory.USER_A_CITY, UsersControllerFactory.USER_A_KIND_MEMBER,
+                UsersControllerFactory.USER_A_COUNTRY_NUMERIC_CODE,
+                UsersControllerFactory.USER_A_COUNTRY_SUBDIVISION_NAME);
+        // Configurar el comportamiento del mock JavaMailSender
+        when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
+        var userARequestJson = gson.toJson(userARequest);
+        // Register user correctly
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
+        mockMvc.perform(delete("/api/user" + "/" + UsersControllerFactory.USER_A_EMAIL))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.content().string(
+                        "User with email " + UsersControllerFactory.USER_A_EMAIL + " has been permanently deleted."));
+
+        mockMvc.perform(post(SIGN_UP_URL).contentType(MediaType.APPLICATION_JSON).content(userARequestJson))
+                .andExpect(MockMvcResultMatchers.status().isCreated());
+
     }
 
     /**

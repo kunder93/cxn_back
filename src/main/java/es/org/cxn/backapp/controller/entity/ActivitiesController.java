@@ -31,6 +31,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.stream.Stream;
 
+import org.apache.tika.Tika;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,11 +46,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.model.form.requests.AddActivityRequestData;
-import es.org.cxn.backapp.model.form.responses.ActivityResponse;
 import es.org.cxn.backapp.model.form.responses.CreatedActivityResponse;
 import es.org.cxn.backapp.service.ActivitiesService;
-import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.dto.ActivityDto;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 import jakarta.validation.Valid;
 
 /**
@@ -106,15 +108,12 @@ public class ActivitiesController {
     public ResponseEntity<CreatedActivityResponse> addActivity(@RequestPart("data")
     @Valid final AddActivityRequestData activityData, @RequestPart(value = "imageFile", required = false)
     /* @ValidImageFile */ final MultipartFile imageFile) {
-
         try {
             // Call the service with file and other parameters
             final var createdActivityEntity = activitiesService.addActivity(activityData.title(),
                     activityData.description(), activityData.startDate(), activityData.endDate(),
                     activityData.category(), imageFile);
-
             return new ResponseEntity<>(new CreatedActivityResponse(createdActivityEntity), HttpStatus.CREATED);
-
         } catch (ActivityServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
@@ -130,41 +129,58 @@ public class ActivitiesController {
      *                                 HTTP 404 (Not Found) response.
      */
     @GetMapping("/{title}")
-    public ResponseEntity<ActivityResponse> getActivity(@PathVariable final String title) {
+    public ResponseEntity<ActivityDto> getActivity(@PathVariable final String title) {
         try {
-            final var activityEntity = activitiesService.getActivity(title);
-
-            final var imageFile = activitiesService.getActivityImage(title);
-
-            // Convert activityEntity to ActivityResponse (assuming this mapping exists)
-            final var activityResponse = new ActivityResponse(activityEntity, imageFile);
-
-            return new ResponseEntity<>(activityResponse, HttpStatus.OK);
-
+            final var activity = activitiesService.getActivity(title);
+            return new ResponseEntity<>(activity, HttpStatus.OK);
         } catch (ActivityServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
     /**
-     * Handles the HTTP GET request to retrieve all activities.
+     * Handles the HTTP GET request to retrieve the image of an activity by title.
      *
-     * @return A {@link ResponseEntity} containing a stream of
-     *         {@link ActivityWithImageDto} representing all activities and HTTP
-     *         status 200 (OK).
-     * @throws ResponseStatusException if there is an error while retrieving the
-     *                                 activities, resulting in an HTTP 400 (Bad
-     *                                 Request) response.
+     * @param title The title of the activity whose image is to be retrieved.
+     * @return A {@link ResponseEntity} containing the image as a byte array and the
+     *         appropriate content type.
+     * @throws ResponseStatusException if the image is not found, resulting in an
+     *                                 HTTP 404 (Not Found) response.
      */
-    @GetMapping()
-    public ResponseEntity<Stream<ActivityWithImageDto>> getAllActivities() {
-
-        final Stream<ActivityWithImageDto> activitiesList;
+    @GetMapping("/{title}/image")
+    public ResponseEntity<byte[]> getActivityImage(@PathVariable final String title) {
         try {
-            activitiesList = activitiesService.getAllActivities();
-            return new ResponseEntity<>(activitiesList, HttpStatus.OK);
+            byte[] image = activitiesService.getActivityImage(title);
+
+            // Detect content type using Apache Tika
+            Tika tika = new Tika();
+            String contentType = tika.detect(image);
+
+            return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(image);
+
+        } catch (ActivityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+
+        } catch (ActivityImageNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, e.getMessage()); // 204 No Content for missing
+                                                                                      // image
+
         } catch (ActivityServiceException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving image", e);
         }
     }
+
+    /**
+     * Handles the HTTP GET request to retrieve all activities.
+     *
+     * @return A {@link ResponseEntity} containing a stream of {@link ActivityDto}
+     *         representing all activities and HTTP status 200 (OK).
+     */
+    @GetMapping()
+    public ResponseEntity<Stream<ActivityDto>> getAllActivities() {
+        final Stream<ActivityDto> activitiesList;
+        activitiesList = activitiesService.getAllActivities();
+        return new ResponseEntity<>(activitiesList, HttpStatus.OK);
+    }
+
 }

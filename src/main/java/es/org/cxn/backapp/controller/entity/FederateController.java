@@ -35,6 +35,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,10 +44,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import es.org.cxn.backapp.model.form.responses.DniImagesResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList.FederateStateExtendedResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateResponse;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.dto.UserDniImagesDto;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
@@ -124,15 +128,18 @@ public class FederateController {
      */
     private final FederateStateService federateStateService;
 
+    private final UserService userService;
+
     /**
      * Constructs a new FederateController with the specified FederateStateService.
      *
-     * @param federateStateServ the federate state service to be used
+     * @param federateStateServ The federate state service.
+     * @param userServ          The user service.
      * @throws NullPointerException if the federate state service is null
      */
-    public FederateController(final FederateStateService federateStateServ) {
-        super();
+    public FederateController(final FederateStateService federateStateServ, final UserService userServ) {
         federateStateService = checkNotNull(federateStateServ, "Received a null pointer as federate state service");
+        userService = checkNotNull(userServ, "Received a null pointer as user service.");
     }
 
     /**
@@ -259,6 +266,51 @@ public class FederateController {
         final var result = FederateStateExtendedResponseList.fromEntities(entitiesList);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves the authenticated user's DNI images.
+     *
+     * @return ResponseEntity containing the front and back images of the user's
+     *         DNI.
+     * @throws ResponseStatusException if the user is not found or an error occurs
+     *                                 while retrieving the images.
+     */
+    @GetMapping("/dni")
+    public ResponseEntity<DniImagesResponse> getOwnDniImage() {
+        final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
+        try {
+            final var userEntity = userService.findByEmail(authName);
+            final String userDni = userEntity.getDni();
+            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            return new ResponseEntity<>(
+                    new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
+                    HttpStatus.OK);
+        } catch (FederateStateServiceException | UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Retrieves the DNI images of a user based on the provided DNI.
+     *
+     * @param userDni The DNI of the user whose images are to be retrieved.
+     * @return ResponseEntity containing the front and back images of the specified
+     *         user's DNI.
+     * @throws ResponseStatusException if an error occurs while retrieving the
+     *                                 images.
+     */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or " + "hasRole('SECRETARIO')")
+    @GetMapping("/dni/{userDni}")
+    public ResponseEntity<DniImagesResponse> getUserDniImage(final @PathVariable String userDni) {
+        try {
+            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            return new ResponseEntity<>(
+                    new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
+                    HttpStatus.OK);
+        } catch (FederateStateServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
     }
 
     /**

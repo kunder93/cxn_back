@@ -13,10 +13,10 @@ package es.org.cxn.backapp.security;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,12 +29,12 @@ package es.org.cxn.backapp.security;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import es.org.cxn.backapp.repository.UserEntityRepository;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import es.org.cxn.backapp.repository.UserEntityRepository;
 
 /**
  * Implementation of Spring UserDetailsService.
@@ -45,33 +45,32 @@ import org.springframework.stereotype.Service;
 @Service
 public final class MyUserDetailsService implements UserDetailsService {
 
-  /**
-   * User repository field.
-   */
-  private final UserEntityRepository userRepository;
+    /**
+     * User repository field.
+     */
+    private final UserEntityRepository userRepository;
 
-  /**
-   * Main constructor.
-   *
-   * @param repository the user repository.
-   */
-  public MyUserDetailsService(final UserEntityRepository repository) {
-    super();
-    userRepository =
-          checkNotNull(repository, "Received a null pointer as repository");
-  }
-
-  /**
-   * Load User by user name aka email.
-   */
-  @Override
-  public UserDetails loadUserByUsername(final String email) {
-    final var usrEntityOpt = userRepository.findByEmail(email);
-    if (usrEntityOpt.isEmpty()) {
-      throw new UsernameNotFoundException("email: " + email);
+    /**
+     * Main constructor.
+     *
+     * @param repository the user repository.
+     */
+    public MyUserDetailsService(final UserEntityRepository repository) {
+        super();
+        userRepository = checkNotNull(repository, "Received a null pointer as repository");
     }
-    final var userEntity = usrEntityOpt.get();
-    return new MyPrincipalUser(userEntity);
-  }
+
+    /**
+     * Load User by user name aka email.
+     */
+    @Override
+    public UserDetails loadUserByUsername(final String email) {
+        final var usrEntityOpt = userRepository.findByEmail(email);
+        if (usrEntityOpt.isEmpty()) {
+            throw new UsernameNotFoundException("email: " + email);
+        }
+        final var userEntity = usrEntityOpt.get();
+        return new MyPrincipalUser(userEntity);
+    }
 
 }

@@ -12,10 +12,10 @@ package es.org.cxn.backapp.test.integration.controller;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -58,6 +58,7 @@ import es.org.cxn.backapp.controller.entity.FederateController;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.internet.MimeMessage;
@@ -76,8 +77,8 @@ import jakarta.mail.internet.MimeMessage;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource("/application.properties")
-class FederateControllerIntegrationIT {
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
+class FederateControllerIT {
 
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
@@ -118,6 +119,12 @@ class FederateControllerIntegrationIT {
     private FederateStateService federateStateService;
 
     /**
+     * User service used by federate controller.
+     */
+    @Mock
+    private UserService userService;
+
+    /**
      * The FederateController mock injected into the test. It contains the methods
      * that will be tested in the integration test.
      */
@@ -137,7 +144,7 @@ class FederateControllerIntegrationIT {
      */
     private String userAJwtToken;
 
-    FederateControllerIntegrationIT() {
+    FederateControllerIT() {
         super();
     }
 
@@ -172,6 +179,7 @@ class FederateControllerIntegrationIT {
                 .andExpect(MockMvcResultMatchers.status().isCreated());
         userAJwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
                 UsersControllerFactory.USER_A_PASSWORD);
+
     }
 
 //    @Test

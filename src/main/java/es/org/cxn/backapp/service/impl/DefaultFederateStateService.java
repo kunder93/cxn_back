@@ -48,6 +48,7 @@ import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.dto.UserDniImagesDto;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
@@ -286,6 +287,28 @@ public final class DefaultFederateStateService implements FederateStateService {
     @Override
     public List<PersistentFederateStateEntity> getAll() {
         return federateStateRepository.findAll();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserDniImagesDto getDniImages(final String userDni) throws FederateStateServiceException {
+        final var federateStateOpt = federateStateRepository.findById(userDni);
+        if (federateStateOpt.isEmpty()) {
+            throw new FederateStateServiceException("User with DNI: " + userDni + " no have federate state.");
+        }
+        final var federateStateEntity = federateStateOpt.get();
+        final String frontDniImageUrl = federateStateEntity.getDniFrontImageUrl();
+        final String backDniImageUrl = federateStateEntity.getDniBackImageUrl();
+
+        try {
+            final byte[] frontDniImage = imageStorageService.loadImage(frontDniImageUrl);
+            final byte[] backDniImage = imageStorageService.loadImage(backDniImageUrl);
+            return new UserDniImagesDto(frontDniImage, backDniImage);
+        } catch (IOException e) {
+            throw new FederateStateServiceException("User with DNI: " + userDni + " DNI images cannot be loaded.", e);
+        }
     }
 
     /**

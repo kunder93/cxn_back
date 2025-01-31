@@ -31,7 +31,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -42,8 +41,11 @@ import org.springframework.web.multipart.MultipartFile;
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.ActivitiesService;
-import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.dto.ActivityDto;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
+import jakarta.transaction.Transactional;
 
 /**
  * DefaultActivitiesService is the default implementation of the
@@ -111,6 +113,7 @@ public final class DefaultActivitiesService implements ActivitiesService {
      * @return the saved {@link PersistentActivityEntity} instance
      */
     @Override
+    @Transactional
     public PersistentActivityEntity addActivity(final String title, final String description,
             final LocalDateTime startDate, final LocalDateTime endDate, final String category,
             final MultipartFile imageFile) throws ActivityServiceException {
@@ -126,7 +129,7 @@ public final class DefaultActivitiesService implements ActivitiesService {
         activityEntity.setCategory(category);
         activityEntity.setCreatedAt(LocalDateTime.now());
 
-        if (imageFile.isEmpty()) {
+        if (imageFile == null || imageFile.isEmpty()) {
             activityEntity.setImageSrc(null);
 
         } else {
@@ -159,12 +162,14 @@ public final class DefaultActivitiesService implements ActivitiesService {
      *                                  identifier
      */
     @Override
-    public PersistentActivityEntity getActivity(final String title) throws ActivityServiceException {
+    public ActivityDto getActivity(final String title) throws ActivityServiceException {
         final var optionalActivity = activityRepository.findById(title);
         if (optionalActivity.isEmpty()) {
             throw new ActivityServiceException("Activity with title: " + title + " not found.");
         } else {
-            return optionalActivity.get();
+            final var activityEntity = optionalActivity.get();
+            return new ActivityDto(activityEntity.getTitle(), activityEntity.getDescription(),
+                    activityEntity.getStartDate(), activityEntity.getEndDate(), activityEntity.getCategory());
         }
     }
 
@@ -173,18 +178,30 @@ public final class DefaultActivitiesService implements ActivitiesService {
      *
      * @param title the activity title, used to locate the associated image file.
      * @return the {@link MultipartFile} representing the image file.
-     * @throws ActivityServiceException if the image cannot be found or loaded.
+     * @throws ActivityServiceException       Image loading error (I/O, etc.)
+     * @throws ActivityImageNotFoundException Activity exists but no image is
+     *                                        assigned
+     * @throws ActivityNotFoundException      Activity does not exist
      */
     @Override
-    public byte[] getActivityImage(final String title) throws ActivityServiceException {
-        final PersistentActivityEntity activity = getActivity(title);
+    public byte[] getActivityImage(final String title)
+            throws ActivityNotFoundException, ActivityImageNotFoundException, ActivityServiceException {
+        final var activityOptional = activityRepository.findById(title);
 
+        // Case 1: Activity does not exist
+        if (activityOptional.isEmpty()) {
+            throw new ActivityNotFoundException("Activity with title: " + title + " not found.");
+        }
+
+        final var activity = activityOptional.get();
+
+        // Case 2: Activity exists but has no image
         if (activity.getImageSrc() == null || activity.getImageSrc().isEmpty()) {
-            throw new ActivityServiceException("No image associated with activity: " + title);
+            throw new ActivityImageNotFoundException("No image associated with activity: " + title);
         }
 
         try {
-            // Load the image bytes using the image storage service
+            // Case 3: Activity exists and has an image
             return imageStorageService.loadImage(activity.getImageSrc());
 
         } catch (IOException e) {
@@ -196,22 +213,14 @@ public final class DefaultActivitiesService implements ActivitiesService {
      * Retrieves all activities from the database along with their associated
      * images.
      *
-     * @return a {@link Stream} of all {@link ActivityWithImageDto} instances
+     * @return a {@link Stream} with entities data converted in {@link ActivityDto}
+     *         instances
      */
     @Override
-    public Stream<ActivityWithImageDto> getAllActivities() throws ActivityServiceException {
+    public Stream<ActivityDto> getAllActivities() {
         final List<PersistentActivityEntity> activitiesList = activityRepository.findAll();
-
-        return activitiesList.stream().map(activity -> {
-            try {
-                final byte[] image = getActivityImage(activity.getTitle());
-                return new ActivityWithImageDto(activity.getTitle(), activity.getDescription(), activity.getStartDate(),
-                        activity.getEndDate(), activity.getCategory(), Base64.getEncoder().encodeToString(image));
-            } catch (ActivityServiceException e) {
-                // Handle exception (e.g., log it, or return a default ActivityWithImageDto)
-                throw new RuntimeException(e); // Wrap in unchecked exception
-            }
-        });
+        return activitiesList.stream().map(activity -> new ActivityDto(activity.getTitle(), activity.getDescription(),
+                activity.getStartDate(), activity.getEndDate(), activity.getCategory()));
     }
 
 }

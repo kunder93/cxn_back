@@ -78,7 +78,7 @@ import jakarta.mail.internet.MimeMessage;
 @SpringBootTest
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
-@TestPropertySource("/application.properties")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class PaymentsControllerIntegrationIT {
 
     /**

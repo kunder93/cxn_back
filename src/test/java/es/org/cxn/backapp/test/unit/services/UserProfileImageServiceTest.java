@@ -55,7 +55,7 @@ import es.org.cxn.backapp.service.impl.DefaultUserProfileImageService;
  *
  * @see DefaultUserProfileImageService
  */
-public class UserProfileImageServiceTest {
+class UserProfileImageServiceTest {
 
     /**
      * Mocked repository for managing {@link PersistentUserEntity}.
