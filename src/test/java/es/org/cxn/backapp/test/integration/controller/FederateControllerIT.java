@@ -58,6 +58,7 @@ import es.org.cxn.backapp.controller.entity.FederateController;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.internet.MimeMessage;
@@ -116,6 +117,12 @@ class FederateControllerIT {
      */
     @Mock
     private FederateStateService federateStateService;
+
+    /**
+     * User service used by federate controller.
+     */
+    @Mock
+    private UserService userService;
 
     /**
      * The FederateController mock injected into the test. It contains the methods
