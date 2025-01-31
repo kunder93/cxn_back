@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
@@ -68,6 +69,7 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest()
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:IntegrationController.properties")
 final class PaymentsServiceIT {
 
     /**

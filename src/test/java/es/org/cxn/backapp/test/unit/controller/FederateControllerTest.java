@@ -61,6 +61,7 @@ import es.org.cxn.backapp.controller.entity.FederateController.ConfirmCancelFede
 import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.service.FederateStateService;
+import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
@@ -114,6 +115,11 @@ class FederateControllerTest {
     @MockitoBean
     private SecurityContextHolder securityContextHolder;
 
+    /**
+     * Service for users used by controller.
+     */
+    @MockitoBean
+    private UserService userService;
     /**
      * The Gson instance configured with a custom adapter to handle LocalDateTime
      * serialization and deserialization.

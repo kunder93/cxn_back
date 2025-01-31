@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.service.exceptions;
+package es.org.cxn.backapp.service.exceptions.activity;
 
 import java.io.Serial;
 
@@ -14,10 +14,10 @@ import java.io.Serial;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,29 +40,19 @@ import java.io.Serial;
  *
  * @see Exception
  */
-public final class ActivityServiceException extends Exception {
+public final class ActivityNotFoundException extends Exception {
 
     /** Serial version UID for serialization compatibility. */
     @Serial
-    private static final long serialVersionUID = 1387289236385464048L;
+    private static final long serialVersionUID = 1387289444385214048L;
 
     /**
      * Constructs a new ActivityServiceException with a specified error message.
      *
      * @param value the detailed message for the exception
      */
-    public ActivityServiceException(final String value) {
+    public ActivityNotFoundException(final String value) {
         super(value);
     }
 
-    /**
-     * Constructs a new ActivityServiceException with a specified error message and
-     * a cause.
-     *
-     * @param value the detailed message for the exception
-     * @param cause the underlying cause of the exception
-     */
-    public ActivityServiceException(final String value, final Throwable cause) {
-        super(value, cause);
-    }
 }

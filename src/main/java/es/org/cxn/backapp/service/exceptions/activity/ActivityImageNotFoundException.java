@@ -1,5 +1,4 @@
-
-package es.org.cxn.backapp.service.exceptions;
+package es.org.cxn.backapp.service.exceptions.activity;
 
 import java.io.Serial;
 
@@ -15,10 +14,10 @@ import java.io.Serial;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,35 +29,30 @@ import java.io.Serial;
  */
 
 /**
- * Exception thrown by library service.
+ * ActivityServiceException is a custom exception for handling errors within the
+ * Activity Service. This exception extends {@link Exception} and provides a
+ * mechanism to capture error messages specific to activity-related operations.
  *
- * @author Santiago Paz.
+ * <p>
+ * This class is marked as {@code final} to prevent extension and ensure
+ * consistent usage for service-specific exceptions.
+ * </p>
  *
+ * @see Exception
  */
-public final class LibraryServiceException extends Exception {
+public final class ActivityImageNotFoundException extends Exception {
 
-    /**
-     * Serial UID.
-     */
+    /** Serial version UID for serialization compatibility. */
     @Serial
-    private static final long serialVersionUID = 4621625583628223252L;
+    private static final long serialVersionUID = 138712536385464048L;
 
     /**
-     * Main constructor.
+     * Constructs a new ActivityServiceException with a specified error message.
      *
-     * @param value exception message.
+     * @param value the detailed message for the exception
      */
-    public LibraryServiceException(final String value) {
+    public ActivityImageNotFoundException(final String value) {
         super(value);
     }
 
-    /**
-     * Main constructor.
-     *
-     * @param value     exception message.
-     * @param exception The high order exception.
-     */
-    public LibraryServiceException(final String value, final Throwable exception) {
-        super(value, exception);
-    }
 }

@@ -32,6 +32,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
+import es.org.cxn.backapp.service.dto.UserDniImagesDto;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
@@ -123,6 +124,15 @@ public interface FederateStateService {
      *         federate states
      */
     List<PersistentFederateStateEntity> getAll();
+
+    /**
+     * Get User DNI image if have federate state.
+     *
+     * @param userDni The user identifier.
+     * @return User DTO containing front and back DNI images.
+     * @throws FederateStateServiceException When user not found.
+     */
+    UserDniImagesDto getDniImages(String userDni) throws FederateStateServiceException;
 
     /**
      * Retrieves the federate state data for the user identified by the given email.

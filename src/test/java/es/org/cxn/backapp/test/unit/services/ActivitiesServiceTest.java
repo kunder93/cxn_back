@@ -62,8 +62,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
-import es.org.cxn.backapp.service.dto.ActivityWithImageDto;
-import es.org.cxn.backapp.service.exceptions.ActivityServiceException;
+import es.org.cxn.backapp.service.dto.ActivityDto;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 import es.org.cxn.backapp.service.impl.DefaultActivitiesService;
 import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 
@@ -302,7 +303,7 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
-        ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
+        ActivityImageNotFoundException exception = assertThrows(ActivityImageNotFoundException.class, () -> {
             activitiesService.getActivityImage(activityTitle);
         });
 
@@ -318,7 +319,7 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
-        ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
+        ActivityImageNotFoundException exception = assertThrows(ActivityImageNotFoundException.class, () -> {
             activitiesService.getActivityImage(activityTitle);
         });
 
@@ -334,7 +335,7 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(mockActivity));
 
         // Act & Assert
-        ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {
+        ActivityImageNotFoundException exception = assertThrows(ActivityImageNotFoundException.class, () -> {
             activitiesService.getActivityImage(activityTitle);
         });
 
@@ -389,42 +390,12 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(sampleActivity));
 
         // Act
-        PersistentActivityEntity result = activitiesService.getActivity(activityTitle);
+        ActivityDto result = activitiesService.getActivity(activityTitle);
 
         // Assert
         assertNotNull(result);
-        assertEquals(sampleActivity.getTitle(), result.getTitle());
+        assertEquals(sampleActivity.getTitle(), result.title());
         verify(activityRepository, times(1)).findById(activityTitle);
-    }
-
-    @Test
-    void testGetAllActivitiesHandlesRuntimeException() throws IOException {
-        // Arrange
-        PersistentActivityEntity activity1 = new PersistentActivityEntity();
-        activity1.setTitle("Activity 1");
-        activity1.setDescription("Description 1");
-        activity1.setStartDate(LocalDateTime.now());
-        activity1.setEndDate(LocalDateTime.now().plusHours(1));
-        activity1.setCategory("Category 1");
-
-        PersistentActivityEntity activity2 = new PersistentActivityEntity();
-        activity2.setTitle("Activity 2");
-        activity2.setDescription("Description 2");
-        activity2.setStartDate(LocalDateTime.now());
-        activity2.setEndDate(LocalDateTime.now().plusHours(2));
-        activity2.setCategory("Category 2");
-
-        List<PersistentActivityEntity> activitiesList = Arrays.asList(activity1, activity2);
-
-        when(activityRepository.findAll()).thenReturn(activitiesList);
-        when(imageStorageService.loadImage(anyString())).thenThrow(new IOException("Image loading error"))
-                .thenReturn("image-data".getBytes());
-
-        // Act & Assert
-        assertThrows(RuntimeException.class, () -> {
-            activitiesService.getAllActivities().forEach(activity -> {
-            });
-        });
     }
 
     /**
@@ -432,12 +403,12 @@ class ActivitiesServiceTest {
      * are found.
      */
     @Test
-    void testGetAllActivitiesNoActivities() throws ActivityServiceException {
+    void testGetAllActivitiesNoActivities() {
         // Arrange
         when(activityRepository.findAll()).thenReturn(Collections.emptyList());
 
         // Act
-        List<ActivityWithImageDto> result = activitiesService.getAllActivities().toList();
+        List<ActivityDto> result = activitiesService.getAllActivities().toList();
 
         // Assert
         assertNotNull(result);
@@ -460,7 +431,7 @@ class ActivitiesServiceTest {
         when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(sampleActivity));
 
         // Act
-        Stream<ActivityWithImageDto> result = activitiesService.getAllActivities();
+        Stream<ActivityDto> result = activitiesService.getAllActivities();
 
         // Assert
         assertNotNull(result);

@@ -3,7 +3,7 @@
  * <p>
  * This package includes tests for various controllers within the application,
  * such as the {@link es.org.cxn.backapp.controller.ChessQuestionsController}
- * and {@link es.org.cxn.backapp.controller.LibraryController}. It also
+ * and {@link es.org.cxn.backapp.controller.entity.resources.LibraryController}. It also
  * includes tests for security configurations managed by
  * {@link es.org.cxn.backapp.config.TestSecurityConfiguration}.
  * </p>
