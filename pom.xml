@@ -27,7 +27,7 @@
 
 	<groupId>es.org.cxn</groupId>
 	<artifactId>back-app</artifactId>
-	<version>5.0.0-SNAPSHOT</version>
+	<version>5.0.0-RELEASE</version>
 
 	<name>back-app</name>
 	<description>BackEnd app para CXN naron</description>
