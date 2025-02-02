@@ -80,7 +80,7 @@ public class RoleController {
      * @return form with the deleted user data.
      */
     @PatchMapping()
-    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or" + " hasRole('SECRETARIO')")
     public ResponseEntity<UserChangeRoleResponse> changeUserRoles(
             @RequestBody final UserChangeRoleRequest userChangeRoleRequestForm) {
 
@@ -90,8 +90,9 @@ public class RoleController {
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
-        return new ResponseEntity<>(new UserChangeRoleResponse(userChangeRoleRequestForm.email(),
-                userChangeRoleRequestForm.userRoles()), HttpStatus.OK);
+        return new ResponseEntity<>(
+                new UserChangeRoleResponse(userChangeRoleRequestForm.email(), userChangeRoleRequestForm.userRoles()),
+                HttpStatus.OK);
     }
 
 }

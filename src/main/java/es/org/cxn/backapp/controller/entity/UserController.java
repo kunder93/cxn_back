@@ -196,6 +196,7 @@ public class UserController {
      * @return a {@link UserDataResponse} with the updated membership information.
      * @throws ResponseStatusException if the update fails.
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or " + "hasRole('SECRETARIO')")
     @PatchMapping("/changeKindOfMember")
     public ResponseEntity<UserDataResponse> changeUserKindOfMember(
             @RequestBody final UserChangeKindMemberRequest userChangeKindMemberReq) {
@@ -313,6 +314,7 @@ public class UserController {
      *                                 in the {@link UserService}.
      */
     @GetMapping("/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or " + "hasRole('SECRETARIO')")
     public ResponseEntity<UserDataResponse> getUserProfile(final @PathVariable String userDni) {
         try {
             final var userFound = userService.findByDni(userDni);
