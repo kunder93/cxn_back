@@ -314,6 +314,7 @@ public class UserController {
      *                                 in the {@link UserService}.
      */
     @GetMapping("/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or " + "hasRole('SECRETARIO')")
     public ResponseEntity<UserDataResponse> getUserProfile(final @PathVariable String userDni) {
         try {
             final var userFound = userService.findByDni(userDni);
