@@ -57,6 +57,7 @@ import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
 import es.org.cxn.backapp.security.MyPrincipalUser;
+import es.org.cxn.backapp.service.RoleService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
@@ -99,6 +100,11 @@ public class AuthController {
     private final DefaultJwtUtils jwtUtils;
 
     /**
+     * The role service.
+     */
+    private final RoleService roleService;
+
+    /**
      * Constructs an {@code AuthController} with essential security and user
      * management dependencies.
      *
@@ -116,6 +122,7 @@ public class AuthController {
      * @param userDetailsServ User details service for security context loading
      * @param jwtUtils        JWT utilities for token generation/validation
      * @param emailServ       Email service for notifications and verification
+     * @param roleServ        The role service.
      * @throws NullPointerException if any parameter is null
      *
      * @see UserService Core user management operations
@@ -126,14 +133,14 @@ public class AuthController {
      */
     public AuthController(final UserService serviceUser, final AuthenticationManager authManag,
             final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtils,
-            final DefaultEmailService emailServ) {
+            final DefaultEmailService emailServ, final RoleService roleServ) {
         super();
         this.jwtUtils = Preconditions.checkNotNull(jwtUtils, "Received a null pointer as jwtUtils");
         this.userService = Preconditions.checkNotNull(serviceUser, "Received a null pointer as userService");
         this.authManager = Preconditions.checkNotNull(authManag, "Received a null pointer as authenticationManager");
         this.usrDtlsSrv = Preconditions.checkNotNull(userDetailsServ, "Received a null pointer as userDetailsService");
         this.emailService = Preconditions.checkNotNull(emailServ, "Received a null pointer as email service.");
-
+        this.roleService = Preconditions.checkNotNull(roleServ, "Received a null pointer as email service.");
     }
 
     /**
@@ -224,7 +231,7 @@ public class AuthController {
 
         try {
             userService.add(userDetails);
-            final var createdUser = userService.changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
+            final var createdUser = roleService.changeUserRoles(signUpRequestForm.email(), initialUserRolesSet);
             final var signUpRspnsFrm = SignUpResponseForm.fromEntity(createdUser);
 
             emailService.sendSignUp(signUpRequestForm.email(), signUpRequestForm.name(),
