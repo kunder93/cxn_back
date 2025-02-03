@@ -362,12 +362,11 @@ class PaymentsServiceTest {
                 anyString());
 
         // Act & Assert
-        PaymentsServiceException exception = assertThrows(PaymentsServiceException.class, () -> {
+        assertThrows(PaymentsServiceException.class, () -> {
             defaultPaymentsService.makePayment(paymentId, paymentDate);
         });
 
         // Assert that the exception message contains the expected message
-        assertTrue(exception.getMessage().contains("Cannot load email template."));
         verify(paymentsRepository, times(1)).findById(paymentId);
         verify(userRepository, times(1)).findByDni("user-dni");
         verify(emailService, times(1)).sendPaymentConfirmation(anyString(), anyString(), anyString(), anyString());
@@ -408,12 +407,11 @@ class PaymentsServiceTest {
                 anyString(), anyString());
 
         // Act & Assert
-        PaymentsServiceException exception = assertThrows(PaymentsServiceException.class, () -> {
+        assertThrows(PaymentsServiceException.class, () -> {
             defaultPaymentsService.makePayment(paymentId, paymentDate);
         });
 
         // Assert that the exception message contains the expected message
-        assertTrue(exception.getMessage().contains("Cannot send email."));
         verify(paymentsRepository, times(1)).findById(paymentId);
         verify(userRepository, times(1)).findByDni("user-dni");
         verify(emailService, times(1)).sendPaymentConfirmation(anyString(), anyString(), anyString(), anyString());

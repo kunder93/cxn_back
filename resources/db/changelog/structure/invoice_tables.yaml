@@ -1,0 +1,96 @@
+databaseChangeLog:
+- changeSet:
+    id: invoice_table
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: invoices
+        columns:
+        - column:
+            name: id
+            type: bigint
+            autoIncrement: true
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: number
+            type: integer
+            constraints:
+              nullable: false
+        - column:
+            name: series
+            type: varchar(10)
+            constraints:
+              nullable: false
+        - column:
+            name: expedition_date
+            type: date
+            constraints:
+              nullable: false
+        - column:
+            name: advance_payment_date
+            type: date
+            constraints:
+              nullable: true
+        - column:
+            name: tax_exempt
+            type: bool
+            constraints:
+              nullable: false
+        - column:
+            name: buyer_nif  
+            type: varchar(40)
+            constraints:
+              nullable: false
+        - column:
+            name: seller_nif
+            type: varchar(40)
+            constraints:
+              nullable: false        
+        
+- changeSet:
+    id: company_table        
+    author: Santiago
+    changes:
+    - createTable:
+        tableName: companies
+        columns:
+        - column:
+            name: nif
+            type: varchar(10)
+            autoIncrement: false
+            constraints:
+              primaryKey: true
+              nullable: false
+        - column:
+            name: name
+            type: varchar(40)
+            constraints:
+                nullable: false      
+        - column:
+            name: address
+            type: varchar(60)
+            constraints:
+              nullable: false
+
+- changeSet:
+    id: invoices_seller_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: seller_nif
+        baseTableName: invoices
+        constraintName: fk_invoice_seller
+        referencedColumnNames: nif
+        referencedTableName: companies
+- changeSet:
+    id: invoices_buyer_realtion
+    author: Santiago
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: buyer_nif
+        baseTableName: invoices
+        constraintName: fk_invoice_buyer
+        referencedColumnNames: nif
+        referencedTableName: companies        

@@ -147,7 +147,7 @@ public class DefaultMagazineService implements MagazineService {
                     magazine.getIssn());
             magazine.setCoverSrc(imageSoruce);
         } catch (IOException ex) {
-            throw new MagazineServiceException("Magazine cover cannot be saved");
+            throw new MagazineServiceException("Magazine cover cannot be saved", ex);
         }
         try {
             return magazineRepository.save(magazine);
@@ -190,17 +190,18 @@ public class DefaultMagazineService implements MagazineService {
     public List<MagazineDataImageDto> getAll() {
         final var persistentMagazines = magazineRepository.findAll();
 
-        Set<MagazineDataImageDto> dtoSet = persistentMagazines.stream().map((PersistentMagazineEntity magazine) -> {
-            // Convert PersistentMagazineEntity to MagazineDataImageDto
-            return new MagazineDataImageDto(magazine.getIssn(), magazine.getTitle(), magazine.getPublisher(),
-                    magazine.getEditionNumber(), magazine.getDescription(), magazine.getPublishDate().toString(),
-                    magazine.getPagesAmount(), magazine.getLanguage(),
-                    magazine.getAuthors().stream()
-                            .map(author -> new AuthorDataDto(author.getFirstName(), author.getLastName()))
-                            .collect(Collectors.toSet())
-            // Include the image bytes
-            );
-        }).collect(Collectors.toSet()); // Use Collectors.toSet() for immutability
+        final Set<MagazineDataImageDto> dtoSet = persistentMagazines.stream()
+                .map((PersistentMagazineEntity magazine) -> {
+                    // Convert PersistentMagazineEntity to MagazineDataImageDto
+                    return new MagazineDataImageDto(magazine.getIssn(), magazine.getTitle(), magazine.getPublisher(),
+                            magazine.getEditionNumber(), magazine.getDescription(),
+                            magazine.getPublishDate().toString(), magazine.getPagesAmount(), magazine.getLanguage(),
+                            magazine.getAuthors().stream()
+                                    .map(author -> new AuthorDataDto(author.getFirstName(), author.getLastName()))
+                                    .collect(Collectors.toSet())
+                    // Include the image bytes
+                    );
+                }).collect(Collectors.toSet()); // Use Collectors.toSet() for immutability
 
         // Return the result as a list of MagazineDataImageDto
         return new ArrayList<>(dtoSet); // Convert Set to List
