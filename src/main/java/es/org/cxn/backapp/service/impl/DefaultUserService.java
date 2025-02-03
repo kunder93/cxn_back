@@ -218,7 +218,6 @@ public final class DefaultUserService implements UserService {
         case SOCIO_ASPIRANTE -> checkAgeUnder18(user);
         case SOCIO_HONORARIO -> true;
         case SOCIO_FAMILIAR -> true;
-        default -> false;
         };
     }
 

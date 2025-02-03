@@ -60,7 +60,6 @@ import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
-import es.org.cxn.backapp.service.BookService;
 import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import es.org.cxn.backapp.service.impl.DefaultBookService;
@@ -77,7 +76,11 @@ import es.org.cxn.backapp.service.impl.DefaultBookService;
  */
 class BookServiceTest {
 
+    /**
+     * Mock image path location.
+     */
     private static final String MOCK_IMAGE_LOCATION = "/mock/path/to/covers";
+
     /**
      * Constant representing the ISBN of the book. This value is used to identify
      * the book in the system.
@@ -132,7 +135,7 @@ class BookServiceTest {
     /**
      * Mocked image file.
      */
-    final MultipartFile mockFile = mock(MultipartFile.class);
+    private final MultipartFile mockFile = mock(MultipartFile.class);
 
     /**
      * Mocked repository for managing book entities.
@@ -246,7 +249,8 @@ class BookServiceTest {
     }
 
     /**
-     * Verifies that {@link BookService#add(AddBookRequestDto, MultipartFile)}
+     * Verifies that
+     * {@link es.org.cxn.backapp.service.BookService#add(AddBookRequestDto, MultipartFile)}
      * throws a {@link BookServiceException} when a
      * {@link DataIntegrityViolationException} occurs during book saving, preserving
      * the original exception's message.
@@ -267,8 +271,9 @@ class BookServiceTest {
     }
 
     /**
-     * Ensures {@link BookService#add(AddBookRequestDto, MultipartFile)} throws a
-     * {@link BookServiceException} when the image storage process fails.
+     * Ensures
+     * {@link es.org.cxn.backapp.service.BookService#add(AddBookRequestDto, MultipartFile)}
+     * throws a {@link BookServiceException} when the image storage process fails.
      */
     @Test
     void addBookStorageFailureRaisesException() throws java.io.IOException {
@@ -287,7 +292,7 @@ class BookServiceTest {
 
     /**
      * Verifies that a valid book is added successfully using
-     * {@link BookService#add(AddBookRequestDto, MultipartFile)}.
+     * {@link es.org.cxn.backapp.service.BookService#add(AddBookRequestDto, MultipartFile)}.
      */
     @Test
     void addBookValidBookAddsBookSuccessfully() throws BookServiceException {
@@ -307,9 +312,9 @@ class BookServiceTest {
     }
 
     /**
-     * Verifies that {@link BookService#find(String)} throws a
-     * {@link BookServiceException} when a book with the given ISBN is not found in
-     * the repository.
+     * Verifies that {@link es.org.cxn.backapp.service.BookService#find(String)}
+     * throws a {@link BookServiceException} when a book with the given ISBN is not
+     * found in the repository.
      */
     @Test
     void findByIsbnBookNotFoundThrowsException() {
@@ -321,8 +326,8 @@ class BookServiceTest {
     }
 
     /**
-     * Verifies that {@link BookService#find(String)} returns a book when a book
-     * with the given ISBN exists in the repository.
+     * Verifies that {@link es.org.cxn.backapp.service.BookService#find(String)}
+     * returns a book when a book with the given ISBN exists in the repository.
      */
     @Test
     void findByIsbnExistingBookReturnsBook() throws BookServiceException {
@@ -338,8 +343,8 @@ class BookServiceTest {
     }
 
     /**
-     * Verifies that {@link BookService#remove(String)} successfully removes a book
-     * when it exists in the repository.
+     * Verifies that {@link es.org.cxn.backapp.service.BookService#remove(String)}
+     * successfully removes a book when it exists in the repository.
      */
     @Test
     void removeBookByIsbnBookExistsRemovesBook() throws BookServiceException {
@@ -355,9 +360,9 @@ class BookServiceTest {
     }
 
     /**
-     * Verifies that {@link BookService#remove(String)} throws a
-     * {@link BookServiceException} when attempting to remove a book that does not
-     * exist in the repository.
+     * Verifies that {@link es.org.cxn.backapp.service.BookService#remove(String)}
+     * throws a {@link BookServiceException} when attempting to remove a book that
+     * does not exist in the repository.
      */
     @Test
     void removeBookByIsbnBookNotFoundThrowsException() {
@@ -369,9 +374,9 @@ class BookServiceTest {
     }
 
     /**
-     * Verifies that {@link BookService#remove(String)} throws a
-     * {@link BookServiceException} when an invalid ISBN is provided and the
-     * repository method throws an {@link IllegalArgumentException}.
+     * Verifies that {@link es.org.cxn.backapp.service.BookService#remove(String)}
+     * throws a {@link BookServiceException} when an invalid ISBN is provided and
+     * the repository method throws an {@link IllegalArgumentException}.
      */
     @Test
     void removeBookByIsbnInvalidIsbnThrowsLibraryServiceException() {
@@ -389,7 +394,7 @@ class BookServiceTest {
     /**
      * Sets up the test environment before each test method execution. Initializes
      * mock objects, configures the mock file's original filename, and sets the
-     * image location field in the {@link BookService}.
+     * image location field in the {@link es.org.cxn.backapp.service.BookService}.
      */
     @BeforeEach
     void setUp() {

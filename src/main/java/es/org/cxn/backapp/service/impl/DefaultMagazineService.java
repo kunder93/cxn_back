@@ -170,8 +170,11 @@ public class DefaultMagazineService implements MagazineService {
         }
     }
 
+    /**
+     * Find image using magazine isbn.
+     */
     @Override
-    public byte[] findImage(String isbn) throws MagazineServiceException {
+    public byte[] findImage(final String isbn) throws MagazineServiceException {
         final var magazine = find(isbn);
         try {
             return imageStorageService.loadImage(magazine.getCoverSrc());
@@ -180,9 +183,6 @@ public class DefaultMagazineService implements MagazineService {
         }
     }
 
-    /**
-     * Get all magazines.
-     */
     /**
      * Get all magazines.
      */

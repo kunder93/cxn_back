@@ -128,6 +128,17 @@ public class FederateController {
      */
     private final FederateStateService federateStateService;
 
+    /**
+     * The user service that provides user-related operations such as loading user
+     * data, updating profiles, and managing user roles.
+     *
+     * <p>
+     * UserService is used to interact with user-related data, including retrieving
+     * user details and performing actions like updating or deleting user profiles.
+     * </p>
+     *
+     * @see UserService Service responsible for handling user data and operations
+     */
     private final UserService userService;
 
     /**

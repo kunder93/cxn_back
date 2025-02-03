@@ -2,9 +2,9 @@ package es.org.cxn.backapp.filter;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -12,10 +12,10 @@ package es.org.cxn.backapp.filter;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,152 +27,133 @@ package es.org.cxn.backapp.filter;
  */
 
 import java.io.IOException;
-import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import es.org.cxn.backapp.AppURL;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
-import es.org.cxn.backapp.security.MyPrincipalUser;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Filter to process HTTP requests for JWT token-based authentication.
- * <p>
- * This filter intercepts requests to validate the presence and validity of a
- * JSON Web Token (JWT) in the "Authorization" header. If the token is valid, it
- * extracts the username and sets the authentication context. Requests to
- * specific unprotected URIs or HTTP methods are bypassed.
- * </p>
+ * JWT Authentication Filter that processes incoming requests and establishes
+ * security context for valid JWT tokens. This filter:
+ * <ul>
+ * <li>Intercepts requests with Authorization headers</li>
+ * <li>Validates JWT tokens using {@link DefaultJwtUtils}</li>
+ * <li>Loads user details for valid tokens</li>
+ * <li>Sets Spring Security authentication context</li>
+ * </ul>
  *
  * <p>
- * This filter extends
- * {@link org.springframework.web.filter.OncePerRequestFilter}, ensuring it is
- * executed once per request.
+ * <strong>Flow:</strong>
  * </p>
+ * <ol>
+ * <li>Check for Bearer token in Authorization header</li>
+ * <li>Validate token signature and structure</li>
+ * <li>Extract username from valid token</li>
+ * <li>Load UserDetails from service</li>
+ * <li>Validate token against user-specific details</li>
+ * <li>Set authentication in security context</li>
+ * </ol>
  *
- * @author Santiago Paz
- * @version 1.0
+ * @see OncePerRequestFilter Spring's base filter class
+ * @see DefaultJwtUtils JWT validation utilities
  */
-@Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     /**
-     * Logger instance for recording debug and error information.
+     * Length of bearer prefix 'Bearer '.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(JwtRequestFilter.class);
+    private static final int BEARER_PREFIX_LENGTH = 7;
 
     /**
-     * Prefix used in the Authorization header to indicate a Bearer token.
+     * Utility class for working with JWT tokens. Provides methods for token
+     * validation and user extraction.
      */
-    private static final String BEARER_PREFIX = "Bearer ";
+    private final DefaultJwtUtils jwtUtils;
 
     /**
-     * Length of the Bearer token prefix, used for extracting the JWT from the
-     * header.
-     */
-    private static final int BEARER_PREFIX_LENGTH = BEARER_PREFIX.length();
-
-    /**
-     * Name of the HTTP header that contains the authorization information.
-     */
-    private static final String AUTHORIZATION_HEADER = "Authorization";
-
-    /**
-     * Service for retrieving user details, used to validate and load user
-     * information during authentication.
+     * Service to load user details based on the username from the authentication
+     * request.
      */
     private final UserDetailsService userDetailsService;
 
     /**
-     * Constructs a new JwtRequestFilter.
+     * Constructs a JWT authentication filter with required dependencies.
      *
-     * @param usrDetailsService the service used to load user details by username.
+     * @param jwtUtils           JWT utilities for token validation and processing
+     * @param userDetailsService User details service for loading security
+     *                           principals
      */
-    public JwtRequestFilter(final UserDetailsService usrDetailsService) {
-        super();
-        this.userDetailsService = usrDetailsService;
+    public JwtRequestFilter(final DefaultJwtUtils jwtUtils, final UserDetailsService userDetailsService) {
+        this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
-     * Filters incoming HTTP requests to validate JWT tokens.
-     * <p>
-     * Extracts the JWT from the "Authorization" header, validates it, and sets the
-     * Spring Security authentication context if valid.
-     * </p>
+     * Core filter method that processes JWT authentication.
      *
-     * @param request     the HTTP request.
-     * @param response    the HTTP response.
-     * @param filterChain the filter chain to pass the request and response.
-     * @throws ServletException if an error occurs during filtering.
-     * @throws IOException      if an input or output error occurs.
+     * @param request  HTTP request
+     * @param response HTTP response
+     * @param chain    Filter chain
+     * @throws ServletException if request processing fails
+     * @throws IOException      if I/O error occurs
+     *
+     *                          <p>
+     *                          The filter:
+     *                          </p>
+     *                          <ul>
+     *                          <li>Extracts Bearer token from Authorization
+     *                          header</li>
+     *                          <li>Validates token using
+     *                          {@link DefaultJwtUtils#isTokenValid(String)}</li>
+     *                          <li>Loads user details if token is valid</li>
+     *                          <li>Sets authentication context using
+     *                          {@link SecurityContextHolder}</li>
+     *                          <li>Continues filter chain regardless of
+     *                          authentication success</li>
+     *                          </ul>
      */
     @Override
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-            final FilterChain filterChain) throws ServletException, IOException {
-        final String requestURI = request.getRequestURI();
-
-        // Ensure debug logging is enabled before calling LOGGER.debug
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Request URI: {}", requestURI);
-        }
+            final FilterChain chain) throws ServletException, IOException {
 
         try {
-            extractJwtFromRequest(request).flatMap(this::getUsernameFromJwt)
-                    .flatMap(username -> validateAndLoadUser(username, request))
-                    .ifPresent(user -> setAuthentication(user, request));
-        } catch (JwtException e) {
-            // Ensure warn logging is enabled before calling LOGGER.warn
-            if (LOGGER.isWarnEnabled()) {
-                LOGGER.warn("JWT validation failed: {}", e.getMessage());
+            final String authorizationHeader = request.getHeader("Authorization");
+
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+                String jwt = authorizationHeader.substring(BEARER_PREFIX_LENGTH);
+
+                if (jwtUtils.isTokenValid(jwt)) {
+                    String username = jwtUtils.extractUsername(jwt);
+
+                    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+
+                        if (jwtUtils.validateToken(jwt, userDetails)) {
+                            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                                    userDetails, null, userDetails.getAuthorities());
+
+                            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+                            SecurityContextHolder.getContext().setAuthentication(authentication);
+                        }
+                    }
+                }
             }
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+        } catch (Exception e) {
+            logger.error("Cannot set user authentication", e);
         }
 
-        filterChain.doFilter(request, response);
-    }
-
-    /**
-     * Extracts the JWT token from the "Authorization" header of the HTTP request.
-     *
-     * @param request the HTTP request.
-     * @return an {@link Optional} containing the JWT token if present and valid;
-     *         otherwise, an empty {@link Optional}.
-     */
-    private Optional<String> extractJwtFromRequest(final HttpServletRequest request) {
-        final String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        Optional<String> jwtToken = Optional.empty(); // Default to empty
-        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
-            jwtToken = Optional.of(authorizationHeader.substring(BEARER_PREFIX_LENGTH));
-        } else {
-            LOGGER.debug("Missing or invalid Authorization header");
-        }
-        return jwtToken;
-    }
-
-    /**
-     * Extracts the username from the JWT token.
-     *
-     * @param jwt the JWT token.
-     * @return an {@link Optional} containing the username if successfully
-     *         extracted; otherwise, an empty {@link Optional}.
-     */
-    private Optional<String> getUsernameFromJwt(final String jwt) {
-        final Optional<String> username; // Default to empty
-        username = Optional.ofNullable(DefaultJwtUtils.extractUsername(jwt));
-        return username;
+        chain.doFilter(request, response);
     }
 
     /**
@@ -201,23 +182,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     /**
-     * Sets the Spring Security authentication context with the specified user.
-     *
-     * @param user    the authenticated user.
-     * @param request the HTTP request.
-     */
-    private void setAuthentication(final MyPrincipalUser user, final HttpServletRequest request) {
-        final var authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-
-        // Guarded log statement
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Authentication set for user: {}", user.getUsername());
-        }
-    }
-
-    /**
      * Determines whether the request should bypass the filter.
      * <p>
      * Requests are skipped if they match specific unprotected URIs or methods.
@@ -233,31 +197,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         final String httpMethod = request.getMethod();
 
         final boolean shouldSkip = isUnprotectedUri(requestURI) || isUnprotectedMethod(requestURI, httpMethod);
-        LOGGER.debug("Skipping JWT filter: {}", shouldSkip);
+        logger.debug("Skipping JWT filter: ");
         return shouldSkip;
-    }
-
-    /**
-     * Validates the JWT token and loads the corresponding user details.
-     *
-     * @param username the username extracted from the JWT token.
-     * @param request  the HTTP request.
-     * @return an {@link Optional} containing the user details if validation
-     *         succeeds; otherwise, an empty {@link Optional}.
-     */
-    private Optional<MyPrincipalUser> validateAndLoadUser(final String username, final HttpServletRequest request) {
-        Optional<MyPrincipalUser> result = Optional.empty(); // Single exit point, initialize the result
-
-        final MyPrincipalUser user = (MyPrincipalUser) userDetailsService.loadUserByUsername(username);
-        final String jwt = extractJwtFromRequest(request).orElse(null);
-        if (Boolean.TRUE.equals(DefaultJwtUtils.validateToken(jwt, user))) {
-            LOGGER.debug("Valid JWT for user: {}", username);
-            result = Optional.of(user);
-        } else {
-            LOGGER.debug("Invalid JWT for user: {}", username);
-        }
-
-        return result; // The single return statement
     }
 
 }

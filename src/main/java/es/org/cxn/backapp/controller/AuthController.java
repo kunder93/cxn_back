@@ -94,24 +94,46 @@ public class AuthController {
     private final DefaultEmailService emailService;
 
     /**
-     * Constructs a controller with the specified dependencies.
+     * The jwtUtils service for validate auth tokens.
+     */
+    private final DefaultJwtUtils jwtUtils;
+
+    /**
+     * Constructs an {@code AuthController} with essential security and user
+     * management dependencies.
      *
-     * @param serviceUser     the user service to manage user operations.
-     * @param authManag       the authentication manager to handle authentication.
-     * @param userDetailsServ the user details service to load user-specific
-     *                        details.
-     * @param emailServ       the email service for send email messages.
-     * @param jwtUtil         the JWT utility for generating and validating tokens.
+     * <p>
+     * <strong>Dependency Requirements:</strong>
+     * </p>
+     * <ul>
+     * <li>All parameters must be non-null (validated via
+     * {@link Preconditions#checkNotNull})</li>
+     * <li>Dependencies are typically injected by the Spring framework</li>
+     * </ul>
+     *
+     * @param serviceUser     User service for user management operations
+     * @param authManag       Authentication manager for credential validation
+     * @param userDetailsServ User details service for security context loading
+     * @param jwtUtils        JWT utilities for token generation/validation
+     * @param emailServ       Email service for notifications and verification
+     * @throws NullPointerException if any parameter is null
+     *
+     * @see UserService Core user management operations
+     * @see AuthenticationManager Spring Security authentication entry point
+     * @see UserDetailsService Spring Security user loading mechanism
+     * @see DefaultJwtUtils JWT token handling utilities
+     * @see DefaultEmailService Email delivery service
      */
     public AuthController(final UserService serviceUser, final AuthenticationManager authManag,
-            final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtil,
+            final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtils,
             final DefaultEmailService emailServ) {
         super();
+        this.jwtUtils = Preconditions.checkNotNull(jwtUtils, "Received a null pointer as jwtUtils");
         this.userService = Preconditions.checkNotNull(serviceUser, "Received a null pointer as userService");
         this.authManager = Preconditions.checkNotNull(authManag, "Received a null pointer as authenticationManager");
         this.usrDtlsSrv = Preconditions.checkNotNull(userDetailsServ, "Received a null pointer as userDetailsService");
         this.emailService = Preconditions.checkNotNull(emailServ, "Received a null pointer as email service.");
-        Preconditions.checkNotNull(jwtUtil, "Received a null pointer as jwtUtils");
+
     }
 
     /**
@@ -175,7 +197,7 @@ public class AuthController {
         } catch (UsernameNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage(), e);
         }
-        final var jwt = DefaultJwtUtils.generateToken(userDetails);
+        final var jwt = jwtUtils.generateToken(userDetails);
         return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
     }
 

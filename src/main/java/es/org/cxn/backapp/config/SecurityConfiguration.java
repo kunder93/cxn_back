@@ -28,11 +28,10 @@ package es.org.cxn.backapp.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -44,6 +43,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -52,21 +52,24 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import es.org.cxn.backapp.AppURL;
-import es.org.cxn.backapp.filter.EnableUserRequestFilter;
 import es.org.cxn.backapp.filter.JwtRequestFilter;
+import es.org.cxn.backapp.security.DefaultJwtUtils;
 
 /**
- * Spring security configuration.
+ * Security configuration for the application.
  * <p>
- * This class configures the security settings of the application, including
- * CORS, JWT filters, password encoding, and authentication management.
- * </p>
+ * This class configures Spring Security settings, including JWT authentication,
+ * CORS policies, password encoding, and access control for various endpoints.
  *
  * <p>
- * The {@link EnableWebSecurity} annotation enables Spring Security’s web
- * security support, and the {@link EnableMethodSecurity} annotation allows
- * method-level security with pre/post annotations.
- * </p>
+ * The configuration includes:
+ * <ul>
+ * <li>Disabling CSRF protection (as JWT is used).</li>
+ * <li>Stateless session management.</li>
+ * <li>CORS configuration.</li>
+ * <li>Custom JWT authentication filter.</li>
+ * <li>Access control for API endpoints.</li>
+ * </ul>
  *
  * @author Santiago Paz
  */
@@ -76,117 +79,119 @@ import es.org.cxn.backapp.filter.JwtRequestFilter;
 public class SecurityConfiguration {
 
     /**
-     * The logger.
+     * Logger for logging security-related messages.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     /**
-     * Default constructor for SecurityConfiguration. This constructor is used to
-     * create an instance of the SecurityConfiguration class.
+     * Utility class for working with JWT tokens. Provides methods for token
+     * validation and user extraction.
      */
-    public SecurityConfiguration() {
-        // Default constructor
+    private final DefaultJwtUtils jwtUtils;
+
+    /**
+     * Service to load user details based on the username from the authentication
+     * request.
+     */
+    private final UserDetailsService userDetailsService;
+
+    /**
+     * Constructor for SecurityConfiguration.
+     *
+     * @param jwtUtils           Utility class for handling JWT tokens.
+     * @param userDetailsService Service for loading user details.
+     */
+    public SecurityConfiguration(final DefaultJwtUtils jwtUtils, final UserDetailsService userDetailsService) {
+        this.jwtUtils = jwtUtils;
+        this.userDetailsService = userDetailsService;
     }
 
     /**
-     * Provides an authentication manager bean for managing user authentication.
+     * Provides the authentication manager.
      *
-     * @param authConfig the current authentication configuration.
-     * @return the authentication manager.
-     * @throws Exception When fails.
+     * @param authConfig The authentication configuration.
+     * @return The authentication manager instance.
+     * @throws Exception if an error occurs while retrieving the authentication
+     *                   manager.
      */
     @Bean
-    AuthenticationManager authenticationManager(final AuthenticationConfiguration authConfig) throws Exception {
+    public AuthenticationManager authenticationManager(final AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
     }
 
     /**
-     * Configures CORS settings for the application.
+     * Configures Cross-Origin Resource Sharing (CORS) settings.
      *
-     * @return the CORS configuration source.
+     * @return A configured {@link UrlBasedCorsConfigurationSource} instance.
      */
     @Bean
-    UrlBasedCorsConfigurationSource corsConfigurationSource() {
-        LOGGER.info("Configurando CORS");
-        final var configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+    public UrlBasedCorsConfigurationSource corsConfigurationSource() {
+        LOGGER.info("Configuring CORS");
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("*"));
+        configuration.setAllowedMethods(List.of("*"));
+        configuration.setAllowedHeaders(List.of("*"));
 
-        final var source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 
     /**
-     * Configures the security filter chain applied to HTTP requests.
+     * Configures the security filter chain, including JWT filters and access rules.
      *
-     * @param http                    the HTTP security configuration.
-     * @param jwtRequestFilter        the JWT filter.
-     * @param enableUserRequestFilter The filter that check if user is or not
-     *                                enabled.
-     * @return the configured SecurityFilterChain.
-     * @throws Exception The exception when fails.
+     * @param http The {@link HttpSecurity} instance.
+     * @return The configured security filter chain.
+     * @throws Exception If an error occurs during configuration.
      */
     @Bean
-    DefaultSecurityFilterChain filterChain(final HttpSecurity http, final @Autowired JwtRequestFilter jwtRequestFilter,
-            final @Autowired EnableUserRequestFilter enableUserRequestFilter) throws Exception {
-        LOGGER.info("Configurando SecurityFilterChain");
-        // Disable CSRF for REST API and use stateless session management
+    public DefaultSecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+        LOGGER.info("Configuring Security Filter Chain");
+
         http.csrf(csrf -> csrf.disable())
-                .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(withDefaults());
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .cors(withDefaults()).headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin))
+                .addFilterBefore(jwtRequestFilter(), UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/h2-console/**", AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL, "/swagger-ui/**",
+                                "/v3/api-docs/**", AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL,
+                                "/api/activities", "/api/activities/*/image", "/api/address/**")
+                        .permitAll().requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/lichessAuth").authenticated().anyRequest()
+                        .authenticated());
 
-        // Allow H2 console access by modifying frame options
-        http.headers(headers -> headers.frameOptions(FrameOptionsConfig::sameOrigin));
-
-        // Add JWT filter before UsernamePasswordAuthenticationFilter
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(enableUserRequestFilter, UsernamePasswordAuthenticationFilter.class);
-        // Permit all requests to /api/auth/signup and /api/auth/signin
-        http.authorizeHttpRequests(requests -> requests.requestMatchers("/h2-console/**").permitAll()
-                .requestMatchers(AppURL.SIGN_UP_URL, AppURL.SIGN_IN_URL).permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs").permitAll()
-                .requestMatchers(AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL).permitAll()
-                .requestMatchers("/v3/api-docs/swagger-config").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/activities").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/activities/*/image").permitAll()
-                .requestMatchers("/getAllLichessProfiles").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/lichessAuth").authenticated()
-                .requestMatchers("/api/address/getCountries", "/api/address/country/**").permitAll().anyRequest()
-                .authenticated());
-
-        // Disable anonymous access
-        http.anonymous(withDefaults());
-        LOGGER.info("Autorizaciones configuradas para rutas específicas");
         return http.build();
     }
 
     /**
-     * Provides a password encoder bean for encoding passwords using BCrypt.
+     * Creates a JWT authentication filter.
      *
-     * @return the password encoder.
+     * @return An instance of {@link JwtRequestFilter}.
      */
     @Bean
-    BCryptPasswordEncoder passwordEncoder() {
+    public JwtRequestFilter jwtRequestFilter() {
+        return new JwtRequestFilter(jwtUtils, userDetailsService);
+    }
+
+    /**
+     * Provides a password encoder bean using BCrypt.
+     *
+     * @return A {@link BCryptPasswordEncoder} instance.
+     */
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     /**
-     * Configures which web requests are ignored by Spring Security.
-     * <p>
-     * This method sets up a {@link WebSecurityCustomizer} that ignores requests to
-     * the H2 console endpoint.
-     * </p>
+     * Configures web security to ignore specific endpoints such as H2 Console and
+     * API documentation.
      *
-     * @return the configured WebSecurityCustomizer.
+     * @return A {@link WebSecurityCustomizer} instance.
      */
     @Bean
-    WebSecurityCustomizer webSecurityCustomizer() {
-        return web -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"));
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers(new AntPathRequestMatcher("/h2-console/**"),
+                new AntPathRequestMatcher("/v3/api-docs/**"), new AntPathRequestMatcher("/swagger-ui/**"));
     }
-
 }

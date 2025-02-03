@@ -271,6 +271,7 @@ class UserControllerIntegrationIT {
      */
     @Test
     @Transactional
+    @WithMockUser(username = "userA", roles = { "ADMIN" })
     void testChangeKindOfMemberSocioNumeroSocioAspiranteNotAllowedBirthDate() throws Exception {
         // Configurar el comportamiento del mock JavaMailSender
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);

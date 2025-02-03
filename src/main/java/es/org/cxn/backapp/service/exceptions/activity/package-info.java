@@ -1,5 +1,14 @@
-
-package es.org.cxn.backapp.repository;
+/**
+ * Contains custom exceptions related to activity services.
+ *
+ * This package includes: - ActivityImageNotFoundException: Exception thrown
+ * when an activity image is not found. - ActivityNotFoundException: Exception
+ * thrown when an activity cannot be found. - ActivityServiceException: General
+ * exception for errors occurring in activity services.
+ *
+ * @author Santiago Paz
+ */
+package es.org.cxn.backapp.service.exceptions.activity;
 
 /*-
  * #%L
@@ -26,20 +35,3 @@ package es.org.cxn.backapp.repository;
  * THE SOFTWARE.
  * #L%
  */
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
-
-/**
- * Spring-JPA repository for {@link PersistentFederateStateEntity}.
- * <p>
- * This repository provides CRUD operations for
- * {@link PersistentFederateStateEntity} entities, allowing for interactions
- * with the database in a convenient and straightforward manner.
- *
- * @author Santiago Paz Perez
- */
-public interface FederateStateEntityRepository extends JpaRepository<PersistentFederateStateEntity, String> {
-
-}

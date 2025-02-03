@@ -1,5 +1,15 @@
-
-package es.org.cxn.backapp.repository;
+/**
+ * Contains DTOs and validation values for requests related to member resources
+ * like books and magazines.
+ *
+ * This package includes: - AddBookRequestDto: DTO for handling book addition
+ * requests. - AddMagazineRequestDto: DTO for handling magazine addition
+ * requests. - AuthorRequest: DTO for handling author-related requests. -
+ * ValidationValues: Contains constants for validation purposes.
+ *
+ * @author Santiago Paz
+ */
+package es.org.cxn.backapp.model.form.requests.member_resources;
 
 /*-
  * #%L
@@ -26,20 +36,3 @@ package es.org.cxn.backapp.repository;
  * THE SOFTWARE.
  * #L%
  */
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
-
-/**
- * Spring-JPA repository for {@link PersistentFederateStateEntity}.
- * <p>
- * This repository provides CRUD operations for
- * {@link PersistentFederateStateEntity} entities, allowing for interactions
- * with the database in a convenient and straightforward manner.
- *
- * @author Santiago Paz Perez
- */
-public interface FederateStateEntityRepository extends JpaRepository<PersistentFederateStateEntity, String> {
-
-}

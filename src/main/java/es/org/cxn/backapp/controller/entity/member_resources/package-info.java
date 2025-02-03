@@ -1,5 +1,15 @@
+/**
+ * Contains controllers for managing member-related resources like magazines and
+ * books.
+ *
+ * This package includes: - MagazinesController: Controller for handling
+ * magazine-related operations. - BookController: Controller for handling
+ * book-related operations.
+ *
+ * @author Santiago Paz
+ */
 
-package es.org.cxn.backapp.repository;
+package es.org.cxn.backapp.controller.entity.member_resources;
 
 /*-
  * #%L
@@ -26,20 +36,3 @@ package es.org.cxn.backapp.repository;
  * THE SOFTWARE.
  * #L%
  */
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
-
-/**
- * Spring-JPA repository for {@link PersistentFederateStateEntity}.
- * <p>
- * This repository provides CRUD operations for
- * {@link PersistentFederateStateEntity} entities, allowing for interactions
- * with the database in a convenient and straightforward manner.
- *
- * @author Santiago Paz Perez
- */
-public interface FederateStateEntityRepository extends JpaRepository<PersistentFederateStateEntity, String> {
-
-}

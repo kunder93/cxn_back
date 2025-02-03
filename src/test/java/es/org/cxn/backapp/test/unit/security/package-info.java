@@ -1,5 +1,14 @@
-
-package es.org.cxn.backapp.repository;
+/**
+ * Unit tests for the security-related components of the application.
+ *
+ * This package includes tests for authentication, authorization, and other
+ * security features that are part of the application's security layer. The
+ * tests aim to verify that security mechanisms such as JWT authentication, user
+ * roles, and access control are working as expected.
+ *
+ * @author Santiago Paz
+ */
+package es.org.cxn.backapp.test.unit.security;
 
 /*-
  * #%L
@@ -26,20 +35,3 @@ package es.org.cxn.backapp.repository;
  * THE SOFTWARE.
  * #L%
  */
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
-
-/**
- * Spring-JPA repository for {@link PersistentFederateStateEntity}.
- * <p>
- * This repository provides CRUD operations for
- * {@link PersistentFederateStateEntity} entities, allowing for interactions
- * with the database in a convenient and straightforward manner.
- *
- * @author Santiago Paz Perez
- */
-public interface FederateStateEntityRepository extends JpaRepository<PersistentFederateStateEntity, String> {
-
-}
