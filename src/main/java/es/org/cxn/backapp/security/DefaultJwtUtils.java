@@ -174,13 +174,15 @@ public class DefaultJwtUtils {
      * @throws JwtException if the token cannot be parsed
      */
     public boolean isTokenExpired(final String token) {
+        boolean isExpired = false;
+
         try {
-            Instant expiration = extractExpiration(token);
-            return expiration.isBefore(Instant.now());
+            final Instant expiration = extractExpiration(token);
+            isExpired = expiration.isBefore(Instant.now());
         } catch (ExpiredJwtException ex) {
-            LOGGER.warn("El token ya estaba expirado: {}", ex.getClaims().getExpiration());
-            return true;
+            isExpired = true;
         }
+        return isExpired;
     }
 
     /**
@@ -190,13 +192,15 @@ public class DefaultJwtUtils {
      * @return true if token is properly signed and formatted, false otherwise
      */
     public boolean isTokenValid(final String token) {
+        boolean isValid;
+
         try {
             Jwts.parser().verifyWith(signingKey).build().parse(token);
-            return true;
+            isValid = true;
         } catch (JwtException | IllegalArgumentException e) {
-            LOGGER.error("Invalid JWT: {}", e.getMessage());
-            return false;
+            isValid = false;
         }
+        return isValid;
     }
 
     /**

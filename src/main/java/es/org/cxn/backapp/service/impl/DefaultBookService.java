@@ -144,7 +144,7 @@ public class DefaultBookService implements BookService {
             final var imageSoruce = imageStorageService.saveImage(imageCover, imageLocation, "book", book.getIsbn());
             book.setCoverSrc(imageSoruce);
         } catch (IOException ex) {
-            throw new BookServiceException("Book cover cannot be saved");
+            throw new BookServiceException("Book cover cannot be saved", ex);
         }
         try {
             return bookRepository.save(book);
@@ -200,7 +200,7 @@ public class DefaultBookService implements BookService {
     public List<BookDataImageDto> getAll() {
         final var persistentBooks = bookRepository.findAll();
 
-        Set<BookDataImageDto> dtoSet = persistentBooks.stream().map((PersistentBookEntity book) ->
+        final Set<BookDataImageDto> dtoSet = persistentBooks.stream().map((PersistentBookEntity book) ->
         // Convert PersistentBookEntity to BookDataImageDto
         new BookDataImageDto(book.getIsbn(), book.getTitle(), book.getDescription(), book.getPublishYear().toString(),
                 book.getLanguage(), book.getGenre(),

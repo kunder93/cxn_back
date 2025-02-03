@@ -87,7 +87,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
  * <p>
  * All methods handle exceptions and return appropriate HTTP status codes in
  * case of errors, such as bad requests or access violations.
- * </p>
  *
  * @see FederateStateService
  * @see ResponseEntity
@@ -293,7 +292,7 @@ public class FederateController {
         try {
             final var userEntity = userService.findByEmail(authName);
             final String userDni = userEntity.getDni();
-            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            final UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
             return new ResponseEntity<>(
                     new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
                     HttpStatus.OK);
@@ -315,7 +314,7 @@ public class FederateController {
     @GetMapping("/dni/{userDni}")
     public ResponseEntity<DniImagesResponse> getUserDniImage(final @PathVariable String userDni) {
         try {
-            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            final UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
             return new ResponseEntity<>(
                     new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
                     HttpStatus.OK);
