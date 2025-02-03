@@ -219,35 +219,10 @@ public final class DefaultUserService implements UserService {
     @Transactional
     public UserEntity acceptUserAsMember(final String userDni) throws UserServiceException {
         final var userEntity = findByDni(userDni);
-        final var userRoles = userEntity.getRoles();
-        final Integer numberRolesExpected = Integer.valueOf(1);
-        final String exMessage = "User with dni: " + userDni;
-        if (numberRolesExpected.equals(userRoles.size())) {
-            // Get the only one role.
-            final var roleName = userRoles.iterator().next();
-            if (roleName.getName().equals(UserRoleName.ROLE_CANDIDATO_SOCIO)) {
-                // Modify user roles for have only UserRoleName.ROLE_SOCIO
-                final var roles = new ArrayList<UserRoleName>();
-                roles.add(UserRoleName.ROLE_SOCIO);
-                final UserEntity userWithchangedRoles = roleService.changeUserRoles(userEntity.getEmail(), roles);
-                try {
-                    final UserEntity result = userRepository.save(asPersistentUserEntity(userWithchangedRoles));
-                    emailService.sendWelcome(result.getEmail(), result.getCompleteName());
-                    generatePaymentForAcceptedUser(result);
-                    return result;
-                } catch (MessagingException e) {
-                    throw new UserServiceException(exMessage + "cannot send email.", e);
-                } catch (IOException e) {
-                    throw new UserServiceException(exMessage + "cannot send email: cannot load template.", e);
-                } catch (PaymentsServiceException e) {
-                    throw new UserServiceException(exMessage + "cannot generate payment for this user.", e);
-                }
-            } else {
-                throw new UserServiceException(exMessage + "no have " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
-            }
-        } else {
-            throw new UserServiceException(exMessage + "have no only " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
-        }
+        validateCandidateRole(userEntity, userDni);
+
+        final var updatedUser = changeUserRoleToSocio(userEntity);
+        return processAcceptedUser(updatedUser);
     }
 
     /**
@@ -391,6 +366,10 @@ public final class DefaultUserService implements UserService {
 
     }
 
+    private UserEntity changeUserRoleToSocio(final UserEntity userEntity) throws UserServiceException {
+        return roleService.changeUserRoles(userEntity.getEmail(), List.of(UserRoleName.ROLE_SOCIO));
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -456,6 +435,19 @@ public final class DefaultUserService implements UserService {
         return new ArrayList<>(persistentUsers);
     }
 
+    private UserEntity processAcceptedUser(final UserEntity userEntity) throws UserServiceException {
+        try {
+            final UserEntity savedUser = userRepository.save(asPersistentUserEntity(userEntity));
+            emailService.sendWelcome(savedUser.getEmail(), savedUser.getCompleteName());
+            generatePaymentForAcceptedUser(savedUser);
+            return savedUser;
+        } catch (MessagingException | IOException e) {
+            throw new UserServiceException("Error sending email to user: " + userEntity.getDni(), e);
+        } catch (PaymentsServiceException e) {
+            throw new UserServiceException("Error generating payment for user: " + userEntity.getDni(), e);
+        }
+    }
+
     @Transactional
     @Override
     public void unsubscribe(final String email) throws UserServiceException {
@@ -489,6 +481,13 @@ public final class DefaultUserService implements UserService {
         userProfile.setGender(gender);
         userEntity.setProfile(userProfile);
         return userRepository.save(asPersistentUserEntity(userEntity));
+    }
+
+    private void validateCandidateRole(final UserEntity userEntity, final String userDni) throws UserServiceException {
+        final var roles = userEntity.getRoles();
+        if (roles.size() != 1 || !roles.iterator().next().getName().equals(UserRoleName.ROLE_CANDIDATO_SOCIO)) {
+            throw new UserServiceException("User with dni: " + userDni + " must have only ROLE_CANDIDATO_SOCIO.");
+        }
     }
 
 }
