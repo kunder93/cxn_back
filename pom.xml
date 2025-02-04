@@ -112,6 +112,11 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 		<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+		<dependency>
 			<groupId>com.github.therapi</groupId>
 			<artifactId>therapi-runtime-javadoc</artifactId>
 			<version>${therapi.runtime.version}</version>
@@ -776,7 +781,7 @@
 				<version>${pmd.plugin.version}</version>
 				<configuration>
 					<rulesets>
-						<ruleset>src/main/resources/pmdRuleset.xml</ruleset>
+						<ruleset>src/main/resources/myRuleset.xml</ruleset>
 					</rulesets>
 					<skipEmptyReport>false</skipEmptyReport>
 					<linkXref>true</linkXref>

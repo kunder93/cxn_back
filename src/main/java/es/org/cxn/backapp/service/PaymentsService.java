@@ -35,7 +35,6 @@ import java.util.UUID;
 
 import es.org.cxn.backapp.model.PaymentsEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
-import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
@@ -51,25 +50,29 @@ import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
  *
  * @see PaymentsEntity
  * @see PaymentsCategory
- * @see PaymentsState
+ * @see es.org.cxn.backapp.model.persistence.payments.PaymentsState
  */
 public interface PaymentsService {
 
     /**
-     * Cancels a payment by updating its state to {@link PaymentsState#CANCELLED}.
+     * Cancels a payment by updating its state to
+     * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#CANCELLED}.
      * <p>
      * This method retrieves a payment record by its unique identifier, checks if
-     * the payment is already in the {@link PaymentsState#CANCELLED} state, and if
-     * not, updates its state to {@link PaymentsState#CANCELLED}. The updated
-     * payment entity is then saved to the database.
+     * the payment is already in the
+     * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#CANCELLED}
+     * state, and if not, updates its state to
+     * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#CANCELLED}.
+     * The updated payment entity is then saved to the database.
      * </p>
      *
      * @param paymentId the unique identifier of the payment to be cancelled.
      * @return the updated payment entity with state set to
-     *         {@link PaymentsState#CANCELLED}.
+     *         {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#CANCELLED}.
      * @throws PaymentsServiceException if the payment with the given ID does not
      *                                  exist or if the payment is already in the
-     *                                  {@link PaymentsState#CANCELLED} state.
+     *                                  {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#CANCELLED}
+     *                                  state.
      */
     PaymentsEntity cancelPayment(UUID paymentId) throws PaymentsServiceException;
 
@@ -79,8 +82,8 @@ public interface PaymentsService {
      * <p>
      * This method creates a new payment entity, sets the provided values (amount,
      * category, description, title, and user DNI), sets the payment state to
-     * {@link PaymentsState#UNPAID}, and assigns the current date and time to the
-     * created and paid timestamps.
+     * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#UNPAID},
+     * and assigns the current date and time to the created and paid timestamps.
      * </p>
      *
      * @param amount      the monetary amount of the payment.
@@ -92,7 +95,7 @@ public interface PaymentsService {
      * @throws PaymentsServiceException if the payment amount is {@code null} or not
      *                                  greater than zero.
      * @see PaymentsCategory
-     * @see PaymentsState
+     * @see es.org.cxn.backapp.model.persistence.payments.PaymentsState
      */
     PaymentsEntity createPayment(BigDecimal amount, PaymentsCategory category, String description, String title,
             String userDni) throws PaymentsServiceException;
@@ -144,22 +147,27 @@ public interface PaymentsService {
     List<PersistentPaymentsEntity> getUserPayments(String userDni);
 
     /**
-     * Processes a payment by updating its state to {@link PaymentsState#PAID} and
+     * Processes a payment by updating its state to
+     * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#PAID} and
      * setting the paid timestamp.
      * <p>
      * This method retrieves a payment record by its unique identifier, verifies
-     * that the payment is currently in the {@link PaymentsState#UNPAID} state, and
-     * then changes its state to {@link PaymentsState#PAID}. The timestamp of the
-     * payment is also updated to the provided payment date.
+     * that the payment is currently in the
+     * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#UNPAID}
+     * state, and then changes its state to
+     * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#PAID}. The
+     * timestamp of the payment is also updated to the provided payment date.
      * </p>
      *
      * @param paymentId   the unique identifier of the payment to be processed.
      * @param paymentDate the date and time when the payment was made.
      * @return the updated payment entity with state set to
-     *         {@link PaymentsState#PAID} and the paid timestamp set.
+     *         {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#PAID}
+     *         and the paid timestamp set.
      * @throws PaymentsServiceException if the payment with the given ID does not
      *                                  exist or if the payment is not in the
-     *                                  {@link PaymentsState#UNPAID} state.
+     *                                  {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#UNPAID}
+     *                                  state.
      */
     PaymentsEntity makePayment(UUID paymentId, LocalDateTime paymentDate) throws PaymentsServiceException;
 

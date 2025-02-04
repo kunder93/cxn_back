@@ -252,6 +252,11 @@ public final class DefaultPaymentsService implements PaymentsService {
                 user -> transformToPaymentDetails(getUserPayments(user.getDni()))));
     }
 
+    private PersistentPaymentsEntity getPaymentEntity(final UUID paymentId) throws PaymentsServiceException {
+        return paymentsRepository.findById(paymentId)
+                .orElseThrow(() -> new PaymentsServiceException(getPaymentNotFoundMessage(paymentId)));
+    }
+
     /**
      * Return payment not found message.
      *
@@ -259,7 +264,12 @@ public final class DefaultPaymentsService implements PaymentsService {
      * @return The string with message.
      */
     private String getPaymentNotFoundMessage(final UUID paymentId) {
-        return ("Payment with id: " + paymentId + " not found.");
+        return "Payment with id: " + paymentId + " not found.";
+    }
+
+    private PersistentUserEntity getUserByDni(final String userDni) throws PaymentsServiceException {
+        return userRepository.findByDni(userDni)
+                .orElseThrow(() -> new PaymentsServiceException("No user with dni: " + userDni + " found."));
     }
 
     /**
@@ -306,34 +316,21 @@ public final class DefaultPaymentsService implements PaymentsService {
     public PaymentsEntity makePayment(final UUID paymentId, final LocalDateTime paymentDate)
             throws PaymentsServiceException {
         Objects.requireNonNull(paymentDate, "Payment date must not be null.");
-        final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
-        if (paymentOptional.isEmpty()) {
-            throw new PaymentsServiceException(getPaymentNotFoundMessage(paymentId));
-        }
-        final var paymentEntity = paymentOptional.get();
-        if (paymentEntity.getState().equals(PaymentsState.UNPAID)) {
-            paymentEntity.setState(PaymentsState.PAID);
-            paymentEntity.setPaidAt(paymentDate);
-            final var result = paymentsRepository.save(paymentEntity);
-            final var userDni = result.getUserDni();
-            final Optional<PersistentUserEntity> userOptional = userRepository.findByDni(userDni);
-            if (userOptional.isEmpty()) {
-                throw new PaymentsServiceException("No user with dni: " + userDni + " found.");
-            }
-            final var userEntity = userOptional.get();
-            try {
-                emailService.sendPaymentConfirmation(userEntity.getEmail(), userEntity.getCompleteName(),
-                        paymentEntity.getAmount().toString(), paymentEntity.getDescription());
-            } catch (MessagingException e) {
-                throw new PaymentsServiceException("Cannot send email.", e);
-            } catch (IOException e) {
-                throw new PaymentsServiceException("Cannot load email template.", e);
-            }
-            return result;
-        } else {
-            throw new PaymentsServiceException(
-                    "Payment with id: " + paymentId + " have not " + PaymentsState.UNPAID + " state.");
-        }
+
+        // Retrieve and validate the payment
+        final var paymentEntity = getPaymentEntity(paymentId);
+        validatePaymentState(paymentEntity);
+
+        // Process the payment and update its state
+        paymentEntity.setState(PaymentsState.PAID);
+        paymentEntity.setPaidAt(paymentDate);
+        final var result = paymentsRepository.save(paymentEntity);
+
+        // Retrieve user and send email confirmation
+        final var userEntity = getUserByDni(result.getUserDni());
+        sendPaymentConfirmationEmail(userEntity, result);
+
+        return result;
     }
 
     /**
@@ -354,6 +351,23 @@ public final class DefaultPaymentsService implements PaymentsService {
             throw new PaymentsServiceException(getPaymentNotFoundMessage(paymentId));
         }
         paymentsRepository.deleteById(paymentId);
+    }
+
+    private void sendPaymentConfirmationEmail(final PersistentUserEntity userEntity,
+            final PersistentPaymentsEntity paymentEntity) throws PaymentsServiceException {
+        try {
+            emailService.sendPaymentConfirmation(userEntity.getEmail(), userEntity.getCompleteName(),
+                    paymentEntity.getAmount().toString(), paymentEntity.getDescription());
+        } catch (MessagingException | IOException e) {
+            throw new PaymentsServiceException("Error sending payment confirmation email.", e);
+        }
+    }
+
+    private void validatePaymentState(final PersistentPaymentsEntity paymentEntity) throws PaymentsServiceException {
+        if (!PaymentsState.UNPAID.equals(paymentEntity.getState())) {
+            throw new PaymentsServiceException("Payment with id: " + paymentEntity.getId() + " does not have the state "
+                    + PaymentsState.UNPAID + ".");
+        }
     }
 
 }

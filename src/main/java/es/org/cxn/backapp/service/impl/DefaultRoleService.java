@@ -30,17 +30,23 @@ package es.org.cxn.backapp.service.impl;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.model.RoleEntity;
+import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.repository.RoleEntityRepository;
+import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.RoleService;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Default implementation of the privilege entity service.
@@ -52,19 +58,31 @@ import es.org.cxn.backapp.service.RoleService;
 public final class DefaultRoleService implements RoleService {
 
     /**
-     * Repository for the domain entities handled by the service.
+     * Role not found message for exception.
      */
-    private final RoleEntityRepository entityRepository;
+    public static final String ROLE_NOT_FOUND_MESSAGE = "Role not found.";
+
+    /**
+     * Repository for the role entities handled by the service.
+     */
+    private final RoleEntityRepository roleRepository;
+
+    /**
+     * Repository for the user entities handled by the service.
+     */
+    private final UserEntityRepository userRepository;
 
     /**
      * Constructs an entities service with the specified repository.
      *
-     * @param repository the repository for the entity instances.
+     * @param roleRepo the repository for the entity instances.
+     * @param usrRepo  the repository for user entities.
      */
-    public DefaultRoleService(final RoleEntityRepository repository) {
+    public DefaultRoleService(final RoleEntityRepository roleRepo, final UserEntityRepository usrRepo) {
         super();
 
-        entityRepository = checkNotNull(repository, "Received a null pointer as repository");
+        roleRepository = checkNotNull(roleRepo, "Received a null pointer as repository");
+        userRepository = checkNotNull(usrRepo, "Received a null pointer as repository");
     }
 
     @Override
@@ -73,11 +91,37 @@ public final class DefaultRoleService implements RoleService {
         final var nameNotNull = checkNotNull(name, "Received a null pointer as name");
         save = new PersistentRoleEntity();
         save.setName(nameNotNull);
-        if (entityRepository.existsByName(nameNotNull)) {
+        if (roleRepository.existsByName(nameNotNull)) {
             throw new RoleNameExistsException(nameNotNull);
         }
 
-        return entityRepository.save(save);
+        return roleRepository.save(save);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    @Transactional
+    public UserEntity changeUserRoles(final String email, final List<UserRoleName> roleNameList)
+            throws UserServiceException {
+        final var userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            throw new UserServiceException("User with email: " + email + " not found.");
+        }
+        final var userEntity = userOpt.get();
+
+        final Set<PersistentRoleEntity> rolesSet = new HashSet<>();
+        for (final UserRoleName roleName : roleNameList) {
+            final var role = roleRepository.findByName(roleName);
+            if (role.isEmpty()) {
+                throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
+            }
+            rolesSet.add(role.get());
+
+        }
+        userEntity.setRoles(rolesSet);
+        return userRepository.save(userEntity);
     }
 
     /**
@@ -93,7 +137,7 @@ public final class DefaultRoleService implements RoleService {
     public RoleEntity findById(final Integer identifier) {
         checkNotNull(identifier, "Received a null pointer as identifier");
 
-        final var entityOpt = entityRepository.findById(identifier);
+        final var entityOpt = roleRepository.findById(identifier);
 
         // Variable para almacenar el resultado
         final RoleEntity result;
@@ -110,7 +154,7 @@ public final class DefaultRoleService implements RoleService {
     @Override
     public RoleEntity findByName(final UserRoleName name) throws RoleNameNotFoundException {
         checkNotNull(name, "Received a null pointer as identifier");
-        final var entity = entityRepository.findByName(name);
+        final var entity = roleRepository.findByName(name);
         if (entity.isEmpty()) {
             throw new RoleNameNotFoundException(name);
         }
@@ -119,16 +163,17 @@ public final class DefaultRoleService implements RoleService {
 
     @Override
     public List<RoleEntity> getAllRoles() {
-        final var usersList = entityRepository.findAll();
+        final var usersList = roleRepository.findAll();
         return new ArrayList<>(usersList);
     }
 
     @Override
     public void remove(final UserRoleName name) throws RoleNameNotFoundException {
-        final var delete = entityRepository.findByName(name);
+        final var delete = roleRepository.findByName(name);
         if (delete.isEmpty()) {
             throw new RoleNameNotFoundException(name);
         }
-        entityRepository.delete(delete.get());
+        roleRepository.delete(delete.get());
     }
+
 }

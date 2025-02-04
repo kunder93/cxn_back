@@ -772,7 +772,8 @@ final class PaymentsServiceIT {
                 "Expected exception not thrown when trying to mark an already paid payment.");
 
         // Assert: Verify the exception message is correct
-        final String expectedMessage = "Payment with id: " + createdPayment.getId() + " have not UNPAID state.";
+        final String expectedMessage = "Payment with id: " + createdPayment.getId()
+                + " does not have the state UNPAID.";
         Assertions.assertEquals(expectedMessage, exception.getMessage(),
                 "The exception message does not match the expected one.");
     }

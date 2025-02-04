@@ -29,7 +29,7 @@ package es.org.cxn.backapp.model.form.requests.member_resources;
 /**
  * Validation values like messages and constants.
  */
-public class ValidationValues {
+public final class ValidationValues {
 
     /**
      * The minimum allowed length for the title of a book.

@@ -36,11 +36,10 @@ import org.springframework.stereotype.Service;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.service.AddressService;
-import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.AddressServiceException;
 
 /**
- * Default implementation of the {@link UserService}.
+ * Default implementation of the {@link AddressService}.
  *
  * @author Santiago Paz.
  *

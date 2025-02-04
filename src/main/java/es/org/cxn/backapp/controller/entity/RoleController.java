@@ -40,7 +40,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
-import es.org.cxn.backapp.service.UserService;
+import es.org.cxn.backapp.service.RoleService;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
@@ -58,19 +58,19 @@ public class RoleController {
     public static final String ADMIN_ROLE = "ADMIN";
 
     /**
-     * The user service.
+     * The role service.
      */
-    private final UserService userService;
+    private final RoleService roleService;
 
     /**
      * Create a a controller with the specified dependencies.
      *
      * @param serv user service
      */
-    public RoleController(final UserService serv) {
+    public RoleController(final RoleService serv) {
         super();
 
-        userService = checkNotNull(serv, "Received a null pointer as user service");
+        roleService = checkNotNull(serv, "Received a null pointer as user service");
     }
 
     /**
@@ -86,7 +86,7 @@ public class RoleController {
 
         final var roles = userChangeRoleRequestForm.userRoles();
         try {
-            userService.changeUserRoles(userChangeRoleRequestForm.email(), roles);
+            roleService.changeUserRoles(userChangeRoleRequestForm.email(), roles);
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }

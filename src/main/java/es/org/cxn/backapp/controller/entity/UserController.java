@@ -53,7 +53,6 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
-import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
 import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
@@ -86,7 +85,7 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
  * @see UserChangeEmailRequest
  * @see UserChangeKindMemberRequest
  * @see UserChangePasswordRequest
- * @see UserUnsubscribeRequest
+ * @see es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest
  * @see UserUpdateResponseForm
  * @see UserListDataResponse
  * @see UserDataResponse
