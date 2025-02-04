@@ -3,10 +3,10 @@ name: Build
 on:
   push:
     branches:
-      - develop
+      - master
   pull_request:
     branches:
-      - develop
+      - master
 
 jobs:
   build:
@@ -38,4 +38,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=cxn-back-develop
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=kunder93_cxn_back_AZTNJNXBOrEcGMuqLhb2
