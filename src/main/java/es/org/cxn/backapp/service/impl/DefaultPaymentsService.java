@@ -176,13 +176,17 @@ public final class DefaultPaymentsService implements PaymentsService {
     @Override
     public PaymentsEntity createPayment(final BigDecimal amount, final PaymentsCategory category,
             final String description, final String title, final String userDni) throws PaymentsServiceException {
+        Objects.requireNonNull(userDni, "User DNI must not be null.");
 
+        final var userOpt = userRepository.findByDni(userDni);
+        if (userOpt.isEmpty()) {
+            throw new PaymentsServiceException("User with dni: " + userDni + " not found.");
+        }
         // Validate mandatory fields
         Objects.requireNonNull(amount, "Payment amount must not be null.");
         Objects.requireNonNull(category, "Payment category must not be null.");
         Objects.requireNonNull(description, "Payment description must not be null.");
         Objects.requireNonNull(title, "Payment title must not be null.");
-        Objects.requireNonNull(userDni, "User DNI must not be null.");
 
         final PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
 
@@ -291,6 +295,18 @@ public final class DefaultPaymentsService implements PaymentsService {
     public List<PersistentPaymentsEntity> getUserPayments(final String userDni) {
         Objects.requireNonNull(userDni, "User DNI must not be null.");
         return paymentsRepository.findByUserDni(userDni);
+    }
+
+    @Override
+    public List<PersistentPaymentsEntity> getUserPaymentsByEmail(String email) throws PaymentsServiceException {
+        final var userOpt = userRepository.findByEmail(email);
+        if (userOpt.isEmpty()) {
+            throw new PaymentsServiceException("User with email: " + email + " not found.");
+
+        }
+        final var userEntity = userOpt.get();
+        return paymentsRepository.findByUserDni(userEntity.getDni());
+
     }
 
     /**

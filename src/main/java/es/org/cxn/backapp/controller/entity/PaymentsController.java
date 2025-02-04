@@ -31,13 +31,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -139,6 +142,30 @@ public class PaymentsController {
     }
 
     /**
+     * Get payments for authenticated user.
+     *
+     * @return The payments info list for an user.
+     */
+    @GetMapping()
+    public ResponseEntity<Set<PaymentDetails>> getOwnPayments() {
+        final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        List<PersistentPaymentsEntity> userPayments;
+        try {
+            userPayments = paymentsService.getUserPaymentsByEmail(userEmail);
+
+            Set<PaymentDetails> response = new HashSet<>();
+
+            userPayments.forEach((PersistentPaymentsEntity payment) -> response.add(new PaymentDetails(payment.getId(),
+                    payment.getTitle(), payment.getDescription(), payment.getAmount(), payment.getCategory(),
+                    payment.getState(), payment.getCreatedAt(), payment.getPaidAt())));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (PaymentsServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+
+    }
+
+    /**
      * Retrieves payment information by ID.
      *
      * @param paymentId The unique identifier of the payment.
@@ -146,6 +173,7 @@ public class PaymentsController {
      * @throws ResponseStatusException if the payment cannot be found.
      */
     @GetMapping("/{paymentId}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO')")
     public ResponseEntity<PaymentResponse> getPaymentInfo(@PathVariable final UUID paymentId) {
         try {
             final var paymentFound = paymentsService.findPayment(paymentId);
@@ -164,12 +192,12 @@ public class PaymentsController {
      * @return A ResponseEntity containing a list of payments for the user.
      */
     @GetMapping("/user/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO')")
     public ResponseEntity<List<PaymentResponse>> getUserPayments(@PathVariable final String userDni) {
         final List<PersistentPaymentsEntity> results = paymentsService.getUserPayments(userDni);
         final List<PaymentResponse> responsesList = new ArrayList<>();
-        results.forEach((PersistentPaymentsEntity paymentEntity) -> {
-            responsesList.add(new PaymentResponse(paymentEntity));
-        });
+        results.forEach(
+                (PersistentPaymentsEntity paymentEntity) -> responsesList.add(new PaymentResponse(paymentEntity)));
         return new ResponseEntity<>(responsesList, HttpStatus.OK);
     }
 

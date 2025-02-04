@@ -147,6 +147,16 @@ public interface PaymentsService {
     List<PersistentPaymentsEntity> getUserPayments(String userDni);
 
     /**
+     * Return user payments.
+     *
+     * @param email The user email identifier.
+     *
+     * @return The users payment list.
+     * @throws PaymentsServiceException When user with given email not found.
+     */
+    List<PersistentPaymentsEntity> getUserPaymentsByEmail(String email) throws PaymentsServiceException;
+
+    /**
      * Processes a payment by updating its state to
      * {@link es.org.cxn.backapp.model.persistence.payments.PaymentsState#PAID} and
      * setting the paid timestamp.
