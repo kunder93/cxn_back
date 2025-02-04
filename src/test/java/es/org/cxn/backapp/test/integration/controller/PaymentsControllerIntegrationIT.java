@@ -62,7 +62,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 import com.jayway.jsonpath.JsonPath;
 
+import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
+import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
@@ -92,6 +94,11 @@ class PaymentsControllerIntegrationIT {
     private static final BigDecimal PAYMENT_AMOUNT = BigDecimal.valueOf(100.00);
 
     /**
+     * URL endpoint for delete users with delete method.
+     */
+    private static final String ENDPOINT_USER_URL = "/api/user";
+
+    /**
      * The payment title used in test payment requests.
      */
     private static final String PAYMENT_TITLE = "Title Payment";
@@ -105,6 +112,12 @@ class PaymentsControllerIntegrationIT {
      * The category for the payment, used in test requests.
      */
     private static final String PAYMENT_CATEGORY = "FEDERATE_PAYMENT";
+
+    /**
+     * URL endpoint for user sign-in. This static final string represents the URL
+     * used for user authentication and generating JWT tokens.
+     */
+    private static final String SIGN_IN_URL = "/api/auth/signinn";
 
     /**
      * Mocked {@link DefaultEmailService} instance to test email-related
@@ -149,6 +162,18 @@ class PaymentsControllerIntegrationIT {
 
     PaymentsControllerIntegrationIT() {
         super();
+    }
+
+    private String authenticateAndGetToken(final String email, final String password) throws Exception {
+        var authRequest = new AuthenticationRequest(email, password);
+        var authRequestJson = gson.toJson(authRequest);
+
+        var response = mockMvc
+                .perform(post(SIGN_IN_URL).contentType(MediaType.APPLICATION_JSON).content(authRequestJson))
+                .andExpect(MockMvcResultMatchers.status().isOk()).andReturn().getResponse().getContentAsString();
+
+        var authResponse = gson.fromJson(response, AuthenticationResponse.class);
+        return authResponse.jwt();
     }
 
     @BeforeEach
@@ -248,6 +273,111 @@ class PaymentsControllerIntegrationIT {
     }
 
     @Test
+    @DisplayName("Fail to create payment when userDni does not exist")
+    @Transactional
+    @WithMockUser(username = UsersControllerFactory.USER_A_EMAIL, roles = { "ADMIN" }) // A user with permission
+    void testCreatePaymentWithNonExistentUserDni() throws Exception {
+        final String notExistentUserDni = "99999999X";
+        // Create a request with a non-existent userDni
+        CreatePaymentRequest request = new CreatePaymentRequest(notExistentUserDni, // Non-existent DNI
+                "Test Payment", "Test Description", PaymentsCategory.FEDERATE_PAYMENT, BigDecimal.TEN);
+
+        final String jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        mockMvc.perform(post("/api/payments").header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON).content(gson.toJson(request)))
+                .andExpect(status().isBadRequest()) // Expecting 400 Bad Request
+                .andExpect(jsonPath("$.content").value("400 BAD_REQUEST \"User with dni: 99999999X not found.\""))
+                .andExpect(jsonPath("$.status").value("failure")); // Ensure status is "failure"
+    }
+
+    @Test
+    @DisplayName("Retrieve all payments as a treasurer")
+    @Transactional
+    @WithMockUser(username = UsersControllerFactory.USER_A_EMAIL, roles = { "TESORERO" })
+    void testGetAllUsersPayments() throws Exception {
+        // Crear pagos para diferentes usuarios
+        CreatePaymentRequest requestA = new CreatePaymentRequest(UsersControllerFactory.USER_A_DNI, PAYMENT_TITLE,
+                PAYMENT_DESCRIPTION, PaymentsCategory.FEDERATE_PAYMENT, PAYMENT_AMOUNT);
+        CreatePaymentRequest requestB = new CreatePaymentRequest(UsersControllerFactory.USER_B_DNI, PAYMENT_TITLE,
+                PAYMENT_DESCRIPTION, PaymentsCategory.FEDERATE_PAYMENT, PAYMENT_AMOUNT);
+
+        mockMvc.perform(post("/api/payments").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(requestA)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/api/payments").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(requestB)))
+                .andExpect(status().isCreated());
+
+        String token = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+        // Verificar que un tesorero puede obtener todos los pagos
+        mockMvc.perform(get("/api/payments/getAll").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3)) // 3 DNIs en el objeto de
+                                                                                       // respuesta
+                .andExpect(jsonPath("$.32721859N").isArray()) // Asegurar que es un array
+                .andExpect(jsonPath("$.32721859N.length()").value(0)) // Usuario sin pagos
+                .andExpect(jsonPath("$.32721860J").isArray()).andExpect(jsonPath("$.32721860J.length()").value(1))
+                // Un pago para este usuario
+                .andExpect(jsonPath("$.32721860J[0].id").exists()) // Validar que hay un pago
+                .andExpect(jsonPath("$.55456534S").isArray()).andExpect(jsonPath("$.55456534S.length()").value(1))
+                // Un pago para este usuario
+                .andExpect(jsonPath("$.55456534S[0].id").exists()); // Validar que hay un pago
+    }
+
+    @Test
+    @DisplayName("Unauthorized attempt to get all payments")
+    @Transactional
+    @WithMockUser(username = UsersControllerFactory.USER_A_EMAIL, roles = { "USER" })
+    void testGetAllUsersPaymentsForbidden() throws Exception {
+        String token = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+        mockMvc.perform(get("/api/payments/getAll").header("Authorization", "Bearer " + token))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Retrieve own payments")
+    @Transactional
+    @WithMockUser(username = UsersControllerFactory.USER_A_EMAIL, roles = { "ADMIN" })
+    void testGetOwnPayments() throws Exception {
+        // Crear un pago para USER_A
+        CreatePaymentRequest request = new CreatePaymentRequest(UsersControllerFactory.USER_A_DNI, PAYMENT_TITLE,
+                PAYMENT_DESCRIPTION, PaymentsCategory.FEDERATE_PAYMENT, PAYMENT_AMOUNT);
+
+        mockMvc.perform(post("/api/payments").contentType(MediaType.APPLICATION_JSON).content(gson.toJson(request)))
+                .andExpect(status().isCreated());
+
+        String token = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+
+        // USER_A solicita sus propios pagos
+        mockMvc.perform(get("/api/payments").header("Authorization", "Bearer " + token)) // Incluir el token
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1)) // Asegurar que hay 1 elemento en
+                                                                                       // el array
+                .andExpect(jsonPath("$[0].id").exists()) // Validar que el primer elemento tiene un id
+                .andExpect(jsonPath("$[0].title").value(PAYMENT_TITLE))
+                .andExpect(jsonPath("$[0].description").value(PAYMENT_DESCRIPTION))
+                .andExpect(jsonPath("$[0].amount").value(PAYMENT_AMOUNT))
+                .andExpect(jsonPath("$[0].category").value("FEDERATE_PAYMENT"))
+                .andExpect(jsonPath("$[0].state").value("UNPAID")).andExpect(jsonPath("$[0].createdAt").exists())
+                // La fecha de creación existe
+                .andExpect(jsonPath("$[0].paidAt").isEmpty()); // paidAt debe ser null
+    }
+
+    @Test
+    @DisplayName("Retrieve own payments when there are none")
+    @Transactional
+    @WithMockUser(username = UsersControllerFactory.USER_A_EMAIL, roles = { "ADMIN" })
+    void testGetOwnPaymentsNoPayments() throws Exception {
+        String token = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
+                UsersControllerFactory.USER_A_PASSWORD);
+        // USER_B no tiene pagos, debería recibir una lista vacía
+        mockMvc.perform(get("/api/payments").header("Authorization", "Bearer " + token)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+    }
+
+    @Test
     @DisplayName("Test for retrieving payment info with a non-existent payment ID")
     @Transactional
     @WithMockUser(username = "tesorero", roles = { "TESORERO" })
@@ -336,4 +466,5 @@ class PaymentsControllerIntegrationIT {
                 .andExpect(jsonPath("$[0].category", is(PAYMENT_CATEGORY)))
                 .andExpect(jsonPath("$[0].amount", equalTo(PAYMENT_AMOUNT.doubleValue())));
     }
+
 }
