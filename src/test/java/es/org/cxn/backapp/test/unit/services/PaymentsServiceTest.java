@@ -197,7 +197,8 @@ class PaymentsServiceTest {
         String description = "Payment for membership";
         String title = "Membership Fee";
         String userDni = "123456789";
-
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setDni(userDni);
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
         paymentEntity.setId(UUID.randomUUID());
         paymentEntity.setAmount(amount);
@@ -210,7 +211,7 @@ class PaymentsServiceTest {
 
         // Mock repository behavior
         when(paymentsRepository.save(any(PersistentPaymentsEntity.class))).thenReturn(paymentEntity);
-
+        when(userRepository.findByDni(anyString())).thenReturn(Optional.of(user));
         // Act
         PaymentsEntity createdPayment = defaultPaymentsService.createPayment(amount, category, description, title,
                 userDni);
