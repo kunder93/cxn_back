@@ -76,7 +76,7 @@ class ActivityResponseTest {
     private static final byte[] ACTIVITY_IMAGE = { 1, 2, 3, 4 };
 
     /**
-     * The activity description-
+     * The activity description.
      */
     private static final String ACTIVITY_DESCRIPTION = "Description of Activity 1";
 

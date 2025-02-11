@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.service;
 
+import java.util.List;
+
 /*-
  * #%L
  * back-app
@@ -30,7 +32,9 @@ package es.org.cxn.backapp.service;
 import es.org.cxn.backapp.exceptions.RoleNameExistsException;
 import es.org.cxn.backapp.exceptions.RoleNameNotFoundException;
 import es.org.cxn.backapp.model.RoleEntity;
+import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
  * Service for the Role entity domain. {@link RoleEntity}
@@ -50,6 +54,17 @@ public interface RoleService {
      * @throws RoleNameExistsException when role with this name already exists
      */
     RoleEntity add(UserRoleName name) throws RoleNameExistsException;
+
+    /**
+     * Add role to an existing user.
+     *
+     * @param email        user unique email acting as identifier.
+     * @param roleNameList List with role names that user want to add.
+     * @return UserEntity with role added.
+     * @throws UserServiceException When an role with given name no exists or When
+     *                              user with given email that no exist.
+     */
+    UserEntity changeUserRoles(String email, List<UserRoleName> roleNameList) throws UserServiceException;
 
     /**
      * Returns a role with the given id.

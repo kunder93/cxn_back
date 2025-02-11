@@ -40,6 +40,12 @@ import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 
 class FederateStateResponseTest {
 
+    /** Sample date: December 31, 2025. */
+    private static final LocalDate DATE_2025_DEC_31 = LocalDate.of(2025, 12, 31);
+
+    /** Sample date: January 1, 2025. */
+    private static final LocalDate DATE_2025_JAN_1 = LocalDate.of(2025, 1, 1);
+
     @Test
     void testConstructorNullValues() {
         // Given
@@ -62,7 +68,7 @@ class FederateStateResponseTest {
         FederateStateEntity entity = new PersistentFederateStateEntity();
         entity.setState(FederateState.NO_FEDERATE);
         entity.setAutomaticRenewal(false);
-        entity.setDniLastUpdate(LocalDate.of(2025, 12, 31));
+        entity.setDniLastUpdate(DATE_2025_DEC_31);
 
         // When
         FederateStateResponse response = new FederateStateResponse(entity);
@@ -70,7 +76,7 @@ class FederateStateResponseTest {
         // Then
         assertEquals(entity.getState(), response.state());
         assertEquals(entity.isAutomaticRenewal(), response.autoRenew());
-        assertEquals(entity.getDniLastUpdate(), response.dniLastUpdate());
+        assertEquals(DATE_2025_DEC_31, response.dniLastUpdate());
     }
 
     @Test
@@ -78,7 +84,6 @@ class FederateStateResponseTest {
         // Given
         FederateStateEntity entity = new PersistentFederateStateEntity();
         entity.setState(null);
-
         entity.setDniLastUpdate(null);
 
         // When
@@ -95,14 +100,13 @@ class FederateStateResponseTest {
         // Given
         FederateState state = FederateState.FEDERATE;
         Boolean autoRenew = true;
-        LocalDate dniLastUpdate = LocalDate.of(2025, 1, 1);
 
         // When
-        FederateStateResponse response = new FederateStateResponse(state, autoRenew, dniLastUpdate);
+        FederateStateResponse response = new FederateStateResponse(state, autoRenew, DATE_2025_JAN_1);
 
         // Then
         assertEquals(state, response.state());
         assertEquals(autoRenew, response.autoRenew());
-        assertEquals(dniLastUpdate, response.dniLastUpdate());
+        assertEquals(DATE_2025_JAN_1, response.dniLastUpdate());
     }
 }

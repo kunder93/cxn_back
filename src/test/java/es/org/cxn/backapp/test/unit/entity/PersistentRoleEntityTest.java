@@ -41,8 +41,19 @@ import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
+/**
+ * Unit tests for {@link PersistentRoleEntity}.
+ *
+ * This class contains unit tests to verify the functionality and behavior of
+ * the {@link PersistentRoleEntity} class, which represents roles assigned to
+ * users in the application.
+ */
 class PersistentRoleEntityTest {
 
+    /**
+     * Instance of {@link PersistentRoleEntity} to be tested. This entity is used to
+     * manage the roles associated with users and their permissions.
+     */
     private PersistentRoleEntity roleEntity;
 
     @BeforeEach
@@ -80,8 +91,9 @@ class PersistentRoleEntityTest {
 
     @Test
     void testSetAndGetIdentifier() {
-        roleEntity.setIdentifier(100);
-        assertEquals(100, roleEntity.getIdentifier(), "Identifier should be updated correctly.");
+        final int roleIdentifier = 100;
+        roleEntity.setIdentifier(roleIdentifier);
+        assertEquals(roleIdentifier, roleEntity.getIdentifier(), "Identifier should be updated correctly.");
     }
 
     @Test

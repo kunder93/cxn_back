@@ -28,7 +28,6 @@ package es.org.cxn.backapp.repository;
  */
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 
@@ -38,11 +37,6 @@ import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
  * This repository provides CRUD operations for
  * {@link PersistentFederateStateEntity} entities, allowing for interactions
  * with the database in a convenient and straightforward manner.
- * <p>
- * The repository is annotated with {@link Repository}, which makes it a
- * Spring-managed bean and provides exception translation into Spring's data
- * access exception hierarchy.
- * </p>
  *
  * @author Santiago Paz Perez
  */

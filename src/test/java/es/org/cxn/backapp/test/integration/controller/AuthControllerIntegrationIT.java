@@ -129,6 +129,12 @@ class AuthControllerIntegrationIT {
     private MockMvc mockMvc;
 
     /**
+     * Jwt utils for manage tokens.
+     */
+    @Autowired
+    private DefaultJwtUtils jwtUtils;
+
+    /**
      * Main class constructor.
      */
     AuthControllerIntegrationIT() {
@@ -217,7 +223,7 @@ class AuthControllerIntegrationIT {
 
         var ar = gson.fromJson(authenticationResponseJson, AuthenticationResponse.class);
         var jwtToken = ar.jwt();
-        var jwtUsername = DefaultJwtUtils.extractUsername(jwtToken);
+        var jwtUsername = jwtUtils.extractUsername(jwtToken);
         Assertions.assertEquals(UsersControllerFactory.USER_A_EMAIL, jwtUsername,
                 "Jwt username is same as user signUp");
     }

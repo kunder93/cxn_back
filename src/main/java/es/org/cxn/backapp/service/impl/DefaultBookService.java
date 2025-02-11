@@ -144,7 +144,7 @@ public class DefaultBookService implements BookService {
             final var imageSoruce = imageStorageService.saveImage(imageCover, imageLocation, "book", book.getIsbn());
             book.setCoverSrc(imageSoruce);
         } catch (IOException ex) {
-            throw new BookServiceException("Book cover cannot be saved");
+            throw new BookServiceException("Book cover cannot be saved", ex);
         }
         try {
             return bookRepository.save(book);
@@ -154,7 +154,11 @@ public class DefaultBookService implements BookService {
     }
 
     /**
-     * Find book using isbn.
+     * Finds a book using its ISBN.
+     *
+     * @param val the ISBN of the book to find
+     * @return the found {@link BookEntity}
+     * @throws BookServiceException if the book is not found or if the ISBN is null
      */
     @Override
     public BookEntity find(final String val) throws BookServiceException {
@@ -167,8 +171,16 @@ public class DefaultBookService implements BookService {
         }
     }
 
+    /**
+     * Retrieves the image of a book cover using its ISBN.
+     *
+     * @param isbn the ISBN of the book
+     * @return a byte array containing the book cover image
+     * @throws BookServiceException if the book is not found or if the image cannot
+     *                              be loaded
+     */
     @Override
-    public byte[] findImage(String isbn) throws BookServiceException {
+    public byte[] findImage(final String isbn) throws BookServiceException {
         final var book = find(isbn);
         try {
             return imageStorageService.loadImage(book.getCoverSrc());
@@ -178,32 +190,34 @@ public class DefaultBookService implements BookService {
     }
 
     /**
-     * Get all books.
-     */
-    /**
-     * Get all books.
+     * Retrieves all books from the repository and converts them to
+     * {@link BookDataImageDto}.
+     *
+     * @return a list of {@link BookDataImageDto} containing book details and their
+     *         associated images
      */
     @Override
     public List<BookDataImageDto> getAll() {
         final var persistentBooks = bookRepository.findAll();
 
-        Set<BookDataImageDto> dtoSet = persistentBooks.stream().map((PersistentBookEntity book) -> {
-            // Convert PersistentBookEntity to BookDataImageDto
-            return new BookDataImageDto(book.getIsbn(), book.getTitle(), book.getDescription(),
-                    book.getPublishYear().toString(), book.getLanguage(), book.getGenre(),
-                    book.getAuthors().stream()
-                            .map(author -> new AuthorDataDto(author.getFirstName(), author.getLastName()))
-                            .collect(Collectors.toSet())
-            // Include the image bytes
-            );
-        }).collect(Collectors.toSet()); // Use Collectors.toSet() for immutability
+        final Set<BookDataImageDto> dtoSet = persistentBooks.stream().map((PersistentBookEntity book) ->
+        // Convert PersistentBookEntity to BookDataImageDto
+        new BookDataImageDto(book.getIsbn(), book.getTitle(), book.getDescription(), book.getPublishYear().toString(),
+                book.getLanguage(), book.getGenre(),
+                book.getAuthors().stream().map(author -> new AuthorDataDto(author.getFirstName(), author.getLastName()))
+                        .collect(Collectors.toSet())
+        // Include the image bytes
+        )).collect(Collectors.toSet()); // Use Collectors.toSet() for immutability
 
         // Return the result as a list of BookDataImageDto
         return new ArrayList<>(dtoSet); // Convert Set to List
     }
 
     /**
-     * Remove book using isbn.
+     * Removes a book from the repository using its ISBN.
+     *
+     * @param isbn the ISBN of the book to remove
+     * @throws BookServiceException if the book is not found or if the removal fails
      */
     @Override
     public void remove(final String isbn) throws BookServiceException {

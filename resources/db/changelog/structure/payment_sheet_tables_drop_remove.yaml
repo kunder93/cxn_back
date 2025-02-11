@@ -1,0 +1,39 @@
+databaseChangeLog:
+  - changeSet:
+      id: drop_payment_sheet_tables_and_relations
+      author: Santiago
+      changes:
+        # Eliminar claves foráneas relacionadas
+        - dropForeignKeyConstraint:
+            baseTableName: invoices
+            constraintName: fk_food_housing_invoice
+        - dropForeignKeyConstraint:
+            baseTableName: regulartransport
+            constraintName: fk_regular_transport_invoice
+        - dropForeignKeyConstraint:
+            baseTableName: foodhousing
+            constraintName: fk_paymentsheet_food_housing
+        - dropForeignKeyConstraint:
+            baseTableName: selfvehicle
+            constraintName: fk_paymentsheet_self_vehicle
+        - dropForeignKeyConstraint:
+            baseTableName: regulartransport
+            constraintName: fk_paymentsheet_regular_transport
+        - dropForeignKeyConstraint:
+            baseTableName: paymentsheet
+            constraintName: fk_paymentsheet_users
+        
+        # Eliminar columnas añadidas
+        - dropColumn:
+            tableName: invoices
+            columnName: food_housing_id
+
+        # Eliminar tablas
+        - dropTable:
+            tableName: foodhousing
+        - dropTable:
+            tableName: selfvehicle
+        - dropTable:
+            tableName: regulartransport
+        - dropTable:
+            tableName: paymentsheet

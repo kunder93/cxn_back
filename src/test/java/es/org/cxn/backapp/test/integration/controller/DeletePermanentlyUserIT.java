@@ -40,6 +40,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -193,7 +194,8 @@ class DeletePermanentlyUserIT {
 
     @Test
     @Transactional
-    void testDeletenotExistentUserBadRequest() throws Exception {
+    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
+    void testDeleteNotExistentUserBadRequest() throws Exception {
         final var adminEmail = "santi@santi.es";
         final var adminPswrd = "123123";
 
