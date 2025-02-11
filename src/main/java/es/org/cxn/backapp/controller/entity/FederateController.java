@@ -87,7 +87,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
  * <p>
  * All methods handle exceptions and return appropriate HTTP status codes in
  * case of errors, such as bad requests or access violations.
- * </p>
  *
  * @see FederateStateService
  * @see ResponseEntity
@@ -128,6 +127,17 @@ public class FederateController {
      */
     private final FederateStateService federateStateService;
 
+    /**
+     * The user service that provides user-related operations such as loading user
+     * data, updating profiles, and managing user roles.
+     *
+     * <p>
+     * UserService is used to interact with user-related data, including retrieving
+     * user details and performing actions like updating or deleting user profiles.
+     * </p>
+     *
+     * @see UserService Service responsible for handling user data and operations
+     */
     private final UserService userService;
 
     /**
@@ -282,7 +292,7 @@ public class FederateController {
         try {
             final var userEntity = userService.findByEmail(authName);
             final String userDni = userEntity.getDni();
-            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            final UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
             return new ResponseEntity<>(
                     new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
                     HttpStatus.OK);
@@ -304,7 +314,7 @@ public class FederateController {
     @GetMapping("/dni/{userDni}")
     public ResponseEntity<DniImagesResponse> getUserDniImage(final @PathVariable String userDni) {
         try {
-            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            final UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
             return new ResponseEntity<>(
                     new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
                     HttpStatus.OK);

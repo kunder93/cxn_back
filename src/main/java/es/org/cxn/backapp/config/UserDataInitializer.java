@@ -41,6 +41,7 @@ import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.RoleService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
@@ -58,6 +59,11 @@ public class UserDataInitializer {
     private final UserService userService;
 
     /**
+     * The role service.
+     */
+    private final RoleService roleService;
+
+    /**
      * The user repository.
      */
     private final UserEntityRepository userRepository;
@@ -67,10 +73,13 @@ public class UserDataInitializer {
      *
      * @param userServ The user service for use in this class.
      * @param userRepo user repository for use in this class.
+     * @param roleServ The role service.
      */
-    public UserDataInitializer(final UserService userServ, final UserEntityRepository userRepo) {
+    public UserDataInitializer(final UserService userServ, final UserEntityRepository userRepo,
+            final RoleService roleServ) {
         userService = checkNotNull(userServ, "Received user service as null.");
         userRepository = checkNotNull(userRepo, "Received user repository as null.");
+        roleService = checkNotNull(roleServ, "Received role service as null.");
     }
 
     /**
@@ -141,7 +150,7 @@ public class UserDataInitializer {
 
             if (!dniExists && !emailExists) {
                 userService.add(userDetails);
-                userService.changeUserRoles(adminUserRequest.email(), initialUserRolesSet);
+                roleService.changeUserRoles(adminUserRequest.email(), initialUserRolesSet);
             }
 
         };

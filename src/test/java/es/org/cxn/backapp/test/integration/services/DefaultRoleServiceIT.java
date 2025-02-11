@@ -123,6 +123,12 @@ final class DefaultRoleServiceIT {
     private RoleEntityRepository roleEntityRepository;
 
     /**
+     * Needed by RoleService.
+     */
+    @MockitoBean
+    private UserEntityRepository userRepository;
+
+    /**
      * Default constructor.
      */
     DefaultRoleServiceIT() {

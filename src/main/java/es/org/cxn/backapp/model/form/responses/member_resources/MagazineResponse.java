@@ -80,7 +80,7 @@ public record MagazineResponse(String issn, String title, String publishYear, St
      *         specified {@link MagazineResponse}.
      */
     @Override
-    public int compareTo(MagazineResponse other) {
+    public int compareTo(final MagazineResponse other) {
         return this.issn.compareTo(other.issn); // Or you can compare by title or any other field
     }
 }

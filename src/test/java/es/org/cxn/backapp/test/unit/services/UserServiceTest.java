@@ -43,7 +43,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,11 +57,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
@@ -949,169 +946,6 @@ class UserServiceTest {
         // Opcional: Verificar el mensaje de la excepción, si es relevante
         assertEquals("User current password dont match.", thrownException.getMessage(),
                 "The exception message should indicate that the current " + "password provided is incorrect");
-    }
-
-    /**
-     * Tests the
-     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
-     * method to ensure that an exception is thrown when attempting to assign a role
-     * to a user, but one of the specified roles does not exist.
-     *
-     * <p>
-     * This test simulates the scenario where a user is assigned new roles, but one
-     * of the roles is not found in the system. The test verifies that a
-     * {@link UserServiceException} is thrown with an appropriate message.
-     * </p>
-     *
-     * <p>
-     * Steps:
-     * </p>
-     * <ul>
-     * <li>Arrange: Set up the user's email and a list of roles to assign.</li>
-     * <li>Configure {@code userRepository} to return an existing user based on
-     * email.</li>
-     * <li>Configure {@code roleRepository} to find {@code ROLE_ADMIN} but not
-     * {@code ROLE_SOCIO}.</li>
-     * <li>Act: Call {@code userService.changeUserRoles} with the email and role
-     * list.</li>
-     * <li>Assert: Verify that a {@link UserServiceException} is thrown and that the
-     * exception message indicates a missing role.</li>
-     * </ul>
-     *
-     * <p>
-     * Expected Result:
-     * </p>
-     * The test should pass, confirming that the service throws a
-     * {@link UserServiceException} with the message "Role not found." when any
-     * specified role cannot be found in the database.
-     */
-    @Test
-    void testChangeUserRolesRoleNotFound() {
-        // Configura el email del usuario y los roles a cambiar
-        var email = "test@example.com";
-        List<UserRoleName> roleNameList = List.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
-
-        // Configura el mock del repositorio de usuarios para devolver un usuario
-        var usrEntity = new PersistentUserEntity();
-        usrEntity.setEmail(email);
-        when(userRepository.findByEmail(email)).thenReturn(Optional.of(usrEntity));
-
-        // Configura el mock del repositorio de roles
-        // El rol ROLE_ADMIN está presente
-        when(roleRepository.findByName(UserRoleName.ROLE_ADMIN)).thenReturn(Optional.of(new PersistentRoleEntity()));
-
-        // El rol ROLE_SOCIO no está presente
-        when(roleRepository.findByName(UserRoleName.ROLE_SOCIO)).thenReturn(Optional.empty());
-
-        // Ejecuta el método y verifica que se lanza la excepción esperada
-        var exception = assertThrows(UserServiceException.class, () -> {
-            userService.changeUserRoles(email, roleNameList);
-        }, "Expected UserServiceException to be thrown when one of " + "the roles does not exist");
-
-        // Verifica el mensaje de la excepción
-        Assertions.assertEquals("Role not found.", exception.getMessage(),
-                "The exception message should indicate that the role was not found");
-    }
-
-    /**
-     * Tests the
-     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
-     * method to verify that user roles are successfully changed when valid role
-     * names are provided.
-     *
-     * <p>
-     * This test simulates a scenario where the user has an email in the repository,
-     * and the roles to be assigned are valid and present in the role repository.
-     * The test confirms that after changing the roles, the user's role list is not
-     * empty.
-     * </p>
-     *
-     * <p>
-     * Steps:
-     * </p>
-     * <ul>
-     * <li>Arrange: Set up the user's email and the role to assign.</li>
-     * <li>Mock the {@code userRepository} to return a user entity for the provided
-     * email.</li>
-     * <li>Mock the {@code roleRepository} to return a role entity for the provided
-     * role name.</li>
-     * <li>Mock {@code userRepository.save} to return the updated user entity.</li>
-     * <li>Act: Call {@code userService.changeUserRoles} with the email and role
-     * list.</li>
-     * <li>Assert: Verify that the user's role list is not empty after the roles are
-     * changed.</li>
-     * </ul>
-     *
-     * <p>
-     * Expected Result:
-     * </p>
-     * The test should pass, confirming that the user's roles are correctly updated
-     * and the role list is not empty after the method execution.
-     *
-     * @throws UserServiceException if any error occurs while changing user roles
-     */
-    @Test
-    void testChangeUserRolesSuccess() throws UserServiceException {
-        // Arrange: Configurar los datos y comportamiento esperado
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(persistentUserEntity));
-        when(roleRepository.findByName(any())).thenReturn(Optional.of(new PersistentRoleEntity()));
-        when(userRepository.save(any(PersistentUserEntity.class))).thenReturn(persistentUserEntity);
-
-        // Act: Llamar al método que se está probando
-        var result = userService.changeUserRoles("test@example.com",
-                Collections.singletonList(UserRoleName.ROLE_PRESIDENTE));
-
-        // Assert: Verificar resultados
-        assertThat(result.getRoles())
-                .as("La lista de roles del usuario debería no estar vacía " + "después de cambiar los roles")
-                .isNotEmpty();
-    }
-
-    /**
-     * Tests the
-     * {@link es.org.cxn.backapp.service.UserService#changeUserRoles(String, List)}
-     * method to verify that an exception is thrown when attempting to change roles
-     * for a user that does not exist.
-     *
-     * <p>
-     * This test simulates a scenario where no user is found with the specified
-     * email in the repository, which should result in a
-     * {@link UserServiceException} being thrown.
-     * </p>
-     *
-     * <p>
-     * Steps:
-     * </p>
-     * <ul>
-     * <li>Arrange: Mock the {@code userRepository} to return an empty result for
-     * the provided email.</li>
-     * <li>Act: Call {@code userService.changeUserRoles} with the email of a
-     * non-existent user.</li>
-     * <li>Assert: Verify that a {@link UserServiceException} is thrown and check
-     * the exception message.</li>
-     * </ul>
-     *
-     * <p>
-     * Expected Result:
-     * </p>
-     * The test should pass if the {@link UserServiceException} is thrown with the
-     * message "User not found.", confirming the system's behavior when a
-     * non-existent user is targeted for role changes.
-     */
-    @Test
-    void testChangeUserRolesUserNotFound() {
-        // Configura el mock para devolver vacío al buscar por email
-        when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
-
-        // Ejecuta el método y verifica que se lanza una excepción esperada
-        var exception = assertThrows(UserServiceException.class,
-                () -> userService.changeUserRoles("test@example.com",
-                        Collections.singletonList(UserRoleName.ROLE_SOCIO)),
-                "Expected UserServiceException to be thrown when changing " + "roles for a non-existent user");
-
-        // Verifica el mensaje de la excepción se asegura de ser el esperado
-        Assertions.assertEquals("User not found.", exception.getMessage(),
-                "The exception message should match the expected message " + "when user is not found");
     }
 
     /**

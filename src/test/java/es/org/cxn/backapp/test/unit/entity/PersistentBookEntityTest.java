@@ -77,37 +77,37 @@ class PersistentBookEntityTest {
     /**
      * The book isb string number.
      */
-    final String isbn = "123456789";
+    private final String isbn = "123456789";
 
     /**
      * The book title.
      */
-    final String title = "Kovic chess problems";
+    private final String title = "Kovic chess problems";
 
     /**
      * The book genre.
      */
-    final String genre = "Fiction";
+    private final String genre = "Fiction";
 
     /**
      * The book publish date.
      */
-    final LocalDate publishDate = LocalDate.of(2023, 1, 1);
+    private final LocalDate publishDate = LocalDate.of(2023, 1, 1);
 
     /**
      * The book language.
      */
-    final String language = "English";
+    private final String language = "English";
 
     /**
      * The book description.
      */
-    final String description = "A test book description.";
+    private final String description = "A test book description.";
 
     /**
      * The book cover image source.
      */
-    final String coverSrc = "/images/test-cover.jpg";
+    private final String coverSrc = "/images/test-cover.jpg";
 
     @BeforeEach
     void setUp() {
