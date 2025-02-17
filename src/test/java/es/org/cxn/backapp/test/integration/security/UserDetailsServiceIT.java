@@ -39,7 +39,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.model.persistence.user.UserType;
@@ -60,7 +61,6 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class UserDetailsServiceIT {
 
     /**
@@ -80,11 +80,20 @@ class UserDetailsServiceIT {
      */
     @MockitoBean
     private DefaultEmailService defaultEmailService;
+
     /**
      * Mocked mail sender.
      */
     @MockitoBean
     private JavaMailSender javaMailSender;
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
+    }
 
     /**
      * Tests loading user details by username.
