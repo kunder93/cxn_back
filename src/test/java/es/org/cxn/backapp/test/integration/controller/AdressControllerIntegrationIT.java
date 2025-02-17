@@ -38,7 +38,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -65,7 +66,6 @@ import es.org.cxn.backapp.service.impl.DefaultEmailService;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class AdressControllerIntegrationIT {
 
     /**
@@ -77,6 +77,7 @@ class AdressControllerIntegrationIT {
      * </p>
      */
     private static final String GET_COUNTRIES_URL = "/api/address/getCountries";
+
     /**
      * The expected number of countries returned by the API.
      *
@@ -86,7 +87,6 @@ class AdressControllerIntegrationIT {
      * </p>
      */
     private static final int COUNTRIES_COUNT = 2;
-
     /**
      * The expected number of subdivisions for Spain.
      *
@@ -126,6 +126,14 @@ class AdressControllerIntegrationIT {
      */
     AdressControllerIntegrationIT() {
         super();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     /**
