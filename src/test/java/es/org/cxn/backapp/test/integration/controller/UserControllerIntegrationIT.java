@@ -453,8 +453,7 @@ class UserControllerIntegrationIT {
         var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
                 UsersControllerFactory.USER_A_PASSWORD);
 
-        var changePasswordRequest = new UserChangePasswordRequest(memberEmail, memberRequestPasswordNotValid,
-                memberNewPassword);
+        var changePasswordRequest = new UserChangePasswordRequest(memberRequestPasswordNotValid, memberNewPassword);
 
         var changePasswordRequestJson = gson.toJson(changePasswordRequest);
 
@@ -481,7 +480,7 @@ class UserControllerIntegrationIT {
         final var notExistingMemberEmail = "email@email.es";
         final var currentPassword = "123123";
         final var newPassword = "321321";
-        var changePasswordRequest = new UserChangePasswordRequest(notExistingMemberEmail, currentPassword, newPassword);
+        var changePasswordRequest = new UserChangePasswordRequest(currentPassword, newPassword);
 
         var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
         var memberRequestJson = gson.toJson(memberRequest);
@@ -518,7 +517,7 @@ class UserControllerIntegrationIT {
 
         var jwtToken = authenticateAndGetToken(memberEmail, currentPassword);
 
-        var changePasswordRequest = new UserChangePasswordRequest(memberEmail, currentPassword, newPassword);
+        var changePasswordRequest = new UserChangePasswordRequest(currentPassword, newPassword);
 
         var changePasswordRequestJson = gson.toJson(changePasswordRequest);
         mockMvc.perform(patch(CHANGE_MEMBER_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON)
