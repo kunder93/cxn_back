@@ -6,11 +6,11 @@
 
 - **Mandatory:**
   - Java 21
-  - Maven 3.x  
-- **Optional:**  
-  - DB PostgreSQL 14.X or higher or other compatible DB.
-  - Docker for run in container.
+  - Maven 3.x
   - Mail server service for sending mails
+  - DB PostgreSQL 14.X or higher or other compatible DB.  
+- **Optional:**  
+  - Docker for run in container.
 
 #### 1. Downloading the Program
 
@@ -31,7 +31,7 @@ Before running the application, you may need to make a few adjustments:
 - Environment Configuration:  
   SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/databaseName
   SPRING_DATASOURCE_USERNAME=databaseUsername
-  SPRING_DATASOURCE_PASSWORD=databasePssw
+  SPRING_DATASOURCE_PASSWORD=DatabasePassword
   SPRING_JPA_HIBERNATE_DDL_AUTO: update
   COPY_CERTIFICATES: true
   BUILD_PROFILE=prod     # Options: prod or dev
