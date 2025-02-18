@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.integration.services;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,8 +35,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Assertions;
@@ -60,47 +58,10 @@ import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import es.org.cxn.backapp.service.impl.DefaultBookService;
 import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 
-/**
- * Unit tests for {@link DefaultLibraryService}.
- * <p>
- * This class contains tests to verify the functionality of the
- * {@link DefaultLibraryService} service. It ensures that various methods of the
- * service behave as expected and handle different scenarios correctly. The
- * tests use mocks to simulate interactions with dependencies.
- * </p>
- *
- * @author Santiago Paz
- */
 @SpringBootTest(classes = { BookEntityRepository.class, BookService.class, DefaultBookService.class,
         ImageStorageService.class, DefaultImageStorageService.class })
 @ActiveProfiles("test")
-final class DefaultLibraryServiceIT {
-    /**
-     * ISBN number for the first book used in test cases.
-     * <p>
-     * This ISBN is used to simulate a book with a specific identifier in various
-     * test scenarios.
-     * </p>
-     */
-    private static final String BOOK_ISBN_1 = "1231231231";
-
-    /**
-     * ISBN number for the second book used in test cases.
-     * <p>
-     * This ISBN is used to simulate another book with a different identifier in
-     * various test scenarios.
-     * </p>
-     */
-    private static final String BOOK_ISBN_2 = "1231231231231";
-
-    /**
-     * ISBN number for the third book used in test cases.
-     * <p>
-     * This ISBN is used to simulate a third book with yet another identifier in
-     * various test scenarios.
-     * </p>
-     */
-    private static final String BOOK_ISBN_3 = "3213213211";
+final class DefaultBookServiceIT {
 
     /**
      * ISBN number used for adding a new book in test cases.
@@ -120,69 +81,6 @@ final class DefaultLibraryServiceIT {
      * </p>
      */
     private static final String NON_EXISTING_BOOK_ISBN = "1112223331";
-
-    /**
-     * Title for the book used in test cases.
-     * <p>
-     * This title is used to simulate a book with a specific title in various test
-     * scenarios.
-     * </p>
-     */
-    private static final String BOOK_TITLE = "book title";
-
-    /**
-     * Gender of the book used in test cases.
-     * <p>
-     * This gender is used to simulate a book belonging to a specific genre in
-     * various test scenarios.
-     * </p>
-     */
-    private static final String BOOK_GENDER = "Terror";
-
-    /**
-     * Publishing year of the book used in test cases.
-     * <p>
-     * This year is used to simulate the publication date of a book in various test
-     * scenarios.
-     * </p>
-     */
-    private static final LocalDate BOOK_PUBLISH_YEAR = LocalDate.now();
-
-    /**
-     * Language of the book used in test cases.
-     * <p>
-     * This language is used to simulate a book being published in a specific
-     * language in various test scenarios.
-     * </p>
-     */
-    private static final String BOOK_LANGUAGE = "Spanish";
-
-    /**
-     * First name of the author used in test cases.
-     * <p>
-     * This first name is used to simulate an author with a specific first name in
-     * various test scenarios.
-     * </p>
-     */
-    private static final String AUTHOR_FIRST_NAME = "Alfonso";
-
-    /**
-     * Last name of the author used in test cases.
-     * <p>
-     * This last name is used to simulate an author with a specific last name in
-     * various test scenarios.
-     * </p>
-     */
-    private static final String AUTHOR_LAST_NAME = "Rueda";
-
-    /**
-     * Nationality of the author used in test cases.
-     * <p>
-     * This nationality is used to simulate an author with a specific nationality in
-     * various test scenarios.
-     * </p>
-     */
-    private static final String AUTHOR_NATIONALITY = "Spain";
 
     /**
      * Mocked image file.
@@ -230,9 +128,6 @@ final class DefaultLibraryServiceIT {
      * <p>
      * This method is called before each test method to set up the mocks and prepare
      * the test environment.
-     * </p>
-     *
-     * @throws IOException image storage service exception.
      */
     @BeforeEach
     void setUp() {
@@ -241,16 +136,6 @@ final class DefaultLibraryServiceIT {
 
     }
 
-    /**
-     * Tests the {@link DefaultLibraryService#addBook(AddBookRequestDto)} method
-     * when a null book is provided.
-     * <p>
-     * This test verifies that a {@link NullPointerException} is thrown when trying
-     * to add a null book.
-     * </p>
-     *
-     * @throws IOException
-     */
     @Test
     void testAddNullBookRaisesServiceException() {
 
@@ -262,15 +147,6 @@ final class DefaultLibraryServiceIT {
                 "Null book should raise NullPointerException.");
     }
 
-    /**
-     * Tests the {@link DefaultLibraryService#findByIsbn(Long)} method.
-     * <p>
-     * This test verifies that the service correctly finds a book by its ISBN and
-     * returns the expected book entity.
-     * </p>
-     *
-     * @throws LibraryServiceException if an error occurs during the book retrieval
-     */
     @Test
     void testFindBookByISBN() throws BookServiceException {
         var bookOptional = Optional.of(PersistentBookEntity.builder().isbn(ADD_BOOK_ISBN).title("Book 1").build());
@@ -283,14 +159,6 @@ final class DefaultLibraryServiceIT {
         Assertions.assertEquals(bookFound, bookOptional.get(), "Returned book should match the expected book.");
     }
 
-    /**
-     * Tests the {@link DefaultLibraryService#findByIsbn(Long)} method with a null
-     * ISBN value.
-     * <p>
-     * This test verifies that a {@link LibraryServiceException} is thrown when a
-     * null ISBN is provided.
-     * </p>
-     */
     @Test
     void testFindByIsbnWithNullValue() {
         // Arrange: Prepare the test scenario
@@ -299,16 +167,9 @@ final class DefaultLibraryServiceIT {
         // Act and Assert: Test the behavior when a null value is passed
         Assertions.assertThrows(BookServiceException.class, () -> {
             bookService.find(isbn);
-        }, "Null ISBN should raise LibraryServiceException.");
+        }, "Null ISBN should raise BookServiceException.");
     }
 
-    /**
-     * Tests the {@link DefaultLibraryService#removeBookByIsbn(Long)} method.
-     * <p>
-     * This test verifies that the service correctly removes a book by its ISBN when
-     * the book exists in the repository.
-     * </p>
-     */
     @Test
     void testRemoveBookWithIsbn() {
         // Arrange
@@ -326,14 +187,6 @@ final class DefaultLibraryServiceIT {
         verify(libraryRepository, times(1)).deleteById(ADD_BOOK_ISBN);
     }
 
-    /**
-     * Tests the {@link DefaultLibraryService#removeBookByIsbn(Long)} method with a
-     * null ISBN value.
-     * <p>
-     * This test verifies that a {@link LibraryServiceException} is thrown when a
-     * null ISBN is provided and ensures that the delete method is not called.
-     * </p>
-     */
     @Test
     void testRemoveBookWithNullIsbn() {
         // Arrange
@@ -342,20 +195,12 @@ final class DefaultLibraryServiceIT {
         // Act and Assert
         Assertions.assertThrows(BookServiceException.class, () -> {
             bookService.remove(nullIsbn);
-        }, "Null ISBN should raise LibraryServiceException.");
+        }, "Null ISBN should raise BookServiceException.");
 
         // Ensure that libraryRepository.deleteById is not called
         verify(libraryRepository, never()).deleteById(anyString());
     }
 
-    /**
-     * Tests the {@link DefaultLibraryService#removeBookByIsbn(Long)} method when
-     * attempting to remove a non-existing book.
-     * <p>
-     * This test verifies that a {@link LibraryServiceException} is thrown when
-     * trying to remove a book that does not exist in the repository.
-     * </p>
-     */
     @Test
     void testRemoveNonExistingBookByIsbn() {
         // Arrange
@@ -364,7 +209,7 @@ final class DefaultLibraryServiceIT {
         // Act and Assert
         Assertions.assertThrows(BookServiceException.class, () -> {
             bookService.remove(NON_EXISTING_BOOK_ISBN);
-        }, "Removing a non-existing book should raise LibraryServiceException.");
+        }, "Removing a non-existing book should raise BookServiceException.");
 
         // Ensure that libraryRepository.deleteById is not called
         verify(libraryRepository, never()).deleteById(anyString());

@@ -39,11 +39,10 @@ import es.org.cxn.backapp.model.ChessQuestionEntity;
 import es.org.cxn.backapp.model.persistence.PersistentChessQuestionEntity;
 import es.org.cxn.backapp.repository.ChessQuestionEntityRepository;
 import es.org.cxn.backapp.service.ChessQuestionsService;
-import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.ChessQuestionServiceException;
 
 /**
- * Default implementation of the {@link UserService}.
+ * Default implementation of the {@link es.org.cxn.backapp.service.UserService}.
  *
  * @author Santiago Paz.
  *

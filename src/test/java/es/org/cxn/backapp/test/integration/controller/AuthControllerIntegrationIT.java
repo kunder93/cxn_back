@@ -41,7 +41,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -87,19 +88,17 @@ import jakarta.mail.internet.MimeMessage;
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 @ActiveProfiles("test")
 class AuthControllerIntegrationIT {
-
     /**
      * URL endpoint for user sign-up.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
+
     /**
      * URL endpoint for user sign-in.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
-
     /**
      * Gson instance for serializing/deserializing JSON objects during the tests.
      */
@@ -129,6 +128,12 @@ class AuthControllerIntegrationIT {
     private MockMvc mockMvc;
 
     /**
+     * Jwt utils for manage tokens.
+     */
+    @Autowired
+    private DefaultJwtUtils jwtUtils;
+
+    /**
      * Main class constructor.
      */
     AuthControllerIntegrationIT() {
@@ -147,6 +152,14 @@ class AuthControllerIntegrationIT {
     @BeforeAll
     static void createUsersData() {
         gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     /**
@@ -217,7 +230,7 @@ class AuthControllerIntegrationIT {
 
         var ar = gson.fromJson(authenticationResponseJson, AuthenticationResponse.class);
         var jwtToken = ar.jwt();
-        var jwtUsername = DefaultJwtUtils.extractUsername(jwtToken);
+        var jwtUsername = jwtUtils.extractUsername(jwtToken);
         Assertions.assertEquals(UsersControllerFactory.USER_A_EMAIL, jwtUsername,
                 "Jwt username is same as user signUp");
     }

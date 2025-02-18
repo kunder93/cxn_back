@@ -12,10 +12,10 @@ package es.org.cxn.backapp.controller.entity;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -220,8 +220,8 @@ public class LichessController {
         try {
             final ResponseEntity<String> response = restTemplate.exchange(lichessApiUrl, HttpMethod.GET, entity,
                     String.class);
-
-            if (response.getStatusCode() == HttpStatus.OK) {
+            final var statusCode = response.getStatusCode();
+            if (statusCode.equals(HttpStatus.OK)) {
                 // Convertir la respuesta en JSON a un objeto de Java
                 final ObjectMapper objectMapper = new ObjectMapper();
                 final JsonNode rootNode = objectMapper.readTree(response.getBody());
@@ -370,7 +370,8 @@ public class LichessController {
      * @return true if the response status code is in the 2xx range, false otherwise
      */
     private boolean isResponseSuccessful(final ResponseEntity<String> response) {
-        return response != null && response.getStatusCode().is2xxSuccessful();
+        final var statusCode = response.getStatusCode();
+        return statusCode.is2xxSuccessful();
     }
 
     /**

@@ -1,0 +1,8 @@
+databaseChangeLog:
+  - changeSet:
+      id: initial
+      author: Santiago Paz        
+      modifySql:
+        - append:
+            dbms: mysql
+            value: ' ENGINE=InnoDB DEFAULT CHARSET=latin1'

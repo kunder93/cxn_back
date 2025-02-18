@@ -51,43 +51,22 @@ import jakarta.validation.constraints.Size;
  */
 public record AddBookRequestDto(
 
-        /**
-         * The book isbn.
-         */
         @NotNull(message = ValidationValues.ISBN_NOT_NULL) String isbn,
 
-        /**
-         * Book title.
-         */
         @NotNull(message = ValidationValues.TITLE_NOT_NULL)
         @Size(min = ValidationValues.MIN_TITLE_LENGTH, max = ValidationValues.MAX_TITLE_LENGTH,
                 message = ValidationValues.TITLE_SIZE) String title,
 
-        /**
-         * Book description.
-         */
         String description,
 
-        /**
-         * Book genre.
-         */
         @Size(min = ValidationValues.MIN_GENDER_LENGTH, max = ValidationValues.MAX_GENDER_LENGTH,
                 message = ValidationValues.GENDER_SIZE) String genre,
 
-        /**
-         * Book publish date.
-         */
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy") LocalDate publishDate,
 
-        /**
-         * Book language.
-         */
         @Size(min = ValidationValues.MIN_LANGUAGE_LENGTH, max = ValidationValues.MAX_LANGUAGE_LENGTH,
                 message = ValidationValues.LANGUAGE_SIZE) String language,
 
-        /**
-         * Book authors set.
-         */
         @NotNull(message = ValidationValues.AUTHORS_LIST_NOT_NULL)
         @Size(min = ValidationValues.MIN_AUTHORS_LIST_SIZE,
                 message = ValidationValues.AUTHORS_LIST_SIZE) List<AuthorRequest> authors) {

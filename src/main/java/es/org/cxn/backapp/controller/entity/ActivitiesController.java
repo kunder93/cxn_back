@@ -150,20 +150,20 @@ public class ActivitiesController {
     @GetMapping("/{title}/image")
     public ResponseEntity<byte[]> getActivityImage(@PathVariable final String title) {
         try {
-            byte[] image = activitiesService.getActivityImage(title);
+            final byte[] image = activitiesService.getActivityImage(title);
 
             // Detect content type using Apache Tika
-            Tika tika = new Tika();
-            String contentType = tika.detect(image);
+            final Tika tika = new Tika();
+            final String contentType = tika.detect(image);
 
             return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType)).body(image);
 
         } catch (ActivityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage(), e);
 
         } catch (ActivityImageNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, e.getMessage()); // 204 No Content for missing
-                                                                                      // image
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, e.getMessage(), e); // 204 No Content for missing
+                                                                                         // image
 
         } catch (ActivityServiceException e) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error retrieving image", e);

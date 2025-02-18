@@ -101,17 +101,6 @@ public interface UserService {
     UserEntity changeUserPassword(String email, String currentPassword, String newPassword) throws UserServiceException;
 
     /**
-     * Add role to an existing user.
-     *
-     * @param email        user unique email acting as identifier.
-     * @param roleNameList List with role names that user want to add.
-     * @return UserEntity with role added.
-     * @throws UserServiceException When an role with given name no exists or When
-     *                              user with given email that no exist.
-     */
-    UserEntity changeUserRoles(String email, List<UserRoleName> roleNameList) throws UserServiceException;
-
-    /**
      * Permanently deletes all data associated with a user identified by their
      * email. This operation is irreversible and ensures that the user's data is
      * fully removed from the system.
@@ -155,12 +144,13 @@ public interface UserService {
     List<UserEntity> getAll();
 
     /**
-     * Unsubscribe an user.
+     * Unsubscribe an user. Needs validation password.
      *
-     * @param email The user email
+     * @param email          The user email
+     * @param validationPass The user validation password.User for validate action.
      * @throws UserServiceException When user with provided email not found.
      */
-    void unsubscribe(String email) throws UserServiceException;
+    void unsubscribe(String email, String validationPass) throws UserServiceException;
 
     /**
      * Updates an existing user.

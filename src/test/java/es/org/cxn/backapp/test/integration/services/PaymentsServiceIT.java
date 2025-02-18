@@ -40,7 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
@@ -69,7 +70,6 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest()
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 final class PaymentsServiceIT {
 
     /**
@@ -104,6 +104,14 @@ final class PaymentsServiceIT {
      * Test user dni.
      */
     private final String userDni = "32721880X";
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
+    }
 
     @BeforeEach
     void setUp() throws UserServiceException {
@@ -772,7 +780,8 @@ final class PaymentsServiceIT {
                 "Expected exception not thrown when trying to mark an already paid payment.");
 
         // Assert: Verify the exception message is correct
-        final String expectedMessage = "Payment with id: " + createdPayment.getId() + " have not UNPAID state.";
+        final String expectedMessage = "Payment with id: " + createdPayment.getId()
+                + " does not have the state UNPAID.";
         Assertions.assertEquals(expectedMessage, exception.getMessage(),
                 "The exception message does not match the expected one.");
     }

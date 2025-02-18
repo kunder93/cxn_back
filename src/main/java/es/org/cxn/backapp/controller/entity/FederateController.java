@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import es.org.cxn.backapp.model.form.requests.ConfirmCancelFederateRequest;
 import es.org.cxn.backapp.model.form.responses.DniImagesResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList.FederateStateExtendedResponse;
@@ -87,7 +88,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
  * <p>
  * All methods handle exceptions and return appropriate HTTP status codes in
  * case of errors, such as bad requests or access violations.
- * </p>
  *
  * @see FederateStateService
  * @see ResponseEntity
@@ -97,21 +97,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 @RestController
 @RequestMapping("/api/user/federate")
 public class FederateController {
-
-    /**
-     * Represents a request to confirm or cancel a federate status, containing the
-     * user's DNI.
-     *
-     * <p>
-     * This record is used as a request body in the confirmCancelFederate endpoint
-     * to specify the DNI of the user whose federate status is to be confirmed or
-     * canceled.
-     * </p>
-     *
-     * @param userDni The user DNI.
-     */
-    public record ConfirmCancelFederateRequest(String userDni) {
-    }
 
     /**
      * A service that handles federate state-related operations for users, including
@@ -128,6 +113,17 @@ public class FederateController {
      */
     private final FederateStateService federateStateService;
 
+    /**
+     * The user service that provides user-related operations such as loading user
+     * data, updating profiles, and managing user roles.
+     *
+     * <p>
+     * UserService is used to interact with user-related data, including retrieving
+     * user details and performing actions like updating or deleting user profiles.
+     * </p>
+     *
+     * @see UserService Service responsible for handling user data and operations
+     */
     private final UserService userService;
 
     /**
@@ -187,7 +183,7 @@ public class FederateController {
     public ResponseEntity<FederateStateExtendedResponse> confirmCancelFederate(
             @RequestBody final ConfirmCancelFederateRequest request) throws PaymentsServiceException {
         try {
-            final var result = federateStateService.confirmCancelFederate(request.userDni);
+            final var result = federateStateService.confirmCancelFederate(request.userDni());
             return new ResponseEntity<>(new FederateStateExtendedResponse(result), HttpStatus.OK);
         } catch (FederateStateServiceException | UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -242,7 +238,7 @@ public class FederateController {
     public ResponseEntity<FederateStateResponse> getFederateState() {
         final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
-            final var result = federateStateService.getFederateData(userEmail);
+            final var result = federateStateService.getFederateDataByEmail(userEmail);
             return new ResponseEntity<>(new FederateStateResponse(result), HttpStatus.OK);
         } catch (FederateStateServiceException | UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -260,12 +256,35 @@ public class FederateController {
      * @return a ResponseEntity containing the federate state data for all users
      */
     @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
     public ResponseEntity<FederateStateExtendedResponseList> getFederateStateMembers() {
         final var entitiesList = federateStateService.getAll();
 
         final var result = FederateStateExtendedResponseList.fromEntities(entitiesList);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves the federate state data from user using dni.
+     *
+     * <p>
+     * This endpoint fetches the federate state for the user based on their dni.
+     * </p>
+     *
+     * @return a ResponseEntity containing the federate state response
+     * @throws ResponseStatusException if there is an error retrieving the federate
+     *                                 state
+     */
+    @GetMapping("/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
+    public ResponseEntity<FederateStateResponse> getFederateStateUsingDni(final @PathVariable String userDni) {
+        try {
+            final var result = federateStateService.getFederateDataByDni(userDni);
+            return new ResponseEntity<>(new FederateStateResponse(result), HttpStatus.OK);
+        } catch (FederateStateServiceException | UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
     }
 
     /**
@@ -282,7 +301,7 @@ public class FederateController {
         try {
             final var userEntity = userService.findByEmail(authName);
             final String userDni = userEntity.getDni();
-            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            final UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
             return new ResponseEntity<>(
                     new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
                     HttpStatus.OK);
@@ -304,7 +323,7 @@ public class FederateController {
     @GetMapping("/dni/{userDni}")
     public ResponseEntity<DniImagesResponse> getUserDniImage(final @PathVariable String userDni) {
         try {
-            UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
+            final UserDniImagesDto dniImagesServiceDto = federateStateService.getDniImages(userDni);
             return new ResponseEntity<>(
                     new DniImagesResponse(dniImagesServiceDto.frontImage(), dniImagesServiceDto.backImage()),
                     HttpStatus.OK);

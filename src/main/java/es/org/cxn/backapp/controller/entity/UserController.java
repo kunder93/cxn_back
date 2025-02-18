@@ -53,7 +53,6 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
-import es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest;
 import es.org.cxn.backapp.model.form.requests.UserUpdateRequestForm;
 import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
 import es.org.cxn.backapp.model.form.responses.UserDataResponse;
@@ -86,7 +85,7 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
  * @see UserChangeEmailRequest
  * @see UserChangeKindMemberRequest
  * @see UserChangePasswordRequest
- * @see UserUnsubscribeRequest
+ * @see es.org.cxn.backapp.model.form.requests.UserUnsubscribeRequest
  * @see UserUpdateResponseForm
  * @see UserListDataResponse
  * @see UserDataResponse
@@ -196,6 +195,7 @@ public class UserController {
      * @return a {@link UserDataResponse} with the updated membership information.
      * @throws ResponseStatusException if the update fails.
      */
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or " + "hasRole('SECRETARIO')")
     @PatchMapping("/changeKindOfMember")
     public ResponseEntity<UserDataResponse> changeUserKindOfMember(
             @RequestBody final UserChangeKindMemberRequest userChangeKindMemberReq) {
@@ -225,8 +225,9 @@ public class UserController {
             @RequestBody final UserChangePasswordRequest userChangePasswordRequest) {
         final UserEntity result;
         try {
-            result = userService.changeUserPassword(userChangePasswordRequest.email(),
-                    userChangePasswordRequest.currentPassword(), userChangePasswordRequest.newPassword());
+            final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
+            result = userService.changeUserPassword(authName, userChangePasswordRequest.currentPassword(),
+                    userChangePasswordRequest.newPassword());
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
@@ -313,6 +314,7 @@ public class UserController {
      *                                 in the {@link UserService}.
      */
     @GetMapping("/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or " + "hasRole('SECRETARIO')")
     public ResponseEntity<UserDataResponse> getUserProfile(final @PathVariable String userDni) {
         try {
             final var userFound = userService.findByDni(userDni);

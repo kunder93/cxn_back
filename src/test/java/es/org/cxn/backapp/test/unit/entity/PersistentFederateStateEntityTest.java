@@ -1,4 +1,3 @@
-
 package es.org.cxn.backapp.test.unit.entity;
 
 /*-
@@ -13,10 +12,10 @@ package es.org.cxn.backapp.test.unit.entity;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,6 +47,39 @@ import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
  */
 class PersistentFederateStateEntityTest {
 
+    /**
+     * The test DNI (Document National Identity) for a user.
+     */
+    private static final String TEST_USER_DNI = "1234567890";
+
+    /**
+     * The URL for the front image of the user's DNI.
+     */
+    private static final String FRONT_IMAGE_URL = "http://example.com/front.jpg";
+
+    /**
+     * The URL for the back image of the user's DNI.
+     */
+    private static final String BACK_IMAGE_URL = "http://example.com/back.jpg";
+
+    /**
+     * The flag indicating if the user's federation has automatic renewal enabled.
+     */
+    private static final boolean AUTOMATIC_RENEWAL = true;
+
+    /**
+     * The date of the last update for the federate state.
+     */
+    private static final LocalDate LAST_UPDATE = LocalDate.of(2025, 1, 1);
+
+    /**
+     * The current federate state of the user.
+     */
+    private static final FederateState STATE = FederateState.FEDERATE;
+
+    /**
+     * Instance of {@link PersistentFederateStateEntity} to be tested.
+     */
     private PersistentFederateStateEntity entity;
 
     @BeforeEach
@@ -86,13 +118,11 @@ class PersistentFederateStateEntityTest {
     @Test
     void testEqualsAndHashCode() {
         // Arrange
-        PersistentFederateStateEntity entity1 = new PersistentFederateStateEntity("1234567890",
-                "http://example.com/front.jpg", "http://example.com/back.jpg", true, LocalDate.of(2025, 1, 1),
-                FederateState.FEDERATE);
+        PersistentFederateStateEntity entity1 = new PersistentFederateStateEntity(TEST_USER_DNI, FRONT_IMAGE_URL,
+                BACK_IMAGE_URL, AUTOMATIC_RENEWAL, LAST_UPDATE, STATE);
 
-        PersistentFederateStateEntity entity2 = new PersistentFederateStateEntity("1234567890",
-                "http://example.com/front.jpg", "http://example.com/back.jpg", true, LocalDate.of(2025, 1, 1),
-                FederateState.FEDERATE);
+        PersistentFederateStateEntity entity2 = new PersistentFederateStateEntity(TEST_USER_DNI, FRONT_IMAGE_URL,
+                BACK_IMAGE_URL, AUTOMATIC_RENEWAL, LAST_UPDATE, STATE);
 
         // Act & Assert
         assertEquals(entity1, entity2, "Entities with the same data should be equal.");
@@ -101,76 +131,63 @@ class PersistentFederateStateEntityTest {
 
     @Test
     void testParameterizedConstructor() {
-        // Arrange
-        String userDni = "1234567890";
-        String frontImageUrl = "http://example.com/dni-front.jpg";
-        String backImageUrl = "http://example.com/dni-back.jpg";
-        boolean isAutomaticRenewal = true;
-        LocalDate lastUpdate = LocalDate.now();
-        FederateState state = FederateState.FEDERATE;
-
         // Act
-        PersistentFederateStateEntity paramEntity = new PersistentFederateStateEntity(userDni, frontImageUrl,
-                backImageUrl, isAutomaticRenewal, lastUpdate, state);
+        PersistentFederateStateEntity paramEntity = new PersistentFederateStateEntity(TEST_USER_DNI, FRONT_IMAGE_URL,
+                BACK_IMAGE_URL, AUTOMATIC_RENEWAL, LAST_UPDATE, STATE);
 
         // Assert
-        assertEquals(userDni, paramEntity.getUserDni(), "userDni should match the constructor value.");
-        assertEquals(frontImageUrl, paramEntity.getDniFrontImageUrl(),
+        assertEquals(TEST_USER_DNI, paramEntity.getUserDni(), "userDni should match the constructor value.");
+        assertEquals(FRONT_IMAGE_URL, paramEntity.getDniFrontImageUrl(),
                 "dniFrontImageUrl should match the constructor value.");
-        assertEquals(backImageUrl, paramEntity.getDniBackImageUrl(),
+        assertEquals(BACK_IMAGE_URL, paramEntity.getDniBackImageUrl(),
                 "dniBackImageUrl should match the constructor value.");
         assertTrue(paramEntity.isAutomaticRenewal(), "automaticRenewal should match the constructor value.");
-        assertEquals(lastUpdate, paramEntity.getDniLastUpdate(), "dniLastUpdate should match the constructor value.");
-        assertEquals(state, paramEntity.getState(), "state should match the constructor value.");
+        assertEquals(LAST_UPDATE, paramEntity.getDniLastUpdate(), "dniLastUpdate should match the constructor value.");
+        assertEquals(STATE, paramEntity.getState(), "state should match the constructor value.");
     }
 
     @Test
     void testSettersAndGetters() {
-        // Arrange
-        String userDni = "0987654321";
-        String frontImageUrl = "http://example.com/front.jpg";
-        String backImageUrl = "http://example.com/back.jpg";
-        boolean isAutomaticRenewal = false;
-        LocalDate lastUpdate = LocalDate.of(2025, 1, 1);
-        FederateState state = FederateState.NO_FEDERATE;
-
+        final int dniUpdateYear = 2025;
+        final int dniUpdateMonth = 1;
+        final int dniUpdateDay = 1;
         // Act
-        entity.setUserDni(userDni);
-        entity.setDniFrontImageUrl(frontImageUrl);
-        entity.setDniBackImageUrl(backImageUrl);
-        entity.setAutomaticRenewal(isAutomaticRenewal);
-        entity.setDniLastUpdate(lastUpdate);
-        entity.setState(state);
+        entity.setUserDni(TEST_USER_DNI);
+        entity.setDniFrontImageUrl(FRONT_IMAGE_URL);
+        entity.setDniBackImageUrl(BACK_IMAGE_URL);
+        entity.setAutomaticRenewal(false);
+        entity.setDniLastUpdate(LocalDate.of(dniUpdateYear, dniUpdateMonth, dniUpdateDay));
+        entity.setState(FederateState.NO_FEDERATE);
 
         // Assert
-        assertEquals(userDni, entity.getUserDni(), "getUserDni should return the set value.");
-        assertEquals(frontImageUrl, entity.getDniFrontImageUrl(), "getDniFrontImageUrl should return the set value.");
-        assertEquals(backImageUrl, entity.getDniBackImageUrl(), "getDniBackImageUrl should return the set value.");
+        assertEquals(TEST_USER_DNI, entity.getUserDni(), "getUserDni should return the set value.");
+        assertEquals(FRONT_IMAGE_URL, entity.getDniFrontImageUrl(), "getDniFrontImageUrl should return the set value.");
+        assertEquals(BACK_IMAGE_URL, entity.getDniBackImageUrl(), "getDniBackImageUrl should return the set value.");
         assertFalse(entity.isAutomaticRenewal(), "isAutomaticRenewal should return the set value.");
-        assertEquals(lastUpdate, entity.getDniLastUpdate(), "getDniLastUpdate should return the set value.");
-        assertEquals(state, entity.getState(), "getState should return the set value.");
+        assertEquals(LocalDate.of(dniUpdateYear, dniUpdateMonth, dniUpdateDay), entity.getDniLastUpdate(),
+                "getDniLastUpdate should return the set value.");
+        assertEquals(FederateState.NO_FEDERATE, entity.getState(), "getState should return the set value.");
     }
 
     @Test
     void testToString() {
-        // Arrange
-        entity.setUserDni("1234567890");
-        entity.setDniFrontImageUrl("http://example.com/front.jpg");
-        entity.setDniBackImageUrl("http://example.com/back.jpg");
-        entity.setAutomaticRenewal(true);
-        entity.setDniLastUpdate(LocalDate.of(2025, 1, 1));
-        entity.setState(FederateState.FEDERATE);
-
         // Act
+        entity.setUserDni(TEST_USER_DNI);
+        entity.setDniFrontImageUrl(FRONT_IMAGE_URL);
+        entity.setDniBackImageUrl(BACK_IMAGE_URL);
+        entity.setAutomaticRenewal(AUTOMATIC_RENEWAL);
+        entity.setDniLastUpdate(LAST_UPDATE);
+        entity.setState(STATE);
+
         String result = entity.toString();
 
         // Assert
         assertNotNull(result, "toString should not return null.");
-        assertTrue(result.contains("1234567890"), "toString should include userDni.");
-        assertTrue(result.contains("http://example.com/front.jpg"), "toString should include dniFrontImageUrl.");
-        assertTrue(result.contains("http://example.com/back.jpg"), "toString should include dniBackImageUrl.");
-        assertTrue(result.contains("true"), "toString should include automaticRenewal.");
-        assertTrue(result.contains("2025-01-01"), "toString should include dniLastUpdate.");
-        assertTrue(result.contains("FEDERATE"), "toString should include state.");
+        assertTrue(result.contains(TEST_USER_DNI), "toString should include userDni.");
+        assertTrue(result.contains(FRONT_IMAGE_URL), "toString should include dniFrontImageUrl.");
+        assertTrue(result.contains(BACK_IMAGE_URL), "toString should include dniBackImageUrl.");
+        assertTrue(result.contains(String.valueOf(AUTOMATIC_RENEWAL)), "toString should include automaticRenewal.");
+        assertTrue(result.contains(LAST_UPDATE.toString()), "toString should include dniLastUpdate.");
+        assertTrue(result.contains(STATE.toString()), "toString should include state.");
     }
 }

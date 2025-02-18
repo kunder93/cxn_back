@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model.form.responses;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,7 +29,6 @@ package es.org.cxn.backapp.model.form.responses;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
 import es.org.cxn.backapp.model.UserEntity;
@@ -148,7 +147,7 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
      * @return A new {@code Set<UserRoleName>} containing the user's roles.
      */
     public Set<UserRoleName> userRoles() {
-        return new HashSet<>(userRoles);
+        return EnumSet.copyOf(userRoles);
     }
 
 }

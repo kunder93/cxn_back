@@ -40,6 +40,9 @@ import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 
 class PersistentProfileImageEntityTest {
 
+    /**
+     * Entity that represents profile image.
+     */
     private PersistentProfileImageEntity profileImageEntity;
 
     @BeforeEach

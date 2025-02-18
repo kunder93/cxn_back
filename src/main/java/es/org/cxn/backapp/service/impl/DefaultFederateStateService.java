@@ -196,24 +196,19 @@ public final class DefaultFederateStateService implements FederateStateService {
     public PersistentFederateStateEntity confirmCancelFederate(final String userDni)
             throws FederateStateServiceException, UserServiceException, PaymentsServiceException {
         final var federateStateOptional = federateStateRepository.findById(userDni);
-
         final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
-        final var entityState = federateStateEntity.getState();
-        if (entityState == FederateState.IN_PROGRESS) {
-            federateStateEntity.setState(FederateState.FEDERATE);
-        }
-        if (entityState == FederateState.FEDERATE) {
+
+        switch (federateStateEntity.getState()) {
+        case IN_PROGRESS -> federateStateEntity.setState(FederateState.FEDERATE);
+        case FEDERATE -> {
             federateStateEntity.setState(FederateState.NO_FEDERATE);
             final var payment = federateStateEntity.getPayment();
-
             federateStateEntity.setPayment(null);
-            final var result = federateStateRepository.save(federateStateEntity);
             paymentsService.remove(payment.getId());
-            return result;
         }
-        if (entityState == FederateState.NO_FEDERATE) {
-            throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
+        case NO_FEDERATE -> throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
         }
+
         return federateStateRepository.save(federateStateEntity);
     }
 
@@ -312,6 +307,16 @@ public final class DefaultFederateStateService implements FederateStateService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PersistentFederateStateEntity getFederateDataByDni(final String userDni)
+            throws UserServiceException, FederateStateServiceException {
+        final var userEntity = userService.findByDni(userDni);
+        return getFederateDataByEmail(userEntity.getEmail());
+    }
+
+    /**
      * Retrieves the federate state data for a given user.
      *
      * @param userEmail The email of the user.
@@ -321,7 +326,7 @@ public final class DefaultFederateStateService implements FederateStateService {
      *                                       user.
      */
     @Override
-    public PersistentFederateStateEntity getFederateData(final String userEmail)
+    public PersistentFederateStateEntity getFederateDataByEmail(final String userEmail)
             throws UserServiceException, FederateStateServiceException {
         final var userEntity = userService.findByEmail(userEmail);
         final var userDni = userEntity.getDni();

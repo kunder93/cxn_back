@@ -28,6 +28,7 @@ package es.org.cxn.backapp.test.unit.response;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 
@@ -38,22 +39,62 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 
+/**
+ * Unit tests for the {@link UserUpdateResponse} class.
+ *
+ * <p>
+ * This test class verifies the correctness of user update responses by testing
+ * different scenarios, including name, surname, gender, and birthdate updates.
+ * </p>
+ *
+ * <p>
+ * Test data constants are defined for consistency and readability.
+ * </p>
+ */
 class UserUpdateResponseTest {
+    /** The year used for a sample birthdate: 1985. */
+    private static final int TEST_YEAR_1985 = 1985;
+
+    /** The month used for a sample birthdate: May (5). */
+    private static final int TEST_MONTH_MAY = 5;
+
+    /** The day used for a sample birthdate: 15. */
+    private static final int TEST_DAY_15 = 15;
+
+    /** The year used for another sample birthdate: 1990. */
+    private static final int TEST_YEAR_1990 = 1990;
+
+    /** The month used for another sample birthdate: January (1). */
+    private static final int TEST_MONTH_JANUARY = 1;
+
+    /** The day used for another sample birthdate: 1. */
+    private static final int TEST_DAY_1 = 1;
+
+    /** A sample first name: Alice. */
+    private static final String NAME_ALICE = "Alice";
+
+    /** A sample surname: Brown. */
+    private static final String SURNAME_BROWN = "Brown";
+
+    /** Another sample surname: Johnson. */
+    private static final String SURNAME_JOHNSON = "Johnson";
+
+    /** A sample gender: Female. */
+    private static final String GENDER_FEMALE = "Female";
+
+    /** A sample gender: Male. */
+    private static final String GENDER_MALE = "Male";
+
+    /** A common test birthdate: May 15, 1985. */
+    private static final LocalDate BIRTHDATE_1985 = LocalDate.of(TEST_YEAR_1985, TEST_MONTH_MAY, TEST_DAY_15);
+
+    /** Another common test birthdate: January 1, 1990. */
+    private static final LocalDate BIRTHDATE_1990 = LocalDate.of(TEST_YEAR_1990, TEST_MONTH_JANUARY, TEST_DAY_1);
 
     @Test
     void testConstructorWithNullValues() {
-        // Given
-        String name = null;
-        String firstSurname = null;
-        String secondSurname = null;
-        LocalDate birthDate = null;
-        String gender = null;
+        UserUpdateResponseForm responseForm = new UserUpdateResponseForm(null, null, null, null, null);
 
-        // When
-        UserUpdateResponseForm responseForm = new UserUpdateResponseForm(name, firstSurname, secondSurname, birthDate,
-                gender);
-
-        // Then
         assertEquals(null, responseForm.name());
         assertEquals(null, responseForm.firstSurname());
         assertEquals(null, responseForm.secondSurname());
@@ -63,63 +104,43 @@ class UserUpdateResponseTest {
 
     @Test
     void testConstructorWithUserEntity() {
-        // Given
         UserEntity userEntity = Mockito.mock(UserEntity.class);
         UserProfile profile = Mockito.mock(UserProfile.class);
 
         Mockito.when(userEntity.getProfile()).thenReturn(profile);
-        Mockito.when(profile.getName()).thenReturn("Alice");
-        Mockito.when(profile.getFirstSurname()).thenReturn("Brown");
-        Mockito.when(profile.getSecondSurname()).thenReturn("Johnson");
-        Mockito.when(profile.getBirthDate()).thenReturn(LocalDate.of(1985, 5, 15));
-        Mockito.when(profile.getGender()).thenReturn("Female");
+        Mockito.when(profile.getName()).thenReturn(NAME_ALICE);
+        Mockito.when(profile.getFirstSurname()).thenReturn(SURNAME_BROWN);
+        Mockito.when(profile.getSecondSurname()).thenReturn(SURNAME_JOHNSON);
+        Mockito.when(profile.getBirthDate()).thenReturn(BIRTHDATE_1985);
+        Mockito.when(profile.getGender()).thenReturn(GENDER_FEMALE);
 
-        // When
         UserUpdateResponseForm responseForm = new UserUpdateResponseForm(userEntity);
 
-        // Then
-        assertEquals("Alice", responseForm.name());
-        assertEquals("Brown", responseForm.firstSurname());
-        assertEquals("Johnson", responseForm.secondSurname());
-        assertEquals(LocalDate.of(1985, 5, 15), responseForm.birthDate());
-        assertEquals("Female", responseForm.gender());
+        assertEquals(NAME_ALICE, responseForm.name());
+        assertEquals(SURNAME_BROWN, responseForm.firstSurname());
+        assertEquals(SURNAME_JOHNSON, responseForm.secondSurname());
+        assertEquals(BIRTHDATE_1985, responseForm.birthDate());
+        assertEquals(GENDER_FEMALE, responseForm.gender());
     }
 
     @Test
     void testConstructorWithUserEntityAndNullProfile() {
-        // Given
         UserEntity userEntity = Mockito.mock(UserEntity.class);
-
         Mockito.when(userEntity.getProfile()).thenReturn(null);
 
-        // When / Then
-        try {
-            new UserUpdateResponseForm(userEntity);
-        } catch (NullPointerException e) {
-            assertEquals(
-                    "Cannot invoke \"es.org.cxn.backapp.model.persistence.user.UserProfile.getName()\" because the return value of \"es.org.cxn.backapp.model.UserEntity.getProfile()\" is null",
-                    e.getMessage());
-        }
+        assertThrows(NullPointerException.class, () -> new UserUpdateResponseForm(userEntity));
+
     }
 
     @Test
     void testConstructorWithValidValues() {
-        // Given
-        String name = "John";
-        String firstSurname = "Doe";
-        String secondSurname = "Smith";
-        LocalDate birthDate = LocalDate.of(1990, 1, 1);
-        String gender = "Male";
+        UserUpdateResponseForm responseForm = new UserUpdateResponseForm(NAME_ALICE, SURNAME_BROWN, SURNAME_JOHNSON,
+                BIRTHDATE_1990, GENDER_MALE);
 
-        // When
-        UserUpdateResponseForm responseForm = new UserUpdateResponseForm(name, firstSurname, secondSurname, birthDate,
-                gender);
-
-        // Then
-        assertEquals(name, responseForm.name());
-        assertEquals(firstSurname, responseForm.firstSurname());
-        assertEquals(secondSurname, responseForm.secondSurname());
-        assertEquals(birthDate, responseForm.birthDate());
-        assertEquals(gender, responseForm.gender());
+        assertEquals(NAME_ALICE, responseForm.name());
+        assertEquals(SURNAME_BROWN, responseForm.firstSurname());
+        assertEquals(SURNAME_JOHNSON, responseForm.secondSurname());
+        assertEquals(BIRTHDATE_1990, responseForm.birthDate());
+        assertEquals(GENDER_MALE, responseForm.gender());
     }
 }

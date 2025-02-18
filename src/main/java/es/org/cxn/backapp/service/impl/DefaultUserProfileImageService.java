@@ -100,62 +100,82 @@ public final class DefaultUserProfileImageService implements UserProfileImageSer
         this.imageStorageService = checkNotNull(imgStorageService, "Received a null pointer as image storage service");
     }
 
+    private void deleteExistingProfileImage(final String existingImagePath) throws UserServiceException {
+        final File existingFile = new File(existingImagePath);
+        if (!existingFile.exists() || existingFile.delete()) {
+            return;
+        }
+        throw new UserServiceException("Could not delete existing profile image file: " + existingImagePath);
+    }
+
+    private String getMimeType(final ImageExtension extension) throws UserServiceException {
+        final String mimeType;
+        switch (extension) {
+        case PNG:
+            mimeType = "data:image/png;base64,";
+            break;
+        case JPG:
+        case JPEG:
+            mimeType = "data:image/jpeg;base64,";
+            break;
+        case WEBP:
+            mimeType = "data:image/webp;base64,";
+            break;
+        default:
+            throw new UserServiceException("Unsupported image extension: " + extension);
+        }
+        return mimeType;
+    }
+
     @Override
     public ProfileImageResponse getProfileImage(final String dni) throws UserServiceException {
         final var user = userService.findByDni(dni);
         final var profileImage = user.getProfileImage();
 
-        final ProfileImageResponse response;
+        // Default response if no profile image exists
+        ProfileImageResponse response = new ProfileImageResponse(null, null, null, null);
 
-        if (profileImage == null) {
-            response = new ProfileImageResponse(null, null, null, null);
-        } else if (profileImage.isStored().equals(Boolean.TRUE)) {
-            // Load the image file from the filesystem
-            final File imageFile = new File(profileImage.getUrl());
-
-            if (!imageFile.exists()) {
-                throw new UserServiceException("Profile image file not found at path: " + profileImage.getUrl());
+        if (profileImage != null) {
+            if (Boolean.TRUE.equals(profileImage.isStored())) {
+                response = handleStoredProfileImage(profileImage);
+            } else {
+                response = new ProfileImageResponse(profileImage);
             }
-
-            try {
-                // Read the image file and encode it in Base64
-                final byte[] imageData = Files.readAllBytes(imageFile.toPath());
-                final String base64Image = Base64.getEncoder().encodeToString(imageData);
-
-                // Determine the MIME type based on the file extension
-                final String mimeType;
-                switch (profileImage.getExtension()) {
-                case ImageExtension.PNG:
-                    mimeType = "data:image/png;base64,";
-                    break;
-                case ImageExtension.JPG:
-                    mimeType = "data:image/jpeg;base64,";
-                    break;
-                case ImageExtension.JPEG:
-                    mimeType = "data:image/jpeg;base64,";
-                    break;
-                case ImageExtension.WEBP:
-                    mimeType = "data:image/webp;base64,";
-                    break;
-                default:
-                    throw new UserServiceException("Unsupported image extension: " + profileImage.getExtension());
-                }
-
-                // Prepend the MIME type to the Base64 image data
-                final String base64ImageWithPrefix = mimeType + base64Image;
-
-                // Assign to response
-                response = new ProfileImageResponse(profileImage, base64ImageWithPrefix);
-
-            } catch (IOException e) {
-                throw new UserServiceException("Error reading profile image file: " + e.getMessage(), e);
-            }
-        } else {
-            // If the image is not stored, return the external URL
-            response = new ProfileImageResponse(profileImage);
         }
 
         return response;
+    }
+
+    private ProfileImageResponse handleStoredProfileImage(final PersistentProfileImageEntity profileImage)
+            throws UserServiceException {
+        final File imageFile = new File(profileImage.getUrl());
+
+        if (!imageFile.exists()) {
+            throw new UserServiceException("Profile image file not found at path: " + profileImage.getUrl());
+        }
+
+        try {
+            final byte[] imageData = Files.readAllBytes(imageFile.toPath());
+            final String base64Image = Base64.getEncoder().encodeToString(imageData);
+            final String mimeType = getMimeType(profileImage.getExtension());
+
+            return new ProfileImageResponse(profileImage, mimeType + base64Image);
+        } catch (IOException e) {
+            throw new UserServiceException("Error reading profile image file: " + e.getMessage(), e);
+        }
+    }
+
+    private PersistentUserEntity saveNewProfileImage(final PersistentUserEntity userEntity, final String userDni,
+            final String url) {
+        final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
+        profileImageEntity.setExtension(ImageExtension.PROVIDED);
+        profileImageEntity.setStored(false);
+        profileImageEntity.setUrl(url);
+        profileImageEntity.setUserDni(userDni);
+
+        final var savedImageEntity = imageProfileEntityRepository.save(profileImageEntity);
+        userEntity.setProfileImage(savedImageEntity);
+        return userRepository.save(userEntity);
     }
 
     /**
@@ -175,35 +195,23 @@ public final class DefaultUserProfileImageService implements UserProfileImageSer
      */
     @Override
     public PersistentUserEntity saveProfileImage(final String userEmail, final String url) throws UserServiceException {
-        PersistentUserEntity userEntity = (PersistentUserEntity) userService.findByEmail(userEmail);
+        final PersistentUserEntity userEntity = (PersistentUserEntity) userService.findByEmail(userEmail);
         final var userDni = userEntity.getDni();
+
         final var imageProfileOptional = imageProfileEntityRepository.findById(userDni);
-        if (imageProfileOptional.isPresent()) {
+        final PersistentUserEntity resultUserEntity;
+
+        if (imageProfileOptional.isEmpty()) {
+            resultUserEntity = saveNewProfileImage(userEntity, userDni, url);
+        } else {
             final var image = imageProfileOptional.get();
-            if (image.isStored().equals(Boolean.TRUE)) { // Borrar la imagen almacenada.
-                // Get the file path from the existing image entity
-                final String existingImagePath = image.getUrl(); // Assuming getUrl() returns the complete path
-                // Create a File object
-                final File existingFile = new File(existingImagePath);
-                // Check if the file exists and delete it
-                if (existingFile.exists()) {
-                    final boolean deleted = existingFile.delete();
-                    if (!deleted) {
-                        // Handle the case where the file could not be deleted
-                        throw new UserServiceException(
-                                "Could not delete existing profile image file: " + existingImagePath);
-                    }
-                }
+            if (Boolean.TRUE.equals(image.isStored())) {
+                deleteExistingProfileImage(image.getUrl());
             }
+            resultUserEntity = saveNewProfileImage(userEntity, userDni, url);
         }
-        final PersistentProfileImageEntity profileImageEntity = new PersistentProfileImageEntity();
-        profileImageEntity.setExtension(ImageExtension.PROVIDED);
-        profileImageEntity.setStored(false);
-        profileImageEntity.setUrl(url);
-        profileImageEntity.setUserDni(userDni);
-        final var savedImageEntity = imageProfileEntityRepository.save(profileImageEntity);
-        userEntity.setProfileImage(savedImageEntity);
-        return userRepository.save(userEntity);
+
+        return resultUserEntity;
     }
 
     /**

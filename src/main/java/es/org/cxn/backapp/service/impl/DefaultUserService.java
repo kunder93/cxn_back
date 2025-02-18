@@ -34,10 +34,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -49,17 +47,16 @@ import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
-import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.CountryEntityRepository;
 import es.org.cxn.backapp.repository.CountrySubdivisionEntityRepository;
-import es.org.cxn.backapp.repository.RoleEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.EmailService;
 import es.org.cxn.backapp.service.PaymentsService;
+import es.org.cxn.backapp.service.RoleService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
@@ -94,10 +91,7 @@ public final class DefaultUserService implements UserService {
      * User not found message for exception.
      */
     public static final String USER_NOT_FOUND_MESSAGE = "User not found.";
-    /**
-     * Role not found message for exception.
-     */
-    public static final String ROLE_NOT_FOUND_MESSAGE = "Role not found.";
+
     /**
      * User with this email exists message for exception.
      */
@@ -115,11 +109,6 @@ public final class DefaultUserService implements UserService {
      * Repository for the user entities handled by the service.
      */
     private final UserEntityRepository userRepository;
-
-    /**
-     * Repository for the role entities handled by the service.
-     */
-    private final RoleEntityRepository roleRepository;
 
     /**
      * Repository for the country entities handled by the service.
@@ -142,13 +131,23 @@ public final class DefaultUserService implements UserService {
     private final PaymentsService paymentsService;
 
     /**
+     * The payments service for generating payments.
+     */
+    private final RoleService roleService;
+
+    /**
+     * The password encoder.
+     */
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    /**
      * Constructs a DefaultUserService with the specified repositories and image
      * storage service.
      *
      * @param userRepo          The user repository {@link UserEntityRepository}
      *                          used for user-related operations.
-     * @param roleRepo          The role repository {@link RoleEntityRepository}
-     *                          used for role-related operations.
+     * @param roleServ          The role service {@link RoleService} used for
+     *                          role-related operations.
      * @param countryRepo       The country repository
      *                          {@link CountryEntityRepository} used for
      *                          country-related operations.
@@ -159,21 +158,24 @@ public final class DefaultUserService implements UserService {
      *
      * @param emailServ         The email service.
      *
+     * @param passwordEncoder   The password enconder.
      *
      * @throws NullPointerException if any of the provided repositories or services
      *                              are null.
      */
-    public DefaultUserService(final UserEntityRepository userRepo, final RoleEntityRepository roleRepo,
-            final CountryEntityRepository countryRepo, final CountrySubdivisionEntityRepository countrySubdivRepo,
-            final EmailService emailServ, final PaymentsService paymentsServ) {
+    public DefaultUserService(final UserEntityRepository userRepo, final CountryEntityRepository countryRepo,
+            final CountrySubdivisionEntityRepository countrySubdivRepo, final EmailService emailServ,
+            final PaymentsService paymentsServ, final RoleService roleServ,
+            final BCryptPasswordEncoder passwordEncoder) {
         super();
         this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
-        this.roleRepository = checkNotNull(roleRepo, "Received a null pointer as role repository");
         this.countryRepository = checkNotNull(countryRepo, "Received a null pointer as country repository");
         this.countrySubdivisionRepo = checkNotNull(countrySubdivRepo,
                 "Received a null pointer as country subdivision repository");
         this.emailService = checkNotNull(emailServ, "Received a null pointer as email service.");
         this.paymentsService = checkNotNull(paymentsServ, "Received a null pointer as payments service.");
+        this.roleService = checkNotNull(roleServ, "Received a null pointer as role service.");
+        this.passwordEncoder = checkNotNull(passwordEncoder, "Received a null pointer as password encoder.");
     }
 
     /**
@@ -218,7 +220,6 @@ public final class DefaultUserService implements UserService {
         case SOCIO_ASPIRANTE -> checkAgeUnder18(user);
         case SOCIO_HONORARIO -> true;
         case SOCIO_FAMILIAR -> true;
-        default -> false;
         };
     }
 
@@ -226,35 +227,10 @@ public final class DefaultUserService implements UserService {
     @Transactional
     public UserEntity acceptUserAsMember(final String userDni) throws UserServiceException {
         final var userEntity = findByDni(userDni);
-        final var userRoles = userEntity.getRoles();
-        final Integer numberRolesExpected = Integer.valueOf(1);
-        final String exMessage = "User with dni: " + userDni;
-        if (numberRolesExpected.equals(userRoles.size())) {
-            // Get the only one role.
-            final var roleName = userRoles.iterator().next();
-            if (roleName.getName().equals(UserRoleName.ROLE_CANDIDATO_SOCIO)) {
-                // Modify user roles for have only UserRoleName.ROLE_SOCIO
-                final var roles = new ArrayList<UserRoleName>();
-                roles.add(UserRoleName.ROLE_SOCIO);
-                final UserEntity userWithchangedRoles = changeUserRoles(userEntity.getEmail(), roles);
-                try {
-                    final UserEntity result = userRepository.save(asPersistentUserEntity(userWithchangedRoles));
-                    emailService.sendWelcome(result.getEmail(), result.getCompleteName());
-                    generatePaymentForAcceptedUser(result);
-                    return result;
-                } catch (MessagingException e) {
-                    throw new UserServiceException(exMessage + "cannot send email.", e);
-                } catch (IOException e) {
-                    throw new UserServiceException(exMessage + "cannot send email: cannot load template.", e);
-                } catch (PaymentsServiceException e) {
-                    throw new UserServiceException(exMessage + "cannot generate payment for this user.", e);
-                }
-            } else {
-                throw new UserServiceException(exMessage + "no have " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
-            }
-        } else {
-            throw new UserServiceException(exMessage + "have no only " + UserRoleName.ROLE_CANDIDATO_SOCIO + " role.");
-        }
+        validateCandidateRole(userEntity, userDni);
+
+        final var updatedUser = changeUserRoleToSocio(userEntity);
+        return processAcceptedUser(updatedUser);
     }
 
     /**
@@ -383,8 +359,6 @@ public final class DefaultUserService implements UserService {
             throws UserServiceException {
         final var userEntity = findByEmail(email);
 
-        // Check password with stored.
-        final var passwordEncoder = new BCryptPasswordEncoder();
         final String storedPassword = userEntity.getPassword();
         if (!passwordEncoder.matches(currentPassword, storedPassword)) {
             throw new UserServiceException(USER_PASSWORD_NOT_MATCH);
@@ -398,28 +372,8 @@ public final class DefaultUserService implements UserService {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Transactional
-    public UserEntity changeUserRoles(final String email, final List<UserRoleName> roleNameList)
-            throws UserServiceException {
-        final var userEntity = findByEmail(email);
-
-        final Set<PersistentRoleEntity> rolesSet = new HashSet<>();
-        for (final UserRoleName roleName : roleNameList) {
-
-            final var role = roleRepository.findByName(roleName);
-            if (role.isEmpty()) {
-                throw new UserServiceException(ROLE_NOT_FOUND_MESSAGE);
-            }
-            rolesSet.add(role.get());
-
-        }
-        final var persistentUserEntity = asPersistentUserEntity(userEntity);
-        persistentUserEntity.setRoles(rolesSet);
-        return userRepository.save(persistentUserEntity);
+    private UserEntity changeUserRoleToSocio(final UserEntity userEntity) throws UserServiceException {
+        return roleService.changeUserRoles(userEntity.getEmail(), List.of(UserRoleName.ROLE_SOCIO));
     }
 
     /**
@@ -487,9 +441,22 @@ public final class DefaultUserService implements UserService {
         return new ArrayList<>(persistentUsers);
     }
 
+    private UserEntity processAcceptedUser(final UserEntity userEntity) throws UserServiceException {
+        try {
+            final UserEntity savedUser = userRepository.save(asPersistentUserEntity(userEntity));
+            emailService.sendWelcome(savedUser.getEmail(), savedUser.getCompleteName());
+            generatePaymentForAcceptedUser(savedUser);
+            return savedUser;
+        } catch (MessagingException | IOException e) {
+            throw new UserServiceException("Error sending email to user: " + userEntity.getDni(), e);
+        } catch (PaymentsServiceException e) {
+            throw new UserServiceException("Error generating payment for user: " + userEntity.getDni(), e);
+        }
+    }
+
     @Transactional
     @Override
-    public void unsubscribe(final String email) throws UserServiceException {
+    public void unsubscribe(final String email, final String validationPass) throws UserServiceException {
         final Optional<PersistentUserEntity> userOptional;
         userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty()) {
@@ -497,8 +464,13 @@ public final class DefaultUserService implements UserService {
         }
         final var userEntity = userOptional.get();
 
-        userEntity.setEnabled(false);
-        userRepository.save(userEntity);
+        if (passwordEncoder.matches(validationPass, userEntity.getPassword())) {
+            userEntity.setEnabled(false);
+            userRepository.save(userEntity);
+        } else {
+            throw new UserServiceException("Password provided is not valid.");
+        }
+
     }
 
     @Transactional
@@ -520,6 +492,13 @@ public final class DefaultUserService implements UserService {
         userProfile.setGender(gender);
         userEntity.setProfile(userProfile);
         return userRepository.save(asPersistentUserEntity(userEntity));
+    }
+
+    private void validateCandidateRole(final UserEntity userEntity, final String userDni) throws UserServiceException {
+        final var roles = userEntity.getRoles();
+        if (roles.size() != 1 || !roles.iterator().next().getName().equals(UserRoleName.ROLE_CANDIDATO_SOCIO)) {
+            throw new UserServiceException("User with dni: " + userDni + " must have only ROLE_CANDIDATO_SOCIO.");
+        }
     }
 
 }
