@@ -148,12 +148,15 @@ class PersistentFederateStateEntityTest {
 
     @Test
     void testSettersAndGetters() {
+        final int dniUpdateYear = 2025;
+        final int dniUpdateMonth = 1;
+        final int dniUpdateDay = 1;
         // Act
         entity.setUserDni(TEST_USER_DNI);
         entity.setDniFrontImageUrl(FRONT_IMAGE_URL);
         entity.setDniBackImageUrl(BACK_IMAGE_URL);
         entity.setAutomaticRenewal(false);
-        entity.setDniLastUpdate(LocalDate.of(2025, 1, 1));
+        entity.setDniLastUpdate(LocalDate.of(dniUpdateYear, dniUpdateMonth, dniUpdateDay));
         entity.setState(FederateState.NO_FEDERATE);
 
         // Assert
@@ -161,7 +164,7 @@ class PersistentFederateStateEntityTest {
         assertEquals(FRONT_IMAGE_URL, entity.getDniFrontImageUrl(), "getDniFrontImageUrl should return the set value.");
         assertEquals(BACK_IMAGE_URL, entity.getDniBackImageUrl(), "getDniBackImageUrl should return the set value.");
         assertFalse(entity.isAutomaticRenewal(), "isAutomaticRenewal should return the set value.");
-        assertEquals(LocalDate.of(2025, 1, 1), entity.getDniLastUpdate(),
+        assertEquals(LocalDate.of(dniUpdateYear, dniUpdateMonth, dniUpdateDay), entity.getDniLastUpdate(),
                 "getDniLastUpdate should return the set value.");
         assertEquals(FederateState.NO_FEDERATE, entity.getState(), "getState should return the set value.");
     }
