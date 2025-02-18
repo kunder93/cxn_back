@@ -135,6 +135,20 @@ public interface FederateStateService {
     UserDniImagesDto getDniImages(String userDni) throws FederateStateServiceException;
 
     /**
+     * Retrieves the federate state data for the user identified by the given dni.
+     *
+     * @param userDni the dni used for find user federate state.
+     * @return the {@link PersistentFederateStateEntity} representing the user's
+     *         federate state
+     * @throws UserServiceException          if there is an error related to the
+     *                                       user service
+     * @throws FederateStateServiceException if there is an error retrieving the
+     *                                       federate state
+     */
+    PersistentFederateStateEntity getFederateDataByDni(String userDni)
+            throws UserServiceException, FederateStateServiceException;
+
+    /**
      * Retrieves the federate state data for the user identified by the given email.
      *
      * @param userEmail the email of the user whose federate state data is to be
@@ -146,7 +160,7 @@ public interface FederateStateService {
      * @throws FederateStateServiceException if there is an error retrieving the
      *                                       federate state
      */
-    PersistentFederateStateEntity getFederateData(String userEmail)
+    PersistentFederateStateEntity getFederateDataByEmail(String userEmail)
             throws UserServiceException, FederateStateServiceException;
 
     /**

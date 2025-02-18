@@ -238,7 +238,7 @@ public class FederateController {
     public ResponseEntity<FederateStateResponse> getFederateState() {
         final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
-            final var result = federateStateService.getFederateData(userEmail);
+            final var result = federateStateService.getFederateDataByEmail(userEmail);
             return new ResponseEntity<>(new FederateStateResponse(result), HttpStatus.OK);
         } catch (FederateStateServiceException | UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -263,6 +263,28 @@ public class FederateController {
         final var result = FederateStateExtendedResponseList.fromEntities(entitiesList);
 
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    /**
+     * Retrieves the federate state data from user using dni.
+     *
+     * <p>
+     * This endpoint fetches the federate state for the user based on their dni.
+     * </p>
+     *
+     * @return a ResponseEntity containing the federate state response
+     * @throws ResponseStatusException if there is an error retrieving the federate
+     *                                 state
+     */
+    @GetMapping("/{userDni}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
+    public ResponseEntity<FederateStateResponse> getFederateStateUsingDni(final @PathVariable String userDni) {
+        try {
+            final var result = federateStateService.getFederateDataByDni(userDni);
+            return new ResponseEntity<>(new FederateStateResponse(result), HttpStatus.OK);
+        } catch (FederateStateServiceException | UserServiceException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
     }
 
     /**

@@ -411,7 +411,7 @@ class FederateControllerTest {
         final String userEmail = "test@example.com";
 
         // Mock the service method to throw FederateStateServiceException
-        when(federateStateService.getFederateData(userEmail))
+        when(federateStateService.getFederateDataByEmail(userEmail))
                 .thenThrow(new FederateStateServiceException("Federate state service exception occurred"));
 
         // Perform the GET request and expect a 400 BAD REQUEST with the exception
@@ -482,7 +482,7 @@ class FederateControllerTest {
         federateStateEntity.setDniLastUpdate(lastUpdate);
 
         // Mock the service method to return the mock entity
-        when(federateStateService.getFederateData(userEmail)).thenReturn(federateStateEntity);
+        when(federateStateService.getFederateDataByEmail(userEmail)).thenReturn(federateStateEntity);
 
         // Perform the GET request and validate response
         mockMvc.perform(get("/api/user/federate")).andExpect(status().isOk())
@@ -498,7 +498,7 @@ class FederateControllerTest {
         final String userEmail = "test@example.com";
 
         // Mock the service method to throw UserServiceException
-        when(federateStateService.getFederateData(userEmail))
+        when(federateStateService.getFederateDataByEmail(userEmail))
                 .thenThrow(new UserServiceException("User service exception occurred"));
 
         // Perform the GET request and expect a 400 BAD REQUEST with the exception

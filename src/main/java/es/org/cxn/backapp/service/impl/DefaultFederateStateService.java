@@ -307,6 +307,16 @@ public final class DefaultFederateStateService implements FederateStateService {
     }
 
     /**
+     * {@inheritDoc}
+     */
+    @Override
+    public PersistentFederateStateEntity getFederateDataByDni(final String userDni)
+            throws UserServiceException, FederateStateServiceException {
+        final var userEntity = userService.findByDni(userDni);
+        return getFederateDataByEmail(userEntity.getEmail());
+    }
+
+    /**
      * Retrieves the federate state data for a given user.
      *
      * @param userEmail The email of the user.
@@ -316,7 +326,7 @@ public final class DefaultFederateStateService implements FederateStateService {
      *                                       user.
      */
     @Override
-    public PersistentFederateStateEntity getFederateData(final String userEmail)
+    public PersistentFederateStateEntity getFederateDataByEmail(final String userEmail)
             throws UserServiceException, FederateStateServiceException {
         final var userEntity = userService.findByEmail(userEmail);
         final var userDni = userEntity.getDni();
