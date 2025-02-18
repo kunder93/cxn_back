@@ -44,6 +44,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import es.org.cxn.backapp.model.form.requests.ConfirmCancelFederateRequest;
 import es.org.cxn.backapp.model.form.responses.DniImagesResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList.FederateStateExtendedResponse;
@@ -96,21 +97,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 @RestController
 @RequestMapping("/api/user/federate")
 public class FederateController {
-
-    /**
-     * Represents a request to confirm or cancel a federate status, containing the
-     * user's DNI.
-     *
-     * <p>
-     * This record is used as a request body in the confirmCancelFederate endpoint
-     * to specify the DNI of the user whose federate status is to be confirmed or
-     * canceled.
-     * </p>
-     *
-     * @param userDni The user DNI.
-     */
-    public record ConfirmCancelFederateRequest(String userDni) {
-    }
 
     /**
      * A service that handles federate state-related operations for users, including
@@ -197,7 +183,7 @@ public class FederateController {
     public ResponseEntity<FederateStateExtendedResponse> confirmCancelFederate(
             @RequestBody final ConfirmCancelFederateRequest request) throws PaymentsServiceException {
         try {
-            final var result = federateStateService.confirmCancelFederate(request.userDni);
+            final var result = federateStateService.confirmCancelFederate(request.userDni());
             return new ResponseEntity<>(new FederateStateExtendedResponse(result), HttpStatus.OK);
         } catch (FederateStateServiceException | UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -270,6 +256,7 @@ public class FederateController {
      * @return a ResponseEntity containing the federate state data for all users
      */
     @GetMapping("/getAll")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
     public ResponseEntity<FederateStateExtendedResponseList> getFederateStateMembers() {
         final var entitiesList = federateStateService.getAll();
 

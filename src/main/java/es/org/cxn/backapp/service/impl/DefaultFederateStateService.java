@@ -196,24 +196,19 @@ public final class DefaultFederateStateService implements FederateStateService {
     public PersistentFederateStateEntity confirmCancelFederate(final String userDni)
             throws FederateStateServiceException, UserServiceException, PaymentsServiceException {
         final var federateStateOptional = federateStateRepository.findById(userDni);
-
         final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
-        final var entityState = federateStateEntity.getState();
-        if (entityState == FederateState.IN_PROGRESS) {
-            federateStateEntity.setState(FederateState.FEDERATE);
-        }
-        if (entityState == FederateState.FEDERATE) {
+
+        switch (federateStateEntity.getState()) {
+        case IN_PROGRESS -> federateStateEntity.setState(FederateState.FEDERATE);
+        case FEDERATE -> {
             federateStateEntity.setState(FederateState.NO_FEDERATE);
             final var payment = federateStateEntity.getPayment();
-
             federateStateEntity.setPayment(null);
-            final var result = federateStateRepository.save(federateStateEntity);
             paymentsService.remove(payment.getId());
-            return result;
         }
-        if (entityState == FederateState.NO_FEDERATE) {
-            throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
+        case NO_FEDERATE -> throw new FederateStateServiceException("Cannot change NO FEDERATE status.");
         }
+
         return federateStateRepository.save(federateStateEntity);
     }
 
