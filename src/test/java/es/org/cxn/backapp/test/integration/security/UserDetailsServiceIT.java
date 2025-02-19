@@ -50,6 +50,7 @@ import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import jakarta.transaction.Transactional;
 
 /**
@@ -80,6 +81,12 @@ class UserDetailsServiceIT {
      */
     @MockitoBean
     private DefaultEmailService defaultEmailService;
+
+    /**
+     * Mocked service for save images.
+     */
+    @MockitoBean
+    private DefaultImageStorageService storageService;
 
     /**
      * Mocked mail sender.

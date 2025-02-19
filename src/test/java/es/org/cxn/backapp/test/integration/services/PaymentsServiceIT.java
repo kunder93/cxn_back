@@ -56,6 +56,7 @@ import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.DefaultPaymentsService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import jakarta.transaction.Transactional;
 
 /**
@@ -99,6 +100,9 @@ final class PaymentsServiceIT {
      */
     @MockitoBean
     private DefaultEmailService emailService;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * Test user dni.

@@ -46,6 +46,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 
 /**
  * Integration tests for the AddressController.
@@ -67,7 +68,6 @@ import es.org.cxn.backapp.service.impl.DefaultEmailService;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 class AdressControllerIntegrationIT {
-
     /**
      * The URL endpoint for retrieving the list of countries.
      *
@@ -96,6 +96,9 @@ class AdressControllerIntegrationIT {
      * </p>
      */
     private static final int SPAIN_SUBDIVISIONS = 50;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.
