@@ -22,7 +22,7 @@ FROM eclipse-temurin:21-jre-alpine
 
 # Copy the generated JAR file from the builder stage
 
-COPY --from=builder /usr/src/app/target/back-app-6.0.0-RELEASE.jar /app/app.jar
+COPY --from=builder /usr/src/app/target/back-app-7.0.0-SNAPSHOT.jar /app/app.jar
 
 # Expose ports
 EXPOSE 8080

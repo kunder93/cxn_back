@@ -52,7 +52,8 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -82,7 +83,6 @@ import jakarta.transaction.Transactional;
 @SpringBootTest
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class UserControllerIntegrationIT {
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
@@ -175,6 +175,14 @@ class UserControllerIntegrationIT {
      */
     UserControllerIntegrationIT() {
         super();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     @BeforeAll
@@ -448,8 +456,7 @@ class UserControllerIntegrationIT {
         var jwtToken = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
                 UsersControllerFactory.USER_A_PASSWORD);
 
-        var changePasswordRequest = new UserChangePasswordRequest(memberEmail, memberRequestPasswordNotValid,
-                memberNewPassword);
+        var changePasswordRequest = new UserChangePasswordRequest(memberRequestPasswordNotValid, memberNewPassword);
 
         var changePasswordRequestJson = gson.toJson(changePasswordRequest);
 
@@ -476,7 +483,7 @@ class UserControllerIntegrationIT {
         final var notExistingMemberEmail = "email@email.es";
         final var currentPassword = "123123";
         final var newPassword = "321321";
-        var changePasswordRequest = new UserChangePasswordRequest(notExistingMemberEmail, currentPassword, newPassword);
+        var changePasswordRequest = new UserChangePasswordRequest(currentPassword, newPassword);
 
         var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
         var memberRequestJson = gson.toJson(memberRequest);
@@ -513,7 +520,7 @@ class UserControllerIntegrationIT {
 
         var jwtToken = authenticateAndGetToken(memberEmail, currentPassword);
 
-        var changePasswordRequest = new UserChangePasswordRequest(memberEmail, currentPassword, newPassword);
+        var changePasswordRequest = new UserChangePasswordRequest(currentPassword, newPassword);
 
         var changePasswordRequestJson = gson.toJson(changePasswordRequest);
         mockMvc.perform(patch(CHANGE_MEMBER_PASSWORD_URL).contentType(MediaType.APPLICATION_JSON)

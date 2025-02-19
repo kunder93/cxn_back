@@ -583,7 +583,7 @@ class FederateStateServiceTest {
 
         // Act & Assert
         assertThrows(FederateStateServiceException.class, () -> {
-            federateStateService.getFederateData(USER_EMAIL);
+            federateStateService.getFederateDataByEmail(USER_EMAIL);
         });
     }
 
@@ -600,7 +600,7 @@ class FederateStateServiceTest {
         when(federateStateRepository.findById(USER_DNI)).thenReturn(Optional.of(federateState));
 
         // Act
-        PersistentFederateStateEntity result = federateStateService.getFederateData(USER_EMAIL);
+        PersistentFederateStateEntity result = federateStateService.getFederateDataByEmail(USER_EMAIL);
 
         // Assert
         assertEquals(federateState, result);

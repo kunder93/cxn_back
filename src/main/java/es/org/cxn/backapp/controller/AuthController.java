@@ -53,6 +53,7 @@ import com.google.common.base.Preconditions;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
+import es.org.cxn.backapp.model.form.requests.UnsubscribeRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
@@ -253,14 +254,19 @@ public class AuthController {
      * service to handle the unsubscription logic.
      * </p>
      *
+     * @param unsubscribeRequest The dto for receive controller data validation
+     *                           password.
+     *
      * @return ResponseEntity indicating the result of the operation.
      */
     @CrossOrigin
     @PatchMapping("/unsubscribe")
-    public ResponseEntity<String> unsubscribe() {
+    public ResponseEntity<String> unsubscribe(@RequestBody final UnsubscribeRequest unsubscribeRequest) {
         final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
+        final String validationPassword = unsubscribeRequest.password();
+
         try {
-            userService.unsubscribe(authName);
+            userService.unsubscribe(authName, validationPassword);
             return ResponseEntity.ok("Successfully unsubscribed");
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

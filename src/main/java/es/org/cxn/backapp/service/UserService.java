@@ -144,12 +144,13 @@ public interface UserService {
     List<UserEntity> getAll();
 
     /**
-     * Unsubscribe an user.
+     * Unsubscribe an user. Needs validation password.
      *
-     * @param email The user email
+     * @param email          The user email
+     * @param validationPass The user validation password.User for validate action.
      * @throws UserServiceException When user with provided email not found.
      */
-    void unsubscribe(String email) throws UserServiceException;
+    void unsubscribe(String email, String validationPass) throws UserServiceException;
 
     /**
      * Updates an existing user.
