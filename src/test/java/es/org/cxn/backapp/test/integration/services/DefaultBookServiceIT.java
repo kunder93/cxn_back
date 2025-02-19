@@ -56,7 +56,7 @@ import es.org.cxn.backapp.service.BookService;
 import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import es.org.cxn.backapp.service.impl.DefaultBookService;
-import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 
 @SpringBootTest(classes = { BookEntityRepository.class, BookService.class, DefaultBookService.class,
         ImageStorageService.class, DefaultImageStorageService.class })

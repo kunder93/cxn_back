@@ -68,6 +68,7 @@ import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
@@ -118,6 +119,9 @@ class PaymentsControllerIntegrationIT {
      * used for user authentication and generating JWT tokens.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * Mocked {@link DefaultEmailService} instance to test email-related
@@ -321,7 +325,7 @@ class PaymentsControllerIntegrationIT {
                 UsersControllerFactory.USER_A_PASSWORD);
         // Verificar que un tesorero puede obtener todos los pagos
         mockMvc.perform(get("/api/payments/getAll").header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(2)) // 2 DNIs en el objeto de
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3)) // 2 DNIs en el objeto de
                                                                                        // respuesta
                 .andExpect(jsonPath("$.32721860J").isArray()).andExpect(jsonPath("$.32721860J.length()").value(1))
                 // Un pago para este usuario

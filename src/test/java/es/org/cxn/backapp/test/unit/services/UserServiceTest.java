@@ -75,8 +75,8 @@ import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
-import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 import es.org.cxn.backapp.service.impl.DefaultUserService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import jakarta.mail.MessagingException;
 
 /**

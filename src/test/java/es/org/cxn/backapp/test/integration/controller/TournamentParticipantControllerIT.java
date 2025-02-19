@@ -54,6 +54,7 @@ import es.org.cxn.backapp.model.form.requests.AddTournamentParticipantRequest;
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity;
 import es.org.cxn.backapp.service.TournamentParticipantService;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 /**
@@ -92,6 +93,9 @@ class TournamentParticipantControllerIT {
      * Birth date for the participant Alice Johnson.
      */
     private static final LocalDate BIRTH_DATE_ALICE = LocalDate.of(2005, 10, 30);
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.

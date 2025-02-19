@@ -34,7 +34,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,6 +44,8 @@ import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
 import jakarta.transaction.Transactional;
 
 /**
@@ -77,12 +78,6 @@ public final class DefaultActivitiesService implements ActivitiesService {
      * storage location.
      */
     private final DefaultImageStorageService imageStorageService;
-
-    /**
-     * Path for storing activities images.
-     */
-    @Value("${image.location.activity}")
-    private String imageLocationActivity;
 
     /**
      * Constructs a new DefaultActivitiesService with the specified repository and
@@ -134,13 +129,9 @@ public final class DefaultActivitiesService implements ActivitiesService {
 
         } else {
             try {
-                // Use activity title like a unique ID.
-                final String entityIdForImage = title;
-                final String entityType = "activity"; // Specify "activity" as the entity type
 
                 // Save the image file using the image storage service with specified parameters
-                final String imagePath = imageStorageService.saveImage(imageFile, imageLocationActivity, entityType,
-                        entityIdForImage);
+                final String imagePath = imageStorageService.saveImage(imageFile, FileLocation.ACTIVITY_IMAGES);
 
                 // Store the image path or URL in the activity entity
                 activityEntity.setImageSrc(imagePath);

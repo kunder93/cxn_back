@@ -61,6 +61,7 @@ import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.internet.MimeMessage;
 
@@ -97,6 +98,9 @@ class FederateControllerIT {
      * used for user authentication and generating JWT tokens.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.

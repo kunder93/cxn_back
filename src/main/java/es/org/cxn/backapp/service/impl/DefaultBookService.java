@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +51,7 @@ import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.dto.AuthorDataDto;
 import es.org.cxn.backapp.service.dto.BookDataImageDto;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
 import jakarta.transaction.Transactional;
 
 /**
@@ -62,12 +62,6 @@ import jakarta.transaction.Transactional;
  */
 @Service
 public class DefaultBookService implements BookService {
-
-    /**
-     * Path for profile's image.
-     */
-    @Value("${book.location.covers}")
-    private String imageLocation;
 
     /**
      * Repository for the book entities handled by the service.
@@ -141,7 +135,7 @@ public class DefaultBookService implements BookService {
             }
         });
         try {
-            final var imageSoruce = imageStorageService.saveImage(imageCover, imageLocation, "book", book.getIsbn());
+            final var imageSoruce = imageStorageService.saveImage(imageCover, FileLocation.BOOK_COVERS);
             book.setCoverSrc(imageSoruce);
         } catch (IOException ex) {
             throw new BookServiceException("Book cover cannot be saved", ex);
