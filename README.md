@@ -47,11 +47,7 @@ Before running the application, you may need to make a few adjustments:
   SSL_KEY_STORE_PASSWORD=password
   SSL_KEY_STORE=/route/to/key/key.jks
 
-  IMAGE_STORAGE_PROFILE_PATH=/etc/cxn-compose/ProfileImages/
-  IMAGE_STORAGE_DNIS_PATH=/etc/cxn-compose/Dnis/
-  IMAGE_STORAGE_ACTIVITY_PATH=/etc/cxn-compose/Activities/
-  IMAGE_STORAGE_BOOK_PATH=/etc/cxn-compose/BookCovers/
-  IMAGE_STORAGE_MAGAZINE_PATH=/etc/cxn-compose/MagazineCovers
+  STORAGE_LOCATION_PATH=/location/storage/folder
 
 
 
