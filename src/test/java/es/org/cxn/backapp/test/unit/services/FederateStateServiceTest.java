@@ -33,7 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -56,7 +55,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -67,13 +65,14 @@ import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.FederateStateEntityRepository;
-import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultFederateStateService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
 
 /**
  * Unit tests for the {@link DefaultFederateStateService} class.
@@ -153,7 +152,7 @@ class FederateStateServiceTest {
      * The mocked image storage service.
      */
     @Mock
-    private ImageStorageService imageStorageService;
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * Mock MultipartFile representing the front side of a DNI (Documento Nacional
@@ -178,14 +177,6 @@ class FederateStateServiceTest {
     @InjectMocks
     private DefaultFederateStateService federateStateService;
 
-    /**
-     * Path for storing DNI images, injected from the application properties. This
-     * is used by the service to determine the location for saving the uploaded DNI
-     * images.
-     */
-    @Value("${image.location.dnis}")
-    private String imageLocationDnis;
-
     @Test
     void federateMemberShouldSaveImagesAndUpdateStateWhenStateIsFederate() throws Exception {
         // Arrange
@@ -200,10 +191,8 @@ class FederateStateServiceTest {
         // Mock return values for dependencies
         when(userService.findByEmail(USER_EMAIL)).thenReturn(user);
         when(federateStateRepository.findById(USER_DNI)).thenReturn(Optional.of(federateState));
-        when(imageStorageService.saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI))
-                .thenReturn("front-image-url");
-        when(imageStorageService.saveImage(backDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI))
-                .thenReturn("back-image-url");
+        when(imageStorageService.saveImage(frontDniFile, FileLocation.DNI, USER_DNI)).thenReturn("front-image-url");
+        when(imageStorageService.saveImage(backDniFile, FileLocation.DNI, USER_DNI)).thenReturn("back-image-url");
 
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
         when(paymentsService.createPayment(PAYMENT_AMOUNT, PaymentsCategory.FEDERATE_PAYMENT, PAYMENT_DESCRIPTION,
@@ -221,8 +210,8 @@ class FederateStateServiceTest {
         // Assert
         assertNotNull(result);
 
-        verify(imageStorageService, times(1)).saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI);
-        verify(imageStorageService, times(1)).saveImage(backDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI);
+        verify(imageStorageService, times(1)).saveImage(frontDniFile, FileLocation.DNI, USER_DNI);
+        verify(imageStorageService, times(1)).saveImage(backDniFile, FileLocation.DNI, USER_DNI);
         verify(paymentsService, times(1)).createPayment(PAYMENT_AMOUNT, PaymentsCategory.FEDERATE_PAYMENT,
                 PAYMENT_DESCRIPTION, PAYMENT_TITLE, USER_DNI);
         verify(federateStateRepository, times(1)).save(any(PersistentFederateStateEntity.class));
@@ -243,10 +232,8 @@ class FederateStateServiceTest {
         // Mock return values for dependencies
         when(userService.findByEmail(USER_EMAIL)).thenReturn(user);
         when(federateStateRepository.findById(USER_DNI)).thenReturn(Optional.of(federateState));
-        when(imageStorageService.saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI))
-                .thenReturn("front-image-url");
-        when(imageStorageService.saveImage(backDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI))
-                .thenReturn("back-image-url");
+        when(imageStorageService.saveImage(frontDniFile, FileLocation.DNI, USER_DNI)).thenReturn("front-image-url");
+        when(imageStorageService.saveImage(backDniFile, FileLocation.DNI, USER_DNI)).thenReturn("back-image-url");
 
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
         when(paymentsService.createPayment(PAYMENT_AMOUNT, PaymentsCategory.FEDERATE_PAYMENT, PAYMENT_DESCRIPTION,
@@ -265,8 +252,8 @@ class FederateStateServiceTest {
         assertNotNull(result);
         assertEquals(FederateState.IN_PROGRESS, result.getState());
 
-        verify(imageStorageService, times(1)).saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI);
-        verify(imageStorageService, times(1)).saveImage(backDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI);
+        verify(imageStorageService, times(1)).saveImage(frontDniFile, FileLocation.DNI, USER_DNI);
+        verify(imageStorageService, times(1)).saveImage(backDniFile, FileLocation.DNI, USER_DNI);
         verify(paymentsService, times(1)).createPayment(PAYMENT_AMOUNT, PaymentsCategory.FEDERATE_PAYMENT,
                 PAYMENT_DESCRIPTION, PAYMENT_TITLE, USER_DNI);
         verify(federateStateRepository, times(1)).save(any(PersistentFederateStateEntity.class));
@@ -285,14 +272,14 @@ class FederateStateServiceTest {
 
         when(userService.findByEmail(USER_EMAIL)).thenReturn(user);
         when(federateStateRepository.findById(USER_DNI)).thenReturn(Optional.of(federateStateEntity));
-        when(imageStorageService.saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI))
+        when(imageStorageService.saveImage(frontDniFile, FileLocation.DNI, USER_DNI))
                 .thenThrow(new IOException("Disk full"));
 
         // Act & Assert
         FederateStateServiceException exception = assertThrows(FederateStateServiceException.class,
                 () -> federateStateService.federateMember(USER_EMAIL, frontDniFile, backDniFile, true));
         assertEquals("Error saving DNI images: Disk full", exception.getMessage());
-        verify(imageStorageService, times(1)).saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI);
+        verify(imageStorageService, times(1)).saveImage(frontDniFile, FileLocation.DNI, USER_DNI);
         verifyNoMoreInteractions(imageStorageService);
     }
 
@@ -332,12 +319,7 @@ class FederateStateServiceTest {
 
     @BeforeEach
     public void setup() {
-        // Empty constructor
-    }
-
-    @BeforeEach
-    void setUp() {
-        ReflectionTestUtils.setField(federateStateService, "imageLocationDnis", IMAGE_BASE_DIRECTORY);
+        ReflectionTestUtils.setField(imageStorageService, "baseDirectory", "mock-directory");
     }
 
     @Test
@@ -639,7 +621,7 @@ class FederateStateServiceTest {
 
         // Match arguments exactly using only raw values
         doThrow(new IOException("Failed to save image")).when(imageStorageService).saveImage(any(MultipartFile.class),
-                any(), any(), any());
+                any(), any());
 
         // Act & Assert
         FederateStateServiceException exception = assertThrows(FederateStateServiceException.class, () -> {
@@ -649,8 +631,8 @@ class FederateStateServiceTest {
         assertEquals("Error updating DNI images: Failed to save image", exception.getMessage());
 
         // Verify behavior
-        verify(imageStorageService).saveImage(any(MultipartFile.class), anyString(), anyString(), anyString());
-        verify(imageStorageService, never()).saveImage(backDniFile, imageLocationDnis, "user-dni", USER_DNI);
+        verify(imageStorageService).saveImage(any(MultipartFile.class), any(), any());
+        verify(imageStorageService, never()).saveImage(backDniFile, FileLocation.DNI, USER_DNI);
         verify(federateStateRepository, never()).save(any());
     }
 
@@ -668,10 +650,8 @@ class FederateStateServiceTest {
         String frontImageUrl = "frontImageUrl";
         String backImageUrl = "backImageUrl";
         // Update stubbing to match base-directory
-        when(imageStorageService.saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI))
-                .thenReturn(frontImageUrl);
-        when(imageStorageService.saveImage(backDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI))
-                .thenReturn(backImageUrl);
+        when(imageStorageService.saveImage(frontDniFile, FileLocation.DNI, USER_DNI)).thenReturn(frontImageUrl);
+        when(imageStorageService.saveImage(backDniFile, FileLocation.DNI, USER_DNI)).thenReturn(backImageUrl);
         when(federateStateRepository.save(federateStateEntity)).thenReturn(federateStateEntity);
         // Act
         PersistentFederateStateEntity result = federateStateService.updateDni(USER_EMAIL, frontDniFile, backDniFile);
@@ -680,8 +660,8 @@ class FederateStateServiceTest {
         assertEquals(frontImageUrl, result.getDniFrontImageUrl());
         assertEquals(backImageUrl, result.getDniBackImageUrl());
         verify(federateStateRepository).save(federateStateEntity);
-        verify(imageStorageService).saveImage(frontDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI);
-        verify(imageStorageService).saveImage(backDniFile, IMAGE_BASE_DIRECTORY, "user-dni", USER_DNI);
+        verify(imageStorageService).saveImage(frontDniFile, FileLocation.DNI, USER_DNI);
+        verify(imageStorageService).saveImage(backDniFile, FileLocation.DNI, USER_DNI);
     }
 
     @Test

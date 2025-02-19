@@ -53,6 +53,7 @@ import es.org.cxn.backapp.model.form.requests.AddTournamentParticipantRequest;
 import es.org.cxn.backapp.model.persistence.PersistentTournamentParticipantEntity;
 import es.org.cxn.backapp.service.TournamentParticipantService;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 
 /**
@@ -68,11 +69,11 @@ class TournamentParticipantControllerIT {
      * FIDE ID for the participant John Doe.
      */
     private static final BigInteger FIDE_ID_JOHN = BigInteger.valueOf(1234567);
+
     /**
      * FIDE ID for the participant Jane Smith.
      */
     private static final BigInteger FIDE_ID_JANE = BigInteger.valueOf(2345678);
-
     /**
      * FIDE ID for the participant Alice Johnson.
      */
@@ -92,6 +93,9 @@ class TournamentParticipantControllerIT {
      * Birth date for the participant Alice Johnson.
      */
     private static final LocalDate BIRTH_DATE_ALICE = LocalDate.of(2005, 10, 30);
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.

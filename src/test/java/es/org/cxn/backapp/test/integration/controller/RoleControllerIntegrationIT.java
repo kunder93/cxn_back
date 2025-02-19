@@ -58,6 +58,7 @@ import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
@@ -84,6 +85,9 @@ class RoleControllerIntegrationIT {
      * Gson instance for JSON serialization and deserialization.
      */
     private static Gson gson;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * MockMvc instance used for performing HTTP requests in tests.

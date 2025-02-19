@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Base64;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,18 +46,14 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.UserProfileImageService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
 
 /**
  * Service for manage user profile image.
  */
 @Service
 public final class DefaultUserProfileImageService implements UserProfileImageService {
-
-    /**
-     * Path for profile's image.
-     */
-    @Value("${image.location.profiles}")
-    private String imageLocationProfiles;
 
     /**
      * Repository for the user entities handled by the service.
@@ -255,9 +250,8 @@ public final class DefaultUserProfileImageService implements UserProfileImageSer
         // Use the image storage service to save the image
         final String savedImagePath;
         // Directory path for saving images (already loaded from properties file)
-        final String uploadDir = imageLocationProfiles; // Use the property loaded from application properties
         try {
-            savedImagePath = imageStorageService.saveImage(file, uploadDir, "profile", userDni);
+            savedImagePath = imageStorageService.saveImage(file, FileLocation.PROFILE_IMAGES, userEntity.getDni());
         } catch (IOException e) {
             throw new UserServiceException("Error saving profile image: " + e.getMessage(), e);
         }

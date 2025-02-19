@@ -53,6 +53,7 @@ import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
@@ -67,12 +68,12 @@ class DeletePermanentlyUserIT {
      * represents the URL used to create a new user account.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
+
     /**
      * URL endpoint for user sign-in. This static final string represents the URL
      * used for user authentication and generating JWT tokens.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
-
     /**
      * URL endpoint for delete users with delete method.
      */
@@ -89,6 +90,9 @@ class DeletePermanentlyUserIT {
      *
      */
     private static Gson gson;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.

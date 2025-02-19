@@ -56,6 +56,7 @@ import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
@@ -95,15 +96,18 @@ class AuthControllerIntegrationIT {
      * URL endpoint for user sign-up.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
+
     /**
      * URL endpoint for user sign-in.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
-
     /**
      * Gson instance for serializing/deserializing JSON objects during the tests.
      */
     private static Gson gson;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.

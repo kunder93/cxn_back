@@ -67,6 +67,7 @@ import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
@@ -118,6 +119,9 @@ class PaymentsControllerIntegrationIT {
      * used for user authentication and generating JWT tokens.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * Mocked {@link DefaultEmailService} instance to test email-related

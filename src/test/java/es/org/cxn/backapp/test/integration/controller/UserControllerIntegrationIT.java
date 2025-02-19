@@ -70,6 +70,7 @@ import es.org.cxn.backapp.model.form.responses.UserDataResponse;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.DefaultUserService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
@@ -83,19 +84,18 @@ import jakarta.transaction.Transactional;
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:IntegrationController.properties")
 class UserControllerIntegrationIT {
-
     /**
      * Gson instance used for converting Java objects to JSON and vice versa. This
      * static instance is used for serializing and deserializing request and
      * response payloads in the tests.
      */
     private static Gson gson;
+
     /**
      * URL endpoint for retrieving user data. This static final string represents
      * the URL used to fetch data of a specific user.
      */
     private static final String GET_USER_DATA_URL = "/api/user";
-
     /**
      * URL endpoint for user sign-in. This static final string represents the URL
      * used for user authentication and generating JWT tokens.
@@ -125,6 +125,9 @@ class UserControllerIntegrationIT {
      * represents the URL used to update a user's role or membership type.
      */
     private static final String CHANGE_KIND_MEMBER_URL = "/api/user/changeKindOfMember";
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.

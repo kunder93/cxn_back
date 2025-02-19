@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.service.impl;
+package es.org.cxn.backapp.service.impl.storage;
 
 /*-
  * #%L
@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,6 +52,12 @@ import es.org.cxn.backapp.service.ImageStorageService;
 public final class DefaultImageStorageService implements ImageStorageService {
 
     /**
+     * Location for storage images. Provided by app .properties file.
+     */
+    @Value("${storage.location}")
+    private String baseDirectory;
+
+    /**
      * Constructor for DefaultImageStorageService class. This constructor is needed
      * for Spring Framework's dependency injection.
      * <p>
@@ -66,14 +73,13 @@ public final class DefaultImageStorageService implements ImageStorageService {
     /**
      * Deletes an image file at the specified path within a base directory.
      *
-     * @param baseDirectory the root directory for storing images, specified by the
-     *                      calling service
-     * @param imagePath     the relative path of the image to delete
+     *
+     * @param imagePath the relative path of the image to delete
      * @throws IOException if an error occurs while deleting the file
      */
     @Override
-    public void deleteImage(final String baseDirectory, final String imagePath) throws IOException {
-        final Path path = Path.of(baseDirectory, imagePath);
+    public void deleteImage(final String imagePath) throws IOException {
+        final Path path = Path.of(imagePath);
         Files.deleteIfExists(path);
     }
 
@@ -92,25 +98,49 @@ public final class DefaultImageStorageService implements ImageStorageService {
     }
 
     /**
-     * Saves an image file to a specified directory, organized by entity type and
-     * ID. If the directory structure does not exist, it is created automatically.
+     * Saves an image file in userId directory and inside this directory in
+     * FileLocation directory.
      *
-     * @param file          the MultipartFile representing the image to save
-     * @param baseDirectory the root directory for storing images, specified by the
-     *                      calling service
-     * @param entityType    the type of entity the image is associated with (e.g.,
-     *                      "activity")
-     * @param entityId      the unique identifier of the entity
+     * @param file         the MultipartFile representing the image to save
+     * @param fileLocation the enum type representing the location of the file
      * @return the path where the image was saved as a String
      * @throws IOException if an error occurs while saving the file
      */
     @Override
-    public String saveImage(final MultipartFile file, final String baseDirectory, final String entityType,
-            final String entityId) throws IOException {
-        final Path directoryPath = Path.of(baseDirectory, entityType, entityId);
+    public String saveImage(final MultipartFile file, final FileLocation fileLocation) throws IOException {
+        // Resolve the directory for the specified file location
+        final Path directoryPath = Path.of(baseDirectory).resolve(fileLocation.getDirectoryKey());
         Files.createDirectories(directoryPath);
+
+        // Save the file to the resolved path
         final Path filePath = directoryPath.resolve(file.getOriginalFilename());
         file.transferTo(filePath.toFile());
+
+        return filePath.toString();
+    }
+
+    /**
+     * Saves an image file in userId directory and inside this directory in
+     * FileLocation directory.
+     *
+     * @param file         the MultipartFile representing the image to save
+     * @param fileLocation the enum type representing the location of the file
+     * @param userId       the user identifier for save image in folder with user id
+     *                     name.
+     * @return the path where the image was saved as a String
+     * @throws IOException if an error occurs while saving the file
+     */
+    @Override
+    public String saveImage(final MultipartFile file, final FileLocation fileLocation, final String userId)
+            throws IOException {
+        // Resolve the directory for the specified file location
+        final Path directoryPath = Path.of(baseDirectory).resolve(userId).resolve(fileLocation.getDirectoryKey());
+        Files.createDirectories(directoryPath);
+
+        // Save the file to the resolved path
+        final Path filePath = directoryPath.resolve(file.getOriginalFilename());
+        file.transferTo(filePath.toFile());
+
         return filePath.toString();
     }
 }

@@ -34,7 +34,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,6 +51,7 @@ import es.org.cxn.backapp.service.dto.UserDniImagesDto;
 import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
 
 /**
  * Service implementation for handling operations related to the federate state
@@ -69,13 +69,6 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
  */
 @Service
 public final class DefaultFederateStateService implements FederateStateService {
-
-    /**
-     * The location where DNI images are stored, injected from the application
-     * properties.
-     */
-    @Value("${image.location.dnis}")
-    private String imageLocationDnis;
 
     /**
      * Repository for managing federate state persistence operations. This
@@ -243,7 +236,6 @@ public final class DefaultFederateStateService implements FederateStateService {
         final var federateStateOptional = federateStateRepository.findById(userDni);
 
         final var federateStateEntity = getFederateStateOptional(federateStateOptional, userDni);
-        final var baseDirectory = imageLocationDnis;
 
         final PersistentFederateStateEntity updatedEntity;
         if (federateStateEntity.getState() == FederateState.NO_FEDERATE
@@ -254,8 +246,8 @@ public final class DefaultFederateStateService implements FederateStateService {
 
             try {
                 // Use ImageStorageService to save the front and back DNI images
-                final String frontUrl = imageStorageService.saveImage(frontDniFile, baseDirectory, "user-dni", userDni);
-                final String backUrl = imageStorageService.saveImage(backDniFile, baseDirectory, "user-dni", userDni);
+                final String frontUrl = imageStorageService.saveImage(frontDniFile, FileLocation.DNI, user.getDni());
+                final String backUrl = imageStorageService.saveImage(backDniFile, FileLocation.DNI, user.getDni());
 
                 federateStateEntity.setDniFrontImageUrl(frontUrl);
                 federateStateEntity.setDniBackImageUrl(backUrl);
@@ -359,10 +351,10 @@ public final class DefaultFederateStateService implements FederateStateService {
 
             try {
                 // Use ImageStorageService to save the front and back DNI images
-                final String frontUrl = imageStorageService.saveImage(frontDniFile, imageLocationDnis, "user-dni",
-                        userDni);
-                final String backUrl = imageStorageService.saveImage(backDniFile, imageLocationDnis, "user-dni",
-                        userDni);
+                final String frontUrl = imageStorageService.saveImage(frontDniFile, FileLocation.DNI,
+                        userEntity.getDni());
+                final String backUrl = imageStorageService.saveImage(backDniFile, FileLocation.DNI,
+                        userEntity.getDni());
 
                 federateStateEntity.setDniFrontImageUrl(frontUrl);
                 federateStateEntity.setDniBackImageUrl(backUrl);
