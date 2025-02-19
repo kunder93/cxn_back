@@ -272,6 +272,7 @@ public class FederateController {
      * This endpoint fetches the federate state for the user based on their dni.
      * </p>
      *
+     * @param userDni The user identifier for locating their info.
      * @return a ResponseEntity containing the federate state response
      * @throws ResponseStatusException if there is an error retrieving the federate
      *                                 state

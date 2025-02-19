@@ -12,10 +12,10 @@ package es.org.cxn.backapp;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,17 +37,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *
  * @author Santi
  */
-@SpringBootApplication
+@SpringBootApplication(exclude = { org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration.class,
+        org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration.class })
 public class BackAppApplication {
-
-    /**
-     * The application main method.
-     *
-     * @param args the application initial arguments.
-     */
-    public static void main(final String[] args) {
-        SpringApplication.run(BackAppApplication.class, args);
-    }
 
     /**
      * Default constructor for {@link BackAppApplication}.
@@ -59,5 +51,14 @@ public class BackAppApplication {
      */
     public BackAppApplication() {
         // Default constructor
+    }
+
+    /**
+     * The application main method.
+     *
+     * @param args the application initial arguments.
+     */
+    public static void main(final String[] args) {
+        SpringApplication.run(BackAppApplication.class, args);
     }
 }
