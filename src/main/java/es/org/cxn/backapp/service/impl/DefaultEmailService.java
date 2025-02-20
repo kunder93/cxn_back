@@ -30,10 +30,12 @@ package es.org.cxn.backapp.service.impl;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.text.StringSubstitutor;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -50,23 +52,20 @@ import jakarta.mail.internet.InternetAddress;
 @Service
 public class DefaultEmailService implements EmailService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultEmailService.class);
+
     /**
      * The JavaMailSender instance used for sending emails.
      */
-    private final JavaMailSender mailSender;
-
-    /**
-     * The email address used as the sender's address in the emails.
-     */
-    @Value("${spring.mail.username}")
-    private String senderAddress;
+    private final Optional<JavaMailSender> mailSender;
 
     /**
      * Main service constructor.
      *
-     * @param mailSender The mail java mail sender implementation.
+     * @param mailSender The mail java mail sender implementation.Can be null when
+     *                   no email service is provided by JavaMail config.
      */
-    public DefaultEmailService(final JavaMailSender mailSender) {
+    public DefaultEmailService(final Optional<JavaMailSender> mailSender) {
         this.mailSender = mailSender;
     }
 
@@ -99,10 +98,17 @@ public class DefaultEmailService implements EmailService {
     @Override
     public void sendChangeEmail(final String oldEmail, final String newEmail, final String memberName)
             throws MessagingException, IOException {
-        sendEmail(oldEmail, "CXN: Cambio de correo", "mailTemplates/ChangeEmailMessage.html",
-                Map.of("name", memberName, "oldEmail", oldEmail, "newEmail", newEmail));
-        sendEmail(newEmail, "CXN: Cambio de correo", "mailTemplates/ChangeEmailMessage.html",
-                Map.of("name", memberName, "oldEmail", oldEmail, "newEmail", newEmail));
+
+        if (mailSender.isEmpty()) {
+            LOGGER.warn("Email service is disabled. Skipping email...");
+
+        } else {
+
+            sendEmail(oldEmail, "CXN: Cambio de correo", "mailTemplates/ChangeEmailMessage.html",
+                    Map.of("name", memberName, "oldEmail", oldEmail, "newEmail", newEmail));
+            sendEmail(newEmail, "CXN: Cambio de correo", "mailTemplates/ChangeEmailMessage.html",
+                    Map.of("name", memberName, "oldEmail", oldEmail, "newEmail", newEmail));
+        }
     }
 
     /**
@@ -118,16 +124,20 @@ public class DefaultEmailService implements EmailService {
      */
     private void sendEmail(final String toEmail, final String subject, final String templatePath,
             final Map<String, String> placeholders) throws MessagingException, IOException {
-        final var message = mailSender.createMimeMessage();
-        message.setFrom(new InternetAddress(senderAddress, "Xadrez Narón"));
-        message.setRecipients(RecipientType.TO, toEmail);
-        message.setSubject(subject);
+        if (mailSender.isEmpty()) {
+            LOGGER.warn("No email send!");
+        } else {
+            final var message = mailSender.get().createMimeMessage();
+            message.setFrom(new InternetAddress("principal@xadreznaron.es", "Xadrez Narón"));
+            message.setRecipients(RecipientType.TO, toEmail);
+            message.setSubject(subject);
 
-        final String htmlTemplate = loadEmailTemplate(templatePath);
-        final String formattedHtml = StringSubstitutor.replace(htmlTemplate, placeholders);
+            final String htmlTemplate = loadEmailTemplate(templatePath);
+            final String formattedHtml = StringSubstitutor.replace(htmlTemplate, placeholders);
 
-        message.setContent(formattedHtml, "text/html; charset=utf-8");
-        mailSender.send(message);
+            message.setContent(formattedHtml, "text/html; charset=utf-8");
+            mailSender.get().send(message);
+        }
     }
 
     /**

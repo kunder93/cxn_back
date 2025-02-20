@@ -7,11 +7,11 @@
 - **Mandatory:**
   - Java 21
   - Maven 3.x
-  - Mail server service for sending mails
   - DB PostgreSQL 14.X or higher or other compatible DB.  
 - **Optional:**  
   - Docker for run in container.
-
+  - Mail server service for sending mails
+    
 #### 1. Downloading the Program
 
 You have two main options to download the program:
@@ -28,26 +28,27 @@ Click on the "Code" button at the top of the repository page and select Download
 #### 2. Modifications Needed
 Before running the application, you may need to make a few adjustments:
 
-- Environment Configuration:  
-  SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/databaseName
-  SPRING_DATASOURCE_USERNAME=databaseUsername
-  SPRING_DATASOURCE_PASSWORD=DatabasePassword
-  SPRING_JPA_HIBERNATE_DDL_AUTO: update
-  COPY_CERTIFICATES: true
-  BUILD_PROFILE=prod     # Options: prod or dev
-  PROFILE=prod          # Options: prod or dev
+ **Environment Configuration:**
+ - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/databaseName
+ - SPRING_DATASOURCE_USERNAME=databaseUsername
+ - SPRING_DATASOURCE_PASSWORD=DatabasePassword
+ - SPRING_JPA_HIBERNATE_DDL_AUTO: update
+ - COPY_CERTIFICATES: true
+ - BUILD_PROFILE=prod     # Options: prod or dev
+ - PROFILE=prod          # Options: prod or dev
 
-  SPRING_MAIL_HOST=org.mailservice.com
-  SPRING_MAIL_PORT=587
-  SPRING_MAIL_USERNAME=mailUserName
-  SPRING_MAIL_PASSWORD=mailPassword
+ #Mail is optional: 
+ - SPRING_MAIL_HOST=org.mailservice.com
+ - SPRING_MAIL_PORT=587
+ - SPRING_MAIL_USERNAME=mailUserName
+ - SPRING_MAIL_PASSWORD=mailPassword
 
-  SSL_KEY_ALIAS=tomcat
-  SSL_KEY_STORE_TYPE=JKS
-  SSL_KEY_STORE_PASSWORD=password
-  SSL_KEY_STORE=/route/to/key/key.jks
+ - SSL_KEY_ALIAS=tomcat
+ - SSL_KEY_STORE_TYPE=JKS
+ - SSL_KEY_STORE_PASSWORD=password
+ - SSL_KEY_STORE=/route/to/key/key.jks
 
-  STORAGE_LOCATION_PATH=/location/storage/folder
+ - STORAGE_LOCATION_PATH=/location/storage/folder
 
 
 
