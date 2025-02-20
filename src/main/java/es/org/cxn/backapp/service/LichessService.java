@@ -12,10 +12,10 @@ package es.org.cxn.backapp.service;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -68,6 +68,15 @@ public interface LichessService {
      * @throws LichessServiceException When user with given email not found.
      */
     LichessProfileDto getLichessProfile(String userEmail) throws LichessServiceException;
+
+    /**
+     * Get user lichess profile using dni identifier.
+     *
+     * @param userDni The user dni identifier.
+     * @return Profile dto with lichess data.
+     * @throws LichessServiceException When user with given dni not found.
+     */
+    LichessProfileDto getLichessProfileByDni(String userDni) throws LichessServiceException;
 
     /**
      * Get all lichess profiles and return dto with data.
