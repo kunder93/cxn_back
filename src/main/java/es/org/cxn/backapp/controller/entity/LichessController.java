@@ -206,6 +206,30 @@ public class LichessController {
         return new LichessProfileListResponse(responsesList);
     }
 
+    /**
+     * Retrieves user's Lichess profile using their dni identifier. This endpoint
+     * fetches the user's profile information, including their username and game
+     * statistics. If the user is not found or an error occurs during the retrieval
+     * process, a Bad Request response is returned.
+     *
+     * @param userDni The user identifier.
+     * @return A ResponseEntity containing the LichessProfileResponse object with
+     *         the user's profile information and an HTTP status of 200 OK if
+     *         successful, or a 400 Bad Request if the user is not found or an error
+     *         occurs.
+     */
+    @GetMapping("/getLichessProfile/{userDni}")
+    public ResponseEntity<LichessProfileResponse> getLichessProfile(final @PathVariable String userDni) {
+        try {
+            // Directly assign the result of getLichessProfile to lichessProfile
+            final LichessProfileDto lichessProfile = lichessService.getLichessProfileByDni(userDni);
+            final LichessProfileResponse response = fromLichessProfileServiceDtoToControllerResponse(lichessProfile);
+            return ResponseEntity.ok(response);
+        } catch (LichessServiceException e) { // When user with given email not found.
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
+        }
+    }
+
     private LichessSaveProfileDto getLichessProfileAsDto(final String accessToken, final String userDni)
             throws LichessServiceException {
         final String lichessApiUrl = "https://lichess.org/api/account";

@@ -44,7 +44,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -58,6 +59,7 @@ import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 
@@ -67,7 +69,6 @@ import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class RoleControllerIntegrationIT {
 
     /**
@@ -84,6 +85,9 @@ class RoleControllerIntegrationIT {
      * Gson instance for JSON serialization and deserialization.
      */
     private static Gson gson;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * MockMvc instance used for performing HTTP requests in tests.
@@ -102,6 +106,14 @@ class RoleControllerIntegrationIT {
      */
     RoleControllerIntegrationIT() {
         super();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     @BeforeAll

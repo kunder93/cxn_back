@@ -35,7 +35,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,6 +51,7 @@ import es.org.cxn.backapp.service.MagazineService;
 import es.org.cxn.backapp.service.dto.AuthorDataDto;
 import es.org.cxn.backapp.service.dto.MagazineDataImageDto;
 import es.org.cxn.backapp.service.exceptions.MagazineServiceException;
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
 import jakarta.transaction.Transactional;
 
 /**
@@ -62,12 +62,6 @@ import jakarta.transaction.Transactional;
  */
 @Service
 public class DefaultMagazineService implements MagazineService {
-
-    /**
-     * Path for profile's image.
-     */
-    @Value("${magazine.location.covers}")
-    private String imageLocation;
 
     /**
      * Repository for the magazine entities handled by the service.
@@ -143,8 +137,7 @@ public class DefaultMagazineService implements MagazineService {
             }
         });
         try {
-            final var imageSoruce = imageStorageService.saveImage(imageCover, imageLocation, "magazine",
-                    magazine.getIssn());
+            final var imageSoruce = imageStorageService.saveImage(imageCover, FileLocation.MAGAZINE_COVERS);
             magazine.setCoverSrc(imageSoruce);
         } catch (IOException ex) {
             throw new MagazineServiceException("Magazine cover cannot be saved", ex);

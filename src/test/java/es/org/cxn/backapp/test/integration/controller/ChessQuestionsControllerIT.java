@@ -43,7 +43,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -57,11 +58,11 @@ import es.org.cxn.backapp.model.form.requests.CreateChessQuestionRequest;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionResponse;
 import es.org.cxn.backapp.model.form.responses.ChessQuestionsListResponse;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateTimeAdapter;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 @ActiveProfiles("test")
 class ChessQuestionsControllerIT {
 
@@ -76,6 +77,9 @@ class ChessQuestionsControllerIT {
      *
      */
     private static Gson gson;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.
@@ -105,6 +109,14 @@ class ChessQuestionsControllerIT {
     static void initializeTest() {
         gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     @Test

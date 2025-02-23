@@ -66,7 +66,7 @@ import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 import es.org.cxn.backapp.service.impl.DefaultActivitiesService;
-import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 
 /**
  * Unit tests for the {@link DefaultActivitiesService} class, focusing on
@@ -226,8 +226,7 @@ class ActivitiesServiceTest {
         when(mockImageFile.isEmpty()).thenReturn(false);
 
         // Directly stub the mock to throw an exception when saveImage is called
-        when(imageStorageService.saveImage(any(), any(), any(), any()))
-                .thenThrow(new IOException("Error saving image"));
+        when(imageStorageService.saveImage(any(), any())).thenThrow(new IOException("Error saving image"));
 
         // Act & Assert
         ActivityServiceException exception = assertThrows(ActivityServiceException.class, () -> {

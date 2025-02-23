@@ -40,7 +40,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
@@ -55,6 +56,7 @@ import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.DefaultPaymentsService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import jakarta.transaction.Transactional;
 
 /**
@@ -69,7 +71,6 @@ import jakarta.transaction.Transactional;
  */
 @SpringBootTest()
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 final class PaymentsServiceIT {
 
     /**
@@ -100,10 +101,21 @@ final class PaymentsServiceIT {
     @MockitoBean
     private DefaultEmailService emailService;
 
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
+
     /**
      * Test user dni.
      */
     private final String userDni = "32721880X";
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
+    }
 
     @BeforeEach
     void setUp() throws UserServiceException {
