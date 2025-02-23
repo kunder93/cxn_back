@@ -60,9 +60,9 @@ import es.org.cxn.backapp.model.persistence.PersistentAuthorEntity;
 import es.org.cxn.backapp.model.persistence.PersistentBookEntity;
 import es.org.cxn.backapp.repository.AuthorEntityRepository;
 import es.org.cxn.backapp.repository.BookEntityRepository;
-import es.org.cxn.backapp.service.ImageStorageService;
 import es.org.cxn.backapp.service.exceptions.BookServiceException;
 import es.org.cxn.backapp.service.impl.DefaultBookService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 
 /**
  * Unit tests for the {@link DefaultBookService}.
@@ -75,11 +75,6 @@ import es.org.cxn.backapp.service.impl.DefaultBookService;
  * @see DefaultLibraryService
  */
 class BookServiceTest {
-
-    /**
-     * Mock image path location.
-     */
-    private static final String MOCK_IMAGE_LOCATION = "/mock/path/to/covers";
 
     /**
      * Constant representing the ISBN of the book. This value is used to identify
@@ -163,7 +158,7 @@ class BookServiceTest {
      * The mocked image storage service used by BookService.
      */
     @Mock
-    private ImageStorageService imageStorageService;
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * Service under test that handles library operations.
@@ -283,7 +278,7 @@ class BookServiceTest {
         when(bookRepository.save(any(PersistentBookEntity.class))).thenReturn(book);
         when(authorRepository.findByFirstNameAndLastName(anyString(), anyString())).thenReturn(null);
         when(authorRepository.save(any(PersistentAuthorEntity.class))).thenReturn(new PersistentAuthorEntity());
-        when(imageStorageService.saveImage(any(), anyString(), anyString(), anyString())).thenThrow(IOException.class);
+        when(imageStorageService.saveImage(any(), any())).thenThrow(IOException.class);
 
         // Act & Assert
         assertThrows(BookServiceException.class, () -> bookService.add(bookRequest, mockFile));
@@ -404,6 +399,6 @@ class BookServiceTest {
         book1.setTitle(BOOK_TITLE);
         book2 = new PersistentBookEntity();
         book2.setTitle(SECOND_BOOK_TITLE);
-        ReflectionTestUtils.setField(bookService, "imageLocation", MOCK_IMAGE_LOCATION);
+        ReflectionTestUtils.setField(imageStorageService, "baseDirectory", "mock-directory");
     }
 }

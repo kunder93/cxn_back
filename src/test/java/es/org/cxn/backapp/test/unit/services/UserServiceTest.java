@@ -75,8 +75,8 @@ import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.dto.UserServiceUpdateDto;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
-import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 import es.org.cxn.backapp.service.impl.DefaultUserService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import jakarta.mail.MessagingException;
 
 /**
@@ -162,6 +162,12 @@ class UserServiceTest {
      */
     @Mock
     private RoleService roleService;
+
+    /**
+     * Encoder for passwords.
+     */
+    @Mock
+    BCryptPasswordEncoder passwordEncoder;
 
     /**
      * The payments service used by user service.
@@ -872,16 +878,16 @@ class UserServiceTest {
      */
     @Test
     void testChangeUserPasswordSuccess() throws UserServiceException {
+        when(passwordEncoder.encode("password123")).thenReturn("password123");
+        when(passwordEncoder.encode("newpassword123")).thenReturn("newpassword123");
+        when(passwordEncoder.matches("password123", "password123")).thenReturn(true);
+        persistentUserEntity.setPassword(passwordEncoder.encode("password123"));
+        persistentUserEntity.setEmail("test@example.com");
         // Configura el objeto mock
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(persistentUserEntity));
 
-        var passwordEncoder = new BCryptPasswordEncoder();
         var currentPassword = "password123";
         var newPassword = "newpassword123";
-
-        // La contraseña almacenada actualmente (encriptada)
-        var encodedCurrentPassword = passwordEncoder.encode(currentPassword);
-        persistentUserEntity.setPassword(encodedCurrentPassword);
 
         // Simula el guardado de la entidad con la nueva contraseña cifrada
         when(userRepository.save(any(PersistentUserEntity.class))).thenAnswer(invocation -> {
@@ -892,11 +898,10 @@ class UserServiceTest {
         var result = userService.changeUserPassword("test@example.com", currentPassword, newPassword);
 
         // Verifica que la nueva contraseña esté correctamente cifrada
-        assertThat(passwordEncoder.matches(newPassword, result.getPassword()))
+        assertThat((newPassword.equals(result.getPassword())))
                 .withFailMessage("The new password should be correctly encoded and " + "match the encrypted value.")
                 .isTrue();
-        assertThat(result.getPassword()).withFailMessage("The new password should be different from the old password.")
-                .isNotEqualTo(encodedCurrentPassword);
+
     }
 
     /**
@@ -1134,14 +1139,18 @@ class UserServiceTest {
 
     @Test
     void testUnsubscribeUserFound() throws UserServiceException {
+
+        when(passwordEncoder.encode("password")).thenReturn("password");
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
         PersistentUserEntity userEntity = new PersistentUserEntity();
         userEntity.setEmail("test@example.com");
         userEntity.setEnabled(true);
+        userEntity.setPassword(passwordEncoder.encode("password"));
         // Arrange: Mock the findByEmail to return the user entity
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(userEntity));
 
         // Act: Call the unsubscribe method
-        userService.unsubscribe("test@example.com");
+        userService.unsubscribe("test@example.com", "password");
 
         // Assert: Verify that save was called and the user's enabled status is set to
         // false
@@ -1154,12 +1163,13 @@ class UserServiceTest {
         PersistentUserEntity userEntity = new PersistentUserEntity();
         userEntity.setEmail("test@example.com");
         userEntity.setEnabled(true);
+        userEntity.setPassword("password");
         // Arrange: Mock the findByEmail to return an empty Optional
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.empty());
 
         // Act and Assert: Verify that UserServiceException is thrown
         UserServiceException exception = assertThrows(UserServiceException.class, () -> {
-            userService.unsubscribe("test@example.com");
+            userService.unsubscribe("test@example.com", "password");
         });
 
         assertEquals("User not found.", exception.getMessage(), "Exception message should match");

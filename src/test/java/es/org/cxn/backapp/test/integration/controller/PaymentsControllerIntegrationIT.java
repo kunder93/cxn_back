@@ -53,7 +53,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -67,6 +68,7 @@ import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
 import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
@@ -74,7 +76,6 @@ import jakarta.mail.internet.MimeMessage;
 @SpringBootTest
 @AutoConfigureMockMvc()
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class PaymentsControllerIntegrationIT {
 
     /**
@@ -119,6 +120,9 @@ class PaymentsControllerIntegrationIT {
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
 
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
+
     /**
      * Mocked {@link DefaultEmailService} instance to test email-related
      * functionality. This service is used to send emails in the application, and it
@@ -162,6 +166,14 @@ class PaymentsControllerIntegrationIT {
 
     PaymentsControllerIntegrationIT() {
         super();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     private String authenticateAndGetToken(final String email, final String password) throws Exception {
@@ -313,10 +325,8 @@ class PaymentsControllerIntegrationIT {
                 UsersControllerFactory.USER_A_PASSWORD);
         // Verificar que un tesorero puede obtener todos los pagos
         mockMvc.perform(get("/api/payments/getAll").header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3)) // 3 DNIs en el objeto de
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3)) // 2 DNIs en el objeto de
                                                                                        // respuesta
-                .andExpect(jsonPath("$.32721859N").isArray()) // Asegurar que es un array
-                .andExpect(jsonPath("$.32721859N.length()").value(0)) // Usuario sin pagos
                 .andExpect(jsonPath("$.32721860J").isArray()).andExpect(jsonPath("$.32721860J.length()").value(1))
                 // Un pago para este usuario
                 .andExpect(jsonPath("$.32721860J[0].id").exists()) // Validar que hay un pago

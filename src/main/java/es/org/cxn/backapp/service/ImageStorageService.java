@@ -31,6 +31,8 @@ import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
+
 /**
  * Service interface for handling image storage operations. Provides methods to
  * save, load, and delete images associated with different entities.
@@ -39,13 +41,10 @@ public interface ImageStorageService {
     /**
      * Deletes an image file from the storage based on its path.
      *
-     * @param baseDirectory the root directory for storing images, specified by the
-     *                      calling service.
-     * @param imagePath     the {@link String} representing the path to the image
-     *                      file.
+     * @param imagePath the {@link String} representing the path to the image file.
      * @throws IOException if an error occurs during file deletion.
      */
-    void deleteImage(String baseDirectory, String imagePath) throws IOException;
+    void deleteImage(String imagePath) throws IOException;
 
     /**
      * Loads an image file from the storage based on its path.
@@ -57,18 +56,27 @@ public interface ImageStorageService {
     byte[] loadImage(String imagePath) throws IOException;
 
     /**
-     * Saves an image file associated with a specific entity.
+     * Saves an image file.
      *
-     * @param file          the {@link MultipartFile} representing the image to be
-     *                      saved.
-     * @param baseDirectory the root directory for storing images, specified by the
-     *                      calling service.
-     * @param entityType    a string representing the type of entity (e.g.,
-     *                      "activity", "user").
-     * @param entityId      the unique identifier of the entity associated with the
-     *                      image.
+     * @param file         the {@link MultipartFile} representing the image to be
+     *                     saved.
+     * @param fileLocation the enum type representing the location of the file.
      * @return a {@link String} representing the path where the image is stored.
      * @throws IOException if an error occurs during file saving.
      */
-    String saveImage(MultipartFile file, String baseDirectory, String entityType, String entityId) throws IOException;
+    String saveImage(MultipartFile file, FileLocation fileLocation) throws IOException;
+
+    /**
+     * Saves an image file in userId folder name.
+     *
+     * @param file         the {@link MultipartFile} representing the image to be
+     *                     saved.
+     * @param userId       the user identifier for save images in folder with name
+     *                     as user identifier.
+     * @param fileLocation the enum type representing the location of the file.
+     * @return a {@link String} representing the path where the image is stored.
+     * @throws IOException if an error occurs during file saving.
+     */
+    String saveImage(MultipartFile file, FileLocation fileLocation, String userId) throws IOException;
+
 }

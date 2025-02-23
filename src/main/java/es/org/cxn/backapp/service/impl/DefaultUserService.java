@@ -136,6 +136,11 @@ public final class DefaultUserService implements UserService {
     private final RoleService roleService;
 
     /**
+     * The password encoder.
+     */
+    private final BCryptPasswordEncoder passwordEncoder;
+
+    /**
      * Constructs a DefaultUserService with the specified repositories and image
      * storage service.
      *
@@ -153,13 +158,15 @@ public final class DefaultUserService implements UserService {
      *
      * @param emailServ         The email service.
      *
+     * @param passwordEncoder   The password enconder.
      *
      * @throws NullPointerException if any of the provided repositories or services
      *                              are null.
      */
     public DefaultUserService(final UserEntityRepository userRepo, final CountryEntityRepository countryRepo,
             final CountrySubdivisionEntityRepository countrySubdivRepo, final EmailService emailServ,
-            final PaymentsService paymentsServ, final RoleService roleServ) {
+            final PaymentsService paymentsServ, final RoleService roleServ,
+            final BCryptPasswordEncoder passwordEncoder) {
         super();
         this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
         this.countryRepository = checkNotNull(countryRepo, "Received a null pointer as country repository");
@@ -168,6 +175,7 @@ public final class DefaultUserService implements UserService {
         this.emailService = checkNotNull(emailServ, "Received a null pointer as email service.");
         this.paymentsService = checkNotNull(paymentsServ, "Received a null pointer as payments service.");
         this.roleService = checkNotNull(roleServ, "Received a null pointer as role service.");
+        this.passwordEncoder = checkNotNull(passwordEncoder, "Received a null pointer as password encoder.");
     }
 
     /**
@@ -351,8 +359,6 @@ public final class DefaultUserService implements UserService {
             throws UserServiceException {
         final var userEntity = findByEmail(email);
 
-        // Check password with stored.
-        final var passwordEncoder = new BCryptPasswordEncoder();
         final String storedPassword = userEntity.getPassword();
         if (!passwordEncoder.matches(currentPassword, storedPassword)) {
             throw new UserServiceException(USER_PASSWORD_NOT_MATCH);
@@ -450,7 +456,7 @@ public final class DefaultUserService implements UserService {
 
     @Transactional
     @Override
-    public void unsubscribe(final String email) throws UserServiceException {
+    public void unsubscribe(final String email, final String validationPass) throws UserServiceException {
         final Optional<PersistentUserEntity> userOptional;
         userOptional = userRepository.findByEmail(email);
         if (userOptional.isEmpty()) {
@@ -458,8 +464,13 @@ public final class DefaultUserService implements UserService {
         }
         final var userEntity = userOptional.get();
 
-        userEntity.setEnabled(false);
-        userRepository.save(userEntity);
+        if (passwordEncoder.matches(validationPass, userEntity.getPassword())) {
+            userEntity.setEnabled(false);
+            userRepository.save(userEntity);
+        } else {
+            throw new UserServiceException("Password provided is not valid.");
+        }
+
     }
 
     @Transactional

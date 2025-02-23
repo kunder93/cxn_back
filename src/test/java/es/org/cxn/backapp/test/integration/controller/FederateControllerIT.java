@@ -46,7 +46,8 @@ import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -60,6 +61,7 @@ import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.internet.MimeMessage;
 
@@ -77,7 +79,6 @@ import jakarta.mail.internet.MimeMessage;
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 class FederateControllerIT {
 
     /**
@@ -86,17 +87,20 @@ class FederateControllerIT {
      * response payloads in the tests.
      */
     private static Gson gson;
+
     /**
      * The URL endpoint for user sign-up. This static final string represents the
      * URL used for user registration in the authentication process.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
-
     /**
      * URL endpoint for user sign-in. This static final string represents the URL
      * used for user authentication and generating JWT tokens.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.
@@ -146,6 +150,14 @@ class FederateControllerIT {
 
     FederateControllerIT() {
         super();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(final DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     @BeforeAll

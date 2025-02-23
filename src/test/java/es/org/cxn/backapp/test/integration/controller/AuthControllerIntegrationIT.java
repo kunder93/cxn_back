@@ -41,7 +41,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -56,6 +57,7 @@ import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
 import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;
 import jakarta.mail.Session;
@@ -87,23 +89,24 @@ import jakarta.mail.internet.MimeMessage;
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "classpath:IntegrationController.properties")
 @ActiveProfiles("test")
 class AuthControllerIntegrationIT {
-
     /**
      * URL endpoint for user sign-up.
      */
     private static final String SIGN_UP_URL = "/api/auth/signup";
+
     /**
      * URL endpoint for user sign-in.
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
-
     /**
      * Gson instance for serializing/deserializing JSON objects during the tests.
      */
     private static Gson gson;
+
+    @MockitoBean
+    private DefaultImageStorageService imageStorageService;
 
     /**
      * The email service mocked implementation.
@@ -153,6 +156,14 @@ class AuthControllerIntegrationIT {
     @BeforeAll
     static void createUsersData() {
         gson = new GsonBuilder().registerTypeAdapter(LocalDate.class, new LocalDateAdapter()).create();
+    }
+
+    @DynamicPropertySource
+    static void setProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.mail.host", () -> "localhost");
+        registry.add("spring.mail.port", () -> "1025");
+        registry.add("spring.mail.username", () -> "test@example.com");
+        registry.add("spring.mail.password", () -> "testpassword");
     }
 
     /**

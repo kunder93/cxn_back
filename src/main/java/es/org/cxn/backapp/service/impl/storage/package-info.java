@@ -1,4 +1,29 @@
-package es.org.cxn.backapp;
+/**
+ * Provides implementations for storage-related services within the application.
+ * <p>
+ * This package includes classes and enumerations responsible for managing file
+ * storage, handling image uploads, and organizing storage locations.
+ * </p>
+ *
+ * <h2>Key Components:</h2>
+ * <ul>
+ * <li>{@link es.org.cxn.backapp.service.impl.storage.FileLocation} - Enum
+ * defining various storage locations for different types of files.</li>
+ * <li>{@link es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService}
+ * - Implementation of the
+ * {@link es.org.cxn.backapp.service.ImageStorageService} interface, responsible
+ * for storing and retrieving images.</li>
+ * </ul>
+ *
+ * <h2>Usage:</h2>
+ * <p>
+ * The {@code DefaultImageStorageService} allows storing images under different
+ * categories defined in {@code FileLocation}, ensuring organized file
+ * management.
+ * </p>
+ *
+ */
+package es.org.cxn.backapp.service.impl.storage;
 
 /*-
  * #%L
@@ -25,40 +50,3 @@ package es.org.cxn.backapp;
  * THE SOFTWARE.
  * #L%
  */
-
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-/**
- * Main executable app class.
- * <p>
- * Spring Boot application.
- * </p>
- *
- * @author Santi
- */
-@SpringBootApplication(exclude = { org.springframework.boot.autoconfigure.mail.MailSenderAutoConfiguration.class,
-        org.springframework.boot.autoconfigure.mail.MailSenderValidatorAutoConfiguration.class })
-public class BackAppApplication {
-
-    /**
-     * Default constructor for {@link BackAppApplication}.
-     * <p>
-     * This constructor is provided by the Java compiler and does not require
-     * additional functionality. It allows the creation of instances of the
-     * application class.
-     * </p>
-     */
-    public BackAppApplication() {
-        // Default constructor
-    }
-
-    /**
-     * The application main method.
-     *
-     * @param args the application initial arguments.
-     */
-    public static void main(final String[] args) {
-        SpringApplication.run(BackAppApplication.class, args);
-    }
-}

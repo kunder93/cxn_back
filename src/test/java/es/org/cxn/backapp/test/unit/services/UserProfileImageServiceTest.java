@@ -45,8 +45,8 @@ import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
-import es.org.cxn.backapp.service.impl.DefaultImageStorageService;
 import es.org.cxn.backapp.service.impl.DefaultUserProfileImageService;
+import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 
 /**
  * Unit tests for the {@link DefaultUserProfileImageService}. This class tests

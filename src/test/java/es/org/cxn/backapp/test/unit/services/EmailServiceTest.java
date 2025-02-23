@@ -34,7 +34,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,18 +70,10 @@ class EmailServiceTest {
     private DefaultEmailService emailService;
 
     @BeforeEach
-    public void setUp()
-            throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-        // Initialize mocks
+    void setUp() {
         MockitoAnnotations.openMocks(this);
-
-        // Configure the mock mailSender to return the mocked MimeMessage
+        emailService = new DefaultEmailService(Optional.of(mailSender));
         when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
-
-        // Inject the value for senderAddress
-        Field senderAddressField = DefaultEmailService.class.getDeclaredField("senderAddress");
-        senderAddressField.setAccessible(true);
-        senderAddressField.set(emailService, "principal@xadreznaron.es");
     }
 
     @Test

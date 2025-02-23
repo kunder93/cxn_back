@@ -225,8 +225,9 @@ public class UserController {
             @RequestBody final UserChangePasswordRequest userChangePasswordRequest) {
         final UserEntity result;
         try {
-            result = userService.changeUserPassword(userChangePasswordRequest.email(),
-                    userChangePasswordRequest.currentPassword(), userChangePasswordRequest.newPassword());
+            final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
+            result = userService.changeUserPassword(authName, userChangePasswordRequest.currentPassword(),
+                    userChangePasswordRequest.newPassword());
         } catch (UserServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
