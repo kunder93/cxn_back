@@ -34,7 +34,6 @@ import java.util.Collection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -144,7 +143,6 @@ public class ChessQuestionsController {
      *
      * @return all stored chess questions.
      */
-    @CrossOrigin
     @GetMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO') or" + " hasRole('SECRETARIO')")
     public ResponseEntity<ChessQuestionsListResponse> getAllChessQuestions() {
