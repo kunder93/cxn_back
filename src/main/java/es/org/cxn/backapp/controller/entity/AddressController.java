@@ -31,7 +31,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,7 +74,6 @@ public class AddressController {
      *
      * @return all stored countries.
      */
-    @CrossOrigin
     @GetMapping(path = "/getCountries")
     public ResponseEntity<CountryListResponse> getAllCountries() {
         // Retrieve the list of PersistentCountryEntity objects
@@ -101,7 +99,6 @@ public class AddressController {
      *         with the country data and its sub-countries, or an error response if
      *         the country cannot be found.
      */
-    @CrossOrigin
     @GetMapping(path = "/country/{countryCode}")
     public ResponseEntity<SubCountryListResponse> getAllSubCountriesFromCountry(
             @PathVariable final Integer countryCode) {
