@@ -181,6 +181,12 @@ public class DefaultEmailService implements EmailService {
                 Map.of("name", memberName));
     }
 
+    @Override
+    public void sendUnsubscribe(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Dado de baja.", "mailTemplates/UnsubscribeMemberEmail.html",
+                Map.of("name", memberName));
+    }
+
     /**
      * Sends a welcome email to the user after they become a member.
      *

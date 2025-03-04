@@ -82,6 +82,16 @@ public interface EmailService {
     void sendSignUp(String toEmail, String subject, String body) throws MessagingException, IOException;
 
     /**
+     * Sends a unsubscribe email.
+     *
+     * @param toEmail    the recipient's email address
+     * @param memberName the complete name of the member
+     * @throws MessagingException When message fails.
+     * @throws IOException        When fails cause cannot load mail template file.
+     */
+    void sendUnsubscribe(String toEmail, String memberName) throws MessagingException, IOException;
+
+    /**
      * Sends a welcome email to newly approved members.
      *
      * @param toEmail    the recipient's email address
