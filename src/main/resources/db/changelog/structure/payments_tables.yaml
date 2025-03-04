@@ -78,4 +78,18 @@ databaseChangeLog:
           baseTableName: user_federative_data
           referencedColumnNames: id
           referencedTableName: payments
-          constraintName: fk_user_federative_data_to_payments       
+          constraintName: fk_user_federative_data_to_payments
+- changeSet:
+    id: alter_fk_payments_user_dni
+    author: Santiago
+    changes:
+      - dropForeignKeyConstraint:
+          baseTableName: payments
+          constraintName: fk_payments_user_dni
+      - addForeignKeyConstraint:
+          baseTableName: payments
+          baseColumnNames: user_dni
+          referencedTableName: users
+          referencedColumnNames: dni
+          constraintName: fk_payments_user_dni
+          onDelete: CASCADE       

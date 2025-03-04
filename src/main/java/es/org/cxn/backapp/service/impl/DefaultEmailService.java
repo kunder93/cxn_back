@@ -111,6 +111,12 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
+    @Override
+    public void sendDeletedUser(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Usuario eliminado", "mailTemplates/DeletedMemberEmail.html",
+                Map.of("name", memberName));
+    }
+
     /**
      * Sends an email with the specified details.
      *
@@ -172,6 +178,12 @@ public class DefaultEmailService implements EmailService {
     public void sendSignUp(final String toEmail, final String memberName, final String body)
             throws MessagingException, IOException {
         sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/SignUpWelcomeEmail.html",
+                Map.of("name", memberName));
+    }
+
+    @Override
+    public void sendUnsubscribe(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Dado de baja.", "mailTemplates/UnsubscribeMemberEmail.html",
                 Map.of("name", memberName));
     }
 

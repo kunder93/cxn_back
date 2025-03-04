@@ -383,7 +383,12 @@ public final class DefaultUserService implements UserService {
     @Override
     public void delete(final String userEmail) throws UserServiceException {
         final var userEntity = findByEmail(userEmail);
-        userRepository.delete((PersistentUserEntity) userEntity);
+        try {
+            userRepository.delete((PersistentUserEntity) userEntity);
+            emailService.sendDeletedUser(userEntity.getEmail(), userEntity.getCompleteName());
+        } catch (Exception e) {
+            throw new UserServiceException("Error sending email to user: " + userEntity.getDni(), e);
+        }
     }
 
     @Override
@@ -467,6 +472,11 @@ public final class DefaultUserService implements UserService {
         if (passwordEncoder.matches(validationPass, userEntity.getPassword())) {
             userEntity.setEnabled(false);
             userRepository.save(userEntity);
+            try {
+                emailService.sendUnsubscribe(userEntity.getEmail(), userEntity.getCompleteName());
+            } catch (MessagingException | IOException e) {
+                throw new UserServiceException("Error sending email to user: " + userEntity.getDni(), e);
+            }
         } else {
             throw new UserServiceException("Password provided is not valid.");
         }
