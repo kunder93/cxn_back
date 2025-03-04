@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -46,6 +46,16 @@ public interface EmailService {
      * @throws IOException        When fails cause cannot load mail template file.
      */
     void sendChangeEmail(String oldEmail, String newEmail, String memberName) throws MessagingException, IOException;
+
+    /**
+     * Send email to user who has been deleted.
+     *
+     * @param toEmail    Email from user.
+     * @param memberName The member complete name.
+     * @throws MessagingException When message fails.
+     * @throws IOException        When fails cause cannot load mail template file.
+     */
+    void sendDeletedUser(final String toEmail, final String memberName) throws MessagingException, IOException;
 
     /**
      * Sends a confirmation payment received email to member.

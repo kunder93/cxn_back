@@ -383,7 +383,13 @@ public final class DefaultUserService implements UserService {
     @Override
     public void delete(final String userEmail) throws UserServiceException {
         final var userEntity = findByEmail(userEmail);
-        userRepository.delete((PersistentUserEntity) userEntity);
+        try {
+
+            userRepository.delete((PersistentUserEntity) userEntity);
+            emailService.sendDeletedUser(userEntity.getEmail(), userEntity.getCompleteName());
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

@@ -111,6 +111,12 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
+    @Override
+    public void sendDeletedUser(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Usuario eliminado", "mailTemplates/DeletedMemberEmail.html",
+                Map.of("name", memberName));
+    }
+
     /**
      * Sends an email with the specified details.
      *
