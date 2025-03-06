@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,6 +48,16 @@ public interface EmailService {
     void sendChangeEmail(String oldEmail, String newEmail, String memberName) throws MessagingException, IOException;
 
     /**
+     * Send email to user who has been deleted.
+     *
+     * @param toEmail    Email from user.
+     * @param memberName The member complete name.
+     * @throws MessagingException When message fails.
+     * @throws IOException        When fails cause cannot load mail template file.
+     */
+    void sendDeletedUser(String toEmail, String memberName) throws MessagingException, IOException;
+
+    /**
      * Sends a confirmation payment received email to member.
      *
      * @param toEmail         the recipient's email address
@@ -70,6 +80,16 @@ public interface EmailService {
      * @throws IOException        When fails cause cannot load mail template file.
      */
     void sendSignUp(String toEmail, String subject, String body) throws MessagingException, IOException;
+
+    /**
+     * Sends a unsubscribe email.
+     *
+     * @param toEmail    the recipient's email address
+     * @param memberName the complete name of the member
+     * @throws MessagingException When message fails.
+     * @throws IOException        When fails cause cannot load mail template file.
+     */
+    void sendUnsubscribe(String toEmail, String memberName) throws MessagingException, IOException;
 
     /**
      * Sends a welcome email to newly approved members.

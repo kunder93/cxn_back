@@ -298,7 +298,7 @@ public final class DefaultPaymentsService implements PaymentsService {
     }
 
     @Override
-    public List<PersistentPaymentsEntity> getUserPaymentsByEmail(String email) throws PaymentsServiceException {
+    public List<PersistentPaymentsEntity> getUserPaymentsByEmail(final String email) throws PaymentsServiceException {
         final var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
             throw new PaymentsServiceException("User with email: " + email + " not found.");

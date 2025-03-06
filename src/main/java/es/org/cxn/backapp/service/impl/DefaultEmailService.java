@@ -52,6 +52,9 @@ import jakarta.mail.internet.InternetAddress;
 @Service
 public class DefaultEmailService implements EmailService {
 
+    /**
+     * The service logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultEmailService.class);
 
     /**
@@ -109,6 +112,12 @@ public class DefaultEmailService implements EmailService {
             sendEmail(newEmail, "CXN: Cambio de correo", "mailTemplates/ChangeEmailMessage.html",
                     Map.of("name", memberName, "oldEmail", oldEmail, "newEmail", newEmail));
         }
+    }
+
+    @Override
+    public void sendDeletedUser(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Usuario eliminado", "mailTemplates/DeletedMemberEmail.html",
+                Map.of("name", memberName));
     }
 
     /**
@@ -172,6 +181,12 @@ public class DefaultEmailService implements EmailService {
     public void sendSignUp(final String toEmail, final String memberName, final String body)
             throws MessagingException, IOException {
         sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/SignUpWelcomeEmail.html",
+                Map.of("name", memberName));
+    }
+
+    @Override
+    public void sendUnsubscribe(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Dado de baja.", "mailTemplates/UnsubscribeMemberEmail.html",
                 Map.of("name", memberName));
     }
 
