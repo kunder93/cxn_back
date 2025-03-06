@@ -1151,7 +1151,7 @@ class UserServiceTest {
         userProfile.setFirstSurname("Santi");
         userProfile.setSecondSurname("Apellido");
         userProfile.setSecondSurname("SegundApellido");
-        userEntity.setProfile(null);
+        userEntity.setProfile(userProfile);
         // Arrange: Mock the findByEmail to return the user entity
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(userEntity));
 
