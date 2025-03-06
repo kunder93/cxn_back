@@ -150,6 +150,24 @@ public class DefaultEmailService implements EmailService {
     }
 
     /**
+     * Sends a payment generated email to the user after they become confirmed
+     * member.
+     *
+     * @param toEmail    The recipient's email address.
+     * @param memberName The complete name of the member.
+     * @throws MessagingException If there is an error while composing or sending
+     *                            the email.
+     * @throws IOException        If there is an error reading the email template.
+     */
+    @Override
+    public void sendGeneratedPayment(final String toEmail, final String memberName, final String paymentTitle,
+            String paymentDescription, final String paymentAmount) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Pago generado", "mailTemplates/GeneratedPaymentEmail.html",
+                Map.of("name", memberName, "paymentTitle", paymentTitle, "paymentDescription", paymentDescription,
+                        "paymentAmount", paymentAmount));
+    }
+
+    /**
      * Sends a payment confirmation email to the user.
      *
      * @param toEmail         The recipient's email address.

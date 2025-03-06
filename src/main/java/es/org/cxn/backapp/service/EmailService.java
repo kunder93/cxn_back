@@ -57,6 +57,9 @@ public interface EmailService {
      */
     void sendDeletedUser(String toEmail, String memberName) throws MessagingException, IOException;
 
+    void sendGeneratedPayment(final String toEmail, final String memberName, final String paymentTitle,
+            String paymentDescription, final String paymentAmount) throws MessagingException, IOException;
+
     /**
      * Sends a confirmation payment received email to member.
      *
