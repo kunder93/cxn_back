@@ -52,6 +52,9 @@ import jakarta.mail.internet.InternetAddress;
 @Service
 public class DefaultEmailService implements EmailService {
 
+    /**
+     * The service logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultEmailService.class);
 
     /**

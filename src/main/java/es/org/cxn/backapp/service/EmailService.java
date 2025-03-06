@@ -55,7 +55,7 @@ public interface EmailService {
      * @throws MessagingException When message fails.
      * @throws IOException        When fails cause cannot load mail template file.
      */
-    void sendDeletedUser(final String toEmail, final String memberName) throws MessagingException, IOException;
+    void sendDeletedUser(String toEmail, String memberName) throws MessagingException, IOException;
 
     /**
      * Sends a confirmation payment received email to member.
