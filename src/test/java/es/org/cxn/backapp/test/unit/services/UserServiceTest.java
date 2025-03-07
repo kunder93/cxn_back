@@ -1146,6 +1146,12 @@ class UserServiceTest {
         userEntity.setEmail("test@example.com");
         userEntity.setEnabled(true);
         userEntity.setPassword(passwordEncoder.encode("password"));
+
+        UserProfile userProfile = new UserProfile();
+        userProfile.setFirstSurname("Santi");
+        userProfile.setSecondSurname("Apellido");
+        userProfile.setSecondSurname("SegundApellido");
+        userEntity.setProfile(userProfile);
         // Arrange: Mock the findByEmail to return the user entity
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(userEntity));
 

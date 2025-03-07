@@ -52,6 +52,9 @@ import jakarta.mail.internet.InternetAddress;
 @Service
 public class DefaultEmailService implements EmailService {
 
+    /**
+     * The service logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultEmailService.class);
 
     /**
@@ -111,6 +114,12 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
+    @Override
+    public void sendDeletedUser(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Usuario eliminado", "mailTemplates/DeletedMemberEmail.html",
+                Map.of("name", memberName));
+    }
+
     /**
      * Sends an email with the specified details.
      *
@@ -138,6 +147,24 @@ public class DefaultEmailService implements EmailService {
             message.setContent(formattedHtml, "text/html; charset=utf-8");
             mailSender.get().send(message);
         }
+    }
+
+    /**
+     * Sends a payment generated email to the user after they become confirmed
+     * member.
+     *
+     * @param toEmail    The recipient's email address.
+     * @param memberName The complete name of the member.
+     * @throws MessagingException If there is an error while composing or sending
+     *                            the email.
+     * @throws IOException        If there is an error reading the email template.
+     */
+    @Override
+    public void sendGeneratedPayment(final String toEmail, final String memberName, final String paymentTitle,
+            String paymentDescription, final String paymentAmount) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Pago generado", "mailTemplates/GeneratedPaymentEmail.html",
+                Map.of("name", memberName, "paymentTitle", paymentTitle, "paymentDescription", paymentDescription,
+                        "paymentAmount", paymentAmount));
     }
 
     /**
@@ -172,6 +199,12 @@ public class DefaultEmailService implements EmailService {
     public void sendSignUp(final String toEmail, final String memberName, final String body)
             throws MessagingException, IOException {
         sendEmail(toEmail, "Hola, " + memberName + "!", "mailTemplates/SignUpWelcomeEmail.html",
+                Map.of("name", memberName));
+    }
+
+    @Override
+    public void sendUnsubscribe(final String toEmail, final String memberName) throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Dado de baja.", "mailTemplates/UnsubscribeMemberEmail.html",
                 Map.of("name", memberName));
     }
 
