@@ -40,7 +40,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -186,7 +185,6 @@ public class AuthController {
      *                                 credentials, disabled account, or account
      *                                 locked.
      */
-    @CrossOrigin
     @PostMapping("/signinn")
     public ResponseEntity<AuthenticationResponse> authenticateUser(final @Valid
     @RequestBody AuthenticationRequest loginRequest) {
@@ -218,7 +216,6 @@ public class AuthController {
      * @throws IOException             When cannot load message template.
      * @throws ResponseStatusException if there is a problem with user registration.
      */
-    @CrossOrigin
     @PostMapping("/signup")
     public ResponseEntity<SignUpResponseForm> registerUser(@Valid
     @RequestBody final SignUpRequestForm signUpRequestForm) throws IOException {
@@ -259,7 +256,6 @@ public class AuthController {
      *
      * @return ResponseEntity indicating the result of the operation.
      */
-    @CrossOrigin
     @PatchMapping("/unsubscribe")
     public ResponseEntity<String> unsubscribe(@RequestBody final UnsubscribeRequest unsubscribeRequest) {
         final var authName = SecurityContextHolder.getContext().getAuthentication().getName();
