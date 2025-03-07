@@ -22,7 +22,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.1</version>
-		<relativePath />
+		<relativePath/>
 	</parent>
 
 	<groupId>es.org.cxn</groupId>
@@ -60,7 +60,7 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>+1</timezone>
-			<properties />
+			<properties/>
 		</developer>
 	</developers>
 
@@ -83,7 +83,7 @@
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<!-- Spring Versions -->
-		<springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
+		<springdoc.openapi.starter.version>2.8.3</springdoc.openapi.starter.version>
 		<therapi.runtime.version>0.15.0</therapi.runtime.version>
 		<jjwt.version>0.12.6</jjwt.version>
 		<junit.jupiter.version>5.11.4</junit.jupiter.version>
