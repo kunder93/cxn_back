@@ -208,8 +208,16 @@ public final class DefaultPaymentsService implements PaymentsService {
         paymentEntity.setState(PaymentsState.UNPAID);
         paymentEntity.setTitle(title);
         paymentEntity.setUserDni(userDni);
+        try {
+            final var userEntity = userOpt.get();
+            emailService.sendGeneratedPayment(userEntity.getEmail(), userEntity.getCompleteName(), title, description,
+                    String.format("%.2f", amount));
+            return paymentsRepository.save(paymentEntity);
+        } catch (MessagingException | IOException ex) {
+            throw new PaymentsServiceException(
+                    "Cannot send email with payment info. Email: " + userOpt.get().getEmail(), ex);
+        }
 
-        return paymentsRepository.save(paymentEntity);
     }
 
     /**
@@ -298,7 +306,7 @@ public final class DefaultPaymentsService implements PaymentsService {
     }
 
     @Override
-    public List<PersistentPaymentsEntity> getUserPaymentsByEmail(String email) throws PaymentsServiceException {
+    public List<PersistentPaymentsEntity> getUserPaymentsByEmail(final String email) throws PaymentsServiceException {
         final var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
             throw new PaymentsServiceException("User with email: " + email + " not found.");

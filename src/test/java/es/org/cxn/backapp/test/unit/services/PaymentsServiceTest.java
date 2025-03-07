@@ -199,6 +199,11 @@ class PaymentsServiceTest {
         String userDni = "123456789";
         PersistentUserEntity user = new PersistentUserEntity();
         user.setDni(userDni);
+        UserProfile userProfile = new UserProfile();
+        userProfile.setName("Name");
+        userProfile.setFirstSurname("FirstSurname");
+        userProfile.setSecondSurname("SecondSurname");
+        user.setProfile(userProfile);
         PersistentPaymentsEntity paymentEntity = new PersistentPaymentsEntity();
         paymentEntity.setId(UUID.randomUUID());
         paymentEntity.setAmount(amount);
