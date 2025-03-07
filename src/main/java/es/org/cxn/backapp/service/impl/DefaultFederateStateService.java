@@ -52,6 +52,7 @@ import es.org.cxn.backapp.service.exceptions.FederateStateServiceException;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.storage.FileLocation;
+import jakarta.transaction.Transactional;
 
 /**
  * Service implementation for handling operations related to the federate state
@@ -186,6 +187,7 @@ public final class DefaultFederateStateService implements FederateStateService {
      * @throws PaymentsServiceException      When cannot delete associated payment.
      */
     @Override
+    @Transactional
     public PersistentFederateStateEntity confirmCancelFederate(final String userDni)
             throws FederateStateServiceException, UserServiceException, PaymentsServiceException {
         final var federateStateOptional = federateStateRepository.findById(userDni);
