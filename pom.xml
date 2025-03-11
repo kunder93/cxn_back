@@ -22,7 +22,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.1</version>
-		<relativePath />
+		<relativePath/>
 	</parent>
 
 	<groupId>es.org.cxn</groupId>
@@ -60,7 +60,7 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>+1</timezone>
-			<properties />
+			<properties/>
 		</developer>
 	</developers>
 
@@ -234,7 +234,7 @@
 		<dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>2.9.1</version>
+            <version>2.9.3</version>
         </dependency>
 		
 		<dependency>
