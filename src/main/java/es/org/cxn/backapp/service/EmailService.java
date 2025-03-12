@@ -57,6 +57,21 @@ public interface EmailService {
      */
     void sendDeletedUser(String toEmail, String memberName) throws MessagingException, IOException;
 
+    /**
+     * Sends a generated payment notification to the specified email address. The
+     * method formats a message containing the payment details and sends it via
+     * email.
+     *
+     * @param toEmail            the email address of the recipient
+     * @param memberName         the name of the member for whom the payment is
+     *                           generated
+     * @param paymentTitle       the title or subject of the payment
+     * @param paymentDescription a brief description of the payment
+     * @param paymentAmount      the amount of the payment
+     * @throws MessagingException if there is an error while sending the email
+     * @throws IOException        if there is an error with input/output during the
+     *                            process
+     */
     void sendGeneratedPayment(final String toEmail, final String memberName, final String paymentTitle,
             String paymentDescription, final String paymentAmount) throws MessagingException, IOException;
 
