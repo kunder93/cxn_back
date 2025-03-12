@@ -13,10 +13,10 @@ package es.org.cxn.backapp.model;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,6 +34,7 @@ import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import lombok.NonNull;
@@ -125,6 +126,13 @@ public interface UserEntity extends Serializable {
     Set<PersistentRoleEntity> getRoles();
 
     /**
+     * Get the team assigned to this user.
+     *
+     * @return The team assigned.
+     */
+    PersistentTeamEntity getTeam();
+
+    /**
      * Checks if the user's account is enabled.
      *
      * @return {@code true} if the account is enabled, {@code false} otherwise.
@@ -214,5 +222,12 @@ public interface UserEntity extends Serializable {
      * @param roles The new set of roles.
      */
     void setRoles(Set<PersistentRoleEntity> roles);
+
+    /**
+     * Sets the team assigned to this user.
+     *
+     * @param team The team assigned.
+     */
+    void setTeam(PersistentTeamEntity team);
 
 }
