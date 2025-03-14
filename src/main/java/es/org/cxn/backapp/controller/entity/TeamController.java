@@ -42,10 +42,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import es.org.cxn.backapp.model.form.requests.team.AddUserRequest;
 import es.org.cxn.backapp.model.form.requests.team.CreateTeamRequest;
 import es.org.cxn.backapp.model.form.responses.team.TeamInfoResponse;
 import es.org.cxn.backapp.service.TeamService;
@@ -81,19 +81,16 @@ public class TeamController {
     /**
      * Adds a user to a team.
      *
-     * @param teamName  The name of the team.
-     * @param userEmail The email of the user to be added.
+     * @param teamName       The name of the team.
+     * @param addUserRequest The request dto with email of the user to be added.
      * @return The updated team information.
      */
     @PatchMapping("/{teamName}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
     public ResponseEntity<TeamInfoResponse> addUserToTeam(@PathVariable
-    @Size(max = 100) final String teamName,
-            @RequestParam
-            @NotBlank
-            @Email final String userEmail) {
+    @Size(max = 100) final String teamName, @RequestBody final AddUserRequest addUserRequest) {
         try {
-            final var updatedTeam = teamService.addMember(teamName, userEmail);
+            final var updatedTeam = teamService.addMember(teamName, addUserRequest.userEmail());
             return ResponseEntity.ok(new TeamInfoResponse(updatedTeam));
         } catch (TeamServiceException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);

@@ -92,6 +92,11 @@ public final class DefaultTeamService implements TeamService {
         }
         var userEntity = userOptional.get();
         var teamEntity = teamOptional.get();
+
+        if (userEntity.getTeam() != null) {
+            throw new TeamServiceException("User with email: " + userEmail + " have assigned team.");
+        }
+
         userEntity.setTeam(teamEntity);
         var teamUsers = teamEntity.getUsers();
         teamUsers.add(userEntity);
