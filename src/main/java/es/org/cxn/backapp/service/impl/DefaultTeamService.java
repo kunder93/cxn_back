@@ -81,6 +81,7 @@ public final class DefaultTeamService implements TeamService {
     }
 
     @Override
+    @Transactional
     public TeamInfoDto addMember(final String teamName, final String userEmail) throws TeamServiceException {
 
         final var teamOptional = teamRepository.findById(teamName);
