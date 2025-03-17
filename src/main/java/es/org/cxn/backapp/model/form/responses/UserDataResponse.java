@@ -29,8 +29,10 @@ package es.org.cxn.backapp.model.form.responses;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
+import es.org.cxn.backapp.model.TeamEntity;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
@@ -64,12 +66,13 @@ import es.org.cxn.backapp.model.persistence.user.UserType;
  *                      {@link AddressResponse}.
  * @param userRoles     The set of role names associated with the user,
  *                      represented by {@link UserRoleName}.
+ * @param teamName      The team name assigned to this user. Can be null.
  *
  * @author Santiago Paz Perez
  */
 public record UserDataResponse(String dni, String name, String firstSurname, String secondSurname, String gender,
         LocalDate birthDate, String email, UserType kindMember, AddressResponse userAddress,
-        Set<UserRoleName> userRoles) {
+        Set<UserRoleName> userRoles, String teamName) {
 
     /**
      * Constructs a {@code UserDataResponse} record from all parameters.
@@ -91,10 +94,11 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
      *                      {@link AddressResponse}.
      * @param userRoles     The set of role names associated with the user,
      *                      represented by {@link UserRoleName}.
+     * @param teamName      The the team name assigned to this user. Can be null.
      */
     public UserDataResponse(final String dni, final String name, final String firstSurname, final String secondSurname,
             final String gender, final LocalDate birthDate, final String email, final UserType kindMember,
-            final AddressResponse userAddress, final Set<UserRoleName> userRoles) {
+            final AddressResponse userAddress, final Set<UserRoleName> userRoles, final String teamName) {
         this.dni = dni;
         this.name = name;
         this.firstSurname = firstSurname;
@@ -105,6 +109,8 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
         this.kindMember = kindMember;
         this.userAddress = userAddress;
         this.userRoles = EnumSet.copyOf(userRoles);
+        this.teamName = teamName;
+
     }
 
     /**
@@ -120,7 +126,8 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
     public UserDataResponse(final UserEntity user) {
         this(user.getDni(), user.getProfile().getName(), user.getProfile().getFirstSurname(),
                 user.getProfile().getSecondSurname(), user.getProfile().getGender(), user.getProfile().getBirthDate(),
-                user.getEmail(), user.getKindMember(), new AddressResponse(user.getAddress()), extractUserRoles(user));
+                user.getEmail(), user.getKindMember(), new AddressResponse(user.getAddress()), extractUserRoles(user),
+                Optional.ofNullable(user.getTeam()).map(TeamEntity::getName).orElse(null));
     }
 
     /**

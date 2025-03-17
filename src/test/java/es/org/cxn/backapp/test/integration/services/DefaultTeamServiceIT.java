@@ -47,6 +47,7 @@ import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.repository.TeamEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
+import es.org.cxn.backapp.service.TeamService;
 import es.org.cxn.backapp.service.dto.TeamInfoDto;
 import es.org.cxn.backapp.service.exceptions.TeamServiceException;
 import es.org.cxn.backapp.service.impl.DefaultTeamService;
@@ -109,7 +110,7 @@ final class DefaultTeamServiceIT {
      * members, and retrieving team information during the integration tests.
      */
     @Autowired
-    private DefaultTeamService teamService;
+    private TeamService teamService;
 
     /**
      * A persistent user entity for testing purposes. This user is created before

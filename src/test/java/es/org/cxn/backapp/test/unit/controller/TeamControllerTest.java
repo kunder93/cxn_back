@@ -88,8 +88,10 @@ class TeamControllerTest {
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Description", "Category", List.of(userDto));
         when(teamService.addMember("team1", "user@test.com")).thenReturn(mockDto);
 
-        mockMvc.perform(patch("/api/team/team1").param("userEmail", "user@test.com")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("team1"))
+        String requestBody = "{\"userEmail\": \"user@test.com\"}";
+
+        mockMvc.perform(patch("/api/team/team1").contentType(MediaType.APPLICATION_JSON).content(requestBody))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("team1"))
                 .andExpect(jsonPath("$.members[0].email").value("user@test.com"));
 
         verify(teamService).addMember("team1", "user@test.com");
@@ -106,7 +108,9 @@ class TeamControllerTest {
         when(teamService.addMember("team1", "invalid@user.com"))
                 .thenThrow(new TeamServiceException("Exception message"));
 
-        mockMvc.perform(patch("/api/team/team1").param("userEmail", "invalid@user.com"))
+        String requestBody = "{\"userEmail\": \"invalid@user.com\"}";
+
+        mockMvc.perform(patch("/api/team/team1").contentType(MediaType.APPLICATION_JSON).content(requestBody))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.content").value("400 BAD_REQUEST \"Exception message\""))
                 .andExpect(jsonPath("$.status").value("failure"));

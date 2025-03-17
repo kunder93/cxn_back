@@ -41,6 +41,7 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.TeamService;
 import es.org.cxn.backapp.service.dto.TeamInfoDto;
 import es.org.cxn.backapp.service.exceptions.TeamServiceException;
+import jakarta.transaction.Transactional;
 
 /**
  * Default implementation of the {@link TeamService} interface.
@@ -80,6 +81,7 @@ public final class DefaultTeamService implements TeamService {
     }
 
     @Override
+    @Transactional
     public TeamInfoDto addMember(final String teamName, final String userEmail) throws TeamServiceException {
 
         final var teamOptional = teamRepository.findById(teamName);
@@ -92,6 +94,11 @@ public final class DefaultTeamService implements TeamService {
         }
         var userEntity = userOptional.get();
         var teamEntity = teamOptional.get();
+
+        if (userEntity.getTeam() != null) {
+            throw new TeamServiceException("User with email: " + userEmail + " have assigned team.");
+        }
+
         userEntity.setTeam(teamEntity);
         var teamUsers = teamEntity.getUsers();
         teamUsers.add(userEntity);
@@ -135,6 +142,7 @@ public final class DefaultTeamService implements TeamService {
     }
 
     @Override
+    @Transactional
     public TeamInfoDto removeMember(final String teamName, final String userEmail) throws TeamServiceException {
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
@@ -155,12 +163,14 @@ public final class DefaultTeamService implements TeamService {
         var teamUsers = teamEntity.getUsers();
         teamUsers.remove(userEntity);
         userEntity.setTeam(null);
-        final var savedTeamEntity = teamRepository.save(teamEntity);
         userRepository.save(userEntity);
+        final var savedTeamEntity = teamRepository.save(teamEntity);
+
         return new TeamInfoDto(savedTeamEntity);
     }
 
     @Override
+    @Transactional
     public void removeTeam(final String teamName) throws TeamServiceException {
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
