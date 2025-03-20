@@ -37,7 +37,7 @@ import java.util.Base64;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
+import es.org.cxn.backapp.model.form.responses.user.ProfileImageResponse;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;

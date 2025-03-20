@@ -45,9 +45,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.model.form.requests.ConfirmCancelFederateRequest;
-import es.org.cxn.backapp.model.form.responses.DniImagesResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList.FederateStateExtendedResponse;
+import es.org.cxn.backapp.model.form.responses.user.DniImagesResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateResponse;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.UserService;

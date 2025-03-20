@@ -65,7 +65,7 @@ import com.jayway.jsonpath.JsonPath;
 
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
-import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.user.auth.AuthenticationResponse;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;

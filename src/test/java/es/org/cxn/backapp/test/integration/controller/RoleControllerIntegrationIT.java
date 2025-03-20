@@ -56,8 +56,8 @@ import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.UserChangeRoleRequest;
-import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
-import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserChangeRoleResponse;
+import es.org.cxn.backapp.model.form.responses.user.auth.SignUpResponseForm;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.LocalDateAdapter;

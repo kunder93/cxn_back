@@ -39,9 +39,9 @@ import org.junit.jupiter.api.Test;
 
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.responses.AddressResponse;
-import es.org.cxn.backapp.model.form.responses.UserDataResponse;
-import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserListDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.AddressResponse;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;

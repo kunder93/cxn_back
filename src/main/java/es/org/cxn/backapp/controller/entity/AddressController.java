@@ -38,8 +38,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.model.CountryEntity;
-import es.org.cxn.backapp.model.form.responses.CountryListResponse;
-import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.CountryListResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.SubCountryListResponse;
 import es.org.cxn.backapp.service.AddressService;
 import es.org.cxn.backapp.service.exceptions.AddressServiceException;
 

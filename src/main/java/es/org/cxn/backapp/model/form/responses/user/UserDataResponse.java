@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.model.form.responses;
+package es.org.cxn.backapp.model.form.responses.user;
 
 /*-
  * #%L
@@ -35,6 +35,7 @@ import java.util.Set;
 import es.org.cxn.backapp.model.TeamEntity;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.form.responses.user.address.AddressResponse;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 
