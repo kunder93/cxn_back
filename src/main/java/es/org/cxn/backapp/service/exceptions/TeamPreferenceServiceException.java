@@ -1,10 +1,13 @@
-package es.org.cxn.backapp.service.dto;
+
+package es.org.cxn.backapp.service.exceptions;
+
+import java.io.Serial;
 
 /*-
  * #%L
- * CXN-back-app
+ * back-app
  * %%
- * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,21 +30,26 @@ package es.org.cxn.backapp.service.dto;
  */
 
 /**
- * Represents a Data Transfer Object (DTO) for user information in a team
- * context. This record provides an immutable representation of a user's details
- * relevant to team operations.
+ * Exception thrown by team preference.
  *
- * @param dni           The unique identifier (DNI) of the user.
- * @param email         The email address of the user.
- * @param name          The first name of the user.
- * @param firstSurname  The first surname of the user.
- * @param secondSurname The second surname of the user.
- * @param gender        The gender of the user.
- * @param birthDate     The birth date of the user in string format.
- * @param assignedTeam  The user assigned team.
- * @param preferredTeam The user preferred team.
+ * @author Santiago Paz.
+ *
  */
-public record UserTeamInfoDto(String dni, String email, String name, String firstSurname, String secondSurname,
-        String gender, String birthDate, String assignedTeam, String preferredTeam) {
+public final class TeamPreferenceServiceException extends Exception {
+
+    /**
+     * Serial UID.
+     */
+    @Serial
+    private static final long serialVersionUID = 4111625113111123252L;
+
+    /**
+     * Main constructor.
+     *
+     * @param value exception message.
+     */
+    public TeamPreferenceServiceException(final String value) {
+        super(value);
+    }
 
 }

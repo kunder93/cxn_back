@@ -30,6 +30,7 @@ import java.util.List;
  */
 
 import es.org.cxn.backapp.service.dto.TeamInfoDto;
+import es.org.cxn.backapp.service.dto.UserTeamInfoDto;
 import es.org.cxn.backapp.service.exceptions.TeamServiceException;
 
 /**
@@ -52,7 +53,9 @@ public interface TeamService {
      * @throws TeamServiceException if the team or user does not exist, or if an
      *                              error occurs while adding the member.
      */
-    TeamInfoDto addMember(String teamName, String userEmail) throws TeamServiceException;
+    TeamInfoDto addAssignedMember(String teamName, String userEmail) throws TeamServiceException;
+
+    UserTeamInfoDto addTeamPreference(String userEmail, String teamName) throws TeamServiceException;
 
     /**
      * Creates a new team.
@@ -90,7 +93,7 @@ public interface TeamService {
      * @throws TeamServiceException if the team or user does not exist, or if the
      *                              user is not a member of the team.
      */
-    TeamInfoDto removeMember(String teamName, String userEmail) throws TeamServiceException;
+    TeamInfoDto removeAssignedMember(String teamName, String userEmail) throws TeamServiceException;
 
     /**
      * Deletes a team and removes all its members.
@@ -100,4 +103,6 @@ public interface TeamService {
      *                              during deletion.
      */
     void removeTeam(String teamName) throws TeamServiceException;
+
+    UserTeamInfoDto removeTeamPreference(String userEmail) throws TeamServiceException;
 }

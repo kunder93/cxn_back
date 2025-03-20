@@ -149,7 +149,7 @@ final class DefaultTeamServiceIT {
     void shouldAddMemberToTeam() throws TeamServiceException {
         teamService.createTeam(TEAM_NAME, TEAM_DESCRIPTION, TEAM_CATEGORY);
 
-        TeamInfoDto updatedTeam = teamService.addMember(TEAM_NAME, USER_EMAIL);
+        TeamInfoDto updatedTeam = teamService.addAssignedMember(TEAM_NAME, USER_EMAIL);
         assertThat(updatedTeam.users()).hasSize(1);
     }
 
@@ -207,9 +207,9 @@ final class DefaultTeamServiceIT {
     @Transactional
     void shouldRemoveMemberFromTeam() throws TeamServiceException {
         teamService.createTeam(TEAM_NAME, TEAM_DESCRIPTION, TEAM_CATEGORY);
-        teamService.addMember(TEAM_NAME, USER_EMAIL);
+        teamService.addAssignedMember(TEAM_NAME, USER_EMAIL);
 
-        TeamInfoDto updatedTeam = teamService.removeMember(TEAM_NAME, USER_EMAIL);
+        TeamInfoDto updatedTeam = teamService.removeAssignedMember(TEAM_NAME, USER_EMAIL);
         assertThat(updatedTeam.users()).isEmpty();
     }
 
@@ -241,7 +241,7 @@ final class DefaultTeamServiceIT {
         teamService.createTeam(TEAM_NAME, TEAM_DESCRIPTION, TEAM_CATEGORY);
 
         // Try adding a non-existing user
-        assertThatThrownBy(() -> teamService.addMember(TEAM_NAME, "nonExistentUser@email.es"))
+        assertThatThrownBy(() -> teamService.addAssignedMember(TEAM_NAME, "nonExistentUser@email.es"))
                 .isInstanceOf(TeamServiceException.class)
                 .hasMessageContaining("User with provided email: " + "nonExistentUser@email.es" + " not found.");
     }
@@ -254,7 +254,7 @@ final class DefaultTeamServiceIT {
     @Transactional
     void shouldThrowExceptionWhenAddUserToNotExistingTeam() {
         // Try adding a member to a non-existing team
-        assertThatThrownBy(() -> teamService.addMember("NonExistentTeam", USER_EMAIL))
+        assertThatThrownBy(() -> teamService.addAssignedMember("NonExistentTeam", USER_EMAIL))
                 .isInstanceOf(TeamServiceException.class).hasMessageContaining("Team not found");
     }
 
@@ -267,7 +267,7 @@ final class DefaultTeamServiceIT {
     void shouldThrowExceptionWhenRemoveFromNotExistingTeam() {
 
         // Try removing a member from a non-existing team
-        assertThatThrownBy(() -> teamService.removeMember("NonExistentTeam", USER_EMAIL))
+        assertThatThrownBy(() -> teamService.removeAssignedMember("NonExistentTeam", USER_EMAIL))
                 .isInstanceOf(TeamServiceException.class).hasMessageContaining("Team not found");
     }
 
@@ -284,7 +284,7 @@ final class DefaultTeamServiceIT {
         teamService.createTeam(TEAM_NAME, TEAM_DESCRIPTION, TEAM_CATEGORY);
 
         // Try removing a user that is not part of the team
-        assertThatThrownBy(() -> teamService.removeMember(TEAM_NAME, "nonExistentUser@email.es"))
+        assertThatThrownBy(() -> teamService.removeAssignedMember(TEAM_NAME, "nonExistentUser@email.es"))
                 .isInstanceOf(TeamServiceException.class)
                 .hasMessageContaining("User with provided email: " + "nonExistentUser@email.es" + " not found.");
     }

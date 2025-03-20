@@ -130,7 +130,14 @@ public interface UserEntity extends Serializable {
      *
      * @return The team assigned.
      */
-    PersistentTeamEntity getTeam();
+    PersistentTeamEntity getTeamAssigned();
+
+    /**
+     * Get the team preferred by this user.
+     *
+     * @return The team preferred.
+     */
+    PersistentTeamEntity getTeamPreferred();
 
     /**
      * Checks if the user's account is enabled.
@@ -228,6 +235,13 @@ public interface UserEntity extends Serializable {
      *
      * @param team The team assigned.
      */
-    void setTeam(PersistentTeamEntity team);
+    void setTeamAssigned(PersistentTeamEntity team);
+
+    /**
+     * Sets the team preferred by this user.
+     *
+     * @param teamPreferred The team preferred.
+     */
+    void setTeamPreferred(PersistentTeamEntity teamPreferred);
 
 }

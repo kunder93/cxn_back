@@ -90,7 +90,7 @@ public class TeamController {
     public ResponseEntity<TeamInfoResponse> addUserToTeam(@PathVariable
     @Size(max = 100) final String teamName, @RequestBody final AddUserRequest addUserRequest) {
         try {
-            final var updatedTeam = teamService.addMember(teamName, addUserRequest.userEmail());
+            final var updatedTeam = teamService.addAssignedMember(teamName, addUserRequest.userEmail());
             return ResponseEntity.ok(new TeamInfoResponse(updatedTeam));
         } catch (TeamServiceException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
@@ -183,7 +183,7 @@ public class TeamController {
             @NotBlank
             @Email String userEmail) {
         try {
-            final var updatedTeam = teamService.removeMember(teamName, userEmail);
+            final var updatedTeam = teamService.removeAssignedMember(teamName, userEmail);
             return ResponseEntity.ok(new TeamInfoResponse(updatedTeam));
         } catch (TeamServiceException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);

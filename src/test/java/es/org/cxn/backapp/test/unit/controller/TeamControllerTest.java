@@ -84,9 +84,9 @@ class TeamControllerTest {
     @Test
     void addUserToTeam_Success() throws Exception {
         UserTeamInfoDto userDto = new UserTeamInfoDto("12345678A", "user@test.com", "John", "Doe", "Smith", "Male",
-                "1990-01-01");
+                "1990-01-01", null, null);
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Description", "Category", List.of(userDto));
-        when(teamService.addMember("team1", "user@test.com")).thenReturn(mockDto);
+        when(teamService.addAssignedMember("team1", "user@test.com")).thenReturn(mockDto);
 
         String requestBody = "{\"userEmail\": \"user@test.com\"}";
 
@@ -94,7 +94,7 @@ class TeamControllerTest {
                 .andExpect(status().isOk()).andExpect(jsonPath("$.name").value("team1"))
                 .andExpect(jsonPath("$.members[0].email").value("user@test.com"));
 
-        verify(teamService).addMember("team1", "user@test.com");
+        verify(teamService).addAssignedMember("team1", "user@test.com");
     }
 
     /**
@@ -105,7 +105,7 @@ class TeamControllerTest {
      */
     @Test
     void addUserToTeam_TeamServiceException() throws Exception {
-        when(teamService.addMember("team1", "invalid@user.com"))
+        when(teamService.addAssignedMember("team1", "invalid@user.com"))
                 .thenThrow(new TeamServiceException("Exception message"));
 
         String requestBody = "{\"userEmail\": \"invalid@user.com\"}";
@@ -172,9 +172,9 @@ class TeamControllerTest {
     @Test
     void getAllTeams_Success() throws Exception {
         UserTeamInfoDto user1 = new UserTeamInfoDto("dni1", "user1@test.com", "Alice", "Smith", "Brown", "Female",
-                "1985-05-05");
+                "1985-05-05", null, null);
         UserTeamInfoDto user2 = new UserTeamInfoDto("dni2", "user2@test.com", "Bob", "Johnson", "Green", "Male",
-                "1990-10-10");
+                "1990-10-10", null, null);
         TeamInfoDto team1 = new TeamInfoDto("team1", "Desc1", "Cat1", List.of(user1));
         TeamInfoDto team2 = new TeamInfoDto("team2", "Desc2", "Cat2", List.of(user2));
         when(teamService.getAllTeams()).thenReturn(List.of(team1, team2));
@@ -213,7 +213,7 @@ class TeamControllerTest {
     @Test
     void getTeamInfo_Success() throws Exception {
         UserTeamInfoDto user = new UserTeamInfoDto("dni3", "member@test.com", "Charlie", "Davis", "White", "Male",
-                "2000-01-01");
+                "2000-01-01", null, null);
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Desc", "Cat", List.of(user));
         when(teamService.getTeamInfo("team1")).thenReturn(mockDto);
 
@@ -266,7 +266,7 @@ class TeamControllerTest {
      */
     @Test
     void removeUserFromTeam_ExceptionThrown() throws Exception {
-        when(teamService.removeMember("team1", "invalid@user.com"))
+        when(teamService.removeAssignedMember("team1", "invalid@user.com"))
                 .thenThrow(new TeamServiceException("User not in team"));
 
         mockMvc.perform(delete("/api/team/team1/invalid@user.com")).andExpect(status().isBadRequest())
@@ -284,7 +284,7 @@ class TeamControllerTest {
     @Test
     void removeUserFromTeam_Success() throws Exception {
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Desc", "Cat", Collections.emptyList());
-        when(teamService.removeMember("team1", "user@test.com")).thenReturn(mockDto);
+        when(teamService.removeAssignedMember("team1", "user@test.com")).thenReturn(mockDto);
 
         mockMvc.perform(delete("/api/team/team1/user@test.com")).andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("team1")).andExpect(jsonPath("$.members").isEmpty());

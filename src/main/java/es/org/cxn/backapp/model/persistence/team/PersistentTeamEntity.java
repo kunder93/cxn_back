@@ -81,10 +81,16 @@ public class PersistentTeamEntity implements TeamEntity {
     private String description;
 
     /**
-     * The list of users that belong to this team.
+     * The list of users that are assigned to this team.
      */
-    @OneToMany(mappedBy = "team")
-    private List<PersistentUserEntity> users = new ArrayList<>();
+    @OneToMany(mappedBy = "teamAssigned")
+    private List<PersistentUserEntity> usersAssigned = new ArrayList<>();
+
+    /**
+     * The list of users that have this team as or.
+     */
+    @OneToMany(mappedBy = "teamPreferred")
+    private List<PersistentUserEntity> usersPreferred = new ArrayList<>();
 
     /**
      * Default constructor.
@@ -163,8 +169,18 @@ public class PersistentTeamEntity implements TeamEntity {
      * @return a list of {@link PersistentUserEntity} representing the team members.
      */
     @Override
-    public List<PersistentUserEntity> getUsers() {
-        return users;
+    public List<PersistentUserEntity> getUsersAssigned() {
+        return usersAssigned;
+    }
+
+    /**
+     * Gets the list of users that have this team as preferred.
+     *
+     * @return a list of {@link PersistentUserEntity} representing the team members.
+     */
+    @Override
+    public List<PersistentUserEntity> getUsersPreferred() {
+        return usersPreferred;
     }
 
     /**
@@ -209,13 +225,24 @@ public class PersistentTeamEntity implements TeamEntity {
     }
 
     /**
-     * Sets the list of users associated with the team.
+     * Sets the list of users associated as assgined to team.
      *
      * @param users a list of {@link PersistentUserEntity} to associate with the
      *              team.
      */
     @Override
-    public void setUsers(final List<PersistentUserEntity> users) {
-        this.users = users;
+    public void setUsersAssigned(final List<PersistentUserEntity> users) {
+        this.usersAssigned = users;
+    }
+
+    /**
+     * Sets the list of users associated as preferred to team.
+     *
+     * @param users a list of {@link PersistentUserEntity} to associate with the
+     *              team.
+     */
+    @Override
+    public void setUsersPreferred(final List<PersistentUserEntity> users) {
+        this.usersPreferred = users;
     }
 }

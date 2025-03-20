@@ -126,10 +126,12 @@ class UserDataResponseTest {
         AddressResponse address = new AddressResponse("PostalCode", "Apartment", "Building", "Street", "City",
                 "Country", "SubCountry");
         Set<UserRoleName> roles = EnumSet.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_PRESIDENTE);
-        String teamName = "TeamChess";
+        String assignedTeamName = "TeamChess";
+        String preferredTeamName = "TeamChess";
         // Act
         UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
-                USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, kindMember, address, roles, teamName);
+                USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, kindMember, address, roles, assignedTeamName,
+                preferredTeamName);
 
         // Assert
         assertEquals(USER_DNI, response.dni());
@@ -202,11 +204,12 @@ class UserDataResponseTest {
     void testUserRolesDefensiveCopy() {
         // Arrange
         Set<UserRoleName> roles = EnumSet.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
-        String teamName = "TeamChess";
+        String assignedTeamName = "TeamChess";
+        String preferredTeamName = "TeamChess";
         UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
                 USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, UserType.SOCIO_NUMERO,
                 new AddressResponse("PostalCode", "Apartment", "Building", "Street", "City", "Country", "SubCountry"),
-                roles, teamName);
+                roles, assignedTeamName, preferredTeamName);
 
         // Act
         Set<UserRoleName> responseRoles = response.userRoles();

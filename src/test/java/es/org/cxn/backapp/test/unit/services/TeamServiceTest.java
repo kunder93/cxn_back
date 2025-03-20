@@ -141,7 +141,7 @@ class TeamServiceTest {
         when(teamEntityRepository.findById(teamName)).thenReturn(Optional.empty());
 
         TeamServiceException exception = assertThrows(TeamServiceException.class, () -> {
-            teamService.addMember(teamName, userEmail);
+            teamService.addAssignedMember(teamName, userEmail);
         });
 
         assertEquals("Team with name: " + teamName + " not found.", exception.getMessage());
@@ -167,7 +167,7 @@ class TeamServiceTest {
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
 
         TeamServiceException exception = assertThrows(TeamServiceException.class, () -> {
-            teamService.addMember(teamName, userEmail);
+            teamService.addAssignedMember(teamName, userEmail);
         });
 
         assertEquals("User with provided email: " + userEmail + " not found.", exception.getMessage());
@@ -198,7 +198,7 @@ class TeamServiceTest {
         when(userRepository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(userEntity));
         when(teamEntityRepository.save(any(PersistentTeamEntity.class))).thenReturn(teamEntity);
 
-        TeamInfoDto result = teamService.addMember(TEAM_NAME, USER_EMAIL);
+        TeamInfoDto result = teamService.addAssignedMember(TEAM_NAME, USER_EMAIL);
 
         assertThat(result).isNotNull();
         assertThat(result.users()).isNotEmpty();
@@ -245,14 +245,14 @@ class TeamServiceTest {
      */
     @Test
     void shouldRemoveMemberFromTeam() throws TeamServiceException {
-        teamEntity.setUsers(new ArrayList<>(List.of(userEntity)));
-        userEntity.setTeam(teamEntity);
+        teamEntity.setUsersAssigned(new ArrayList<>(List.of(userEntity)));
+        userEntity.setTeamAssigned(teamEntity);
 
         when(teamEntityRepository.findById(TEAM_NAME)).thenReturn(Optional.of(teamEntity));
         when(userRepository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(userEntity));
         when(teamEntityRepository.save(any(PersistentTeamEntity.class))).thenReturn(teamEntity);
 
-        TeamInfoDto result = teamService.removeMember(TEAM_NAME, USER_EMAIL);
+        TeamInfoDto result = teamService.removeAssignedMember(TEAM_NAME, USER_EMAIL);
 
         assertThat(result).isNotNull();
         assertThat(result.users()).isEmpty();
@@ -290,7 +290,7 @@ class TeamServiceTest {
         userProfile1.setBirthDate(LocalDate.of(1991, 5, 23));
         user1.setEmail("user1@email.com");
         user1.setProfile(userProfile1);
-        user1.setTeam(teamEntity);
+        user1.setTeamAssigned(teamEntity);
 
         PersistentUserEntity user2 = new PersistentUserEntity();
         UserProfile userProfile2 = new UserProfile();
@@ -300,10 +300,10 @@ class TeamServiceTest {
         userProfile2.setBirthDate(LocalDate.of(1991, 5, 23));
         user2.setEmail("user2@email.com");
         user2.setProfile(userProfile2);
-        user2.setTeam(teamEntity);
+        user2.setTeamAssigned(teamEntity);
 
         List<PersistentUserEntity> users = new ArrayList<>(List.of(user1, user2));
-        teamEntity.setUsers(users);
+        teamEntity.setUsersAssigned(users);
 
         when(teamEntityRepository.findById(TEAM_NAME)).thenReturn(Optional.of(teamEntity));
         when(userRepository.findByEmail("user1@email.com")).thenReturn(Optional.of(user1));
@@ -330,7 +330,7 @@ class TeamServiceTest {
         when(teamEntityRepository.findById(teamName)).thenReturn(Optional.empty());
 
         TeamServiceException exception = assertThrows(TeamServiceException.class, () -> {
-            teamService.removeMember(teamName, userEmail);
+            teamService.removeAssignedMember(teamName, userEmail);
         });
 
         assertEquals("Team with name: " + teamName + " not found.", exception.getMessage());
@@ -356,7 +356,7 @@ class TeamServiceTest {
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
 
         TeamServiceException exception = assertThrows(TeamServiceException.class, () -> {
-            teamService.removeMember(teamName, userEmail);
+            teamService.removeAssignedMember(teamName, userEmail);
         });
 
         assertEquals("User with provided email: " + userEmail + " not found.", exception.getMessage());
@@ -388,12 +388,12 @@ class TeamServiceTest {
     @Test
     void shouldThrowWhenRemovingUserFromDifferentTeam() {
         PersistentTeamEntity anotherTeam = new PersistentTeamEntity("AnotherTeam", "Segunda", "Another chess team");
-        userEntity.setTeam(anotherTeam);
+        userEntity.setTeamAssigned(anotherTeam);
 
         when(teamEntityRepository.findById(TEAM_NAME)).thenReturn(Optional.of(teamEntity));
         when(userRepository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(userEntity));
 
-        assertThatThrownBy(() -> teamService.removeMember(TEAM_NAME, USER_EMAIL))
+        assertThatThrownBy(() -> teamService.removeAssignedMember(TEAM_NAME, USER_EMAIL))
                 .isInstanceOf(TeamServiceException.class)
                 .hasMessage("User with email: " + USER_EMAIL + " no found in team.");
     }
@@ -407,7 +407,7 @@ class TeamServiceTest {
         when(teamEntityRepository.findById(TEAM_NAME)).thenReturn(Optional.of(teamEntity));
         when(userRepository.findByEmail(USER_EMAIL)).thenReturn(Optional.of(userEntity));
 
-        assertThatThrownBy(() -> teamService.removeMember(TEAM_NAME, USER_EMAIL))
+        assertThatThrownBy(() -> teamService.removeAssignedMember(TEAM_NAME, USER_EMAIL))
                 .isInstanceOf(TeamServiceException.class)
                 .hasMessage("User with email: " + USER_EMAIL + " no have assigned team.");
     }

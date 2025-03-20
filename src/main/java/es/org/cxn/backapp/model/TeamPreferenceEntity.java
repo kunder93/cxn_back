@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.service.dto;
+package es.org.cxn.backapp.model;
 
 /*-
  * #%L
@@ -12,10 +12,10 @@ package es.org.cxn.backapp.service.dto;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,21 +27,46 @@ package es.org.cxn.backapp.service.dto;
  */
 
 /**
- * Represents a Data Transfer Object (DTO) for user information in a team
- * context. This record provides an immutable representation of a user's details
- * relevant to team operations.
+ * Represents a team preference entity that defines the association between a
+ * user and their preferred team. Implementations of this interface manage the
+ * team name and user email, typically used as a composite key for storing user
+ * preferences.
  *
- * @param dni           The unique identifier (DNI) of the user.
- * @param email         The email address of the user.
- * @param name          The first name of the user.
- * @param firstSurname  The first surname of the user.
- * @param secondSurname The second surname of the user.
- * @param gender        The gender of the user.
- * @param birthDate     The birth date of the user in string format.
- * @param assignedTeam  The user assigned team.
- * @param preferredTeam The user preferred team.
+ * <p>
+ * This interface extends {@code Serializable} to allow implementations to be
+ * serialized.
+ * </p>
+ *
+ * @author
+ * @version 1.0
  */
-public record UserTeamInfoDto(String dni, String email, String name, String firstSurname, String secondSurname,
-        String gender, String birthDate, String assignedTeam, String preferredTeam) {
+public interface TeamPreferenceEntity extends java.io.Serializable {
 
+    /**
+     * Retrieves the name of the preferred team.
+     *
+     * @return the team name.
+     */
+    public String getTeamName();
+
+    /**
+     * Retrieves the email of the user who set the team preference.
+     *
+     * @return the user email.
+     */
+    public String getUserEmail();
+
+    /**
+     * Sets the name of the preferred team.
+     *
+     * @param teamName the team name to set.
+     */
+    public void setTeamName(String teamName);
+
+    /**
+     * Sets the email of the user who set the team preference.
+     *
+     * @param userEmail the user email to set.
+     */
+    public void setUserEmail(String userEmail);
 }

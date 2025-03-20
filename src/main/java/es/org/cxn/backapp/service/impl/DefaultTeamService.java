@@ -40,6 +40,7 @@ import es.org.cxn.backapp.repository.TeamEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.TeamService;
 import es.org.cxn.backapp.service.dto.TeamInfoDto;
+import es.org.cxn.backapp.service.dto.UserTeamInfoDto;
 import es.org.cxn.backapp.service.exceptions.TeamServiceException;
 import jakarta.transaction.Transactional;
 
@@ -82,7 +83,7 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public TeamInfoDto addMember(final String teamName, final String userEmail) throws TeamServiceException {
+    public TeamInfoDto addAssignedMember(final String teamName, final String userEmail) throws TeamServiceException {
 
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
@@ -95,17 +96,49 @@ public final class DefaultTeamService implements TeamService {
         var userEntity = userOptional.get();
         var teamEntity = teamOptional.get();
 
-        if (userEntity.getTeam() != null) {
+        if (userEntity.getTeamAssigned() != null) {
             throw new TeamServiceException("User with email: " + userEmail + " have assigned team.");
         }
 
-        userEntity.setTeam(teamEntity);
-        var teamUsers = teamEntity.getUsers();
+        userEntity.setTeamAssigned(teamEntity);
+        var teamUsers = teamEntity.getUsersAssigned();
         teamUsers.add(userEntity);
-        teamEntity.setUsers(teamUsers);
+        teamEntity.setUsersAssigned(teamUsers);
         final var savedTeamEntity = teamRepository.save(teamEntity);
         userRepository.save(userEntity);
         return new TeamInfoDto(savedTeamEntity);
+    }
+
+    @Override
+    @Transactional
+    public UserTeamInfoDto addTeamPreference(String userEmail, String teamName) throws TeamServiceException {
+        final var teamOptional = teamRepository.findById(teamName);
+        if (teamOptional.isEmpty()) {
+            throw new TeamServiceException(teamNotFoundMessage(teamName));
+        }
+        final var userOptional = userRepository.findByEmail(userEmail);
+        if (userOptional.isEmpty()) {
+            throw new TeamServiceException(userNotFoundMessage(userEmail));
+        }
+
+        final var userEntity = userOptional.get();
+        final var teamEntity = teamOptional.get();
+
+        userEntity.setTeamPreferred(teamEntity);
+        var userPreferredTeamList = teamEntity.getUsersPreferred();
+        userPreferredTeamList.add(userEntity);
+
+        final var userWithNoPreference = userRepository.save(userEntity);
+        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+
+        return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
+                userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),
+                userWithNoPreference.getProfile().getSecondSurname(), userWithNoPreference.getProfile().getGender(),
+                userWithNoPreference.getProfile().getBirthDate().toString(),
+                userWithNoPreference.getTeamAssigned() == null ? null
+                        : userWithNoPreference.getTeamAssigned().getName(),
+                userWithNoPreference.getTeamPreferred() == null ? null
+                        : userWithNoPreference.getTeamPreferred().getName());
     }
 
     @Override
@@ -143,7 +176,7 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public TeamInfoDto removeMember(final String teamName, final String userEmail) throws TeamServiceException {
+    public TeamInfoDto removeAssignedMember(final String teamName, final String userEmail) throws TeamServiceException {
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
             throw new TeamServiceException(teamNotFoundMessage(teamName));
@@ -154,15 +187,15 @@ public final class DefaultTeamService implements TeamService {
         }
         var userEntity = userOptional.get();
         var teamEntity = teamOptional.get();
-        if (userEntity.getTeam() == null) {
+        if (userEntity.getTeamAssigned() == null) {
             throw new TeamServiceException("User with email: " + userEmail + " no have assigned team.");
         }
-        if (!teamEntity.getUsers().contains(userEntity)) {
+        if (!teamEntity.getUsersAssigned().contains(userEntity)) {
             throw new TeamServiceException("User with email: " + userEmail + " no found in team.");
         }
-        var teamUsers = teamEntity.getUsers();
+        var teamUsers = teamEntity.getUsersAssigned();
         teamUsers.remove(userEntity);
-        userEntity.setTeam(null);
+        userEntity.setTeamAssigned(null);
         userRepository.save(userEntity);
         final var savedTeamEntity = teamRepository.save(teamEntity);
 
@@ -177,12 +210,53 @@ public final class DefaultTeamService implements TeamService {
             throw new TeamServiceException(teamNotFoundMessage(teamName));
         }
         var teamEntity = teamOptional.get();
-        var teamUsers = new ArrayList<>(teamEntity.getUsers()); // Copia para evitar errores de modificación
+        var teamUsers = new ArrayList<>(teamEntity.getUsersAssigned()); // Copia para evitar errores de modificación
 
         for (UserEntity user : teamUsers) {
-            removeMember(teamName, user.getEmail());
+            removeAssignedMember(teamName, user.getEmail());
         }
         teamRepository.delete(teamEntity);
+    }
+
+    @Override
+    @Transactional
+    public UserTeamInfoDto removeTeamPreference(String userEmail) throws TeamServiceException {
+
+        final var userOptional = userRepository.findByEmail(userEmail);
+        if (userOptional.isEmpty()) {
+            throw new TeamServiceException(userNotFoundMessage(userEmail));
+        }
+        final var userEntity = userOptional.get();
+        final var teamEntity = userEntity.getTeamPreferred();
+
+        if (teamEntity == null) {
+            throw new TeamServiceException("User with email: " + userEmail + " no have preferred team.");
+        }
+
+        if (userEntity.getTeamPreferred() == null) {
+            throw new TeamServiceException("User with email: " + userEmail + " no have team preference.");
+        }
+        if (!teamEntity.getUsersPreferred().contains(userEntity)) {
+            throw new TeamServiceException("Team with name: " + teamEntity.getName() + " no contain user with email: "
+                    + userEmail + " as users with this team preference");
+        }
+
+        final var usersThatPreferTeam = teamEntity.getUsersPreferred();
+        usersThatPreferTeam.remove(userEntity);
+        teamEntity.setUsersPreferred(usersThatPreferTeam);
+        userEntity.setTeamPreferred(null);
+
+        final var userWithNoPreference = userRepository.save(userEntity);
+        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+
+        return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
+                userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),
+                userWithNoPreference.getProfile().getSecondSurname(), userWithNoPreference.getProfile().getGender(),
+                userWithNoPreference.getProfile().getBirthDate().toString(),
+                userWithNoPreference.getTeamAssigned() == null ? null
+                        : userWithNoPreference.getTeamAssigned().getName(),
+                userWithNoPreference.getTeamPreferred() == null ? null
+                        : userWithNoPreference.getTeamPreferred().getName());
     }
 
     private String teamNotFoundMessage(final String teamName) {

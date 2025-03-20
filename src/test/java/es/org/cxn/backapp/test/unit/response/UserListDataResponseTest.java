@@ -231,7 +231,7 @@ class UserListDataResponseTest {
                         "SubCountry" // subCountryName
                 ), // userAddress (mocked value)
                 Set.of(UserRoleName.ROLE_SOCIO), // userRoles (mocked value)
-                "TeamName");
+                "TeamNameAssigned", "TeamNamePreferred");
 
         List<UserDataResponse> users = List.of(user1);
         UserListDataResponse response = new UserListDataResponse(users);
@@ -255,7 +255,7 @@ class UserListDataResponseTest {
                         "Other SubCountry" // subCountryName
                 ), // userAddress (mocked value)
                 Set.of(UserRoleName.ROLE_ADMIN), // userRoles (mocked value)
-                "TeamName"));
+                "TeamNameAssigned", "TeamNamePreferred"));
 
         assertEquals(1, response.usersList().size()); // Ensure original list is unchanged
         assertEquals(2, copiedList.size()); // The copied list should be changed
