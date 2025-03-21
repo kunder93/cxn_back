@@ -243,7 +243,7 @@ public final class DefaultUserService implements UserService {
         if (userRepository.findByDni(dni).isPresent()) {
             throw new UserServiceException(USER_DNI_EXISTS_MESSAGE);
         }
-        final var email = userDetails.email();
+        final var email = normalizeEmail(userDetails.email());
         if (userRepository.findByEmail(email).isPresent()) {
             throw new UserServiceException(USER_EMAIL_EXISTS_MESSAGE);
         } else {
@@ -322,13 +322,14 @@ public final class DefaultUserService implements UserService {
     @Override
     @Transactional(rollbackFor = UserServiceException.class) // Ensure rollback on UserServiceException
     public UserEntity changeUserEmail(final String email, final String newEmail) throws UserServiceException {
-        final var userWithNewEmail = userRepository.findByEmail(newEmail);
+        final var normalizedNewEmail = normalizeEmail(newEmail); // Normalize new email
+        final var userWithNewEmail = userRepository.findByEmail(normalizedNewEmail);
         if (userWithNewEmail.isPresent()) {
-            throw new UserServiceException("User with email: " + newEmail + " exists.");
+            throw new UserServiceException("User with email: " + normalizedNewEmail + " exists.");
         }
 
         final var userEntity = findByEmail(email);
-        userEntity.setEmail(newEmail);
+        userEntity.setEmail(normalizedNewEmail);
         // Guardar la entidad de usuario actualizada en la base de datos
         final var persistentUserEntity = asPersistentUserEntity(userEntity);
 
@@ -405,9 +406,8 @@ public final class DefaultUserService implements UserService {
     @Override
     public UserEntity findByEmail(final String email) throws UserServiceException {
         checkNotNull(email, "Received a null pointer as identifier");
-
-        final var result = userRepository.findByEmail(email);
-
+        final var normalizedEmail = normalizeEmail(email); // Normalize input
+        final var result = userRepository.findByEmail(normalizedEmail);
         if (result.isEmpty()) {
             throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
         }
@@ -444,6 +444,10 @@ public final class DefaultUserService implements UserService {
     public List<UserEntity> getAll() {
         final var persistentUsers = userRepository.findAll();
         return new ArrayList<>(persistentUsers);
+    }
+
+    private String normalizeEmail(String email) {
+        return email != null ? email.trim().toLowerCase() : null;
     }
 
     private UserEntity processAcceptedUser(final UserEntity userEntity) throws UserServiceException {
