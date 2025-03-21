@@ -61,13 +61,15 @@ public final class MyUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * Load User by user name aka email.
+     * Load User by user email as user identifier.
      */
     @Override
     public UserDetails loadUserByUsername(final String email) {
-        final var usrEntityOpt = userRepository.findByEmail(email);
+        String normalizedEmail = email.toLowerCase().trim(); // Normalize email
+
+        final var usrEntityOpt = userRepository.findByEmail(normalizedEmail);
         if (usrEntityOpt.isEmpty()) {
-            throw new UsernameNotFoundException("email: " + email);
+            throw new UsernameNotFoundException("email: " + normalizedEmail);
         }
         final var userEntity = usrEntityOpt.get();
         return new MyPrincipalUser(userEntity);
