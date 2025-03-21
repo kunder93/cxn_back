@@ -32,6 +32,7 @@ import java.util.EnumSet;
 import java.util.Optional;
 import java.util.Set;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.TeamEntity;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
@@ -69,12 +70,13 @@ import es.org.cxn.backapp.model.persistence.user.UserType;
  *                          represented by {@link UserRoleName}.
  * @param assignedTeamName  The team name assigned to this user. Can be null.
  * @param preferredTeamName The team name that user preferred.
+ * @param federateState     The user federate state.
  *
  * @author Santiago Paz Perez
  */
 public record UserDataResponse(String dni, String name, String firstSurname, String secondSurname, String gender,
         LocalDate birthDate, String email, UserType kindMember, AddressResponse userAddress,
-        Set<UserRoleName> userRoles, String assignedTeamName, String preferredTeamName) {
+        Set<UserRoleName> userRoles, String assignedTeamName, String preferredTeamName, FederateState federateState) {
 
     /**
      * Constructs a {@code UserDataResponse} record from all parameters.
@@ -102,7 +104,7 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
     public UserDataResponse(final String dni, final String name, final String firstSurname, final String secondSurname,
             final String gender, final LocalDate birthDate, final String email, final UserType kindMember,
             final AddressResponse userAddress, final Set<UserRoleName> userRoles, final String assignedTeamName,
-            String preferredTeamName) {
+            String preferredTeamName, FederateState federateState) {
         this.dni = dni;
         this.name = name;
         this.firstSurname = firstSurname;
@@ -115,6 +117,7 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
         this.userRoles = EnumSet.copyOf(userRoles);
         this.assignedTeamName = assignedTeamName;
         this.preferredTeamName = preferredTeamName;
+        this.federateState = federateState;
     }
 
     /**
@@ -132,7 +135,8 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
                 user.getProfile().getSecondSurname(), user.getProfile().getGender(), user.getProfile().getBirthDate(),
                 user.getEmail(), user.getKindMember(), new AddressResponse(user.getAddress()), extractUserRoles(user),
                 Optional.ofNullable(user.getTeamAssigned()).map(TeamEntity::getName).orElse(null),
-                Optional.ofNullable(user.getTeamPreferred()).map(TeamEntity::getName).orElse(null));
+                Optional.ofNullable(user.getTeamPreferred()).map(TeamEntity::getName).orElse(null),
+                user.getFederateState().getState());
     }
 
     /**

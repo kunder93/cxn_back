@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
+import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
@@ -84,6 +85,13 @@ public interface UserEntity extends Serializable {
      * @return The user's email address.
      */
     String getEmail();
+
+    /**
+     * Get associated federate state.
+     *
+     * @return user federate state entity.
+     */
+    PersistentFederateStateEntity getFederateState();
 
     /**
      * Retrieves the type of user (e.g., admin, regular).
@@ -182,6 +190,13 @@ public interface UserEntity extends Serializable {
      * @param value {@code true} to enable the account, {@code false} to disable.
      */
     void setEnabled(boolean value);
+
+    /**
+     * Set user federate state.
+     *
+     * @param federateState the federate state entity for associate with this user.
+     */
+    void setFederateState(PersistentFederateStateEntity federateState);
 
     /**
      * Sets the type of user (e.g., admin, regular).
