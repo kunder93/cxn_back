@@ -185,8 +185,18 @@ public class PersistentUserEntity implements UserEntity {
      * Team where user is assigned.
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "team_name", referencedColumnName = "name", nullable = true)
-    private PersistentTeamEntity team;
+    @JoinColumn(name = "assigned_team_name", referencedColumnName = "name", nullable = true)
+    private PersistentTeamEntity teamAssigned;
+
+
+    /**
+     * Team that user select as preferred.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "preferred_team_name", referencedColumnName = "name", nullable = true)
+    private PersistentTeamEntity teamPreferred;
+
+
 
 
     /**

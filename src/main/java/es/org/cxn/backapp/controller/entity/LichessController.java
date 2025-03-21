@@ -61,8 +61,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import es.org.cxn.backapp.model.form.responses.LichessProfileListResponse;
-import es.org.cxn.backapp.model.form.responses.LichessProfileResponse;
+import es.org.cxn.backapp.model.form.responses.lichess.LichessProfileListResponse;
+import es.org.cxn.backapp.model.form.responses.lichess.LichessProfileResponse;
 import es.org.cxn.backapp.service.LichessService;
 import es.org.cxn.backapp.service.dto.LichessProfileDto;
 import es.org.cxn.backapp.service.dto.LichessSaveProfileDto;

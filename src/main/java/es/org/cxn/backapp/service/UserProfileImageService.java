@@ -29,7 +29,7 @@ package es.org.cxn.backapp.service;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
+import es.org.cxn.backapp.model.form.responses.user.ProfileImageResponse;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 

@@ -48,10 +48,12 @@ public record TeamInfoDto(String name, String description, String category, List
      */
     public TeamInfoDto(final TeamEntity team) {
         this(team.getName(), team.getDescription(), team.getCategory(),
-                team.getUsers().stream()
+                team.getUsersAssigned().stream()
                         .map(u -> new UserTeamInfoDto(u.getDni(), u.getEmail(), u.getProfile().getName(),
                                 u.getProfile().getFirstSurname(), u.getProfile().getSecondSurname(),
-                                u.getProfile().getGender(), u.getProfile().getBirthDate().toString()))
+                                u.getProfile().getGender(), u.getProfile().getBirthDate().toString(),
+                                u.getTeamAssigned() == null ? null : u.getTeamAssigned().getName(),
+                                u.getTeamPreferred() == null ? null : u.getTeamPreferred().getName()))
                         .toList());
     }
 }

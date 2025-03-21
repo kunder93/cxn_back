@@ -53,8 +53,8 @@ import com.google.gson.GsonBuilder;
 
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
 import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
-import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
-import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.model.form.responses.user.auth.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.user.auth.SignUpResponseForm;
 import es.org.cxn.backapp.security.DefaultJwtUtils;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;

@@ -57,7 +57,7 @@ import com.google.gson.Gson;
 
 import es.org.cxn.backapp.controller.entity.FederateController;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
-import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
+import es.org.cxn.backapp.model.form.responses.user.auth.AuthenticationResponse;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;

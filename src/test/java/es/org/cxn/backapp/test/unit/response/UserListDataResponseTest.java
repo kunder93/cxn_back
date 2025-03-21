@@ -37,11 +37,12 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.responses.AddressResponse;
-import es.org.cxn.backapp.model.form.responses.UserDataResponse;
-import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserListDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.AddressResponse;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
@@ -231,7 +232,7 @@ class UserListDataResponseTest {
                         "SubCountry" // subCountryName
                 ), // userAddress (mocked value)
                 Set.of(UserRoleName.ROLE_SOCIO), // userRoles (mocked value)
-                "TeamName");
+                "TeamNameAssigned", "TeamNamePreferred", FederateState.FEDERATE);
 
         List<UserDataResponse> users = List.of(user1);
         UserListDataResponse response = new UserListDataResponse(users);
@@ -255,7 +256,7 @@ class UserListDataResponseTest {
                         "Other SubCountry" // subCountryName
                 ), // userAddress (mocked value)
                 Set.of(UserRoleName.ROLE_ADMIN), // userRoles (mocked value)
-                "TeamName"));
+                "TeamNameAssigned", "TeamNamePreferred", FederateState.FEDERATE));
 
         assertEquals(1, response.usersList().size()); // Ensure original list is unchanged
         assertEquals(2, copiedList.size()); // The copied list should be changed
