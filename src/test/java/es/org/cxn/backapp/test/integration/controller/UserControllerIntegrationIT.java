@@ -384,7 +384,7 @@ class UserControllerIntegrationIT {
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
         var memberEmail = UsersControllerFactory.USER_A_EMAIL;
         var memberPassword = UsersControllerFactory.USER_A_PASSWORD;
-        var newEmail = "newEmail@email.es";
+        var newEmail = "newemail@email.es";
 
         var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
         var memberRequestJson = gson.toJson(memberRequest);

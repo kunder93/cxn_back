@@ -42,6 +42,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
+import org.springframework.security.config.annotation.web.configurers.ott.OneTimeTokenLoginConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -157,9 +158,14 @@ public class SecurityConfiguration {
                                 "/v3/api-docs/**", AppURL.CHESS_QUESTION_URL, AppURL.PARTICIPANTS_URL,
                                 "/api/activities", "/api/activities/*/image", "/api/address/**")
                         .permitAll().requestMatchers(HttpMethod.GET, "/api/*/lichessAuth").permitAll()
+                        .requestMatchers("/api/ott/my-generate-url").permitAll()
+                        .requestMatchers("/api/ott/my-generate-url/password/reset").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/lichessAuth").authenticated().anyRequest()
-                        .authenticated());
-
+                        .authenticated())
+                .oneTimeTokenLogin((OneTimeTokenLoginConfigurer<HttpSecurity> ott) -> {
+                    ott.tokenGeneratingUrl("/api/ott/my-generate-url");
+                    ott.showDefaultSubmitPage(false);
+                });
         return http.build();
     }
 

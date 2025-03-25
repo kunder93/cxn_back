@@ -89,6 +89,19 @@ public interface EmailService {
             throws MessagingException, IOException;
 
     /**
+     * Sends a password recovery to email to the specified recipient.
+     *
+     * @param toEmail      The email address of the recipient.
+     * @param completeName The full name of the user receiving the email.
+     * @param magicLink    The link for log in user for change password.
+     * @throws MessagingException If there is an error in sending the email.
+     * @throws IOException        If there is an input/output error while processing
+     *                            the email content.
+     */
+    void sendRecoverPasswordEmail(final String toEmail, final String completeName, final String magicLink)
+            throws MessagingException, IOException;
+
+    /**
      * Sends a sign up email.
      *
      * @param toEmail the recipient's email address
