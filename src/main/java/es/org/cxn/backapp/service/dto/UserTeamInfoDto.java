@@ -1,0 +1,47 @@
+package es.org.cxn.backapp.service.dto;
+
+/*-
+ * #%L
+ * CXN-back-app
+ * %%
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
+ * %%
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ * #L%
+ */
+
+/**
+ * Represents a Data Transfer Object (DTO) for user information in a team
+ * context. This record provides an immutable representation of a user's details
+ * relevant to team operations.
+ *
+ * @param dni           The unique identifier (DNI) of the user.
+ * @param email         The email address of the user.
+ * @param name          The first name of the user.
+ * @param firstSurname  The first surname of the user.
+ * @param secondSurname The second surname of the user.
+ * @param gender        The gender of the user.
+ * @param birthDate     The birth date of the user in string format.
+ * @param assignedTeam  The user assigned team.
+ * @param preferredTeam The user preferred team.
+ */
+public record UserTeamInfoDto(String dni, String email, String name, String firstSurname, String secondSurname,
+        String gender, String birthDate, String assignedTeam, String preferredTeam) {
+
+}

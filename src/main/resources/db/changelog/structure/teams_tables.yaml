@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: chess_teams
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: team
+            columns:
+              - column:
+                  name: name
+                  type: varchar(100)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add_assigned_team_to_users
+      author: Santiago
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: assigned_team_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+        - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: assigned_team_name
+            referencedTableName: team
+            referencedColumnNames: name
+            constraintName: fk_users_team_assigned
+  - changeSet:
+      id: add_preferred_team_to_users
+      author: Santiago
+      changes:
+         - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: preferred_team_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+         - addForeignKeyConstraint:
+            baseTableName: users
+            baseColumnNames: preferred_team_name
+            referencedTableName: team
+            referencedColumnNames: name
+            constraintName: fk_users_team_preferred

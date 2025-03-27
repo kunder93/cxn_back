@@ -57,6 +57,21 @@ public interface EmailService {
      */
     void sendDeletedUser(String toEmail, String memberName) throws MessagingException, IOException;
 
+    /**
+     * Sends a generated payment notification to the specified email address. The
+     * method formats a message containing the payment details and sends it via
+     * email.
+     *
+     * @param toEmail            the email address of the recipient
+     * @param memberName         the name of the member for whom the payment is
+     *                           generated
+     * @param paymentTitle       the title or subject of the payment
+     * @param paymentDescription a brief description of the payment
+     * @param paymentAmount      the amount of the payment
+     * @throws MessagingException if there is an error while sending the email
+     * @throws IOException        if there is an error with input/output during the
+     *                            process
+     */
     void sendGeneratedPayment(final String toEmail, final String memberName, final String paymentTitle,
             String paymentDescription, final String paymentAmount) throws MessagingException, IOException;
 
@@ -71,6 +86,19 @@ public interface EmailService {
      * @throws IOException        When fails cause cannot load mail template file.
      */
     void sendPaymentConfirmation(String toEmail, String memberName, String paymentQuantity, String reason)
+            throws MessagingException, IOException;
+
+    /**
+     * Sends a password recovery to email to the specified recipient.
+     *
+     * @param toEmail      The email address of the recipient.
+     * @param completeName The full name of the user receiving the email.
+     * @param magicLink    The link for log in user for change password.
+     * @throws MessagingException If there is an error in sending the email.
+     * @throws IOException        If there is an input/output error while processing
+     *                            the email content.
+     */
+    void sendRecoverPasswordEmail(final String toEmail, final String completeName, final String magicLink)
             throws MessagingException, IOException;
 
     /**

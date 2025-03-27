@@ -51,8 +51,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.google.gson.Gson;
 
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
-import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
-import es.org.cxn.backapp.model.form.responses.UserListDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserListDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.auth.AuthenticationResponse;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import es.org.cxn.backapp.test.utils.UsersControllerFactory;

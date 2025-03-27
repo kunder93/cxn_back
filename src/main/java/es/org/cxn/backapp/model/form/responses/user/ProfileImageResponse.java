@@ -1,4 +1,4 @@
-package es.org.cxn.backapp.model.form.responses;
+package es.org.cxn.backapp.model.form.responses.user;
 
 /*-
  * #%L

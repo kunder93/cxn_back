@@ -1,4 +1,7 @@
-package es.org.cxn.backapp.model.form.responses;
+
+package es.org.cxn.backapp.service.exceptions;
+
+import java.io.Serial;
 
 /*-
  * #%L
@@ -12,10 +15,10 @@ package es.org.cxn.backapp.model.form.responses;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,36 +29,27 @@ package es.org.cxn.backapp.model.form.responses;
  * #L%
  */
 
-import java.util.List;
-
 /**
- * Represents a response containing a list of Lichess profiles. This record is
- * used to encapsulate the data returned by the controller endpoint for
- * retrieving all stored Lichess profiles.
+ * Exception thrown by recover password service.
  *
- * @param profilesList A list of {@link LichessProfileResponse} objects, each
- *                     representing an individual Lichess profile and its
- *                     associated game statistics.
+ * @author Santiago Paz.
+ *
  */
-public record LichessProfileListResponse(List<LichessProfileResponse> profilesList) {
+public final class RecoverPasswordServiceException extends Exception {
 
     /**
-     * Canonical constructor to ensure immutability by making a defensive copy of
-     * the input list.
-     *
-     * @param profilesList the list of Lichess profile responses
+     * Serial UID.
      */
-    public LichessProfileListResponse(final List<LichessProfileResponse> profilesList) {
-        // Create a defensive copy of the list to ensure immutability
-        this.profilesList = List.copyOf(profilesList == null ? List.of() : profilesList);
-    }
+    @Serial
+    private static final long serialVersionUID = 2311622313621123252L;
 
     /**
-     * Returns an immutable view of the profiles list.
+     * Main constructor.
      *
-     * @return an unmodifiable list of Lichess profiles
+     * @param value exception message.
      */
-    public List<LichessProfileResponse> profilesList() {
-        return List.copyOf(profilesList);
+    public RecoverPasswordServiceException(final String value) {
+        super(value);
     }
+
 }

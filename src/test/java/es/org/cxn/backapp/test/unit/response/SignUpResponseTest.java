@@ -40,7 +40,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.responses.SignUpResponseForm;
+import es.org.cxn.backapp.model.form.responses.user.auth.SignUpResponseForm;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;

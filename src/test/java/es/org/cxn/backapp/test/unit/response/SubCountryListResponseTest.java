@@ -36,8 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import es.org.cxn.backapp.model.CountryEntity;
-import es.org.cxn.backapp.model.form.responses.SubCountryListResponse;
-import es.org.cxn.backapp.model.form.responses.SubCountryResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.SubCountryListResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.SubCountryResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
 
 class SubCountryListResponseTest {

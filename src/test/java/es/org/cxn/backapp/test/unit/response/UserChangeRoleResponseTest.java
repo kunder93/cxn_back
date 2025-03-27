@@ -37,7 +37,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.responses.UserChangeRoleResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserChangeRoleResponse;
 
 class UserChangeRoleResponseTest {
 

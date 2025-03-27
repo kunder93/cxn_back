@@ -40,6 +40,7 @@ import es.org.cxn.backapp.model.persistence.PersistentLichessAuthEntity;
 import es.org.cxn.backapp.model.persistence.PersistentOAuthAuthorizationRequestEntity;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
+import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -51,6 +52,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
@@ -177,6 +179,25 @@ public class PersistentUserEntity implements UserEntity {
      */
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
     private PersistentFederateStateEntity federateState;
+
+
+    /**
+     * Team where user is assigned.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_team_name", referencedColumnName = "name", nullable = true)
+    private PersistentTeamEntity teamAssigned;
+
+
+    /**
+     * Team that user select as preferred.
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "preferred_team_name", referencedColumnName = "name", nullable = true)
+    private PersistentTeamEntity teamPreferred;
+
+
+
 
     /**
      * No-args constructor. If use remember change values of federateState cause it needs valid user dni.

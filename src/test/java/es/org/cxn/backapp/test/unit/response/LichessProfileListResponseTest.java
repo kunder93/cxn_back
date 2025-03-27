@@ -37,8 +37,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import es.org.cxn.backapp.model.form.responses.LichessProfileListResponse;
-import es.org.cxn.backapp.model.form.responses.LichessProfileResponse;
+import es.org.cxn.backapp.model.form.responses.lichess.LichessProfileListResponse;
+import es.org.cxn.backapp.model.form.responses.lichess.LichessProfileResponse;
 
 /**
  * Unit tests for the LichessProfileListResponse class. This test class ensures
