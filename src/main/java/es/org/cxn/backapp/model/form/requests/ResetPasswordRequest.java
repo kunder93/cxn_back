@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.form.requests;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -58,6 +58,7 @@ public record ResetPasswordRequest(@NotNull(message = "Token must not be null")
 @Size(max = 255, message = "Token length must not exceed 255 characters") String token,
         @NotBlank(message = ValidationConstants.PASSWORD_NOT_BLANK_MESSAGE)
         @Size(min = ValidationConstants.PASSWORD_MIN_LENGTH, max = ValidationConstants.PASSWORD_MAX_LENGTH,
-                message = ValidationConstants.PASSWORD_SIZE_MESSAGE) String newPassword) {
+                message = ValidationConstants.PASSWORD_SIZE_MESSAGE) String newPassword,
+        String dni) {
 
 }
