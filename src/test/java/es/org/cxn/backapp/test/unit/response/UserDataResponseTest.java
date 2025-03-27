@@ -41,13 +41,15 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
-import es.org.cxn.backapp.model.form.responses.AddressResponse;
-import es.org.cxn.backapp.model.form.responses.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.AddressResponse;
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 import es.org.cxn.backapp.model.persistence.PersistentCountrySubdivisionEntity;
+import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.model.persistence.user.UserType;
@@ -126,10 +128,12 @@ class UserDataResponseTest {
         AddressResponse address = new AddressResponse("PostalCode", "Apartment", "Building", "Street", "City",
                 "Country", "SubCountry");
         Set<UserRoleName> roles = EnumSet.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_PRESIDENTE);
-
+        String assignedTeamName = "TeamChess";
+        String preferredTeamName = "TeamChess";
         // Act
         UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
-                USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, kindMember, address, roles);
+                USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, kindMember, address, roles, assignedTeamName,
+                preferredTeamName, FederateState.FEDERATE);
 
         // Assert
         assertEquals(USER_DNI, response.dni());
@@ -152,7 +156,7 @@ class UserDataResponseTest {
         PersistentAddressEntity addressEntity = mock(PersistentAddressEntity.class);
         PersistentCountryEntity countryEntity = mock(PersistentCountryEntity.class);
         PersistentCountrySubdivisionEntity countrySubdivision = mock(PersistentCountrySubdivisionEntity.class);
-
+        PersistentFederateStateEntity federateState = mock(PersistentFederateStateEntity.class);
         // Mock address and country-related methods
         when(addressEntity.getCountry()).thenReturn(countryEntity);
         when(addressEntity.getCountrySubdivision()).thenReturn(countrySubdivision);
@@ -168,6 +172,7 @@ class UserDataResponseTest {
         when(user.getEmail()).thenReturn(USER_EMAIL);
         when(user.getKindMember()).thenReturn(UserType.SOCIO_NUMERO);
         when(user.getAddress()).thenReturn(addressEntity);
+        when(user.getFederateState()).thenReturn(federateState);
 
         // Mock roles
         PersistentRoleEntity roleEntity = mock(PersistentRoleEntity.class);
@@ -202,10 +207,12 @@ class UserDataResponseTest {
     void testUserRolesDefensiveCopy() {
         // Arrange
         Set<UserRoleName> roles = EnumSet.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO);
+        String assignedTeamName = "TeamChess";
+        String preferredTeamName = "TeamChess";
         UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
                 USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, UserType.SOCIO_NUMERO,
                 new AddressResponse("PostalCode", "Apartment", "Building", "Street", "City", "Country", "SubCountry"),
-                roles);
+                roles, assignedTeamName, preferredTeamName, FederateState.FEDERATE);
 
         // Act
         Set<UserRoleName> responseRoles = response.userRoles();

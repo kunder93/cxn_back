@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import es.org.cxn.backapp.model.form.responses.ProfileImageResponse;
+import es.org.cxn.backapp.model.form.responses.user.ProfileImageResponse;
 import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 

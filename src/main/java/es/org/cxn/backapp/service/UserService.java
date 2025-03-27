@@ -144,6 +144,22 @@ public interface UserService {
     List<UserEntity> getAll();
 
     /**
+     * Updates the user's password without requiring confirmation of the existing
+     * password.
+     *
+     * <p>
+     * This method is typically used in password recovery scenarios where the user
+     * has verified their identity through a one-time token or similar mechanism.
+     * </p>
+     *
+     * @param userEmail   The email of the user whose password is being reset.
+     * @param newPassword The new password to set for the user.
+     * @throws UserServiceException If the user does not exist or the password
+     *                              update fails.
+     */
+    void recoverPassword(String userEmail, String newPassword) throws UserServiceException;
+
+    /**
      * Unsubscribe an user. Needs validation password.
      *
      * @param email          The user email

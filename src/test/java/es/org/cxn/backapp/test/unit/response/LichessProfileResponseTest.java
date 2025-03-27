@@ -35,7 +35,7 @@ import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
 
-import es.org.cxn.backapp.model.form.responses.LichessProfileResponse;
+import es.org.cxn.backapp.model.form.responses.lichess.LichessProfileResponse;
 
 /**
  * Unit tests for the LichessProfileResponse class. This test class validates

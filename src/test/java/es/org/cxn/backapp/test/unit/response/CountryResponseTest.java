@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import es.org.cxn.backapp.model.form.responses.CountryResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.CountryResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
 /**

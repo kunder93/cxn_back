@@ -34,7 +34,10 @@ databaseChangeLog:
       relativeToChangelogFile: true
 -  include:
       file: structure/payment_sheet_tables_drop_remove.yaml
-      relativeToChangelogFile: true      
+      relativeToChangelogFile: true
+-  include:
+      file: structure/teams_tables.yaml
+      relativeToChangelogFile: true  
 -  changeSet:
       id: initial_data
       author: Santiago

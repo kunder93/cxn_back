@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import es.org.cxn.backapp.model.UserEntity;
-import es.org.cxn.backapp.model.form.responses.UserUpdateResponseForm;
+import es.org.cxn.backapp.model.form.responses.user.UserUpdateResponseForm;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 
 /**

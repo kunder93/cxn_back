@@ -1,5 +1,5 @@
 
-package es.org.cxn.backapp.model.form.responses;
+package es.org.cxn.backapp.model.form.responses.user;
 
 /*-
  * #%L
@@ -29,10 +29,14 @@ package es.org.cxn.backapp.model.form.responses;
 
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.Optional;
 import java.util.Set;
 
+import es.org.cxn.backapp.model.FederateState;
+import es.org.cxn.backapp.model.TeamEntity;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.UserRoleName;
+import es.org.cxn.backapp.model.form.responses.user.address.AddressResponse;
 import es.org.cxn.backapp.model.persistence.PersistentRoleEntity;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 
@@ -51,25 +55,28 @@ import es.org.cxn.backapp.model.persistence.user.UserType;
  * also includes a nested {@link AddressResponse} record for the user's address.
  * </p>
  *
- * @param dni           The user's DNI (identification number).
- * @param name          The user's first name.
- * @param firstSurname  The user's first surname.
- * @param secondSurname The user's second surname.
- * @param gender        The user's gender.
- * @param birthDate     The user's birth date.
- * @param email         The user's email address.
- * @param kindMember    The type of membership the user holds, represented by
- *                      {@link UserType}.
- * @param userAddress   The user's address, represented by
- *                      {@link AddressResponse}.
- * @param userRoles     The set of role names associated with the user,
- *                      represented by {@link UserRoleName}.
+ * @param dni               The user's DNI (identification number).
+ * @param name              The user's first name.
+ * @param firstSurname      The user's first surname.
+ * @param secondSurname     The user's second surname.
+ * @param gender            The user's gender.
+ * @param birthDate         The user's birth date.
+ * @param email             The user's email address.
+ * @param kindMember        The type of membership the user holds, represented
+ *                          by {@link UserType}.
+ * @param userAddress       The user's address, represented by
+ *                          {@link AddressResponse}.
+ * @param userRoles         The set of role names associated with the user,
+ *                          represented by {@link UserRoleName}.
+ * @param assignedTeamName  The team name assigned to this user. Can be null.
+ * @param preferredTeamName The team name that user preferred.
+ * @param federateState     The user federate state.
  *
  * @author Santiago Paz Perez
  */
 public record UserDataResponse(String dni, String name, String firstSurname, String secondSurname, String gender,
         LocalDate birthDate, String email, UserType kindMember, AddressResponse userAddress,
-        Set<UserRoleName> userRoles) {
+        Set<UserRoleName> userRoles, String assignedTeamName, String preferredTeamName, FederateState federateState) {
 
     /**
      * Constructs a {@code UserDataResponse} record from all parameters.
@@ -78,23 +85,26 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
      * provided values for each of the parameters.
      * </p>
      *
-     * @param dni           The user's DNI (identification number).
-     * @param name          The user's first name.
-     * @param firstSurname  The user's first surname.
-     * @param secondSurname The user's second surname.
-     * @param gender        The user's gender.
-     * @param birthDate     The user's birth date.
-     * @param email         The user's email address.
-     * @param kindMember    The type of membership the user holds, represented by
-     *                      {@link UserType}.
-     * @param userAddress   The user's address, represented by
-     *                      {@link AddressResponse}.
-     * @param userRoles     The set of role names associated with the user,
-     *                      represented by {@link UserRoleName}.
+     * @param dni               The user's DNI (identification number).
+     * @param name              The user's first name.
+     * @param firstSurname      The user's first surname.
+     * @param secondSurname     The user's second surname.
+     * @param gender            The user's gender.
+     * @param birthDate         The user's birth date.
+     * @param email             The user's email address.
+     * @param kindMember        The type of membership the user holds, represented
+     *                          by {@link UserType}.
+     * @param userAddress       The user's address, represented by
+     *                          {@link AddressResponse}.
+     * @param userRoles         The set of role names associated with the user,
+     *                          represented by {@link UserRoleName}.
+     * @param assignedTeamName  The team name assigned to this user. Can be null.
+     * @param preferredTeamName The team name that user preferred.
      */
     public UserDataResponse(final String dni, final String name, final String firstSurname, final String secondSurname,
             final String gender, final LocalDate birthDate, final String email, final UserType kindMember,
-            final AddressResponse userAddress, final Set<UserRoleName> userRoles) {
+            final AddressResponse userAddress, final Set<UserRoleName> userRoles, final String assignedTeamName,
+            String preferredTeamName, FederateState federateState) {
         this.dni = dni;
         this.name = name;
         this.firstSurname = firstSurname;
@@ -105,22 +115,28 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
         this.kindMember = kindMember;
         this.userAddress = userAddress;
         this.userRoles = EnumSet.copyOf(userRoles);
+        this.assignedTeamName = assignedTeamName;
+        this.preferredTeamName = preferredTeamName;
+        this.federateState = federateState;
     }
 
     /**
-     * Constructs a {@code UserDataResponse} record from a {@link UserEntity}.
+     * Constructs a {@code UserDataResponse} from a given {@link UserEntity}.
      * <p>
-     * This constructor initializes all the fields of the record based on the values
-     * in the provided {@code UserEntity}. The user's roles are extracted and stored
-     * in a set.
+     * This constructor initializes all fields based on the values present in the
+     * provided {@code UserEntity}. It extracts the user's roles, assigned team, and
+     * preferred team, converting the team references to their respective names.
      * </p>
      *
-     * @param user The {@code UserEntity} from which to create the response record.
+     * @param user The {@code UserEntity} from which to create the response.
      */
     public UserDataResponse(final UserEntity user) {
         this(user.getDni(), user.getProfile().getName(), user.getProfile().getFirstSurname(),
                 user.getProfile().getSecondSurname(), user.getProfile().getGender(), user.getProfile().getBirthDate(),
-                user.getEmail(), user.getKindMember(), new AddressResponse(user.getAddress()), extractUserRoles(user));
+                user.getEmail(), user.getKindMember(), new AddressResponse(user.getAddress()), extractUserRoles(user),
+                Optional.ofNullable(user.getTeamAssigned()).map(TeamEntity::getName).orElse(null),
+                Optional.ofNullable(user.getTeamPreferred()).map(TeamEntity::getName).orElse(null),
+                user.getFederateState().getState());
     }
 
     /**

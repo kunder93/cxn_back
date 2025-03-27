@@ -38,8 +38,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import es.org.cxn.backapp.model.form.responses.CountryListResponse;
-import es.org.cxn.backapp.model.form.responses.CountryResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.CountryListResponse;
+import es.org.cxn.backapp.model.form.responses.user.address.CountryResponse;
 import es.org.cxn.backapp.model.persistence.PersistentCountryEntity;
 
 class CountryListResponseTest {

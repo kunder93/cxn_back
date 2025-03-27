@@ -66,8 +66,8 @@ import es.org.cxn.backapp.model.form.requests.SignUpRequestForm;
 import es.org.cxn.backapp.model.form.requests.UserChangeEmailRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangeKindMemberRequest;
 import es.org.cxn.backapp.model.form.requests.UserChangePasswordRequest;
-import es.org.cxn.backapp.model.form.responses.AuthenticationResponse;
-import es.org.cxn.backapp.model.form.responses.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.UserDataResponse;
+import es.org.cxn.backapp.model.form.responses.user.auth.AuthenticationResponse;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
 import es.org.cxn.backapp.service.impl.DefaultUserService;
@@ -384,7 +384,7 @@ class UserControllerIntegrationIT {
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
         var memberEmail = UsersControllerFactory.USER_A_EMAIL;
         var memberPassword = UsersControllerFactory.USER_A_PASSWORD;
-        var newEmail = "newEmail@email.es";
+        var newEmail = "newemail@email.es";
 
         var memberRequest = UsersControllerFactory.getSignUpRequestFormUserA();
         var memberRequestJson = gson.toJson(memberRequest);
