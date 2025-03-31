@@ -208,3 +208,48 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: dni
             onDelete: CASCADE
+-  changeSet:
+      id: OneTimeTokenRecoverPassword
+      author: Santiago
+      changes:
+      -  createTable:
+            tableName: one_time_token
+            columns:
+            -  column:
+                  name: token_value
+                  type: varchar(255)
+                  constraints:
+                     primaryKey: true
+                     nullable: false
+                     unique: true
+            -  column:
+                  name: user_dni
+                  type: varchar(9)
+                  constraints:
+                     nullable: false
+            -  column:
+                  name: created_at
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                     nullable: false
+            -  column:
+                  name: expired_at
+                  type: timestamp
+                  defaultValueComputed: "CURRENT_TIMESTAMP + INTERVAL '15 MINUTES'"
+                  constraints:
+                     nullable: false
+            -  column:
+                  name: is_used
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                     nullable: false
+      -  addForeignKeyConstraint:
+            baseTableName: one_time_token
+            baseColumnNames: user_dni
+            constraintName: fk_one_time_token_user_dni
+            referencedTableName: users
+            referencedColumnNames: dni
+            onDelete: CASCADE
+            

@@ -185,6 +185,13 @@ public class DefaultEmailService implements EmailService {
                 Map.of("name", memberName, "motivo", reason, "cantidad", paymentQuantity));
     }
 
+    @Override
+    public void sendRecoverPasswordEmail(final String toEmail, final String completeName, final String magicLink)
+            throws MessagingException, IOException {
+        sendEmail(toEmail, "CXN: Recuperar contraseña", "mailTemplates/RecoverPasswordEmail.html",
+                Map.of("name", completeName, "tokenCode", magicLink, "supportEmail", "soporte@xadreznaron.es"));
+    }
+
     /**
      * Sends a sign-up confirmation email to the user.
      *

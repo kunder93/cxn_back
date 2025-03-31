@@ -463,6 +463,19 @@ public final class DefaultUserService implements UserService {
         }
     }
 
+    @Override
+    public void recoverPassword(String userEmail, String newPassword) throws UserServiceException {
+        final var userEntity = findByEmail(userEmail);
+
+        // new password hashed.
+        final var hashedNewPassword = passwordEncoder.encode(newPassword);
+        // Update user password with new user password hash.
+        userEntity.setPassword(hashedNewPassword);
+        final var persistentUserEntity = asPersistentUserEntity(userEntity);
+        userRepository.save(persistentUserEntity);
+
+    }
+
     @Transactional
     @Override
     public void unsubscribe(final String email, final String validationPass) throws UserServiceException {
