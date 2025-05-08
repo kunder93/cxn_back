@@ -447,7 +447,6 @@ class UserControllerIntegrationIT {
     void testChangeMemberPasswordCurrentPasswordDontMatch() throws Exception {
         // Configurar el comportamiento del mock JavaMailSender
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-        var memberEmail = UsersControllerFactory.USER_A_EMAIL;
         var memberRequestPasswordNotValid = "456456";
         var memberNewPassword = "321321";
 
@@ -483,7 +482,6 @@ class UserControllerIntegrationIT {
     void testChangeMemberPasswordNotExistingMemberBadRequest() throws Exception {
         // Configurar el comportamiento del mock JavaMailSender
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-        final var notExistingMemberEmail = "email@email.es";
         final var currentPassword = "123123";
         final var newPassword = "321321";
         var changePasswordRequest = new UserChangePasswordRequest(currentPassword, newPassword);

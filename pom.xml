@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.4</version>
+		<version>3.4.5</version>
 		<relativePath />
 	</parent>
 
@@ -85,7 +85,6 @@
 		<springdoc.openapi.starter.version>2.8.6</springdoc.openapi.starter.version>
 		<therapi.runtime.version>0.15.0</therapi.runtime.version>
 		<jjwt.version>0.12.6</jjwt.version>
-		<junit.jupiter.version>5.12.1</junit.jupiter.version>
 		<lombok.version>1.18.36</lombok.version>
 		<pmd.plugin.version>3.26.0</pmd.plugin.version>
 		<rewrite.maven.plugin.version>6.4.0</rewrite.maven.plugin.version>
@@ -300,6 +299,7 @@
 			<groupId>jakarta.mail</groupId>
 			<artifactId>jakarta.mail-api</artifactId>
 		</dependency>
+               
 		<!-- ============================================== -->
 		<!-- ================= ASPECTJ ==================== -->
 		<!-- ============================================== -->
@@ -620,13 +620,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.jupiter</groupId>
-						<artifactId>junit-jupiter-engine</artifactId>
-						<version>${junit.jupiter.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
