@@ -126,6 +126,9 @@ class UserControllerIntegrationIT {
      */
     private static final String CHANGE_KIND_MEMBER_URL = "/api/user/changeKindOfMember";
 
+    /**
+     * The image storage service.
+     */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
 
@@ -178,7 +181,7 @@ class UserControllerIntegrationIT {
     }
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
+    static void setProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> "1025");
         registry.add("spring.mail.username", () -> "test@example.com");

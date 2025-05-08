@@ -3,9 +3,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,9 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
@@ -77,8 +76,8 @@ public final class DefaultTeamService implements TeamService {
      */
     public DefaultTeamService(final TeamEntityRepository teamRepo, final UserEntityRepository userRepo) {
         super();
-        this.teamRepository = checkNotNull(teamRepo, "Received a null pointer as team repository");
-        this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
+        this.teamRepository = Objects.requireNonNull(teamRepo, "Received a null pointer as team repository");
+        this.userRepository = Objects.requireNonNull(userRepo, "Received a null pointer as user repository");
     }
 
     @Override
@@ -111,7 +110,8 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public UserTeamInfoDto addTeamPreference(String userEmail, String teamName) throws TeamServiceException {
+    public UserTeamInfoDto addTeamPreference(final String userEmail, final String teamName)
+            throws TeamServiceException {
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
             throw new TeamServiceException(teamNotFoundMessage(teamName));
@@ -129,7 +129,7 @@ public final class DefaultTeamService implements TeamService {
         userPreferredTeamList.add(userEntity);
 
         final var userWithNoPreference = userRepository.save(userEntity);
-        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+        teamRepository.save(teamEntity);
 
         return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
                 userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),
@@ -220,7 +220,7 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public UserTeamInfoDto removeTeamPreference(String userEmail) throws TeamServiceException {
+    public UserTeamInfoDto removeTeamPreference(final String userEmail) throws TeamServiceException {
 
         final var userOptional = userRepository.findByEmail(userEmail);
         if (userOptional.isEmpty()) {
@@ -247,7 +247,7 @@ public final class DefaultTeamService implements TeamService {
         userEntity.setTeamPreferred(null);
 
         final var userWithNoPreference = userRepository.save(userEntity);
-        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+        teamRepository.save(teamEntity);
 
         return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
                 userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),

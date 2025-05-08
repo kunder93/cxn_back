@@ -93,6 +93,7 @@ class UserChangeRoleResponseTest {
 
     @Test
     void testConstructorWithMultipleRoles() {
+        final int numberOfRoles = 3;
         // Creating a list of multiple roles
         List<UserRoleName> roles = List.of(UserRoleName.ROLE_ADMIN, UserRoleName.ROLE_SOCIO,
                 UserRoleName.ROLE_PRESIDENTE);
@@ -102,7 +103,7 @@ class UserChangeRoleResponseTest {
         assertEquals(USER_NAME, response.userName());
 
         // Ensure the roles list is properly set
-        assertEquals(3, response.userRoles().size());
+        assertEquals(numberOfRoles, response.userRoles().size());
         assertTrue(response.userRoles().contains(UserRoleName.ROLE_ADMIN));
         assertTrue(response.userRoles().contains(UserRoleName.ROLE_SOCIO));
         assertTrue(response.userRoles().contains(UserRoleName.ROLE_ADMIN));

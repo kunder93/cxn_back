@@ -1,5 +1,6 @@
 package es.org.cxn.backapp.model.form.requests.team;
 
+import es.org.cxn.backapp.model.form.requests.ValidationConstants;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -43,11 +44,11 @@ import jakarta.validation.constraints.Size;
  */
 public record CreateTeamRequest(@NotNull
 @NotBlank
-@Size(max = 100) String name,
+@Size(max = ValidationConstants.TEAM_NAME_MAX_LENGTH) String name,
         @NotNull
         @NotBlank
-        @Size(max = 255) String description,
+        @Size(max = ValidationConstants.TEAM_DESCRIPTION_MAX_LENGTH) String description,
         @NotNull
         @NotBlank
-        @Size(max = 50) String category) {
+        @Size(max = ValidationConstants.TEAM_CATEGORY_MAX_LENGTH) String category) {
 }

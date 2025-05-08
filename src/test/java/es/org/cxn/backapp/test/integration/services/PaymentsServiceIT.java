@@ -55,16 +55,15 @@ import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultEmailService;
-import es.org.cxn.backapp.service.impl.DefaultPaymentsService;
 import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
 import jakarta.transaction.Transactional;
 
 /**
- * Unit tests for {@link DefaultPaymentsService}.
+ * Unit tests for {@link PaymentsService}.
  * <p>
  * This class contains tests to verify the functionality of the
- * {@link DefaultPaymentsService} service. It ensures that various methods of
- * the service behave as expected and handle different scenarios correctly. The
+ * {@link PaymentsService} service. It ensures that various methods of the
+ * service behave as expected and handle different scenarios correctly. The
  * </p>
  *
  * @author Santiago Paz
@@ -101,6 +100,9 @@ final class PaymentsServiceIT {
     @MockitoBean
     private DefaultEmailService emailService;
 
+    /**
+     * Service that manage image storage.
+     */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
 
@@ -110,7 +112,7 @@ final class PaymentsServiceIT {
     private final String userDni = "32721880X";
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
+    static void setProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> "1025");
         registry.add("spring.mail.username", () -> "test@example.com");

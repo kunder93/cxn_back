@@ -90,6 +90,9 @@ class DeletePermanentlyUserIT {
      */
     private static Gson gson;
 
+    /**
+     * The image storage service.
+     */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
 
@@ -129,7 +132,7 @@ class DeletePermanentlyUserIT {
     }
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
+    static void setProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> "1025");
         registry.add("spring.mail.username", () -> "test@example.com");

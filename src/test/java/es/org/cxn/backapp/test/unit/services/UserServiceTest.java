@@ -167,7 +167,7 @@ class UserServiceTest {
      * Encoder for passwords.
      */
     @Mock
-    BCryptPasswordEncoder passwordEncoder;
+    private BCryptPasswordEncoder passwordEncoder;
 
     /**
      * The payments service used by user service.

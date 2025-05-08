@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.request;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,6 +50,9 @@ import jakarta.validation.ValidatorFactory;
  */
 final class CreateTeamRequestTest {
 
+    /**
+     * The validator.
+     */
     private static Validator validator;
 
     /**
@@ -87,7 +90,8 @@ final class CreateTeamRequestTest {
      */
     @Test
     void testCategoryTooLong() {
-        String longCategory = "a".repeat(51);
+        final int numberOfCharacters = 51;
+        String longCategory = "a".repeat(numberOfCharacters);
         CreateTeamRequest request = new CreateTeamRequest("Valid Name", "Valid Description", longCategory);
         Set<ConstraintViolation<CreateTeamRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Expected validation error for category length");
@@ -119,7 +123,8 @@ final class CreateTeamRequestTest {
      */
     @Test
     void testDescriptionTooLong() {
-        String longDescription = "a".repeat(256);
+        final int numberOfCharacters = 256;
+        String longDescription = "a".repeat(numberOfCharacters);
         CreateTeamRequest request = new CreateTeamRequest("Valid Name", longDescription, "Valid Category");
         Set<ConstraintViolation<CreateTeamRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Expected validation error for description length");
@@ -151,7 +156,8 @@ final class CreateTeamRequestTest {
      */
     @Test
     void testNameTooLong() {
-        String longName = "a".repeat(101);
+        final int numberOfCharacters = 101;
+        String longName = "a".repeat(numberOfCharacters);
         CreateTeamRequest request = new CreateTeamRequest(longName, "Valid Description", "Valid Category");
         Set<ConstraintViolation<CreateTeamRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Expected validation error for name length");

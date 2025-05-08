@@ -66,12 +66,33 @@ import es.org.cxn.backapp.service.exceptions.TeamServiceException;
 @AutoConfigureMockMvc(addFilters = false)
 class TeamControllerTest {
 
+    /**
+     * MockMvc instance for performing HTTP requests in tests.
+     * <p>
+     * It allows testing the controller layer by simulating HTTP requests without
+     * the need to start a full web server.
+     * </p>
+     */
     @Autowired
     private MockMvc mockMvc;
 
+    /**
+     * ObjectMapper instance for serializing and deserializing JSON data.
+     * <p>
+     * Used in tests to convert Java objects to JSON and vice versa when sending and
+     * receiving HTTP requests.
+     * </p>
+     */
     @Autowired
     private ObjectMapper objectMapper;
 
+    /**
+     * Mocked service for handling team-related operations.
+     * <p>
+     * This service is injected as a mock to isolate the controller from the service
+     * layer and test its behavior independently.
+     * </p>
+     */
     @MockitoBean
     private TeamService teamService;
 
@@ -82,7 +103,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void addUserToTeam_Success() throws Exception {
+    void addUserToTeamSuccess() throws Exception {
         UserTeamInfoDto userDto = new UserTeamInfoDto("12345678A", "user@test.com", "John", "Doe", "Smith", "Male",
                 "1990-01-01", null, null);
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Description", "Category", List.of(userDto));
@@ -104,7 +125,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void addUserToTeam_TeamServiceException() throws Exception {
+    void addUserToTeamTeamServiceException() throws Exception {
         when(teamService.addAssignedMember("team1", "invalid@user.com"))
                 .thenThrow(new TeamServiceException("Exception message"));
 
@@ -123,7 +144,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void createTeam_ExceptionThrown() throws Exception {
+    void createTeamExceptionThrown() throws Exception {
         when(teamService.createTeam(any(), any(), any())).thenThrow(new TeamServiceException("Exception message"));
 
         CreateTeamRequest request = new CreateTeamRequest("Invalid", "Invalid", "Invalid");
@@ -139,7 +160,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void createTeam_Success() throws Exception {
+    void createTeamSuccess() throws Exception {
         CreateTeamRequest request = new CreateTeamRequest("team1", "Description", "Category");
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Description", "Category", Collections.emptyList());
         when(teamService.createTeam(any(), any(), any())).thenReturn(mockDto);
@@ -157,7 +178,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void getAllTeams_Empty() throws Exception {
+    void getAllTeamsEmpty() throws Exception {
         when(teamService.getAllTeams()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/api/team")).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(0));
@@ -170,7 +191,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void getAllTeams_Success() throws Exception {
+    void getAllTeamsSuccess() throws Exception {
         UserTeamInfoDto user1 = new UserTeamInfoDto("dni1", "user1@test.com", "Alice", "Smith", "Brown", "Female",
                 "1985-05-05", null, null);
         UserTeamInfoDto user2 = new UserTeamInfoDto("dni2", "user2@test.com", "Bob", "Johnson", "Green", "Male",
@@ -196,7 +217,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void getTeamInfo_Exception() throws Exception {
+    void getTeamInfoException() throws Exception {
         when(teamService.getTeamInfo("unknown")).thenThrow(new TeamServiceException("Exception  message"));
 
         mockMvc.perform(get("/api/team/unknown")).andExpect(status().isBadRequest())
@@ -211,7 +232,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void getTeamInfo_Success() throws Exception {
+    void getTeamInfoSuccess() throws Exception {
         UserTeamInfoDto user = new UserTeamInfoDto("dni3", "member@test.com", "Charlie", "Davis", "White", "Male",
                 "2000-01-01", null, null);
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Desc", "Cat", List.of(user));
@@ -236,7 +257,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void removeTeam_Exception() throws Exception {
+    void removeTeamException() throws Exception {
         doThrow(new TeamServiceException("Exception message")).when(teamService).removeTeam("unknown");
 
         mockMvc.perform(delete("/api/team/unknown")).andExpect(status().isBadRequest())
@@ -251,7 +272,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void removeTeam_Success() throws Exception {
+    void removeTeamSuccess() throws Exception {
         mockMvc.perform(delete("/api/team/team1")).andExpect(status().isNoContent());
 
         verify(teamService).removeTeam("team1");
@@ -265,7 +286,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void removeUserFromTeam_ExceptionThrown() throws Exception {
+    void removeUserFromTeamExceptionThrown() throws Exception {
         when(teamService.removeAssignedMember("team1", "invalid@user.com"))
                 .thenThrow(new TeamServiceException("User not in team"));
 
@@ -282,7 +303,7 @@ class TeamControllerTest {
      * @throws Exception if an exception occurs during the test execution
      */
     @Test
-    void removeUserFromTeam_Success() throws Exception {
+    void removeUserFromTeamSuccess() throws Exception {
         TeamInfoDto mockDto = new TeamInfoDto("team1", "Desc", "Cat", Collections.emptyList());
         when(teamService.removeAssignedMember("team1", "user@test.com")).thenReturn(mockDto);
 

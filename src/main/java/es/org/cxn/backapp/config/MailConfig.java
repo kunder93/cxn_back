@@ -53,7 +53,7 @@ public class MailConfig {
         /**
          * Default constructor for {@code MailHostCondition}.
          */
-        public MailHostCondition() {
+        MailHostCondition() {
             // Default constructor
         }
 
@@ -66,7 +66,7 @@ public class MailConfig {
          *         otherwise {@code false}
          */
         @Override
-        public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
             String host = context.getEnvironment().getProperty("spring.mail.host");
             return host != null && !host.isEmpty();
         }

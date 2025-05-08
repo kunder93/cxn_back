@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.response;
 
+import java.util.Objects;
+
 /*-
  * #%L
  * back-app
@@ -26,10 +28,6 @@ package es.org.cxn.backapp.response;
  * THE SOFTWARE.
  * #L%
  */
-
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import com.google.common.base.MoreObjects;
 
 /**
  * Default Response.
@@ -65,7 +63,7 @@ public class DefaultResponse<T> implements Response<T> {
     public DefaultResponse(final T cont) {
         super();
 
-        content = checkNotNull(cont, "Missing content");
+        content = Objects.requireNonNull(cont, "Missing content");
     }
 
     /**
@@ -77,8 +75,8 @@ public class DefaultResponse<T> implements Response<T> {
     public DefaultResponse(final T cont, final ResponseStatus stat) {
         super();
 
-        content = checkNotNull(cont, "Missing content");
-        status = checkNotNull(stat, "Missing status");
+        content = Objects.requireNonNull(cont, "Missing content");
+        status = Objects.requireNonNull(stat, "Missing status");
     }
 
     /**
@@ -120,7 +118,9 @@ public class DefaultResponse<T> implements Response<T> {
      */
     @Override
     public final String toString() {
-        return MoreObjects.toStringHelper(this).add("status", status).add("content", content).toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append("status=").append(status).append(", content=").append(content);
+        return sb.toString();
     }
 
 }

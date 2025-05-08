@@ -3,9 +3,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,11 +27,10 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -89,9 +88,9 @@ public class DefaultBookService implements BookService {
     public DefaultBookService(final BookEntityRepository repoBook, final AuthorEntityRepository repoAuth,
             final ImageStorageService imageStorageServ) {
         super();
-        imageStorageService = checkNotNull(imageStorageServ, "Received a null pointer as image service.");
-        bookRepository = checkNotNull(repoBook, "Received a null pointer as library repository");
-        authorRepository = checkNotNull(repoAuth, "Received a null pointer as author repository");
+        imageStorageService = Objects.requireNonNull(imageStorageServ, "Received a null pointer as image service.");
+        bookRepository = Objects.requireNonNull(repoBook, "Received a null pointer as library repository");
+        authorRepository = Objects.requireNonNull(repoAuth, "Received a null pointer as author repository");
     }
 
     /**
@@ -156,7 +155,7 @@ public class DefaultBookService implements BookService {
      */
     @Override
     public BookEntity find(final String val) throws BookServiceException {
-        checkNotNull(val, "Received a null val as book identifier isbn.");
+        Objects.requireNonNull(val, "Received a null val as book identifier isbn.");
         final var optionalBook = bookRepository.findById(val);
         if (optionalBook.isPresent()) {
             return optionalBook.get();

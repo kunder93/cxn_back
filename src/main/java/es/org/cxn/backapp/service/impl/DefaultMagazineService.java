@@ -3,9 +3,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,11 +27,10 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -90,9 +89,9 @@ public class DefaultMagazineService implements MagazineService {
     public DefaultMagazineService(final MagazineEntityRepository repoMagazine, final AuthorEntityRepository repoAuth,
             final ImageStorageService imageStorageServ) {
         super();
-        imageStorageService = checkNotNull(imageStorageServ, "Received a null pointer as image service.");
-        magazineRepository = checkNotNull(repoMagazine, "Received a null pointer as magazine repository");
-        authorRepository = checkNotNull(repoAuth, "Received a null pointer as author repository");
+        imageStorageService = Objects.requireNonNull(imageStorageServ, "Received a null pointer as image service.");
+        magazineRepository = Objects.requireNonNull(repoMagazine, "Received a null pointer as magazine repository");
+        authorRepository = Objects.requireNonNull(repoAuth, "Received a null pointer as author repository");
     }
 
     /**
@@ -154,7 +153,7 @@ public class DefaultMagazineService implements MagazineService {
      */
     @Override
     public MagazineEntity find(final String val) throws MagazineServiceException {
-        checkNotNull(val, "Received a null val as magazine identifier isbn.");
+        Objects.requireNonNull(val, "Received a null val as magazine identifier isbn.");
         final var optionalMagazine = magazineRepository.findById(val);
         if (optionalMagazine.isPresent()) {
             return optionalMagazine.get();

@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.security;
 
+import java.util.Objects;
+
 /*-
  * #%L
  * back-app
@@ -26,8 +28,6 @@ package es.org.cxn.backapp.security;
  * THE SOFTWARE.
  * #L%
  */
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -57,7 +57,7 @@ public final class MyUserDetailsService implements UserDetailsService {
      */
     public MyUserDetailsService(final UserEntityRepository repository) {
         super();
-        userRepository = checkNotNull(repository, "Received a null pointer as repository");
+        userRepository = Objects.requireNonNull(repository, "Received a null pointer as repository");
     }
 
     /**
