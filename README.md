@@ -49,7 +49,8 @@ Before running the application, you may need to make a few adjustments:
      - SSL_CERTIFICATE_PRIVATE_KEY_PATH=/path/certs/privkey.pem
      #For all profiles:
      - STORAGE_LOCATION_PATH=/location/storage/folder
-
+     - JWT_SECRET=your-jwt-secret-key
+     - JWT_EXPIRATION_TIME=12345 [OPTIONAL]: Default value:10800
 
 
 
