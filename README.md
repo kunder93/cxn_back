@@ -29,26 +29,26 @@ Click on the "Code" button at the top of the repository page and select Download
 Before running the application, you may need to make a few adjustments:
 
  **Environment Configuration:**
- - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/databaseName
- - SPRING_DATASOURCE_USERNAME=databaseUsername
- - SPRING_DATASOURCE_PASSWORD=DatabasePassword
- - SPRING_JPA_HIBERNATE_DDL_AUTO: update
- - COPY_CERTIFICATES: true
- - BUILD_PROFILE=prod     # Options: prod or dev
- - PROFILE=prod          # Options: prod or dev
-
- #Mail is optional: 
- - SPRING_MAIL_HOST=org.mailservice.com
- - SPRING_MAIL_PORT=587
- - SPRING_MAIL_USERNAME=mailUserName
- - SPRING_MAIL_PASSWORD=mailPassword
-
- - SSL_KEY_ALIAS=tomcat
- - SSL_KEY_STORE_TYPE=JKS
- - SSL_KEY_STORE_PASSWORD=password
- - SSL_KEY_STORE=/route/to/key/key.jks
-
- - STORAGE_LOCATION_PATH=/location/storage/folder
+     
+  Set app profile: dev/devdocker/prod  see more about profiles in Dockerfile.
+     
+     - BUILD_PROFILE=prod     # Options: prod | dev | devdocker
+    
+     #Mail is OPTIONAL for all profiles: 
+     - SPRING_MAIL_HOST=org.mailservice.com
+     - SPRING_MAIL_PORT=587
+     - SPRING_MAIL_USERNAME=mailUserName
+     - SPRING_MAIL_PASSWORD=mailPassword
+    
+     #For devdocker/prod profile: 
+     - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/databaseName
+     - SPRING_DATASOURCE_USERNAME=databaseUsername
+     - SPRING_DATASOURCE_PASSWORD=DatabasePassword
+     #For prod profile:
+     - SSL_CERTIFICATE_PATH=/path/certs/fullchain.pem
+     - SSL_CERTIFICATE_PRIVATE_KEY_PATH=/path/certs/privkey.pem
+     #For all profiles:
+     - STORAGE_LOCATION_PATH=/location/storage/folder
 
 
 
