@@ -64,16 +64,37 @@ import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 
+/**
+ * Unit test class for {@link PaymentsController}.
+ * <p>
+ * This class contains unit tests for the methods in {@link PaymentsController}.
+ * It uses Mockito for dependency injection and JUnit for assertions.
+ * </p>
+ */
 class PaymentsControllerTest {
 
+    /**
+     * Mocked service for handling payment-related operations.
+     * <p>
+     * This service is injected as a mock to isolate the controller from the service
+     * layer, allowing unit testing of the controller's behavior.
+     * </p>
+     */
     @Mock
     private PaymentsService paymentsService;
 
+    /**
+     * Instance of {@link PaymentsController} with injected mocks.
+     * <p>
+     * This controller is tested independently, with its dependencies mocked to
+     * avoid interactions with the actual service layer.
+     * </p>
+     */
     @InjectMocks
     private PaymentsController paymentsController;
 
     @Test
-    void cancelPayment_ShouldReturnUpdatedPayment() throws PaymentsServiceException {
+    void cancelPaymentShouldReturnUpdatedPayment() throws PaymentsServiceException {
         UUID paymentId = UUID.randomUUID();
         PaymentsEntity mockPayment = new PersistentPaymentsEntity();
         when(paymentsService.cancelPayment(paymentId)).thenReturn(mockPayment);
@@ -85,7 +106,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void cancelPayment_ShouldThrowException_WhenServiceFails() throws PaymentsServiceException {
+    void cancelPaymentShouldThrowExceptionWhenServiceFails() throws PaymentsServiceException {
         UUID paymentId = UUID.randomUUID();
         when(paymentsService.cancelPayment(paymentId)).thenThrow(new PaymentsServiceException("Error"));
 
@@ -93,7 +114,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void createPayment_ShouldReturnCreatedPayment() throws PaymentsServiceException {
+    void createPaymentShouldReturnCreatedPayment() throws PaymentsServiceException {
         String dni = "12345678A";
         PaymentsEntity mockPayment = new PersistentPaymentsEntity();
         when(paymentsService.createPayment(any(), any(), any(), any(), eq(dni))).thenReturn(mockPayment);
@@ -106,7 +127,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void createPayment_ShouldThrowException_WhenServiceFails() throws PaymentsServiceException {
+    void createPaymentShouldThrowExceptionWhenServiceFails() throws PaymentsServiceException {
         when(paymentsService.createPayment(any(), any(), any(), any(), any()))
                 .thenThrow(new PaymentsServiceException("Error"));
 
@@ -116,7 +137,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void getAllUsersPayments_ShouldReturnUsersPayments() {
+    void getAllUsersPaymentsShouldReturnUsersPayments() {
         Map<String, List<PaymentDetails>> payments = new HashMap<>();
         when(paymentsService.getAllUsersWithPayments()).thenReturn(payments);
 
@@ -127,7 +148,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void getOwnPayments_ShouldReturnUserPayments() throws PaymentsServiceException {
+    void getOwnPaymentsShouldReturnUserPayments() throws PaymentsServiceException {
         String email = "test@example.com";
         PersistentPaymentsEntity mockPayment = new PersistentPaymentsEntity();
         mockPayment.setId(UUID.randomUUID());
@@ -147,7 +168,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void getOwnPayments_ShouldThrowException_WhenServiceFails() throws PaymentsServiceException {
+    void getOwnPaymentsShouldThrowExceptionWhenServiceFails() throws PaymentsServiceException {
         String email = "test@example.com";
 
         SecurityContext securityContext = mock(SecurityContext.class);
@@ -162,7 +183,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void getPaymentInfo_ShouldReturnPaymentDetails() throws PaymentsServiceException {
+    void getPaymentInfoShouldReturnPaymentDetails() throws PaymentsServiceException {
         UUID paymentId = UUID.randomUUID();
         PaymentsEntity mockPayment = new PersistentPaymentsEntity();
         when(paymentsService.findPayment(paymentId)).thenReturn(mockPayment);
@@ -174,7 +195,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void getPaymentInfo_ShouldThrowException_WhenServiceFails() throws PaymentsServiceException {
+    void getPaymentInfoShouldThrowExceptionWhenServiceFails() throws PaymentsServiceException {
         UUID paymentId = UUID.randomUUID();
         when(paymentsService.findPayment(paymentId)).thenThrow(new PaymentsServiceException("Error"));
 
@@ -182,7 +203,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void getUserPayments_ShouldReturnUserPayments() {
+    void getUserPaymentsShouldReturnUserPayments() {
         // Arrange
         String dni = "12345678A";
         PersistentPaymentsEntity mockPayment = new PersistentPaymentsEntity();
@@ -197,7 +218,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void makePayment_ShouldReturnUpdatedPayment() throws PaymentsServiceException {
+    void makePaymentShouldReturnUpdatedPayment() throws PaymentsServiceException {
         UUID paymentId = UUID.randomUUID();
         PaymentsEntity mockPayment = new PersistentPaymentsEntity();
         when(paymentsService.makePayment(eq(paymentId), any())).thenReturn(mockPayment);
@@ -209,7 +230,7 @@ class PaymentsControllerTest {
     }
 
     @Test
-    void makePayment_ShouldThrowException_WhenServiceFails() throws PaymentsServiceException {
+    void makePaymentShouldThrowExceptionWhenServiceFails() throws PaymentsServiceException {
         UUID paymentId = UUID.randomUUID();
         when(paymentsService.makePayment(eq(paymentId), any())).thenThrow(new PaymentsServiceException("Error"));
 

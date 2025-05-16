@@ -37,6 +37,31 @@ package es.org.cxn.backapp.model.form.requests;
 public final class ValidationConstants {
 
     /**
+     * Team name max length.
+     */
+    public static final int TEAM_NAME_MAX_LENGTH = 100;
+
+    /**
+     * Team description max length.
+     */
+    public static final int TEAM_DESCRIPTION_MAX_LENGTH = 255;
+
+    /**
+     * Team category max length.
+     */
+    public static final int TEAM_CATEGORY_MAX_LENGTH = 50;
+
+    /**
+     * One Time Token max allowed length.
+     */
+    public static final int OTT_LENGTH = 255;
+
+    /**
+     * The dni max allowed length.
+     */
+    public static final int DNI_MAX_LENGTH = 9;
+
+    /**
      * The maximum length allowed for the transport category.
      */
     public static final int MAX_CATEGORY_LENGTH = 30;

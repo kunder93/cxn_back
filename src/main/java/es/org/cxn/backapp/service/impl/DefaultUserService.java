@@ -3,9 +3,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,14 +27,13 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.dao.DataAccessException;
@@ -168,14 +167,14 @@ public final class DefaultUserService implements UserService {
             final PaymentsService paymentsServ, final RoleService roleServ,
             final BCryptPasswordEncoder passwordEncoder) {
         super();
-        this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
-        this.countryRepository = checkNotNull(countryRepo, "Received a null pointer as country repository");
-        this.countrySubdivisionRepo = checkNotNull(countrySubdivRepo,
+        this.userRepository = Objects.requireNonNull(userRepo, "Received a null pointer as user repository");
+        this.countryRepository = Objects.requireNonNull(countryRepo, "Received a null pointer as country repository");
+        this.countrySubdivisionRepo = Objects.requireNonNull(countrySubdivRepo,
                 "Received a null pointer as country subdivision repository");
-        this.emailService = checkNotNull(emailServ, "Received a null pointer as email service.");
-        this.paymentsService = checkNotNull(paymentsServ, "Received a null pointer as payments service.");
-        this.roleService = checkNotNull(roleServ, "Received a null pointer as role service.");
-        this.passwordEncoder = checkNotNull(passwordEncoder, "Received a null pointer as password encoder.");
+        this.emailService = Objects.requireNonNull(emailServ, "Received a null pointer as email service.");
+        this.paymentsService = Objects.requireNonNull(paymentsServ, "Received a null pointer as payments service.");
+        this.roleService = Objects.requireNonNull(roleServ, "Received a null pointer as role service.");
+        this.passwordEncoder = Objects.requireNonNull(passwordEncoder, "Received a null pointer as password encoder.");
     }
 
     /**
@@ -395,7 +394,7 @@ public final class DefaultUserService implements UserService {
     @Override
     public UserEntity findByDni(final String value) throws UserServiceException {
         final Optional<PersistentUserEntity> entity;
-        checkNotNull(value, "Received a null pointer as identifier");
+        Objects.requireNonNull(value, "Received a null pointer as identifier");
         entity = userRepository.findByDni(value);
         if (entity.isEmpty()) {
             throw new UserServiceException(USER_NOT_FOUND_MESSAGE);
@@ -405,7 +404,7 @@ public final class DefaultUserService implements UserService {
 
     @Override
     public UserEntity findByEmail(final String email) throws UserServiceException {
-        checkNotNull(email, "Received a null pointer as identifier");
+        Objects.requireNonNull(email, "Received a null pointer as identifier");
         final var normalizedEmail = normalizeEmail(email); // Normalize input
         final var result = userRepository.findByEmail(normalizedEmail);
         if (result.isEmpty()) {
@@ -446,7 +445,7 @@ public final class DefaultUserService implements UserService {
         return new ArrayList<>(persistentUsers);
     }
 
-    private String normalizeEmail(String email) {
+    private String normalizeEmail(final String email) {
         return email != null ? email.trim().toLowerCase() : null;
     }
 
@@ -464,7 +463,7 @@ public final class DefaultUserService implements UserService {
     }
 
     @Override
-    public void recoverPassword(String userEmail, String newPassword) throws UserServiceException {
+    public void recoverPassword(final String userEmail, final String newPassword) throws UserServiceException {
         final var userEntity = findByEmail(userEmail);
 
         // new password hashed.

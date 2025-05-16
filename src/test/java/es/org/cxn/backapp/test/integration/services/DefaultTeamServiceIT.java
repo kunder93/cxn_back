@@ -50,11 +50,10 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.TeamService;
 import es.org.cxn.backapp.service.dto.TeamInfoDto;
 import es.org.cxn.backapp.service.exceptions.TeamServiceException;
-import es.org.cxn.backapp.service.impl.DefaultTeamService;
 import jakarta.transaction.Transactional;
 
 /**
- * Integration tests for the {@link DefaultTeamService} class.
+ * Integration tests for the {@link TeamService} class.
  * <p>
  * These tests cover team and user operations such as creating a team,
  * adding/removing members, and retrieving team information. Each test ensures
@@ -113,18 +112,14 @@ final class DefaultTeamServiceIT {
     private TeamService teamService;
 
     /**
-     * A persistent user entity for testing purposes. This user is created before
-     * each test and can be added as a member of a team to test various user-related
-     * operations such as adding/removing a user from a team.
-     */
-    PersistentUserEntity userEntity;
-
-    /**
      * Sets up the test environment by clearing repositories and setting up a test
      * user.
      */
     @BeforeEach
     void setUp() {
+        final int birthYear = 1991;
+        final int birthMonth = 8;
+        final int birthDay = 22;
         teamRepository.deleteAll();
         userRepository.deleteAll();
         UserProfile userProfile = new UserProfile();
@@ -132,9 +127,9 @@ final class DefaultTeamServiceIT {
         userProfile.setFirstSurname("FirstSurname");
         userProfile.setSecondSurname("SecondSurname");
         userProfile.setGender("male");
-        userProfile.setBirthDate(LocalDate.of(1991, 8, 22));
+        userProfile.setBirthDate(LocalDate.of(birthYear, birthMonth, birthDay));
 
-        userEntity = userRepository.save(new PersistentUserEntity("11111111H", userProfile, "pas123123", USER_EMAIL,
+        userRepository.save(new PersistentUserEntity("11111111H", userProfile, "pas123123", USER_EMAIL,
                 UserType.SOCIO_NUMERO, true, null));
     }
 

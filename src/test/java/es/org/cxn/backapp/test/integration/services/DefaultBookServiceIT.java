@@ -85,7 +85,7 @@ final class DefaultBookServiceIT {
     /**
      * Mocked image file.
      */
-    final MultipartFile mockFile = mock(MultipartFile.class);
+    private final MultipartFile mockFile = mock(MultipartFile.class);
 
     /**
      * Mock image storage service.

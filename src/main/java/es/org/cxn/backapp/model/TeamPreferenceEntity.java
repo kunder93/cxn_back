@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,8 +37,6 @@ package es.org.cxn.backapp.model;
  * serialized.
  * </p>
  *
- * @author
- * @version 1.0
  */
 public interface TeamPreferenceEntity extends java.io.Serializable {
 
@@ -47,26 +45,26 @@ public interface TeamPreferenceEntity extends java.io.Serializable {
      *
      * @return the team name.
      */
-    public String getTeamName();
+    String getTeamName();
 
     /**
      * Retrieves the email of the user who set the team preference.
      *
      * @return the user email.
      */
-    public String getUserEmail();
+    String getUserEmail();
 
     /**
      * Sets the name of the preferred team.
      *
      * @param teamName the team name to set.
      */
-    public void setTeamName(String teamName);
+    void setTeamName(String teamName);
 
     /**
      * Sets the email of the user who set the team preference.
      *
      * @param userEmail the user email to set.
      */
-    public void setUserEmail(String userEmail);
+    void setUserEmail(String userEmail);
 }

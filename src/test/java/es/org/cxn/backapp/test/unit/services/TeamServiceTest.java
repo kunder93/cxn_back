@@ -86,6 +86,11 @@ class TeamServiceTest {
     private static final String USER_EMAIL = "user@email.com";
 
     /**
+     * Birth date example for user.
+     */
+    private static final LocalDate USER_PROFILE_BIRTH_DATE = LocalDate.of(1991, 5, 19);
+
+    /**
      * Mock of the {@link UserEntityRepository} used to interact with the user
      * repository. This mock will simulate the behavior of the actual repository in
      * the test cases.
@@ -175,12 +180,13 @@ class TeamServiceTest {
 
     @BeforeEach
     void setUp() {
+
         UserProfile userProfile = new UserProfile();
         userProfile.setName("UserName");
         userProfile.setFirstSurname("FirstSurname");
         userProfile.setSecondSurname("SecondSurname");
         userProfile.setGender("male");
-        userProfile.setBirthDate(LocalDate.of(1991, 5, 19));
+        userProfile.setBirthDate(USER_PROFILE_BIRTH_DATE);
         teamEntity = new PersistentTeamEntity(TEAM_NAME, "Primera", "A chess team");
         userEntity = new PersistentUserEntity();
         userEntity.setProfile(userProfile);
@@ -282,12 +288,13 @@ class TeamServiceTest {
      */
     @Test
     void shouldRemoveTeamWithSeveralMembers() throws TeamServiceException {
+
         PersistentUserEntity user1 = new PersistentUserEntity();
         UserProfile userProfile1 = new UserProfile();
         userProfile1.setName("User1");
         userProfile1.setFirstSurname("FirstSurname1");
         userProfile1.setSecondSurname("SecondSurname1");
-        userProfile1.setBirthDate(LocalDate.of(1991, 5, 23));
+        userProfile1.setBirthDate(USER_PROFILE_BIRTH_DATE);
         user1.setEmail("user1@email.com");
         user1.setProfile(userProfile1);
         user1.setTeamAssigned(teamEntity);
@@ -297,7 +304,7 @@ class TeamServiceTest {
         userProfile2.setName("User2");
         userProfile2.setFirstSurname("FirstSurname2");
         userProfile2.setSecondSurname("SecondSurname2");
-        userProfile2.setBirthDate(LocalDate.of(1991, 5, 23));
+        userProfile2.setBirthDate(USER_PROFILE_BIRTH_DATE);
         user2.setEmail("user2@email.com");
         user2.setProfile(userProfile2);
         user2.setTeamAssigned(teamEntity);

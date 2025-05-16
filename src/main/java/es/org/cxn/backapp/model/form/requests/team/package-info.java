@@ -1,10 +1,25 @@
-package es.org.cxn.backapp.model.form.requests;
+/**
+ * Contains request DTOs related to team operations.
+ *
+ * <p>
+ * This package defines data transfer objects (DTOs) used for handling client
+ * requests concerning team management, such as creating or updating team
+ * entities. These classes are typically used as input in controller endpoints.
+ * </p>
+ *
+ * <p>
+ * All classes in this package follow validation constraints to ensure data
+ * integrity before being processed by the application logic.
+ * </p>
+ *
+ */
+package es.org.cxn.backapp.model.form.requests.team;
 
 /*-
  * #%L
- * CXN-back-app
+ * back-app
  * %%
- * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
+ * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,28 +40,3 @@ package es.org.cxn.backapp.model.form.requests;
  * THE SOFTWARE.
  * #L%
  */
-
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
-/**
- * DTO for requesting a one-time token for password recovery.
- *
- * <p>
- * Both email and dni are required to ensure that the request is secure.
- * </p>
- *
- * @param email the user's email
- * @param dni   the user's DNI
- */
-public record OTTRequest(@NotNull(message = "Email must not be null")
-@NotBlank(message = "Email must not be blank")
-@Size(max = ValidationConstants.EMAIL_MAX_SIZE,
-        message = "Email must not exceed " + ValidationConstants.EMAIL_MAX_SIZE + " characters") String email,
-
-        @NotNull(message = "DNI must not be null")
-        @NotBlank(message = "DNI must not be blank")
-        @Size(max = ValidationConstants.DNI_MAX_LENGTH,
-                message = "DNI must not exceed " + ValidationConstants.DNI_MAX_LENGTH + " characters") String dni) {
-}

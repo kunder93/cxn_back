@@ -161,7 +161,7 @@ public class DefaultEmailService implements EmailService {
      */
     @Override
     public void sendGeneratedPayment(final String toEmail, final String memberName, final String paymentTitle,
-            String paymentDescription, final String paymentAmount) throws MessagingException, IOException {
+            final String paymentDescription, final String paymentAmount) throws MessagingException, IOException {
         sendEmail(toEmail, "CXN: Pago generado", "mailTemplates/GeneratedPaymentEmail.html",
                 Map.of("name", memberName, "paymentTitle", paymentTitle, "paymentDescription", paymentDescription,
                         "paymentAmount", paymentAmount));

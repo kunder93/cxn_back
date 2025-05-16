@@ -97,12 +97,6 @@ class FederateStateServiceTest {
     private static final String USER_DNI = "12345678A";
 
     /**
-     * Constant representing the base directory path for storing images. This is
-     * used as the root directory where images are stored in the system.
-     */
-    private static final String IMAGE_BASE_DIRECTORY = "base-directory";
-
-    /**
      * Constant representing the payment amount. This value is used for the cost of
      * a specific payment, such as a user federation fee.
      */

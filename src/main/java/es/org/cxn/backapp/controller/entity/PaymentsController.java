@@ -27,13 +27,12 @@ package es.org.cxn.backapp.controller.entity;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -81,7 +80,7 @@ public class PaymentsController {
      */
     public PaymentsController(final PaymentsService service) {
         super();
-        paymentsService = checkNotNull(service, "Received a null pointer as service");
+        paymentsService = Objects.requireNonNull(service, "Received a null pointer as service");
     }
 
     /**
