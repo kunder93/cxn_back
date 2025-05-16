@@ -20,6 +20,8 @@ RUN mvn dependency:go-offline -P${BUILD_PROFILE} --batch-mode
 # Copy the rest of the application source code
 COPY . .
 
+
+
 # Build the application using the specified profile
 RUN mvn clean install -P${BUILD_PROFILE}
 
