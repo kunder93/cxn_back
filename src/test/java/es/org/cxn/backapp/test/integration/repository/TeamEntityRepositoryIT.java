@@ -59,23 +59,14 @@ import es.org.cxn.backapp.repository.TeamEntityRepository;
  */
 @DataJpaTest
 class TeamEntityRepositoryIT {
-
     /**
-     * Repository for accessing {@link PersistentTeamEntity} data.
-     * <p>
-     * This repository is used to perform CRUD operations on the team entity in the
-     * database.
-     * </p>
+     * Team entity repository.
      */
     @Autowired
     private TeamEntityRepository teamRepository;
 
     /**
-     * Instance of {@link PersistentTeamEntity} used for testing.
-     * <p>
-     * This test entity is initialized before each test and saved to the database to
-     * ensure test cases operate on a persistent entity.
-     * </p>
+     * The team entity.
      */
     private PersistentTeamEntity testTeam;
 

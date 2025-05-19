@@ -79,7 +79,7 @@ class ChessQuestionsControllerIT {
     private static Gson gson;
 
     /**
-     * The mocked image storage service.
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

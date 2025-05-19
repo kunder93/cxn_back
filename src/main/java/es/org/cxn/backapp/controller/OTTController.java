@@ -87,12 +87,12 @@ public class OTTController {
     private final RecoverPasswordService recoverPasswordService;
 
     /**
-     * Constructs an {@link OTTController} with the required dependencies.
+     * Constructs an {@code OTTController} initializing the required services.
      *
-     * @param oneTimeTokenServ    the service for managing One-Time Tokens.
-     * @param userServ            the service for managing users.
+     * @param oneTimeTokenServ    the service for managing one-time tokens.
+     * @param userServ            the user management service.
      * @param recoverPasswordServ the service for handling password recovery.
-     * @throws NullPointerException if any of the services provided are null.
+     * @throws NullPointerException if any of the parameters is {@code null}.
      */
     public OTTController(final OneTimeTokenService oneTimeTokenServ, final UserService userServ,
             final RecoverPasswordService recoverPasswordServ) {

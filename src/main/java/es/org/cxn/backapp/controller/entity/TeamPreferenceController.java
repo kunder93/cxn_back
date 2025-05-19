@@ -53,7 +53,7 @@ import jakarta.validation.constraints.Size;
 public class TeamPreferenceController {
 
     /**
-     * Team name max length.
+     * Max length of team name.
      */
     private static final int TEAM_NAME_MAX_LENGTH = 100;
 

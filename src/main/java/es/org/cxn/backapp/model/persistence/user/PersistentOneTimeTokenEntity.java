@@ -40,11 +40,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Entity representing a One-Time Token (OTT) used for authentication purposes,
- * such as password recovery.
+ * Entity representing a one-time token (OTT) used for user authentication and
+ * password recovery.
+ *
  * <p>
- * This entity is stored in the database and linked to a user, containing
- * information about its validity and usage.
+ * This entity maps to the "one_time_token" table in the database and contains
+ * information about the token value, associated user, creation and expiration
+ * timestamps, and usage status.
+ * </p>
+ *
+ * <p>
+ * Tokens are unique, linked to a user by their DNI, and have an expiration
+ * time. They can be marked as used once consumed.
  * </p>
  *
  */
@@ -62,37 +69,35 @@ public class PersistentOneTimeTokenEntity {
     private static final int TOKEN_LENGTH = 255;
 
     /**
-     * The unique value of the One-Time Token (OTT).
+     * The unique token string value.
      */
     @Id
     @Column(name = "token_value", length = TOKEN_LENGTH, nullable = false, unique = true)
     private String tokenValue;
 
     /**
-     * The user associated with this One-Time Token.
+     * The user entity associated with this token.
      */
     @ManyToOne
     @JoinColumn(name = "user_dni", nullable = false)
     private PersistentUserEntity user;
 
     /**
-     * The timestamp when the token was created. This value is set at creation time
-     * and cannot be updated.
+     * Timestamp of when the token was created. Defaults to the current instant at
+     * construction.
      */
     @Builder.Default
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
     /**
-     * The timestamp when the token expires. After this time, the token is no longer
-     * valid.
+     * Timestamp when the token expires.
      */
     @Column(name = "expired_at", nullable = false)
     private Instant expiredAt;
 
     /**
-     * Indicates whether the token has already been used. Once used, it should not
-     * be valid for further authentication.
+     * Indicates whether the token has already been used.
      */
     @Builder.Default
     @Column(name = "is_used", nullable = false)

@@ -158,9 +158,7 @@ public final class DefaultTeamService implements TeamService {
     public List<TeamInfoDto> getAllTeams() {
         final var teams = teamRepository.findAll();
         ArrayList<TeamInfoDto> responseTeams = new ArrayList<>();
-        teams.forEach((PersistentTeamEntity team) -> {
-            responseTeams.add(new TeamInfoDto(team));
-        });
+        teams.forEach((PersistentTeamEntity team) -> responseTeams.add(new TeamInfoDto(team)));
         return responseTeams;
     }
 

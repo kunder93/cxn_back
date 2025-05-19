@@ -27,12 +27,15 @@ package es.org.cxn.backapp.model.form.requests;
  */
 
 /**
- * Represents a request to set a user's team preference. This class is immutable
- * and uses Java Record syntax.
+ * Request object representing the user preference for a specific team.
  *
- * @param userEmail The email address of the user making the request.
- * @param teamName  The name of the team preferred by the user.
+ * <p>
+ * This record contains the necessary data to create or update a user's team
+ * preference, including the user's email and the team's name.
+ * </p>
  *
+ * @param userEmail the email of the user
+ * @param teamName  the name of the team the user prefers
  */
 public record CreateUserTeamPreferenceRequest(String userEmail, String teamName) {
 }

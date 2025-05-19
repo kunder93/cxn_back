@@ -95,7 +95,7 @@ class TournamentParticipantControllerIT {
     private static final LocalDate BIRTH_DATE_ALICE = LocalDate.of(2005, 10, 30);
 
     /**
-     * The image storage service.
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

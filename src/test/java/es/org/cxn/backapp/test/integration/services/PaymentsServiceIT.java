@@ -101,7 +101,7 @@ final class PaymentsServiceIT {
     private DefaultEmailService emailService;
 
     /**
-     * Service that manage image storage.
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

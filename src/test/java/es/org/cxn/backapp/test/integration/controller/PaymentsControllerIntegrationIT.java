@@ -116,7 +116,7 @@ class PaymentsControllerIntegrationIT {
     private static final String SIGN_IN_URL = "/api/auth/signinn";
 
     /**
-     * The image storage service.
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

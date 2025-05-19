@@ -127,7 +127,7 @@ class UserControllerIntegrationIT {
     private static final String CHANGE_KIND_MEMBER_URL = "/api/user/changeKindOfMember";
 
     /**
-     * The image storage service.
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

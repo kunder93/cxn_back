@@ -67,31 +67,20 @@ import es.org.cxn.backapp.service.exceptions.TeamServiceException;
 class TeamControllerTest {
 
     /**
-     * MockMvc instance for performing HTTP requests in tests.
-     * <p>
-     * It allows testing the controller layer by simulating HTTP requests without
-     * the need to start a full web server.
-     * </p>
+     * MockMvc instance used to simulate HTTP requests in web layer tests.
      */
     @Autowired
     private MockMvc mockMvc;
 
     /**
-     * ObjectMapper instance for serializing and deserializing JSON data.
-     * <p>
-     * Used in tests to convert Java objects to JSON and vice versa when sending and
-     * receiving HTTP requests.
-     * </p>
+     * ObjectMapper used for serializing and deserializing JSON content in tests.
      */
     @Autowired
     private ObjectMapper objectMapper;
 
     /**
-     * Mocked service for handling team-related operations.
-     * <p>
-     * This service is injected as a mock to isolate the controller from the service
-     * layer and test its behavior independently.
-     * </p>
+     * Mocked instance of {@link TeamService} used to isolate and control
+     * service-layer behavior in test scenarios.
      */
     @MockitoBean
     private TeamService teamService;

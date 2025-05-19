@@ -35,6 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -180,6 +181,41 @@ public class ActivitiesController {
         final Stream<ActivityDto> activitiesList;
         activitiesList = activitiesService.getAllActivities();
         return new ResponseEntity<>(activitiesList, HttpStatus.OK);
+    }
+
+    /**
+     * Deletes an activity based on the title provided as a path variable.
+     *
+     * <p>
+     * This endpoint is restricted to users with roles {@code ADMIN},
+     * {@code PRESIDENTE}, or {@code SECRETARIO}.
+     * </p>
+     *
+     * <p>
+     * If the title is invalid (null, blank, or exceeds 80 characters), or the
+     * activity is not found, a {@link ResponseStatusException} with status
+     * {@code 400 Bad Request} is thrown.
+     * </p>
+     *
+     * @param title the title of the activity to delete (must not be null, blank, or
+     *              exceed 80 characters)
+     * @return a {@link ResponseEntity} with status {@code 204 No Content} if the
+     *         activity is successfully deleted
+     * @throws ResponseStatusException if the title is invalid or the activity is
+     *                                 not found
+     */
+    @DeleteMapping("/{title}")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
+    public ResponseEntity<Object> removeActivity(@PathVariable final String title) {
+        if (title == null || title.isBlank() || title.length() > 80) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid title");
+        }
+        try {
+            activitiesService.remove(title);
+        } catch (ActivityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error: activity not found", e);
+        }
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }

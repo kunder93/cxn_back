@@ -100,12 +100,7 @@ class FederateControllerIT {
     private static final String SIGN_IN_URL = "/api/auth/signinn";
 
     /**
-     * Mocked instance of {@link DefaultImageStorageService} for testing purposes.
-     *
-     * <p>
-     * This mock service is used to simulate image storage operations in tests
-     * without requiring actual storage interactions.
-     * </p>
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

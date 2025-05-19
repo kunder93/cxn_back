@@ -35,20 +35,31 @@ import jakarta.validation.constraints.Size;
  * Represents a request to create a new team. This record contains the necessary
  * information to create a team, including its name, description, and category.
  *
- * @param name        the name of the team (must not be blank, not null, and
- *                    have a maximum length of 100 characters)
- * @param description a description of the team (must not be blank, not null,
- *                    and have a maximum length of 255 characters)
- * @param category    the category the team belongs to (must not be blank, not
- *                    null, and have a maximum length of 50 characters)
+ * <p>
+ * All fields are validated with the following constraints:
+ * </p>
+ * <ul>
+ * <li>{@code name}: must not be {@code null}, blank, and must have a maximum
+ * length defined by {@link ValidationConstants#MAX_TEAM_NAME_LENGTH}.</li>
+ * <li>{@code description}: must not be {@code null}, blank, and must have a
+ * maximum length defined by
+ * {@link ValidationConstants#MAX_TEAM_DESCRIPTION_LENGTH}.</li>
+ * <li>{@code category}: must not be {@code null}, blank, and must have a
+ * maximum length defined by
+ * {@link ValidationConstants#MAX_TEAM_CATEGORY_LENGTH}.</li>
+ * </ul>
+ *
+ * @param name        the name of the team.
+ * @param description the description of the team.
+ * @param category    the category the team belongs to.
  */
 public record CreateTeamRequest(@NotNull
 @NotBlank
-@Size(max = ValidationConstants.TEAM_NAME_MAX_LENGTH) String name,
+@Size(max = ValidationConstants.MAX_TEAM_NAME_LENGTH) String name,
         @NotNull
         @NotBlank
-        @Size(max = ValidationConstants.TEAM_DESCRIPTION_MAX_LENGTH) String description,
+        @Size(max = ValidationConstants.MAX_TEAM_DESCRIPTION_LENGTH) String description,
         @NotNull
         @NotBlank
-        @Size(max = ValidationConstants.TEAM_CATEGORY_MAX_LENGTH) String category) {
+        @Size(max = ValidationConstants.MAX_TEAM_CATEGORY_LENGTH) String category) {
 }

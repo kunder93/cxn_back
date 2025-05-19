@@ -91,7 +91,7 @@ class DeletePermanentlyUserIT {
     private static Gson gson;
 
     /**
-     * The image storage service.
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
@@ -201,7 +201,7 @@ class DeletePermanentlyUserIT {
         final var userListDto = responseAsList.usersList();
         Assertions.assertEquals(1, userListDto.size(), "List have only one user.");
         // Remain user is admin user.
-        Assertions.assertEquals(userListDto.getFirst(), userListDto.getLast(), "list first user is same as last user.");
+        Assertions.assertEquals(userListDto.getFirst(), userListDto.getLast(), "list first user is same as last");
         Assertions.assertEquals(adminEmail, userListDto.getFirst().email(),
                 "First list user is admin user. No more users in list.");
     }

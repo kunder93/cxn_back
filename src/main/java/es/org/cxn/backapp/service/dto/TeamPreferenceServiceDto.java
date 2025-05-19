@@ -28,15 +28,10 @@ package es.org.cxn.backapp.service.dto;
  */
 
 /**
- * Data Transfer Object (DTO) representing a user's team preference.
- * <p>
- * This DTO is used to transfer data related to a user's preferred team. It
- * contains the name of the team and the user's email.
- * </p>
+ * Data Transfer Object (DTO) representing a user's preference for a team.
  *
- * @param teamName  The name of the preferred team.
- * @param userEmail The email address of the user associated with the
- *                  preference.
+ * @param teamName  the name of the preferred team.
+ * @param userEmail the email of the user who prefers the team.
  */
 public record TeamPreferenceServiceDto(String teamName, String userEmail) {
 

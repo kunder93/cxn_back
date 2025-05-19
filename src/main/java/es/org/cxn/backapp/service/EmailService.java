@@ -98,7 +98,7 @@ public interface EmailService {
      * @throws IOException        If there is an input/output error while processing
      *                            the email content.
      */
-    void sendRecoverPasswordEmail(String toEmail, String completeName, String magicLink)
+    void sendRecoverPasswordEmail(final String toEmail, String completeName, String magicLink)
             throws MessagingException, IOException;
 
     /**

@@ -98,7 +98,7 @@ class AdressControllerIntegrationIT {
     private static final int SPAIN_SUBDIVISIONS = 50;
 
     /**
-     * The image storage service.
+     * Image storage service mocked.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

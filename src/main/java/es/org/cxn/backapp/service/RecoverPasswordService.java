@@ -31,31 +31,44 @@ import es.org.cxn.backapp.service.exceptions.RecoverPasswordServiceException;
 
 /**
  * Service interface for handling password recovery operations.
+ *
  * <p>
- * This service provides methods to send a one-time token to users via email and
- * reset their passwords using a valid token.
+ * This service provides methods to send one-time tokens to users for password
+ * reset purposes and to reset the user's password by consuming a valid token.
  * </p>
  */
 public interface RecoverPasswordService {
 
     /**
-     * Resets the user's password using a one-time token.
+     * Resets the password for a user by consuming a one-time token.
      *
-     * @param token       The one-time token provided for password reset.
-     * @param newPassword The new password to be set for the user.
-     * @param dni         The user's DNI (Documento Nacional de Identidad).
-     * @throws RecoverPasswordServiceException If the token is invalid or expired,
-     *                                         or if the user is not found.
+     * <p>
+     * Verifies the provided token and user identity (via DNI), then updates the
+     * password to the new value.
+     * </p>
+     *
+     * @param token       the one-time token used to authorize the password reset
+     * @param newPassword the new password to be set
+     * @param dni         the user's DNI to verify identity
+     * @throws RecoverPasswordServiceException if the token is invalid or expired,
+     *                                         if the user cannot be found, or if
+     *                                         the token and DNI do not match
      */
     void resetPassword(String token, String newPassword, String dni) throws RecoverPasswordServiceException;
 
     /**
-     * Sends a password recovery token to the user's email.
+     * Sends a one-time token to the specified email for password recovery.
      *
-     * @param email   The email address associated with the user account.
-     * @param userDni The DNI (Documento Nacional de Identidad) of the user.
-     * @throws RecoverPasswordServiceException If the user is not found or if there
-     *                                         is an issue sending the token.
+     * <p>
+     * Verifies that the provided email and DNI correspond to the same user,
+     * generates a recovery token, and sends it via email.
+     * </p>
+     *
+     * @param email   the email address of the user to send the recovery token to
+     * @param userDni the user's DNI to verify identity
+     * @throws RecoverPasswordServiceException if the user is not found, if email
+     *                                         sending fails, or if the email and
+     *                                         DNI do not match
      */
     void sendToken(String email, String userDni) throws RecoverPasswordServiceException;
 

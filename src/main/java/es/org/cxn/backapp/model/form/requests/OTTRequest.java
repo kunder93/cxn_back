@@ -49,4 +49,5 @@ public record OTTRequest(@NotNull(message = "Email must not be null")
         @NotBlank(message = "DNI must not be blank")
         @Size(max = ValidationConstants.DNI_MAX_LENGTH,
                 message = "DNI must not exceed " + ValidationConstants.DNI_MAX_LENGTH + " characters") String dni) {
+
 }

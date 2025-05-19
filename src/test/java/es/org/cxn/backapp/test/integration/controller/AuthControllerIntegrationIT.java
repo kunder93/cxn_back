@@ -106,7 +106,7 @@ class AuthControllerIntegrationIT {
     private static Gson gson;
 
     /**
-     * The image storage service.
+     * Mocked image storage service.
      */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;

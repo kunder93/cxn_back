@@ -49,11 +49,7 @@ import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 class PersistentTeamEntityTest {
 
     /**
-     * Instance of {@link PersistentTeamEntity} used in test cases.
-     * <p>
-     * This object is initialized before each test and modified to verify the
-     * behavior of various methods in {@link PersistentTeamEntity}.
-     * </p>
+     * Team entity.
      */
     private PersistentTeamEntity teamEntity;
 

@@ -100,7 +100,7 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
      *                          represented by {@link UserRoleName}.
      * @param assignedTeamName  The team name assigned to this user. Can be null.
      * @param preferredTeamName The team name that user preferred.
-     * @param federateState     The user data federate state.
+     * @param federateState     The federate state.
      */
     public UserDataResponse(final String dni, final String name, final String firstSurname, final String secondSurname,
             final String gender, final LocalDate birthDate, final String email, final UserType kindMember,

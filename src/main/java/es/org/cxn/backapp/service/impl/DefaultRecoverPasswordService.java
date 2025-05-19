@@ -44,55 +44,48 @@ import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import jakarta.mail.MessagingException;
 
 /**
- * Implementation of {@link RecoverPasswordService} that provides password
- * recovery functionality using a one-time token system.
+ * Default implementation of the {@link RecoverPasswordService} interface.
  *
  * <p>
- * This service allows users to request a password reset token via email and
- * subsequently reset their password by providing the valid token.
+ * This service handles the password recovery process by generating and
+ * consuming one-time tokens (OTT) for user authentication, and by sending
+ * recovery emails containing these tokens.
  * </p>
  *
+ * <p>
+ * It relies on {@link OneTimeTokenService} for token management,
+ * {@link EmailService} for sending emails, and {@link UserService} for user
+ * data retrieval and password updates.
+ * </p>
  */
 @Service
 public final class DefaultRecoverPasswordService implements RecoverPasswordService {
 
     /**
-     * Service for generating and validating one-time tokens.
-     * <p>
-     * This service is responsible for creating unique tokens that allow users to
-     * reset their passwords securely.
-     * </p>
+     * Service for generating and consuming one-time tokens used in authentication.
      */
     private final OneTimeTokenService oneTimeTokenService;
 
     /**
-     * Service for sending emails.
-     * <p>
-     * This service is used to send password recovery emails containing the one-time
-     * token or recovery link.
-     * </p>
+     * Service for sending emails, specifically recovery emails with tokens.
+     *
      */
     private final EmailService emailService;
 
     /**
-     * Service for managing user accounts.
-     * <p>
-     * This service provides operations for retrieving and updating user details,
-     * ensuring that password resets are properly applied to the correct user.
-     * </p>
+     * Service for user management, including retrieval by email or DNI and password
+     * recovery.
      */
     private final UserService userService;
 
     /**
-     * Constructs a new {@code DefaultRecoverPasswordService} with the required
+     * Constructs a new {@code DefaultRecoverPasswordService} with the specified
      * dependencies.
      *
-     * @param oneTimeTokenServ The service responsible for generating and consuming
-     *                         one-time tokens.
-     * @param emailServ        The service used to send password recovery emails.
-     * @param userServ         The service for managing user accounts.
-     * @throws NullPointerException If any of the provided services are
-     *                              {@code null}.
+     * @param oneTimeTokenServ the one-time token service; must not be {@code null}
+     * @param emailServ        the email service; must not be {@code null}
+     * @param userServ         the user service; must not be {@code null}
+     * @throws NullPointerException if any argument is {@code null}
      */
     public DefaultRecoverPasswordService(final OneTimeTokenService oneTimeTokenServ, final EmailService emailServ,
             final UserService userServ) {
@@ -103,28 +96,32 @@ public final class DefaultRecoverPasswordService implements RecoverPasswordServi
     }
 
     /**
-     * Normalizes the provided email by trimming whitespace and converting it to
+     * Normalizes an email string by trimming whitespace and converting to
      * lowercase.
      *
-     * @param email The email to normalize.
-     * @return The normalized email, or {@code null} if the input email is
-     *         {@code null}.
+     * @param email the email to normalize; may be {@code null}
+     * @return the normalized email, or {@code null} if the input was {@code null}
      */
     private String normalizeEmail(final String email) {
         return email != null ? email.trim().toLowerCase() : null;
     }
 
     /**
-     * Resets the user's password using a valid one-time token.
+     * Resets the password for the user identified by the given token and DNI.
      *
-     * @param token       The one-time token used to authenticate the password reset
-     *                    request.
-     * @param newPassword The new password to be set for the user.
-     * @param dni         The DNI (identification number) of the user.
-     * @throws RecoverPasswordServiceException If the token is invalid or expired,
-     *                                         the user is not found, or if there is
-     *                                         a mismatch between the token and user
-     *                                         information.
+     * <p>
+     * This method consumes the provided one-time token to authenticate the user,
+     * verifies that the token corresponds to the user identified by the DNI, and
+     * updates the user's password.
+     * </p>
+     *
+     * @param token       the one-time token string to consume
+     * @param newPassword the new password to set
+     * @param dni         the user's DNI to verify identity
+     * @throws RecoverPasswordServiceException if the token is invalid or expired,
+     *                                         if the token and DNI do not match, or
+     *                                         if the user cannot be found or
+     *                                         updated
      */
     @Override
     public void resetPassword(final String token, final String newPassword, final String dni)
@@ -147,13 +144,19 @@ public final class DefaultRecoverPasswordService implements RecoverPasswordServi
     }
 
     /**
-     * Sends a password recovery token to the specified email if the email and DNI
-     * match.
+     * Sends a recovery token via email to the user identified by the provided email
+     * and DNI.
      *
-     * @param email   The email address of the user requesting the password reset.
-     * @param userDni The DNI (identification number) of the user.
-     * @throws RecoverPasswordServiceException If the email and DNI do not match, or
-     *                                         if the email cannot be sent.
+     * <p>
+     * This method verifies that the email and DNI correspond to the same user,
+     * generates a one-time token for that user, and sends a recovery email
+     * containing the token.
+     * </p>
+     *
+     * @param email   the email address of the user to send the token to
+     * @param userDni the DNI of the user to verify identity
+     * @throws RecoverPasswordServiceException if the email and DNI do not match a
+     *                                         user, or if sending the email fails
      */
     @Override
     public void sendToken(final String email, final String userDni) throws RecoverPasswordServiceException {

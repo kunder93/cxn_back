@@ -51,7 +51,7 @@ import jakarta.validation.ValidatorFactory;
 final class CreateTeamRequestTest {
 
     /**
-     * The validator.
+     * Validator instance.
      */
     private static Validator validator;
 
@@ -85,13 +85,13 @@ final class CreateTeamRequestTest {
     }
 
     /**
-     * Tests that a category exceeding the maximum length of 50 characters does not
+     * Tests that a category exceeding the maximum length of 255 characters does not
      * pass validation.
      */
     @Test
     void testCategoryTooLong() {
-        final int numberOfCharacters = 51;
-        String longCategory = "a".repeat(numberOfCharacters);
+
+        String longCategory = "a".repeat(256);
         CreateTeamRequest request = new CreateTeamRequest("Valid Name", "Valid Description", longCategory);
         Set<ConstraintViolation<CreateTeamRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Expected validation error for category length");

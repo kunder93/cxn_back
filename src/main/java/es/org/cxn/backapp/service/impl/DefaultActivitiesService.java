@@ -215,4 +215,27 @@ public final class DefaultActivitiesService implements ActivitiesService {
                 activity.getStartDate(), activity.getEndDate(), activity.getCategory()));
     }
 
+    /**
+     * Removes an activity by its title.
+     *
+     * <p>
+     * If no activity exists with the specified title, an
+     * {@link ActivityNotFoundException} is thrown.
+     * </p>
+     *
+     * @param title the title of the activity to be removed; must not be null or
+     *              empty
+     * @throws ActivityNotFoundException if no activity is found with the specified
+     *                                   title
+     */
+    @Override
+    public void remove(final String title) throws ActivityNotFoundException {
+        final var activityOpt = activityRepository.findById(title);
+        // Case 1: Activity not exist
+        if (activityOpt.isEmpty()) {
+            throw new ActivityNotFoundException("Activity with title: " + title + " not found.");
+        }
+        activityRepository.deleteById(title);
+    }
+
 }

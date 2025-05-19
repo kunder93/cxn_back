@@ -74,21 +74,15 @@ import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 class PaymentsControllerTest {
 
     /**
-     * Mocked service for handling payment-related operations.
-     * <p>
-     * This service is injected as a mock to isolate the controller from the service
-     * layer, allowing unit testing of the controller's behavior.
-     * </p>
+     * Mocked instance of {@link PaymentsService} used to simulate the payment logic
+     * without invoking the actual implementation during unit testing.
      */
     @Mock
     private PaymentsService paymentsService;
 
     /**
-     * Instance of {@link PaymentsController} with injected mocks.
-     * <p>
-     * This controller is tested independently, with its dependencies mocked to
-     * avoid interactions with the actual service layer.
-     * </p>
+     * Instance of {@link PaymentsController} with injected mocks, used for testing
+     * controller behavior in isolation from its dependencies.
      */
     @InjectMocks
     private PaymentsController paymentsController;

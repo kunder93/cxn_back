@@ -56,12 +56,14 @@ public interface TeamService {
     TeamInfoDto addAssignedMember(String teamName, String userEmail) throws TeamServiceException;
 
     /**
-     * Adds a team preference for a user.
+     * Adds or updates a team preference for a user.
      *
-     * @param userEmail the email of the user.
-     * @param teamName  the name of the preferred team.
-     * @return a {@link UserTeamInfoDto} with updated team preference information.
-     * @throws TeamServiceException if the user or team does not exist.
+     * @param userEmail the email of the user to assign the team preference.
+     * @param teamName  the name of the team to set as preference.
+     * @return a {@link UserTeamInfoDto} representing the updated user-team
+     *         preference information.
+     * @throws TeamServiceException if the user or team does not exist or if the
+     *                              operation fails.
      */
     UserTeamInfoDto addTeamPreference(String userEmail, String teamName) throws TeamServiceException;
 
@@ -113,13 +115,14 @@ public interface TeamService {
     void removeTeam(String teamName) throws TeamServiceException;
 
     /**
-     * Removes a user's team preference.
+     * Removes the team preference for a specific user.
      *
      * @param userEmail the email of the user whose team preference is to be
      *                  removed.
-     * @return a {@link UserTeamInfoDto} with updated information after the removal.
-     * @throws TeamServiceException if the user does not exist or has no preference
-     *                              set.
+     * @return a {@link UserTeamInfoDto} representing the updated user-team
+     *         preference state.
+     * @throws TeamServiceException if the user does not exist or if the operation
+     *                              fails.
      */
     UserTeamInfoDto removeTeamPreference(String userEmail) throws TeamServiceException;
 }

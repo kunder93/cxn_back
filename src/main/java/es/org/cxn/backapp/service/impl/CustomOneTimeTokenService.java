@@ -43,66 +43,69 @@ import es.org.cxn.backapp.repository.UserEntityRepository;
 import jakarta.transaction.Transactional;
 
 /**
- * Custom implementation of {@link OneTimeTokenService} that manages the
- * generation and consumption of one-time tokens for authentication purposes.
+ * Custom service for managing One-Time Tokens (OTT) used in authentication.
  *
  * <p>
- * This service is responsible for generating secure one-time tokens, validating
- * them, and ensuring they are used only once. Tokens expire after a predefined
- * period.
+ * This implementation handles the generation and consumption of one-time
+ * tokens, storing them in the database and ensuring their temporal validity.
  * </p>
  *
+ * <p>
+ * Generated tokens are valid for 15 minutes (900 seconds). Once consumed or
+ * expired, they are removed from the repository.
+ * </p>
  */
 @Service
 public class CustomOneTimeTokenService implements OneTimeTokenService {
 
     /**
-     * The validity period of a token in seconds.
-     * <p>
-     * Tokens are valid for 15 minutes (900 seconds) before expiring.
-     * </p>
+     * Duration in seconds that a generated one-time token remains valid. Tokens
+     * expire 900 seconds (15 minutes) after creation.
      */
-    private static final long TOKEN_VALIDITY_TIME = 900; // 15 min
+    private static final long TOKEN_VALIDITY_SECONDS = 900;
 
     /**
-     * Repository for managing one-time token entities.
-     * <p>
-     * This repository is used to store, retrieve, and delete one-time tokens from
-     * the database.
-     * </p>
+     * Repository interface for managing persistent one-time token entities. Used to
+     * store, retrieve, and delete one-time tokens in the database.
      */
     private final OneTimeTokenEntityRepository tokenRepository;
 
     /**
-     * Repository for managing user entities.
-     * <p>
-     * This repository is used to fetch user information associated with a given
-     * one-time token.
-     * </p>
+     * Repository interface for managing user entities. Used to look up users when
+     * generating one-time tokens.
      */
     private final UserEntityRepository userRepository;
 
     /**
-     * Constructs a new {@code CustomOneTimeTokenService} with required
-     * dependencies.
+     * Constructs a {@code CustomOneTimeTokenService} with the specified
+     * repositories.
      *
-     * @param tokenRepository The repository handling token persistence.
-     * @param userRepository  The repository handling user persistence.
+     * @param tokenRepo the repository for managing persistent one-time token
+     *                  entities; must not be {@code null}
+     * @param userRepo  the repository for managing user entities; must not be
+     *                  {@code null}
+     * @throws NullPointerException if {@code tokenRepo} or {@code userRepo} is
+     *                              {@code null}
      */
-    public CustomOneTimeTokenService(final OneTimeTokenEntityRepository tokenRepository,
-            final UserEntityRepository userRepository) {
-        this.tokenRepository = Objects.requireNonNull(tokenRepository, "Token repository cannot be null.");
-        this.userRepository = Objects.requireNonNull(userRepository, "User repository cannot be null.");
+    public CustomOneTimeTokenService(final OneTimeTokenEntityRepository tokenRepo,
+            final UserEntityRepository userRepo) {
+        this.tokenRepository = Objects.requireNonNull(tokenRepo, "Received a null pointer as token repository");
+        this.userRepository = Objects.requireNonNull(userRepo, "Received a null pointer as user repository");
     }
 
     /**
-     * Consumes a one-time token by validating and removing it from storage.
+     * Consumes a one-time token (OTT) to authenticate the user.
      *
-     * @param authenticationToken The authentication token containing the one-time
-     *                            token value.
-     * @return A validated {@link OneTimeToken} if the token is valid and not
-     *         expired.
-     * @throws IllegalArgumentException If the token is invalid or expired.
+     * <p>
+     * Validates that the token exists and has not expired. If valid, the token is
+     * deleted from the repository to prevent reuse.
+     * </p>
+     *
+     * @param authenticationToken the authentication token containing the one-time
+     *                            token
+     * @return the consumed token including token value, user identifier, and
+     *         expiration time
+     * @throws IllegalArgumentException if the token does not exist or has expired
      */
     @Override
     @Transactional
@@ -122,12 +125,18 @@ public class CustomOneTimeTokenService implements OneTimeTokenService {
     }
 
     /**
-     * Generates a new one-time token for a given user.
+     * Generates a new one-time token (OTT) for the specified user.
      *
-     * @param request The request containing the username for which the token is
-     *                generated.
-     * @return A newly created {@link OneTimeToken}.
-     * @throws IllegalArgumentException If the user is not found.
+     * <p>
+     * Creates a unique token with a time-limited validity (15 minutes) and saves it
+     * in the repository.
+     * </p>
+     *
+     * @param request the request containing the username for whom the token is
+     *                generated
+     * @return the generated token including its value, associated user, and
+     *         expiration time
+     * @throws IllegalArgumentException if the user is not found
      */
     @Override
     @Transactional
@@ -136,7 +145,7 @@ public class CustomOneTimeTokenService implements OneTimeTokenService {
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         String tokenValue = UUID.randomUUID().toString();
-        Instant expiresAt = Instant.now().plusSeconds(TOKEN_VALIDITY_TIME);
+        Instant expiresAt = Instant.now().plusSeconds(TOKEN_VALIDITY_SECONDS);
 
         PersistentOneTimeTokenEntity entity = PersistentOneTimeTokenEntity.builder().tokenValue(tokenValue).user(user)
                 .expiredAt(expiresAt).build();
