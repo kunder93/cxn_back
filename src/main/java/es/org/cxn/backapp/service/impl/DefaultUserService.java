@@ -446,7 +446,7 @@ public final class DefaultUserService implements UserService {
         return new ArrayList<>(persistentUsers);
     }
 
-    private String normalizeEmail(String email) {
+    private String normalizeEmail(final String email) {
         return email != null ? email.trim().toLowerCase() : null;
     }
 
@@ -464,7 +464,7 @@ public final class DefaultUserService implements UserService {
     }
 
     @Override
-    public void recoverPassword(String userEmail, String newPassword) throws UserServiceException {
+    public void recoverPassword(final String userEmail, final String newPassword) throws UserServiceException {
         final var userEntity = findByEmail(userEmail);
 
         // new password hashed.

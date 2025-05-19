@@ -40,6 +40,9 @@ import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
 class PersistentTeamEntityTest {
 
+    /**
+     * Team entity.
+     */
     private PersistentTeamEntity teamEntity;
 
     @BeforeEach

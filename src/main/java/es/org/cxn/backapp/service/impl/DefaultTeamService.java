@@ -111,7 +111,8 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public UserTeamInfoDto addTeamPreference(String userEmail, String teamName) throws TeamServiceException {
+    public UserTeamInfoDto addTeamPreference(final String userEmail, final String teamName)
+            throws TeamServiceException {
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
             throw new TeamServiceException(teamNotFoundMessage(teamName));
@@ -129,7 +130,7 @@ public final class DefaultTeamService implements TeamService {
         userPreferredTeamList.add(userEntity);
 
         final var userWithNoPreference = userRepository.save(userEntity);
-        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+        teamRepository.save(teamEntity);
 
         return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
                 userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),
@@ -158,9 +159,7 @@ public final class DefaultTeamService implements TeamService {
     public List<TeamInfoDto> getAllTeams() {
         final var teams = teamRepository.findAll();
         ArrayList<TeamInfoDto> responseTeams = new ArrayList<>();
-        teams.forEach((PersistentTeamEntity team) -> {
-            responseTeams.add(new TeamInfoDto(team));
-        });
+        teams.forEach((PersistentTeamEntity team) -> responseTeams.add(new TeamInfoDto(team)));
         return responseTeams;
     }
 
@@ -220,7 +219,7 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public UserTeamInfoDto removeTeamPreference(String userEmail) throws TeamServiceException {
+    public UserTeamInfoDto removeTeamPreference(final String userEmail) throws TeamServiceException {
 
         final var userOptional = userRepository.findByEmail(userEmail);
         if (userOptional.isEmpty()) {
@@ -247,7 +246,7 @@ public final class DefaultTeamService implements TeamService {
         userEntity.setTeamPreferred(null);
 
         final var userWithNoPreference = userRepository.save(userEntity);
-        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+        teamRepository.save(teamEntity);
 
         return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
                 userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),

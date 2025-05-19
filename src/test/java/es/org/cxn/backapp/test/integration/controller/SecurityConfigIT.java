@@ -31,6 +31,7 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -69,7 +70,7 @@ public class SecurityConfigIT {
      * @throws Exception Si ocurre un error durante la configuración de seguridad.
      */
     @Bean
-    SecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
+    DefaultSecurityFilterChain filterChain(final HttpSecurity http) throws Exception {
         // Desactiva la seguridad para las pruebas
         http.csrf(csrf -> csrf.disable()).authorizeHttpRequests(requests -> requests.anyRequest().permitAll())
                 .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

@@ -72,8 +72,8 @@ public interface EmailService {
      * @throws IOException        if there is an error with input/output during the
      *                            process
      */
-    void sendGeneratedPayment(final String toEmail, final String memberName, final String paymentTitle,
-            String paymentDescription, final String paymentAmount) throws MessagingException, IOException;
+    void sendGeneratedPayment(String toEmail, String memberName, String paymentTitle, String paymentDescription,
+            String paymentAmount) throws MessagingException, IOException;
 
     /**
      * Sends a confirmation payment received email to member.
@@ -98,7 +98,7 @@ public interface EmailService {
      * @throws IOException        If there is an input/output error while processing
      *                            the email content.
      */
-    void sendRecoverPasswordEmail(final String toEmail, final String completeName, final String magicLink)
+    void sendRecoverPasswordEmail(final String toEmail, String completeName, String magicLink)
             throws MessagingException, IOException;
 
     /**

@@ -113,13 +113,6 @@ final class DefaultTeamServiceIT {
     private TeamService teamService;
 
     /**
-     * A persistent user entity for testing purposes. This user is created before
-     * each test and can be added as a member of a team to test various user-related
-     * operations such as adding/removing a user from a team.
-     */
-    PersistentUserEntity userEntity;
-
-    /**
      * Sets up the test environment by clearing repositories and setting up a test
      * user.
      */
@@ -134,7 +127,7 @@ final class DefaultTeamServiceIT {
         userProfile.setGender("male");
         userProfile.setBirthDate(LocalDate.of(1991, 8, 22));
 
-        userEntity = userRepository.save(new PersistentUserEntity("11111111H", userProfile, "pas123123", USER_EMAIL,
+        userRepository.save(new PersistentUserEntity("11111111H", userProfile, "pas123123", USER_EMAIL,
                 UserType.SOCIO_NUMERO, true, null));
     }
 

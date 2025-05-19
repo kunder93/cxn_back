@@ -61,7 +61,7 @@ public class MagicLinkOneTimeTokenGenerationSuccessHandler implements OneTimeTok
      * Logger instance for logging events and errors related to One-Time Token
      * generation.
      */
-    private static final Logger logger = LoggerFactory.getLogger(MagicLinkOneTimeTokenGenerationSuccessHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MagicLinkOneTimeTokenGenerationSuccessHandler.class);
 
     /**
      * Service responsible for sending recovery emails with the generated One-Time
@@ -80,7 +80,7 @@ public class MagicLinkOneTimeTokenGenerationSuccessHandler implements OneTimeTok
      *
      * @param emailService the service used to send emails
      */
-    public MagicLinkOneTimeTokenGenerationSuccessHandler(EmailService emailService) {
+    public MagicLinkOneTimeTokenGenerationSuccessHandler(final EmailService emailService) {
         this.emailService = emailService;
         this.redirectHandler = new RedirectOneTimeTokenGenerationSuccessHandler("/ott/sent");
     }
@@ -97,8 +97,8 @@ public class MagicLinkOneTimeTokenGenerationSuccessHandler implements OneTimeTok
      * @throws ServletException if a servlet-related error occurs
      */
     @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response, OneTimeToken oneTimeToken)
-            throws IOException, ServletException {
+    public void handle(final HttpServletRequest request, final HttpServletResponse response,
+            final OneTimeToken oneTimeToken) throws IOException, ServletException {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(UrlUtils.buildFullRequestUrl(request))
                 .replacePath(request.getContextPath()).replaceQuery(null).fragment(null).path("/login/ott")
                 .queryParam("token", oneTimeToken.getTokenValue());
@@ -109,9 +109,9 @@ public class MagicLinkOneTimeTokenGenerationSuccessHandler implements OneTimeTok
         try {
             this.emailService.sendRecoverPasswordEmail(email, email, magicLink);
         } catch (MessagingException e) {
-            logger.error("Failed to send recovery email to {}: {}", email, e.getMessage(), e);
+            LOGGER.error("Failed to send recovery email to {}: {}", email, e.getMessage(), e);
         } catch (IOException e) {
-            logger.error("IO error while sending recovery email to {}: {}", email, e.getMessage(), e);
+            LOGGER.error("IO error while sending recovery email to {}: {}", email, e.getMessage(), e);
         }
 
         this.redirectHandler.handle(request, response, oneTimeToken);

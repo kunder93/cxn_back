@@ -63,9 +63,15 @@ import jakarta.transaction.Transactional;
  */
 @DataJpaTest
 class TeamEntityRepositoryIT {
+    /**
+     * Team entity repository.
+     */
     @Autowired
     private TeamEntityRepository teamRepository;
 
+    /**
+     * The team entity.
+     */
     private PersistentTeamEntity testTeam;
 
     @BeforeEach

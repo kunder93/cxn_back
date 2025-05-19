@@ -29,7 +29,10 @@ package es.org.cxn.backapp.test.unit.services;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -37,6 +40,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,12 +51,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
 import es.org.cxn.backapp.repository.TeamEntityRepository;
 import es.org.cxn.backapp.repository.UserEntityRepository;
 import es.org.cxn.backapp.service.dto.TeamInfoDto;
+import es.org.cxn.backapp.service.dto.UserTeamInfoDto;
 import es.org.cxn.backapp.service.exceptions.TeamServiceException;
 import es.org.cxn.backapp.service.impl.DefaultTeamService;
 
@@ -171,6 +177,22 @@ class TeamServiceTest {
         });
 
         assertEquals("User with provided email: " + userEmail + " not found.", exception.getMessage());
+    }
+
+    private UserEntity createUser(String email) {
+        UserProfile profile = new UserProfile();
+        profile.setName("John");
+        profile.setFirstSurname("Doe");
+        profile.setSecondSurname("Smith");
+        profile.setGender("M");
+        profile.setBirthDate(LocalDate.of(1990, 1, 1));
+
+        UserEntity user = new PersistentUserEntity();
+        user.setEmail(email);
+        user.setDni("12345678A");
+        user.setProfile(profile);
+
+        return user;
     }
 
     @BeforeEach
@@ -422,6 +444,123 @@ class TeamServiceTest {
 
         assertThatThrownBy(() -> teamService.getTeamInfo(TEAM_NAME)).isInstanceOf(TeamServiceException.class)
                 .hasMessage("Team with name: " + TEAM_NAME + " not found.");
+    }
+
+    @Test
+    void testAddTeamPreference_TeamNotFound() {
+        String userEmail = "user@example.com";
+        String teamName = "Nonexistent Team";
+
+        when(teamEntityRepository.findById(teamName)).thenReturn(Optional.empty());
+
+        assertThrows(TeamServiceException.class, () -> {
+            teamService.addTeamPreference(userEmail, teamName);
+        });
+    }
+
+    @Test
+    void testAddTeamPreference_UserNotFound() {
+        String userEmail = "nonexistent@example.com";
+        String teamName = "Team A";
+
+        when(teamEntityRepository.findById(teamName))
+                .thenReturn(Optional.of(new PersistentTeamEntity(teamName, "Category A", "Description A")));
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
+
+        assertThrows(TeamServiceException.class, () -> {
+            teamService.addTeamPreference(userEmail, teamName);
+        });
+    }
+
+    @Test
+    void testAddTeamPreference_Valid() throws TeamServiceException {
+        String userEmail = "user@example.com";
+        String teamName = "Team A";
+
+        PersistentTeamEntity team = new PersistentTeamEntity(teamName, "Category A", "Description A");
+        PersistentUserEntity user = (PersistentUserEntity) createUser(userEmail);
+
+        when(teamEntityRepository.findById(teamName)).thenReturn(Optional.of(team));
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        when(teamEntityRepository.save(team)).thenReturn(team);
+
+        UserTeamInfoDto result = teamService.addTeamPreference(userEmail, teamName);
+
+        assertNotNull(result);
+        assertEquals(teamName, result.preferredTeam());
+        verify(userRepository, times(1)).save(user);
+        verify(teamEntityRepository, times(1)).save(team);
+    }
+
+    @Test
+    void testGetAllTeams_NoTeams() {
+        when(teamEntityRepository.findAll()).thenReturn(Collections.emptyList());
+
+        var result = teamService.getAllTeams();
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testGetAllTeams_WithTeams() {
+        PersistentTeamEntity team1 = new PersistentTeamEntity("Team A", "Category A", "Description A");
+        PersistentTeamEntity team2 = new PersistentTeamEntity("Team B", "Category B", "Description B");
+
+        when(teamEntityRepository.findAll()).thenReturn(List.of(team1, team2));
+
+        var result = teamService.getAllTeams();
+
+        assertEquals(2, result.size());
+        assertEquals("Team A", result.get(0).name());
+        assertEquals("Team B", result.get(1).name());
+    }
+
+    @Test
+    void testRemoveTeamPreference_NoPreference() {
+        String userEmail = "user@example.com";
+
+        PersistentUserEntity user = (PersistentUserEntity) createUser(userEmail);
+        user.setTeamPreferred(null);
+
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
+
+        assertThrows(TeamServiceException.class, () -> {
+            teamService.removeTeamPreference(userEmail);
+        });
+    }
+
+    @Test
+    void testRemoveTeamPreference_UserNotFound() {
+        String userEmail = "nonexistent@example.com";
+
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
+
+        assertThrows(TeamServiceException.class, () -> {
+            teamService.removeTeamPreference(userEmail);
+        });
+    }
+
+    @Test
+    void testRemoveTeamPreference_Valid() throws TeamServiceException {
+        String userEmail = "user@example.com";
+        String teamName = "Team A";
+
+        PersistentTeamEntity team = new PersistentTeamEntity(teamName, "Category A", "Description A");
+        PersistentUserEntity user = (PersistentUserEntity) createUser(userEmail);
+        user.setTeamPreferred(team);
+        team.setUsersPreferred(new ArrayList<>(List.of(user)));
+
+        when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
+        when(userRepository.save(user)).thenReturn(user);
+        when(teamEntityRepository.save(team)).thenReturn(team);
+
+        UserTeamInfoDto result = teamService.removeTeamPreference(userEmail);
+
+        assertNotNull(result);
+        assertNull(result.preferredTeam());
+        verify(userRepository, times(1)).save(user);
+        verify(teamEntityRepository, times(1)).save(team);
     }
 
 }

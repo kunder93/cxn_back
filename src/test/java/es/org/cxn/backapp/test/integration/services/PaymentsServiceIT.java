@@ -101,6 +101,9 @@ final class PaymentsServiceIT {
     @MockitoBean
     private DefaultEmailService emailService;
 
+    /**
+     * Mocked image storage service.
+     */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
 
@@ -110,7 +113,7 @@ final class PaymentsServiceIT {
     private final String userDni = "32721880X";
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
+    static void setProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> "1025");
         registry.add("spring.mail.username", () -> "test@example.com");

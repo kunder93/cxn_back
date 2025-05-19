@@ -37,6 +37,21 @@ package es.org.cxn.backapp.model.form.requests;
 public final class ValidationConstants {
 
     /**
+     * The maximum length allowed for the team category.
+     */
+    public static final int MAX_TEAM_CATEGORY_LENGTH = 255;
+
+    /**
+     * The maximum length allowed for the team description.
+     */
+    public static final int MAX_TEAM_DESCRIPTION_LENGTH = 255;
+
+    /**
+     * The maximum length allowed for the team name.
+     */
+    public static final int MAX_TEAM_NAME_LENGTH = 100;
+
+    /**
      * The maximum length allowed for the transport category.
      */
     public static final int MAX_CATEGORY_LENGTH = 30;
@@ -92,6 +107,11 @@ public final class ValidationConstants {
      * Maximum allowed length for the email field.
      */
     public static final int EMAIL_MAX_SIZE = 50;
+
+    /**
+     * Max length of email in OTT recover password.
+     */
+    public static final int OTT_EMAIL_SIZE = 255;
 
     /**
      * Error message indicating that the email field must not exceed 50 characters.
@@ -216,7 +236,7 @@ public final class ValidationConstants {
     /**
      * Maximum length for the activity title. Must not exceed 30 characters.
      */
-    public static final int ACTIVITY_TITLE_MAX_LENGTH = 30;
+    public static final int ACTIVITY_TITLE_MAX_LENGTH = 80;
 
     /**
      * Minimum length for the activity description. Must be at least 10 characters.

@@ -53,6 +53,11 @@ import jakarta.validation.constraints.Size;
 public class TeamPreferenceController {
 
     /**
+     * Max length of team name.
+     */
+    private static final int TEAM_NAME_MAX_LENGTH = 100;
+
+    /**
      * The team service.
      */
     private final TeamService teamService;
@@ -75,7 +80,7 @@ public class TeamPreferenceController {
      */
     @PatchMapping("/{teamName}")
     public ResponseEntity<UserTeamInfoDto> addUserToTeam(@PathVariable
-    @Size(max = 100) final String teamName) {
+    @Size(max = TEAM_NAME_MAX_LENGTH) final String teamName) {
         final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
             final var userInfo = teamService.addTeamPreference(userEmail, teamName);

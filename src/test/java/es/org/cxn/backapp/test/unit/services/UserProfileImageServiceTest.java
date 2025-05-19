@@ -1,4 +1,3 @@
-
 package es.org.cxn.backapp.test.unit.services;
 
 /*-
@@ -28,9 +27,20 @@ package es.org.cxn.backapp.test.unit.services;
  */
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import java.io.File;
+import java.nio.file.Files;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,7 +48,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import es.org.cxn.backapp.model.form.responses.user.ProfileImageResponse;
+import es.org.cxn.backapp.model.persistence.ImageExtension;
 import es.org.cxn.backapp.model.persistence.PersistentProfileImageEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.repository.ImageProfileEntityRepository;
@@ -47,83 +60,187 @@ import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 import es.org.cxn.backapp.service.impl.DefaultUserProfileImageService;
 import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
+import es.org.cxn.backapp.service.impl.storage.FileLocation;
 
-/**
- * Unit tests for the {@link DefaultUserProfileImageService}. This class tests
- * various functionalities related to saving user profile images, including
- * handling invalid file extensions.
- *
- * @see DefaultUserProfileImageService
- */
 class UserProfileImageServiceTest {
 
-    /**
-     * Mocked repository for managing {@link PersistentUserEntity}.
-     */
     @Mock
     private UserEntityRepository userRepository;
 
-    /**
-     * Mocked repository for managing {@link PersistentProfileImageEntity}.
-     */
     @Mock
     private ImageProfileEntityRepository imageProfileEntityRepository;
 
-    /**
-     * Mocked service for managing user operations.
-     */
     @Mock
     private UserService userService;
 
-    /**
-     * Mocked service for handling image storage operations.
-     */
     @Mock
     private DefaultImageStorageService imageStorageService;
 
-    /**
-     * Service under test that handles user profile image operations.
-     */
     @InjectMocks
     private DefaultUserProfileImageService userProfileImageService;
 
-    /**
-     * Mocked entity representing a profile image.
-     */
-    @Mock
-    private PersistentProfileImageEntity profileImageEntity;
+    @Test
+    void getProfileImage_shouldReturnEmptyResponse_whenNoImageExists() throws Exception {
+        String dni = "12345678A";
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setDni(dni);
+        user.setProfileImage(null);
 
-    /**
-     * Initializes mocks before each test method is executed.
-     */
+        when(userService.findByDni(dni)).thenReturn(user);
+
+        ProfileImageResponse response = userProfileImageService.getProfileImage(dni);
+
+        assertNull(response.url());
+    }
+
+    @Test
+    void getProfileImage_shouldReturnImageResponse_whenStoredImageExists() throws Exception {
+        final String dni = "12345678A";
+
+        PersistentProfileImageEntity profileImage = new PersistentProfileImageEntity();
+        profileImage.setStored(true);
+        profileImage.setUrl("src/test/resources/sample.png");
+        profileImage.setExtension(ImageExtension.PNG);
+
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setDni(dni);
+        user.setProfileImage(profileImage);
+
+        when(userService.findByDni(dni)).thenReturn(user);
+
+        // Crear archivo de prueba
+        File testFile = new File("src/test/resources/sample.png");
+        testFile.getParentFile().mkdirs();
+        Files.write(testFile.toPath(), new byte[] { 1, 2, 3 });
+
+        ProfileImageResponse response = userProfileImageService.getProfileImage(dni);
+
+        assertNotNull(response.url());
+
+        // Clean up
+        testFile.delete();
+    }
+
+    @Test
+    void saveProfileImage_shouldCreateNew_whenNoPreviousImageExists() throws Exception {
+        String email = "test@example.com";
+        String dni = "12345678A";
+        String imageUrl = "http://example.com/img.png";
+
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setDni(dni);
+
+        when(userService.findByEmail(email)).thenReturn(user);
+        when(imageProfileEntityRepository.findById(dni)).thenReturn(Optional.empty());
+        when(imageProfileEntityRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        PersistentUserEntity result = userProfileImageService.saveProfileImage(email, imageUrl);
+
+        assertEquals(dni, result.getDni());
+        verify(imageProfileEntityRepository).save(any());
+    }
+
+    @Test
+    void saveProfileImage_shouldDeleteOld_whenStoredTrue() throws Exception {
+        String email = "test@example.com";
+        String dni = "12345678A";
+        String imageUrl = "http://example.com/new.png";
+
+        File oldImage = File.createTempFile("old-profile", ".jpg");
+        oldImage.deleteOnExit();
+
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setDni(dni);
+
+        PersistentProfileImageEntity oldProfile = new PersistentProfileImageEntity();
+        oldProfile.setStored(true);
+        oldProfile.setUrl(oldImage.getAbsolutePath());
+
+        when(userService.findByEmail(email)).thenReturn(user);
+        when(imageProfileEntityRepository.findById(dni)).thenReturn(Optional.of(oldProfile));
+        when(imageProfileEntityRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        PersistentUserEntity result = userProfileImageService.saveProfileImage(email, imageUrl);
+
+        assertEquals(dni, result.getDni());
+        verify(imageProfileEntityRepository).save(any());
+        assertFalse(oldImage.exists());
+    }
+
+    @Test
+    void saveProfileImageFile_shouldStoreImage_whenValidFileProvided() throws Exception {
+        String dni = "12345678A";
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setDni(dni);
+
+        MockMultipartFile file = new MockMultipartFile("file", "photo.png", "image/png", new byte[] { 1, 2, 3 });
+
+        when(userService.findByDni(dni)).thenReturn(user);
+        when(imageStorageService.saveImage(any(), eq(FileLocation.PROFILE_IMAGES), eq(dni)))
+                .thenReturn("/fake/path/photo.png");
+        when(imageProfileEntityRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+        when(userRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        PersistentUserEntity result = userProfileImageService.saveProfileImageFile(dni, file);
+
+        assertEquals(dni, result.getDni());
+        verify(imageStorageService).saveImage(any(), eq(FileLocation.PROFILE_IMAGES), eq(dni));
+    }
+
+    @Test
+    void saveProfileImageFile_shouldThrow_whenInvalidExtension() throws UserServiceException {
+        String dni = "12345678A";
+        PersistentUserEntity user = new PersistentUserEntity();
+        user.setDni(dni);
+
+        MockMultipartFile file = new MockMultipartFile("file", "photo.txt", "text/plain", new byte[] { 1, 2 });
+
+        when(userService.findByDni(dni)).thenReturn(user);
+
+        UserServiceException ex = assertThrows(UserServiceException.class,
+                () -> userProfileImageService.saveProfileImageFile(dni, file));
+
+        assertTrue(ex.getMessage().contains("Invalid image extension"));
+    }
+
     @BeforeEach
-    void setup() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
-    /**
-     * Tests that saving a profile image file with an invalid extension throws a
-     * {@link UserServiceException}.
-     *
-     * <p>
-     * This test ensures that the
-     * {@link DefaultUserProfileImageService#saveProfileImageFile(String, MockMultipartFile)}
-     * method correctly identifies and rejects files with unsupported extensions.
-     * </p>
-     *
-     * @throws UserServiceException if the save operation fails.
-     */
     @Test
-    void testSaveProfileImageFileInvalidExtensionThrowsUserServiceException() throws UserServiceException {
+    void testSaveProfileImageFile_shouldThrowException_whenOriginalFilenameIsEmpty() throws UserServiceException {
         // Arrange
-        String userDni = "123456789";
-        MockMultipartFile file = new MockMultipartFile("file", "image.txt", "text/plain", "image content".getBytes());
+        final String dni = "12345678A";
+        final MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getOriginalFilename()).thenReturn("");
 
-        when(userService.findByDni(userDni)).thenReturn(mock(PersistentUserEntity.class));
+        final PersistentUserEntity mockUser = new PersistentUserEntity();
+        when(userService.findByDni(dni)).thenReturn(mockUser);
 
         // Act & Assert
-        UserServiceException thrown = assertThrows(UserServiceException.class,
-                () -> userProfileImageService.saveProfileImageFile(userDni, file));
-        assertEquals("Invalid image extension: txt", thrown.getMessage());
+        UserServiceException ex = assertThrows(UserServiceException.class, () -> {
+            userProfileImageService.saveProfileImageFile(dni, mockFile);
+        });
+        assertEquals("Invalid file name", ex.getMessage());
+    }
+
+    @Test
+    void testSaveProfileImageFile_shouldThrowException_whenOriginalFilenameIsNull() throws UserServiceException {
+        // Arrange
+        final String dni = "12345678A";
+        final MultipartFile mockFile = mock(MultipartFile.class);
+        when(mockFile.getOriginalFilename()).thenReturn(null);
+
+        final PersistentUserEntity mockUser = new PersistentUserEntity();
+        when(userService.findByDni(dni)).thenReturn(mockUser);
+
+        // Act & Assert
+        UserServiceException ex = assertThrows(UserServiceException.class, () -> {
+            userProfileImageService.saveProfileImageFile(dni, mockFile);
+        });
+        assertEquals("Invalid file name", ex.getMessage());
     }
 }

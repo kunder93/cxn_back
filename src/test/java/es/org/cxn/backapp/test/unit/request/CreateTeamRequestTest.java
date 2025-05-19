@@ -13,10 +13,10 @@ package es.org.cxn.backapp.test.unit.request;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -50,6 +50,9 @@ import jakarta.validation.ValidatorFactory;
  */
 final class CreateTeamRequestTest {
 
+    /**
+     * Validator instance.
+     */
     private static Validator validator;
 
     /**
@@ -82,12 +85,12 @@ final class CreateTeamRequestTest {
     }
 
     /**
-     * Tests that a category exceeding the maximum length of 50 characters does not
+     * Tests that a category exceeding the maximum length of 255 characters does not
      * pass validation.
      */
     @Test
     void testCategoryTooLong() {
-        String longCategory = "a".repeat(51);
+        String longCategory = "a".repeat(256);
         CreateTeamRequest request = new CreateTeamRequest("Valid Name", "Valid Description", longCategory);
         Set<ConstraintViolation<CreateTeamRequest>> violations = validator.validate(request);
         assertFalse(violations.isEmpty(), "Expected validation error for category length");

@@ -103,4 +103,17 @@ public interface ActivitiesService {
      */
     Stream<ActivityDto> getAllActivities();
 
+    /**
+     * Removes an activity from the system by its title.
+     *
+     * <p>
+     * If no activity exists with the specified title, an
+     * {@link ActivityNotFoundException} is thrown.
+     * </p>
+     *
+     * @param title the title of the activity to remove; must not be null or empty
+     * @throws ActivityNotFoundException if no activity is found with the specified
+     *                                   title
+     */
+    void remove(String title) throws ActivityNotFoundException;
 }

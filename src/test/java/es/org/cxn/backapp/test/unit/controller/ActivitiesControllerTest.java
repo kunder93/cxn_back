@@ -1,6 +1,9 @@
 
 package es.org.cxn.backapp.test.unit.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /*-
  * #%L
  * back-app
@@ -28,9 +31,12 @@ package es.org.cxn.backapp.test.unit.controller;
  */
 
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,16 +46,20 @@ import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.server.ResponseStatusException;
 
 import es.org.cxn.backapp.controller.entity.ActivitiesController;
 import es.org.cxn.backapp.service.ActivitiesService;
 import es.org.cxn.backapp.service.dto.ActivityDto;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 
 @WebMvcTest(ActivitiesController.class)
@@ -80,6 +90,43 @@ class ActivitiesControllerTest {
     @MockitoBean
     private SecurityContextHolder securityContextHolder;
 
+    /**
+     * Provides a stream of invalid titles that are routable (i.e., they reach the
+     * controller), but fail validation logic due to being blank or exceeding the
+     * maximum allowed length.
+     *
+     * @return a stream of strings representing invalid but routable activity titles
+     */
+    private static Stream<String> invalidButRoutableTitles() {
+        return Stream.of("   ", "A".repeat(81));
+    }
+
+    /**
+     * Provides a stream of titles that lead to a 404 Not Found due to incorrect
+     * path resolution.
+     *
+     * @return a stream of strings representing URLs that should result in 404
+     */
+    private static Stream<String> titlesThatProduce404() {
+        return Stream.of("");
+    }
+
+    /**
+     * Provides a stream of URLs that result in 405 Method Not Allowed when the
+     * DELETE method is not mapped for the given path.
+     *
+     * @return a stream of URLs that should produce HTTP 405 responses
+     */
+    private static Stream<String> titlesThatProduce405() {
+        return Stream.of("/api/activities");
+    }
+
+    /**
+     * Tests that the controller returns {@code 200 OK} and the correct activity
+     * details when a valid title is provided and the activity exists in the system.
+     *
+     * @throws Exception if the request or JSON serialization fails
+     */
     @Test
     void getActivityShouldReturnActivityResponseWhenActivityExists() throws Exception {
         // Arrange test data
@@ -102,6 +149,17 @@ class ActivitiesControllerTest {
         verify(activitiesStateService, times(1)).getActivity(title);
     }
 
+    /**
+     * Tests that the controller returns {@code 400 Bad Request} when the service
+     * layer throws an {@link ActivityServiceException} during activity retrieval.
+     *
+     * <p>
+     * Verifies the JSON error structure and ensures that no image retrieval is
+     * attempted.
+     * </p>
+     *
+     * @throws Exception if the request or JSON parsing fails
+     */
     @Test
     void getActivityShouldReturnBadRequestWhenServiceThrowsException() throws Exception {
         // Arrange test data
@@ -124,6 +182,12 @@ class ActivitiesControllerTest {
         verify(activitiesStateService, times(0)).getActivityImage(title);
     }
 
+    /**
+     * Tests that the controller returns {@code 200 OK} and a list of activities
+     * when the service returns a valid stream of activities.
+     *
+     * @throws Exception if the request or JSON serialization fails
+     */
     @Test
     void getAllActivitiesShouldReturnActivitiesStreamWhenSuccessful() throws Exception {
         // Prepare test data with LocalDateTime values
@@ -146,5 +210,107 @@ class ActivitiesControllerTest {
                 .andExpect(jsonPath("$[1].category").value("Category 2"));
         // Verify that the service was called
         verify(activitiesStateService, times(1)).getAllActivities();
+    }
+
+    /**
+     * Tests that the controller returns {@code 400 Bad Request} when the deletion
+     * attempt fails because the specified activity does not exist.
+     *
+     * <p>
+     * Simulates the scenario by having the service throw an
+     * {@link ActivityNotFoundException}, which is caught and mapped to a
+     * {@link ResponseStatusException}.
+     * </p>
+     *
+     * @throws Exception if the request or exception mapping fails
+     */
+    void removeActivityShouldReturnBadRequestWhenActivityNotFound() throws Exception {
+        String title = "Nonexistent Activity";
+
+        doThrow(new ActivityNotFoundException("Activity not found")).when(activitiesStateService).remove(title);
+
+        mockMvc.perform(delete("/api/activities/{title}", title)).andExpect(status().isBadRequest())
+                .andExpect(result -> assertTrue(result.getResolvedException() instanceof ResponseStatusException))
+                .andExpect(result -> assertEquals("400 BAD_REQUEST \"Error: activity not found\"",
+                        result.getResolvedException().getMessage()));
+
+        verify(activitiesStateService, times(1)).remove(title);
+    }
+
+    /**
+     * Tests that the controller returns {@code 204 No Content} when an activity is
+     * successfully deleted.
+     *
+     * @throws Exception if the request or service interaction fails
+     */
+    @Test
+    void removeActivityShouldReturnNoContentWhenSuccessful() throws Exception {
+        String title = "Activity To Delete";
+
+        mockMvc.perform(delete("/api/activities/{title}", title)).andExpect(status().isNoContent());
+
+        verify(activitiesStateService, times(1)).remove(title);
+    }
+
+    /**
+     * Tests that the controller returns {@code 400 Bad Request} for invalid but
+     * routable titles.
+     *
+     * <p>
+     * These titles are non-null and reach the controller, but fail validation
+     * constraints. The test ensures that the service method {@code remove()} is
+     * never invoked.
+     * </p>
+     *
+     * @param invalidTitle a string that violates the validation rules
+     * @throws Exception if the request or response fails
+     */
+    @ParameterizedTest
+    @MethodSource("invalidButRoutableTitles")
+    void shouldReturn400WhenTitleIsInvalid(final String invalidTitle) throws Exception {
+        mockMvc.perform(delete("/api/activities/{title}", invalidTitle)).andExpect(status().isBadRequest());
+
+        verify(activitiesStateService, never()).remove(anyString());
+    }
+
+    /**
+     * Tests that DELETE requests with missing or malformed titles result in
+     * {@code 404 Not Found}.
+     *
+     * <p>
+     * These cases correspond to malformed URLs or incorrect routing that Spring
+     * cannot resolve to the controller method.
+     * </p>
+     *
+     * @param title an invalid or missing path variable
+     * @throws Exception if the request fails
+     */
+    @ParameterizedTest
+    @MethodSource("titlesThatProduce404")
+    void shouldReturn404WhenTitleMissing(final String title) throws Exception {
+        String url = title == null ? "/api/activities" : "/api/activities/";
+        mockMvc.perform(delete(url)).andExpect(status().isNotFound());
+
+        verify(activitiesStateService, never()).remove(anyString());
+    }
+
+    /**
+     * Tests that DELETE requests sent to valid paths but without a DELETE mapping
+     * result in {@code 405 Method Not Allowed}.
+     *
+     * <p>
+     * This ensures Spring's routing mechanism responds appropriately when the path
+     * exists but doesn't support DELETE.
+     * </p>
+     *
+     * @param url a valid URL path that does not support DELETE
+     * @throws Exception if the request fails
+     */
+    @ParameterizedTest
+    @MethodSource("titlesThatProduce405")
+    void shouldReturn405WhenPathVariableMissingOrInvalid(final String url) throws Exception {
+        mockMvc.perform(delete(url)).andExpect(status().isMethodNotAllowed());
+
+        verify(activitiesStateService, never()).remove(anyString());
     }
 }
