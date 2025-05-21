@@ -1,48 +1,67 @@
 databaseChangeLog:
-- changeSet:
-    id: invoice_table
-    author: Santiago
-    changes:
-    - createTable:
-        tableName: activities
-        columns:
-        - column:
-            name: title
-            type: varchar(80)
-            constraints:
-              primaryKey: true
-              nullable: false
-              unique: true
-        - column:
-            name: description
-            type: text
-            constraints:
-              nullable: false
-        - column:
-            name: start_date
-            type: datetime
-            constraints:
-              nullable: false
-        - column:
-            name: end_date
-            type: datetime
-            constraints:
-              nullable: false
-        - column:
-            name: created_at
-            type: datetime
-            constraints:
-              nullable: false
-        - column:
-            name: category  
-            type: varchar(20)
-            constraints:
-              nullable: false
-        - column:
-            name: image_src  
-            type: varchar(120)
-            constraints:
-              nullable: true
-           
-              
-            
+  - changeSet:
+      id: create-activities-table
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: activities
+            columns:
+              - column:
+                  name: title
+                  type: varchar(80)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    unique: true
+              - column:
+                  name: start_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: datetime
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: image_src
+                  type: varchar(120)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: add-description-postgresql
+      author: Santiago
+      dbms: postgresql
+      changes:
+        - addColumn:
+            tableName: activities
+            columns:
+              - column:
+                  name: description
+                  type: oid
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-description-h2
+      author: Santiago
+      dbms: h2
+      changes:
+        - addColumn:
+            tableName: activities
+            columns:
+              - column:
+                  name: description
+                  type: clob
+                  constraints:
+                    nullable: false

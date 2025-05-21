@@ -40,6 +40,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -117,13 +118,14 @@ public class PersistentMagazineEntity implements MagazineEntity, Comparable<Pers
     /**
      * The magazine's description.
      */
+    @Lob
     @Column(name = "description", nullable = false)
     private String description;
 
     /**
      * The cover source for magazine if it have one.
      */
-    @Column(name = "coverSrc", nullable = true)
+    @Column(name = "coversrc", nullable = true)
     private String coverSrc;
 
     /**

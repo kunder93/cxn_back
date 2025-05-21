@@ -121,7 +121,7 @@ class PersistentBookEntityTest {
 
         when(authorMock1.getFirstName()).thenReturn(authorFirstName);
         when(authorMock1.getLastName()).thenReturn(authorLastName);
-        when(authorMock1.getIdentifier()).thenReturn(authorId);
+        when(authorMock1.getId()).thenReturn(authorId);
 
     }
 

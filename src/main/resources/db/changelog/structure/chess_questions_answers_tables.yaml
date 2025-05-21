@@ -1,44 +1,40 @@
 databaseChangeLog:
-- changeSet:
-    id: chess_questions_table
-    author: Santiago
-    changes:
-    - createTable:
-        tableName: chess_questions
-        columns:
-        - column:
-            name: id
-            type: bigint
-            autoIncrement: true
-            constraints:
-              primaryKey: true
-              nullable: false
-        - column:
-            name: topic
-            type: varchar(50)
-            constraints:
-              nullable: false
-        - column:
-            name: message
-            type: clob
-            constraints:
-              nullable: false
-        - column:
-            name: category
-            type: varchar(30)
-            constraints:
-              nullable: false          
-        - column:
-            name: email
-            type: varchar(50)
-            constraints:
-              nullable: false
-        - column:
-            name: date
-            type: datetime
-            constraints:
-              nullable: false            
-- changeSet:
+  - changeSet:
+      id: chess_questions_table
+      author: Santiago
+      changes:
+        - createTable:
+            tableName: chess_questions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: topic
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: varchar(30)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: email
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: datetime
+                  constraints:
+                    nullable: false
+
+  - changeSet:
       id: addUserStatusEnabled
       author: Santiago
       changes:
@@ -48,5 +44,32 @@ databaseChangeLog:
               - column:
                   name: seen
                   type: boolean
-                  defaultValueBoolean: false   # Set the default value              
-              
+                  defaultValueBoolean: false
+
+  - changeSet:
+      id: add-message-chess-questions-postgresql
+      author: Santiago
+      dbms: postgresql
+      changes:
+        - addColumn:
+            tableName: chess_questions
+            columns:
+              - column:
+                  name: message
+                  type: oid
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: add-message-chess-questions-h2
+      author: Santiago
+      dbms: h2
+      changes:
+        - addColumn:
+            tableName: chess_questions
+            columns:
+              - column:
+                  name: message
+                  type: clob
+                  constraints:
+                    nullable: false
