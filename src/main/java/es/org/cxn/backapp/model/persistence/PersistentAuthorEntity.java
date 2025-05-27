@@ -74,7 +74,7 @@ public class PersistentAuthorEntity implements AuthorEntity {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long identifier;
+    private Long id;
 
     /**
      * Author first name.

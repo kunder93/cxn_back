@@ -94,4 +94,12 @@ databaseChangeLog:
           referencedTableName: users
           referencedColumnNames: dni
           constraintName: fk_payments_user_dni
-          onDelete: CASCADE       
+          onDelete: CASCADE
+- changeSet:
+    id: alter_description_text_to_clob
+    author: Santiago
+    changes:
+      - modifyDataType:
+          tableName: payments
+          columnName: description
+          newDataType: clob       

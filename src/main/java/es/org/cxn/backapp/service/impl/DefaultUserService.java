@@ -36,7 +36,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +74,8 @@ import jakarta.mail.MessagingException;
  */
 @Service
 public final class DefaultUserService implements UserService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultUserService.class);
 
     /**
      * Age limit for be SOCIO_ASPIRANTE.
@@ -223,13 +228,27 @@ public final class DefaultUserService implements UserService {
     }
 
     @Override
-    @Transactional
     public UserEntity acceptUserAsMember(final String userDni) throws UserServiceException {
+        LOGGER.info("acceptUserAsMember: Inicio para userDni={}", userDni);
+
         final var userEntity = findByDni(userDni);
+        LOGGER.info("acceptUserAsMember: Usuario encontrado con email={}", userEntity.getEmail());
+
         validateCandidateRole(userEntity, userDni);
+        LOGGER.info("acceptUserAsMember: Rol candidato validado para userDni={}", userDni);
 
         final var updatedUser = changeUserRoleToSocio(userEntity);
-        return processAcceptedUser(updatedUser);
+        LOGGER.info("acceptUserAsMember: Rol cambiado a socio para userDni={}", userDni);
+
+        final var savedUser = userRepository.save(asPersistentUserEntity(updatedUser));
+        LOGGER.info("acceptUserAsMember: Usuario guardado con éxito, email={}", savedUser.getEmail());
+
+        // Llamada asíncrona a procesos posteriores
+        LOGGER.info("acceptUserAsMember: Lanzando proceso asíncrono post-aceptación para userDni={}", userDni);
+        processPostAcceptAsync(savedUser);
+
+        LOGGER.info("acceptUserAsMember: Método finalizado correctamente para userDni={}", userDni);
+        return savedUser;
     }
 
     /**
@@ -449,17 +468,36 @@ public final class DefaultUserService implements UserService {
         return email != null ? email.trim().toLowerCase() : null;
     }
 
-    private UserEntity processAcceptedUser(final UserEntity userEntity) throws UserServiceException {
+    /**
+     * Asynchronously processes post-acceptance actions for a user.
+     * <p>
+     * This method is executed asynchronously using Spring's {@code @Async} support.
+     * It performs two main tasks after a user is accepted:
+     * <ul>
+     * <li>Sends a welcome email to the user's email address.</li>
+     * <li>Generates a payment record for the accepted user.</li>
+     * </ul>
+     * All operations are wrapped in a try-catch block to handle and log any
+     * exceptions without interrupting the execution flow.
+     *
+     * @param user The {@link UserEntity} instance representing the accepted user.
+     *             Must not be {@code null}.
+     */
+    @Async
+    public void processPostAcceptAsync(final UserEntity user) {
+        LOGGER.info("processPostAcceptAsync: Inicio para userDni={}", user.getDni());
         try {
-            final UserEntity savedUser = userRepository.save(asPersistentUserEntity(userEntity));
-            emailService.sendWelcome(savedUser.getEmail(), savedUser.getCompleteName());
-            generatePaymentForAcceptedUser(savedUser);
-            return savedUser;
-        } catch (MessagingException | IOException e) {
-            throw new UserServiceException("Error sending email to user: " + userEntity.getDni(), e);
-        } catch (PaymentsServiceException e) {
-            throw new UserServiceException("Error generating payment for user: " + userEntity.getDni(), e);
+            emailService.sendWelcome(user.getEmail(), user.getCompleteName());
+            LOGGER.info("processPostAcceptAsync: Email de bienvenida enviado a {}", user.getEmail());
+
+            generatePaymentForAcceptedUser(user);
+            LOGGER.info("processPostAcceptAsync: Pago generado para userDni={}", user.getDni());
+
+        } catch (Exception e) {
+            LOGGER.error("Error en procesamiento asíncrono post-aceptación de usuario {}: {}", user.getDni(),
+                    e.getMessage(), e);
         }
+        LOGGER.info("processPostAcceptAsync: Finalizado para userDni={}", user.getDni());
     }
 
     @Override

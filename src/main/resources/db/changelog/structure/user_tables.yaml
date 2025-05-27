@@ -252,4 +252,11 @@ databaseChangeLog:
             referencedTableName: users
             referencedColumnNames: dni
             onDelete: CASCADE
-            
+- changeSet:
+    id: fix_dni_last_update_type
+    author: Santiago
+    changes:
+    - modifyDataType:
+        tableName: user_federative_data
+        columnName: dni_last_update
+        newDataType: date  

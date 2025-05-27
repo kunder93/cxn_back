@@ -10,8 +10,7 @@ WORKDIR /usr/src/app
 #   - devdocker: same as dev but using postgresql db instead h2.
 #   - prod: production profile.
 #
-ARG BUILD_PROFILE=dev
-ENV BUILD_PROFILE=${BUILD_PROFILE}
+ENV BUILD_PROFILE=dev
 
 # Copy only the necessary files to download dependencies
 COPY pom.xml ./
@@ -28,7 +27,11 @@ RUN mvn clean install -P${BUILD_PROFILE}
 # Use a lightweight Java runtime image for running the application
 FROM eclipse-temurin:23-jre-alpine
 
+ENV SPRING_UID=1000
+ENV SPRING_GID=1000
+ENV STORAGE_LOCATION_PATH=/home/appStorage
 ENV BUILD_PROFILE=dev
+
 
 # Copy the generated JAR file from the builder stage
 
@@ -38,8 +41,18 @@ COPY --from=builder /usr/src/app/target/back-app-9.0.0-SNAPSHOT.jar /app/app.jar
 EXPOSE 8080
 EXPOSE 443
 
-RUN addgroup -S spring && adduser -S spring -G spring
+# Crear grupo y usuario con UID y GID específicos
+RUN addgroup -S -g ${SPRING_GID} spring && \
+    adduser -S -u ${SPRING_UID} -G spring spring
+
+# Crear el directorio y dar permisos al usuario spring
+RUN mkdir -p ${STORAGE_LOCATION_PATH} && \
+    chown -R ${SPRING_UID}:${SPRING_GID} ${STORAGE_LOCATION_PATH}
 USER spring:spring
+
+# Crear el directorio donde se montará el volumen
+RUN mkdir -p ${STORAGE_LOCATION_PATH} && chown spring:spring ${STORAGE_LOCATION_PATH}
+
 
 # Set user for run app.
 USER spring 
