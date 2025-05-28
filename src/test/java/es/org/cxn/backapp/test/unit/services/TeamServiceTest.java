@@ -461,7 +461,7 @@ class TeamServiceTest {
         when(teamEntityRepository.findById(teamName)).thenReturn(Optional.empty());
 
         assertThrows(TeamServiceException.class, () -> {
-            teamService.addTeamPreference(userEmail, teamName);
+            teamService.addOrRemoveTeamPreference(userEmail, teamName);
         });
     }
 
@@ -475,7 +475,7 @@ class TeamServiceTest {
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.empty());
 
         assertThrows(TeamServiceException.class, () -> {
-            teamService.addTeamPreference(userEmail, teamName);
+            teamService.addOrRemoveTeamPreference(userEmail, teamName);
         });
     }
 
@@ -492,7 +492,7 @@ class TeamServiceTest {
         when(userRepository.save(user)).thenReturn(user);
         when(teamEntityRepository.save(team)).thenReturn(team);
 
-        UserTeamInfoDto result = teamService.addTeamPreference(userEmail, teamName);
+        UserTeamInfoDto result = teamService.addOrRemoveTeamPreference(userEmail, teamName);
 
         assertNotNull(result);
         assertEquals(teamName, result.preferredTeam());

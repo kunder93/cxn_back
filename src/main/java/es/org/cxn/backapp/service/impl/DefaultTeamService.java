@@ -110,7 +110,7 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public UserTeamInfoDto addTeamPreference(final String userEmail, final String teamName)
+    public UserTeamInfoDto addOrRemoveTeamPreference(final String userEmail, final String teamName)
             throws TeamServiceException {
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
@@ -124,9 +124,24 @@ public final class DefaultTeamService implements TeamService {
         final var userEntity = userOptional.get();
         final var teamEntity = teamOptional.get();
 
-        userEntity.setTeamPreferred(teamEntity);
-        var userPreferredTeamList = teamEntity.getUsersPreferred();
-        userPreferredTeamList.add(userEntity);
+        if (userEntity.getTeamPreferred() != null) {
+            if (userEntity.getTeamPreferred().getName().equals(teamName)) {
+                var userPreferredTeamList = teamEntity.getUsersPreferred();
+                userPreferredTeamList.remove(userEntity);
+                teamEntity.setUsersPreferred(userPreferredTeamList);
+                userEntity.setTeamPreferred(null);
+            } else {
+                userEntity.setTeamPreferred(teamEntity);
+                var userPreferredTeamList = teamEntity.getUsersPreferred();
+                userPreferredTeamList.add(userEntity);
+                teamEntity.setUsersPreferred(userPreferredTeamList);
+            }
+        } else {
+            userEntity.setTeamPreferred(teamEntity);
+            var userPreferredTeamList = teamEntity.getUsersPreferred();
+            userPreferredTeamList.add(userEntity);
+            teamEntity.setUsersPreferred(userPreferredTeamList);
+        }
 
         final var userWithNoPreference = userRepository.save(userEntity);
         teamRepository.save(teamEntity);

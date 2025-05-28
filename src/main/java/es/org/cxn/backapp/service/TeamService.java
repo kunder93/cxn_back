@@ -56,7 +56,7 @@ public interface TeamService {
     TeamInfoDto addAssignedMember(String teamName, String userEmail) throws TeamServiceException;
 
     /**
-     * Adds or updates a team preference for a user.
+     * Adds or remove a team preference for a user.
      *
      * @param userEmail the email of the user to assign the team preference.
      * @param teamName  the name of the team to set as preference.
@@ -65,7 +65,7 @@ public interface TeamService {
      * @throws TeamServiceException if the user or team does not exist or if the
      *                              operation fails.
      */
-    UserTeamInfoDto addTeamPreference(String userEmail, String teamName) throws TeamServiceException;
+    UserTeamInfoDto addOrRemoveTeamPreference(String userEmail, String teamName) throws TeamServiceException;
 
     /**
      * Creates a new team.
