@@ -73,17 +73,18 @@ public class TeamPreferenceController {
     }
 
     /**
-     * Adds team as user preference.
+     * Adds the specified team as the user's preferred team, or removes it if it is
+     * already set as preferred.
      *
-     * @param teamName The name of the team.
-     * @return The updated team information.
+     * @param teamName the name of the team to add or remove as a preferred team.
+     * @return the updated user team information.
      */
     @PatchMapping("/{teamName}")
-    public ResponseEntity<UserTeamInfoDto> addUserToTeam(@PathVariable
+    public ResponseEntity<UserTeamInfoDto> addOrRemoveUserToTeam(@PathVariable
     @Size(max = TEAM_NAME_MAX_LENGTH) final String teamName) {
         final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
-            final var userInfo = teamService.addTeamPreference(userEmail, teamName);
+            final var userInfo = teamService.addOrRemoveTeamPreference(userEmail, teamName);
             return ResponseEntity.ok(userInfo);
         } catch (TeamServiceException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
