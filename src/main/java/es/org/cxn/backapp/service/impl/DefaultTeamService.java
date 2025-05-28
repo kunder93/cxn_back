@@ -125,10 +125,17 @@ public final class DefaultTeamService implements TeamService {
         final var teamEntity = teamOptional.get();
 
         if (userEntity.getTeamPreferred() != null) {
-            var userPreferredTeamList = teamEntity.getUsersPreferred();
-            userPreferredTeamList.remove(userEntity);
-            teamEntity.setUsersPreferred(userPreferredTeamList);
-            userEntity.setTeamPreferred(null);
+            if (userEntity.getTeamPreferred().getName().equals(teamName)) {
+                var userPreferredTeamList = teamEntity.getUsersPreferred();
+                userPreferredTeamList.remove(userEntity);
+                teamEntity.setUsersPreferred(userPreferredTeamList);
+                userEntity.setTeamPreferred(null);
+            } else {
+                userEntity.setTeamPreferred(teamEntity);
+                var userPreferredTeamList = teamEntity.getUsersPreferred();
+                userPreferredTeamList.add(userEntity);
+                teamEntity.setUsersPreferred(userPreferredTeamList);
+            }
         } else {
             userEntity.setTeamPreferred(teamEntity);
             var userPreferredTeamList = teamEntity.getUsersPreferred();
