@@ -33,6 +33,7 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import es.org.cxn.backapp.repository.TeamEntityRepository;
@@ -123,6 +124,10 @@ public final class DefaultTeamService implements TeamService {
 
         final var userEntity = userOptional.get();
         final var teamEntity = teamOptional.get();
+
+        if (!userEntity.getFederateState().getState().equals(FederateState.FEDERATE)) {
+            throw new TeamServiceException("Member with email: " + userEmail + " is not federated.");
+        }
 
         if (userEntity.getTeamPreferred() != null) {
             if (userEntity.getTeamPreferred().getName().equals(teamName)) {

@@ -51,7 +51,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
+import es.org.cxn.backapp.model.persistence.PersistentFederateStateEntity;
 import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 import es.org.cxn.backapp.model.persistence.user.UserProfile;
@@ -486,7 +488,9 @@ class TeamServiceTest {
 
         PersistentTeamEntity team = new PersistentTeamEntity(teamName, "Category A", "Description A");
         PersistentUserEntity user = (PersistentUserEntity) createUser(userEmail);
-
+        final var federateState = new PersistentFederateStateEntity();
+        federateState.setState(FederateState.FEDERATE);
+        user.setFederateState(federateState);
         when(teamEntityRepository.findById(teamName)).thenReturn(Optional.of(team));
         when(userRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
         when(userRepository.save(user)).thenReturn(user);
