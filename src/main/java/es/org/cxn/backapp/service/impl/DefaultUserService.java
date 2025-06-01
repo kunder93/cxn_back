@@ -30,6 +30,7 @@ package es.org.cxn.backapp.service.impl;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
@@ -525,6 +526,7 @@ public final class DefaultUserService implements UserService {
 
         if (passwordEncoder.matches(validationPass, userEntity.getPassword())) {
             userEntity.setEnabled(false);
+            userEntity.setUnsubscribeDate(LocalDateTime.now());
             userRepository.save(userEntity);
             try {
                 emailService.sendUnsubscribe(userEntity.getEmail(), userEntity.getCompleteName());
