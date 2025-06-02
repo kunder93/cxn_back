@@ -259,4 +259,14 @@ databaseChangeLog:
     - modifyDataType:
         tableName: user_federative_data
         columnName: dni_last_update
-        newDataType: date  
+        newDataType: date
+- changeSet:
+    id: add_unsubscribe_data
+    author: Santiago
+    changes:
+    - addColumn:
+            tableName: users
+            columns:
+            - column:
+                  name: unsubscribe_date
+                  type: datetime

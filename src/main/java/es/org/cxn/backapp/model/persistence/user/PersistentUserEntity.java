@@ -28,6 +28,7 @@ package es.org.cxn.backapp.model.persistence.user;
 
 import java.io.Serial;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -129,6 +130,12 @@ public class PersistentUserEntity implements UserEntity {
     @Enumerated(EnumType.STRING)
     private UserType kindMember = UserType.SOCIO_NUMERO;
 
+    /**
+     * Date time when user initiate unsubscribe proccess.
+     */
+    @Column(name = "unsubscribe_date", nullable = true, unique = false)
+    @Builder.Default
+    private LocalDateTime unsubscribeDate = null;
     /**
      * User status boolean, enabled or disiabled, true or false.
      */
