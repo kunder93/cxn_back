@@ -35,7 +35,6 @@ import java.util.UUID;
 
 import es.org.cxn.backapp.model.PaymentsEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
-import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 
@@ -144,7 +143,7 @@ public interface PaymentsService {
      *         payments. If no payments are found, an empty list is returned.
      * @throws IllegalArgumentException if the provided userDni is null or empty.
      */
-    List<PersistentPaymentsEntity> getUserPayments(String userDni);
+    List<PaymentDetails> getUserPayments(String userDni);
 
     /**
      * Return user payments.
@@ -154,7 +153,7 @@ public interface PaymentsService {
      * @return The users payment list.
      * @throws PaymentsServiceException When user with given email not found.
      */
-    List<PersistentPaymentsEntity> getUserPaymentsByEmail(String email) throws PaymentsServiceException;
+    public List<PaymentDetails> getUserPaymentsByEmail(String email) throws PaymentsServiceException;
 
     /**
      * Processes a payment by updating its state to

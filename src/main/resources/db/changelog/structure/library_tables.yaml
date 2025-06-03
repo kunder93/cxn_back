@@ -218,5 +218,12 @@ databaseChangeLog:
                   type: clob
                   constraints:
                     nullable: false                    
-                    
-            
+  - changeSet:
+      id: rename-magazine-column-cover_src
+      author: Santiago
+      changes:
+        - renameColumn:
+            tableName: magazine
+            oldColumnName: coverSrc
+            newColumnName: cover_src
+            columnDataType: varchar(255)
