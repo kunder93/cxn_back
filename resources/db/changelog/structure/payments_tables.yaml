@@ -18,11 +18,6 @@ databaseChangeLog:
             constraints:
               nullable: false
         - column:
-            name: description
-            type: text
-            constraints:
-              nullable: false
-        - column:
             name: created_at
             type: datetime
             constraints:
@@ -78,4 +73,30 @@ databaseChangeLog:
           baseTableName: user_federative_data
           referencedColumnNames: id
           referencedTableName: payments
-          constraintName: fk_user_federative_data_to_payments       
+          constraintName: fk_user_federative_data_to_payments
+- changeSet:
+    id: add-description-postgresql-payment
+    author: Santiago
+    dbms: postgresql
+    changes:
+      - addColumn:
+          tableName: payments
+          columns:
+            - column:
+                name: description
+                type: oid
+                constraints:
+                  nullable: false
+- changeSet:
+    id: add-description-h2-payment
+    author: Santiago
+    dbms: h2
+    changes:
+      - addColumn:
+          tableName: payments
+          columns:
+            - column:
+                name: description
+                type: clob
+                constraints:
+                  nullable: false       

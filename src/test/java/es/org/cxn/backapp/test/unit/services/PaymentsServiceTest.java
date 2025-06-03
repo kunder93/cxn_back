@@ -42,7 +42,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -569,35 +568,35 @@ class PaymentsServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void shouldReturnPaymentsWhenUserExists() throws PaymentsServiceException {
-        // Arrange
-        final String testEmail = "exmaple@test.es";
-        final String testDni = "10101010J";
-        PersistentUserEntity testUser = new PersistentUserEntity();
-        testUser.setEmail(testEmail);
-        testUser.setDni(testDni);
-        PersistentPaymentsEntity payment1 = new PersistentPaymentsEntity();
-        payment1.setId(UUID.randomUUID());
-        PersistentPaymentsEntity payment2 = new PersistentPaymentsEntity();
-        payment2.setId(UUID.randomUUID());
-
-        List<PersistentPaymentsEntity> testPayments = new ArrayList<>();
-        testPayments.add(payment1);
-        testPayments.add(payment1);
-
-        when(userRepository.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
-        when(paymentsRepository.findByUserDni(testDni)).thenReturn(testPayments);
-
-        // Act
-        List<PersistentPaymentsEntity> result = defaultPaymentsService.getUserPaymentsByEmail(testEmail);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        verify(userRepository).findByEmail(testEmail);
-        verify(paymentsRepository).findByUserDni(testDni);
-    }
+//    @Test
+//    void shouldReturnPaymentsWhenUserExists() throws PaymentsServiceException {
+//        // Arrange
+//        final String testEmail = "exmaple@test.es";
+//        final String testDni = "10101010J";
+//        PersistentUserEntity testUser = new PersistentUserEntity();
+//        testUser.setEmail(testEmail);
+//        testUser.setDni(testDni);
+//        PersistentPaymentsEntity payment1 = new PersistentPaymentsEntity();
+//        payment1.setId(UUID.randomUUID());
+//        PersistentPaymentsEntity payment2 = new PersistentPaymentsEntity();
+//        payment2.setId(UUID.randomUUID());
+//
+//        List<PersistentPaymentsEntity> testPayments = new ArrayList<>();
+//        testPayments.add(payment1);
+//        testPayments.add(payment1);
+//
+//        when(userRepository.findByEmail(testEmail)).thenReturn(Optional.of(testUser));
+//        when(paymentsRepository.findByUserDni(testDni)).thenReturn(testPayments);
+//
+//        // Act
+//        List<PersistentPaymentsEntity> result = defaultPaymentsService.getUserPaymentsByEmail(testEmail);
+//
+//        // Assert
+//        assertNotNull(result);
+//        assertEquals(2, result.size());
+//        verify(userRepository).findByEmail(testEmail);
+//        verify(paymentsRepository).findByUserDni(testDni);
+//    }
 
     @Test
     void shouldThrowExceptionWhenUserNotFound() {

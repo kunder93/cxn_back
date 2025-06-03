@@ -46,11 +46,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
-import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.model.persistence.user.UserType;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.AddressRegistrationDetailsDto;
+import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.dto.UserRegistrationDetailsDto;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
@@ -641,7 +641,7 @@ final class PaymentsServiceIT {
     @Transactional
     void testGetUserPaymentsWhenUserDoesNotExist() {
         final String notExistingUserDni = "43343234D";
-        List<PersistentPaymentsEntity> paymentsList = paymentsService.getUserPayments(notExistingUserDni);
+        List<PaymentDetails> paymentsList = paymentsService.getUserPayments(notExistingUserDni);
 
         // Assert: Verify list of payments is empty.
         Assertions.assertEquals(0, paymentsList.size());
@@ -693,7 +693,7 @@ final class PaymentsServiceIT {
                 thirdPaymentDescription, thirdPaymentTitle, userDni);
 
         // Act: Retrieve payments list from user.
-        List<PersistentPaymentsEntity> paymentsList = paymentsService.getUserPayments(userDni);
+        List<PaymentDetails> paymentsList = paymentsService.getUserPayments(userDni);
 
         // Assert: Verify that the list is not empty
         Assertions.assertFalse(paymentsList.isEmpty(), "Payments list should not be empty for the user.");
@@ -703,45 +703,45 @@ final class PaymentsServiceIT {
                 "The number of payments retrieved does not match the expected.");
 
         // Assert: Verify that the payments in the list match the created payments
-        PersistentPaymentsEntity retrievedFirstPayment = paymentsList.getFirst();
-        PersistentPaymentsEntity retrievedSecondPayment = paymentsList.get(1);
-        PersistentPaymentsEntity retrievedThirdPayment = paymentsList.get(2);
+        PaymentDetails retrievedFirstPayment = paymentsList.getFirst();
+        PaymentDetails retrievedSecondPayment = paymentsList.get(1);
+        PaymentDetails retrievedThirdPayment = paymentsList.get(2);
 
-        Assertions.assertEquals(firstPayment.getId(), retrievedFirstPayment.getId(),
+        Assertions.assertEquals(firstPayment.getId(), retrievedFirstPayment.id(),
                 "The first payment in the list does not match the expected first payment.");
-        Assertions.assertEquals(secondPayment.getId(), retrievedSecondPayment.getId(),
+        Assertions.assertEquals(secondPayment.getId(), retrievedSecondPayment.id(),
                 "The second payment in the list does not match the expected second payment.");
-        Assertions.assertEquals(thirdPayment.getId(), retrievedThirdPayment.getId(),
+        Assertions.assertEquals(thirdPayment.getId(), retrievedThirdPayment.id(),
                 "The third payment in the list does not match the expected third payment.");
 
         // Assert: Verify the payment details match the expected values (amount,
         // category, title, description)
-        Assertions.assertEquals(paymentAmount, retrievedFirstPayment.getAmount(),
+        Assertions.assertEquals(paymentAmount, retrievedFirstPayment.amount(),
                 "The amount for the first payment is incorrect.");
-        Assertions.assertEquals(secondPaymentAmount, retrievedSecondPayment.getAmount(),
+        Assertions.assertEquals(secondPaymentAmount, retrievedSecondPayment.amount(),
                 "The amount for the second payment is incorrect.");
-        Assertions.assertEquals(thirdPaymentAmount, retrievedThirdPayment.getAmount(),
+        Assertions.assertEquals(thirdPaymentAmount, retrievedThirdPayment.amount(),
                 "The amount for the third payment is incorrect.");
 
-        Assertions.assertEquals(paymentCategory, retrievedFirstPayment.getCategory(),
+        Assertions.assertEquals(paymentCategory, retrievedFirstPayment.category(),
                 "The category for the first payment is incorrect.");
-        Assertions.assertEquals(secondPaymentCategory, retrievedSecondPayment.getCategory(),
+        Assertions.assertEquals(secondPaymentCategory, retrievedSecondPayment.category(),
                 "The category for the second payment is incorrect.");
-        Assertions.assertEquals(thirdPaymentCategory, retrievedThirdPayment.getCategory(),
+        Assertions.assertEquals(thirdPaymentCategory, retrievedThirdPayment.category(),
                 "The category for the third payment is incorrect.");
 
-        Assertions.assertEquals(paymentTitle, retrievedFirstPayment.getTitle(),
+        Assertions.assertEquals(paymentTitle, retrievedFirstPayment.title(),
                 "The title for the first payment is incorrect.");
-        Assertions.assertEquals(secondPaymentTitle, retrievedSecondPayment.getTitle(),
+        Assertions.assertEquals(secondPaymentTitle, retrievedSecondPayment.title(),
                 "The title for the second payment is incorrect.");
-        Assertions.assertEquals(thirdPaymentTitle, retrievedThirdPayment.getTitle(),
+        Assertions.assertEquals(thirdPaymentTitle, retrievedThirdPayment.title(),
                 "The title for the third payment is incorrect.");
 
-        Assertions.assertEquals(paymentDescription, retrievedFirstPayment.getDescription(),
+        Assertions.assertEquals(paymentDescription, retrievedFirstPayment.description(),
                 "The description for the first payment is incorrect.");
-        Assertions.assertEquals(secondPaymentDescription, retrievedSecondPayment.getDescription(),
+        Assertions.assertEquals(secondPaymentDescription, retrievedSecondPayment.description(),
                 "The description for the second payment is incorrect.");
-        Assertions.assertEquals(thirdPaymentDescription, retrievedThirdPayment.getDescription(),
+        Assertions.assertEquals(thirdPaymentDescription, retrievedThirdPayment.description(),
                 "The description for the third payment is incorrect.");
     }
 

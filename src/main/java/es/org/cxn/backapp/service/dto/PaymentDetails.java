@@ -12,10 +12,10 @@ package es.org.cxn.backapp.service.dto;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import es.org.cxn.backapp.model.PaymentsEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
 
@@ -49,4 +50,15 @@ import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
  */
 public record PaymentDetails(UUID id, String title, String description, BigDecimal amount, PaymentsCategory category,
         PaymentsState state, LocalDateTime createdAt, LocalDateTime paidAt) {
+
+    /**
+     * Constructs a PaymentDetails record from a {@link PaymentsEntity}.
+     *
+     * @param entity the PaymentsEntity instance to convert, must not be null.
+     */
+    public PaymentDetails(final PaymentsEntity entity) {
+        this(entity.getId(), entity.getTitle(), entity.getDescription(), entity.getAmount(), entity.getCategory(),
+                entity.getState(), entity.getCreatedAt(), entity.getPaidAt());
+    }
+
 }

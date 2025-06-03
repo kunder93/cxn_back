@@ -125,7 +125,7 @@ public class PersistentMagazineEntity implements MagazineEntity, Comparable<Pers
     /**
      * The cover source for magazine if it have one.
      */
-    @Column(name = "coversrc", nullable = true)
+    @Column(name = "cover_src", nullable = true)
     private String coverSrc;
 
     /**
