@@ -114,6 +114,15 @@ public class DefaultEmailService implements EmailService {
         }
     }
 
+    /**
+     * Sends an email notifying that a user has been deleted.
+     *
+     * @param toEmail    The recipient's email address.
+     * @param memberName The name of the deleted member.
+     * @throws MessagingException If there is an error while composing or sending
+     *                            the email.
+     * @throws IOException        If there is an error reading the email template.
+     */
     @Override
     public void sendDeletedUser(final String toEmail, final String memberName) throws MessagingException, IOException {
         sendEmail(toEmail, "CXN: Usuario eliminado", "mailTemplates/DeletedMemberEmail.html",
@@ -185,6 +194,16 @@ public class DefaultEmailService implements EmailService {
                 Map.of("name", memberName, "motivo", reason, "cantidad", paymentQuantity));
     }
 
+    /**
+     * Sends a password recovery email containing a magic link (token).
+     *
+     * @param toEmail      The recipient's email address.
+     * @param completeName The full name of the user.
+     * @param magicLink    The link or token to reset the password.
+     * @throws MessagingException If there is an error while composing or sending
+     *                            the email.
+     * @throws IOException        If there is an error reading the email template.
+     */
     @Override
     public void sendRecoverPasswordEmail(final String toEmail, final String completeName, final String magicLink)
             throws MessagingException, IOException {
@@ -209,6 +228,16 @@ public class DefaultEmailService implements EmailService {
                 Map.of("name", memberName));
     }
 
+    /**
+     * Sends an email notifying the user of their unsubscription or account
+     * cancellation.
+     *
+     * @param toEmail    The recipient's email address.
+     * @param memberName The name of the member who unsubscribed.
+     * @throws MessagingException If there is an error while composing or sending
+     *                            the email.
+     * @throws IOException        If there is an error reading the email template.
+     */
     @Override
     public void sendUnsubscribe(final String toEmail, final String memberName) throws MessagingException, IOException {
         sendEmail(toEmail, "CXN: Dado de baja.", "mailTemplates/UnsubscribeMemberEmail.html",

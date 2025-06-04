@@ -82,6 +82,13 @@ public record UserDataResponse(String dni, String name, String firstSurname, Str
         Set<UserRoleName> userRoles, String assignedTeamName, String preferredTeamName, FederateState federateState,
         String unsubscribeDate) {
 
+    /**
+     * Formatter for dates to the pattern "dd/MM/yyyy".
+     * <p>
+     * Used to format dates consistently when converting {@link LocalDate} values to
+     * strings.
+     * </p>
+     */
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     /**
      * Constructs a {@code UserDataResponse} record from all parameters.

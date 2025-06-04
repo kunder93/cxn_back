@@ -191,6 +191,13 @@ public class DefaultLichessService implements LichessService {
         return lichessProfileDto;
     }
 
+    /**
+     * Get Lichess profile by user DNI.
+     *
+     * @param userDni The user's DNI.
+     * @return The Lichess profile DTO.
+     * @throws LichessServiceException When user with given DNI not found.
+     */
     @Override
     public LichessProfileDto getLichessProfileByDni(final String userDni) throws LichessServiceException {
         final var userEntityOptional = userEntityRepository.findByDni(userDni);
@@ -202,7 +209,9 @@ public class DefaultLichessService implements LichessService {
     }
 
     /**
-     * Get all lichess profiles and return data as List of dto.
+     * Get all Lichess profiles stored in the system.
+     *
+     * @return A list of LichessProfileDto representing all profiles.
      */
     @Override
     public List<LichessProfileDto> getLichessProfiles() {

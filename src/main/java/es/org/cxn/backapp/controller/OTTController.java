@@ -13,10 +13,10 @@ package es.org.cxn.backapp.controller;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,30 +48,44 @@ import es.org.cxn.backapp.service.exceptions.RecoverPasswordServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
- * Controlador para la gestión de tokens de un solo uso (One-Time Token, OTT) y
- * recuperación de contraseña.
+ * Controller for managing One-Time Tokens (OTT) and password recovery.
  *
  * <p>
- * Este controlador permite generar un token de un solo uso y enviarlo por
- * correo electrónico para la recuperación de contraseña. También maneja la
- * solicitud de restablecimiento de contraseña utilizando el token recibido.
+ * This controller allows generating a one-time token and sending it via email
+ * for password recovery. It also handles password reset requests using the
+ * received token.
  * </p>
  *
- * @author Santiago Paz Perez
  */
+
 @RestController
 @RequestMapping("/api/ott/my-generate-url")
 public class OTTController {
+    /**
+     * Service for managing One-Time Tokens (OTT).
+     */
     private final OneTimeTokenService oneTimeTokenService;
+
+    /**
+     * Service for user management operations.
+     */
     private final UserService userService;
+
+    /**
+     * Service for handling password recovery processes.
+     */
     private final RecoverPasswordService recoverPasswordService;
 
     /**
-     * Constructor de {@code OTTController} que inicializa los servicios necesarios.
+     * Constructs an {@code OTTController} with the required services.
      *
-     * @param oneTimeTokenServ Servicio para la gestión de tokens de un solo uso.
-     * @param userServ         Servicio de gestión de usuarios.
-     * @throws NullPointerException si algún parámetro es {@code null}.
+     * @param oneTimeTokenServ    the service for managing one-time tokens; must not
+     *                            be {@code null}
+     * @param userServ            the service for user management; must not be
+     *                            {@code null}
+     * @param recoverPasswordServ the service for password recovery; must not be
+     *                            {@code null}
+     * @throws NullPointerException if any of the parameters is {@code null}
      */
     public OTTController(final OneTimeTokenService oneTimeTokenServ, final UserService userServ,
             final RecoverPasswordService recoverPasswordServ) {
@@ -104,11 +118,10 @@ public class OTTController {
     }
 
     /**
-     * Permite restablecer la contraseña del usuario utilizando un token de un solo
-     * uso.
+     * Allows resetting the user's password using a one-time token.
      *
-     * @param request Objeto que contiene el token y la nueva contraseña.
-     * @return Respuesta indicando el éxito o fallo de la operación.
+     * @param request the object containing the token and the new password
+     * @return a response indicating the success or failure of the operation
      */
     @PostMapping("/password/reset")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
