@@ -1,5 +1,5 @@
 # Use Maven base image to compile the application
-FROM maven:3.9.9-eclipse-temurin-23 AS builder
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
 
 # Set the working directory
 WORKDIR /usr/src/app
@@ -25,10 +25,10 @@ COPY . .
 RUN mvn clean install -P${BUILD_PROFILE}
 
 # Use a lightweight Java runtime image for running the application
-FROM eclipse-temurin:23-jre
+FROM eclipse-temurin:21-jre-alpine
 
-ENV SPRING_UID=1010
-ENV SPRING_GID=1010
+ENV SPRING_UID=1000
+ENV SPRING_GID=1000
 ENV STORAGE_LOCATION_PATH=/home/appStorage
 ENV BUILD_PROFILE=dev
 
@@ -42,8 +42,8 @@ EXPOSE 8080
 EXPOSE 443
 
 # Crear grupo y usuario con UID y GID específicos
-RUN groupadd --gid ${SPRING_GID} spring && \
-    useradd --uid ${SPRING_UID} --gid spring --shell /bin/bash --create-home spring
+RUN addgroup -S -g ${SPRING_GID} spring && \
+    adduser -S -u ${SPRING_UID} -G spring spring
 
 # Crear el directorio y dar permisos al usuario spring
 RUN mkdir -p ${STORAGE_LOCATION_PATH} && \
@@ -54,7 +54,7 @@ USER spring:spring
 RUN mkdir -p ${STORAGE_LOCATION_PATH} && chown spring:spring ${STORAGE_LOCATION_PATH}
 
 
-# Set user for run app.git c
+# Set user for run app.
 USER spring 
 # Command to run the Spring Boot application with the specified profile
 ENTRYPOINT ["sh", "-c", "java -Dspring.profiles.active=${BUILD_PROFILE} -jar /app/app.jar"]

@@ -119,7 +119,7 @@ public class UserDataInitializer {
      */
     @Bean
     CommandLineRunner init() {
-        return _ -> {
+        return args -> {
             // Usuario inicial.
             final var adminUserRequest = new SignUpRequestForm("32721859N", // DNI
                     "Santiago", // Nombre
