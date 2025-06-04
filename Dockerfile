@@ -27,8 +27,8 @@ RUN mvn clean install -P${BUILD_PROFILE}
 # Use a lightweight Java runtime image for running the application
 FROM eclipse-temurin:23-jre
 
-ENV SPRING_UID=1000
-ENV SPRING_GID=1000
+ENV SPRING_UID=1010
+ENV SPRING_GID=1010
 ENV STORAGE_LOCATION_PATH=/home/appStorage
 ENV BUILD_PROFILE=dev
 
@@ -42,8 +42,8 @@ EXPOSE 8080
 EXPOSE 443
 
 # Crear grupo y usuario con UID y GID específicos
-RUN addgroup -S -g ${SPRING_GID} spring && \
-    adduser -S -u ${SPRING_UID} -G spring spring
+RUN groupadd --gid ${SPRING_GID} spring && \
+    useradd --uid ${SPRING_UID} --gid spring --shell /bin/bash --create-home spring
 
 # Crear el directorio y dar permisos al usuario spring
 RUN mkdir -p ${STORAGE_LOCATION_PATH} && \

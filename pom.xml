@@ -82,10 +82,10 @@
 		<maven.compiler.source>23</maven.compiler.source>
 		<maven.compiler.target>23</maven.compiler.target>
 		<!-- Spring Versions -->
-		<springdoc.openapi.starter.version>2.8.6</springdoc.openapi.starter.version>
+		<springdoc.openapi.starter.version>2.8.8</springdoc.openapi.starter.version>
 		<therapi.runtime.version>0.15.0</therapi.runtime.version>
 		<jjwt.version>0.12.6</jjwt.version>
-		<lombok.version>1.18.36</lombok.version>
+		<lombok.version>1.18.38</lombok.version>
 		<pmd.plugin.version>3.26.0</pmd.plugin.version>
 		<rewrite.maven.plugin.version>6.4.0</rewrite.maven.plugin.version>
 		<rewrite.logging.frameworks.version>3.0.0</rewrite.logging.frameworks.version>
@@ -93,7 +93,7 @@
 		<tidy.maven.plugin.version>1.4.0</tidy.maven.plugin.version>
 		<apache.rat.plugin.version>0.16.1</apache.rat.plugin.version>
 		<license-maven.plugin.version>2.5.0</license-maven.plugin.version>
-		<swagger.models.jakarta.version>2.2.28</swagger.models.jakarta.version>
+		<swagger.models.jakarta.version>2.2.32</swagger.models.jakarta.version>
 		<tika.core.version>3.1.0</tika.core.version>
 		<jetty.ee10.maven.plugin.version>12.0.16</jetty.ee10.maven.plugin.version>
 		<maven.dependency.plugin.version>3.8.1</maven.dependency.plugin.version>
@@ -108,6 +108,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>	
 		<com.google.guava.version>33.4.8-jre</com.google.guava.version>
+		<tomcat.version>11.0.7</tomcat.version>
 	</properties>
 
 	<dependencies>
@@ -722,6 +723,13 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+			 <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>versions-maven-plugin</artifactId>
+              <configuration>
+                <allowSnapshots>false</allowSnapshots>
+              </configuration>
+            </plugin>
 		</plugins>
 	</build>
 
