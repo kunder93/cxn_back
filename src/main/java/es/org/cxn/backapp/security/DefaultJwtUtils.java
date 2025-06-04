@@ -34,8 +34,6 @@ import java.util.function.Function;
 
 import javax.crypto.SecretKey;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -67,11 +65,6 @@ import io.jsonwebtoken.security.Keys;
  */
 @Service
 public class DefaultJwtUtils {
-
-    /**
-     * Logger implementation.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultJwtUtils.class);
 
     /**
      * Secret key used to sign and verify JWT tokens.

@@ -52,10 +52,14 @@ import jakarta.validation.constraints.Size;
  *                    null, blank, and must not exceed 255 characters.
  * @param newPassword The new password to set for the user. Must comply with
  *                    {@link ValidationConstants} constraints.
+ * @param dni         An optional identification number (DNI) associated with
+ *                    the user; may be null or blank. >>>>>>>
+ *                    feature/103-remove-activity
  */
 public record ResetPasswordRequest(@NotNull(message = "Token must not be null")
 @NotBlank(message = "Token must not be blank")
-@Size(max = 255, message = "Token length must not exceed 255 characters") String token,
+@Size(max = ValidationConstants.OTT_LENGTH,
+        message = "Token length must not exceed " + ValidationConstants.OTT_LENGTH + " characters") String token,
         @NotBlank(message = ValidationConstants.PASSWORD_NOT_BLANK_MESSAGE)
         @Size(min = ValidationConstants.PASSWORD_MIN_LENGTH, max = ValidationConstants.PASSWORD_MAX_LENGTH,
                 message = ValidationConstants.PASSWORD_SIZE_MESSAGE) String newPassword,

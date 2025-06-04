@@ -81,7 +81,7 @@ databaseChangeLog:
             -  column:
                   name: username
                   type: varchar(50)
-            -  colunn:
+            -  column:
                   name: updated_at
                   type: timestamp
             -  column:

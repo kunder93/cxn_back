@@ -90,6 +90,9 @@ class DeletePermanentlyUserIT {
      */
     private static Gson gson;
 
+    /**
+     * Mocked image storage service.
+     */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
 
@@ -129,7 +132,7 @@ class DeletePermanentlyUserIT {
     }
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
+    static void setProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> "1025");
         registry.add("spring.mail.username", () -> "test@example.com");
@@ -198,7 +201,7 @@ class DeletePermanentlyUserIT {
         final var userListDto = responseAsList.usersList();
         Assertions.assertEquals(1, userListDto.size(), "List have only one user.");
         // Remain user is admin user.
-        Assertions.assertEquals(userListDto.getFirst(), userListDto.getLast(), "list first user is same as last user.");
+        Assertions.assertEquals(userListDto.getFirst(), userListDto.getLast(), "list first user is same as last");
         Assertions.assertEquals(adminEmail, userListDto.getFirst().email(),
                 "First list user is admin user. No more users in list.");
     }

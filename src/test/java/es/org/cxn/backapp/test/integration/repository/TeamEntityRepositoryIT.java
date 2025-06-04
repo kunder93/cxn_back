@@ -1,6 +1,10 @@
 
 package es.org.cxn.backapp.test.integration.repository;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /*-
  * #%L
  * back-app
@@ -27,8 +31,6 @@ package es.org.cxn.backapp.test.integration.repository;
  * #L%
  */
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +40,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import es.org.cxn.backapp.repository.TeamEntityRepository;
-import jakarta.transaction.Transactional;
 
 /**
  * Integration test for the {@link TeamEntityRepository}.
@@ -53,49 +54,77 @@ import jakarta.transaction.Transactional;
  * it can persist and retrieve entities correctly.
  * </p>
  *
- * <p>
- * The {@link Transactional} annotation is used to ensure that each test runs in
- * a transaction, which is rolled back after the test completes, ensuring
- * isolation between tests.
- * </p>
  *
  * @author Santi
  */
 @DataJpaTest
 class TeamEntityRepositoryIT {
+    /**
+     * Team entity repository.
+     */
     @Autowired
     private TeamEntityRepository teamRepository;
 
+    /**
+     * The team entity.
+     */
     private PersistentTeamEntity testTeam;
 
+    /**
+     * Initializes test data before each test execution.
+     * <p>
+     * Creates and saves a {@link PersistentTeamEntity} to be used in test cases.
+     * </p>
+     */
     @BeforeEach
     void setUp() {
         testTeam = new PersistentTeamEntity("Team A", "Category A", "Description A");
         teamRepository.save(testTeam);
     }
 
+    /**
+     * Tests if a team entity can be successfully deleted from the repository.
+     * <p>
+     * This test deletes a previously saved team entity and verifies that it no
+     * longer exists in the repository.
+     * </p>
+     */
     @Test
     void shouldDeleteTeam() {
         teamRepository.deleteById("Team A");
         Optional<PersistentTeamEntity> foundTeam = teamRepository.findById("Team A");
-        assertThat(foundTeam).isEmpty();
+        assertFalse(foundTeam.isPresent());
     }
 
+    /**
+     * Tests if a team entity can be found by its ID.
+     * <p>
+     * This test retrieves a previously saved team entity and asserts that the
+     * retrieved entity has the expected properties.
+     * </p>
+     */
     @Test
     void shouldFindTeamById() {
         Optional<PersistentTeamEntity> foundTeam = teamRepository.findById("Team A");
-        assertThat(foundTeam).isPresent();
-        assertThat(foundTeam.get().getName()).isEqualTo("Team A");
+        assertTrue(foundTeam.isPresent());
+        assertEquals("Team A", foundTeam.get().getName());
     }
 
+    /**
+     * Tests saving and retrieving a new team entity.
+     * <p>
+     * This test saves a new {@link PersistentTeamEntity} to the repository and
+     * verifies that it can be correctly retrieved.
+     * </p>
+     */
     @Test
     void shouldSaveAndRetrieveTeam() {
         PersistentTeamEntity newTeam = new PersistentTeamEntity("Team B", "Category B", "Description B");
         teamRepository.save(newTeam);
 
         Optional<PersistentTeamEntity> foundTeam = teamRepository.findById("Team B");
-        assertThat(foundTeam).isPresent();
-        assertThat(foundTeam.get().getCategory()).isEqualTo("Category B");
+        assertTrue(foundTeam.isPresent());
+        assertEquals("Category B", foundTeam.get().getCategory());
     }
 
 }

@@ -133,7 +133,7 @@ class UserDataResponseTest {
         // Act
         UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
                 USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, kindMember, address, roles, assignedTeamName,
-                preferredTeamName, FederateState.FEDERATE);
+                preferredTeamName, FederateState.FEDERATE, null);
 
         // Assert
         assertEquals(USER_DNI, response.dni());
@@ -212,7 +212,7 @@ class UserDataResponseTest {
         UserDataResponse response = new UserDataResponse(USER_DNI, USER_NAME, USER_FIRST_SURNAME, USER_SECOND_SURNAME,
                 USER_GENDER, USER_BIRTH_DATE, USER_EMAIL, UserType.SOCIO_NUMERO,
                 new AddressResponse("PostalCode", "Apartment", "Building", "Street", "City", "Country", "SubCountry"),
-                roles, assignedTeamName, preferredTeamName, FederateState.FEDERATE);
+                roles, assignedTeamName, preferredTeamName, FederateState.FEDERATE, null);
 
         // Act
         Set<UserRoleName> responseRoles = response.userRoles();

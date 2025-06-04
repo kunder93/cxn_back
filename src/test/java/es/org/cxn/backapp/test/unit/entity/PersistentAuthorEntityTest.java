@@ -63,12 +63,12 @@ class PersistentAuthorEntityTest {
     void testEqualsAndHashCode() {
         // Crear dos instancias de PersistentAuthorEntity con los mismos atributos
         var author1 = new PersistentAuthorEntity();
-        author1.setIdentifier(1L);
+        author1.setId(1L);
         author1.setFirstName("John");
         author1.setLastName("Doe");
 
         var author2 = new PersistentAuthorEntity();
-        author2.setIdentifier(1L);
+        author2.setId(1L);
         author2.setFirstName("John");
         author2.setLastName("Doe");
 
@@ -99,13 +99,13 @@ class PersistentAuthorEntityTest {
         var author = new PersistentAuthorEntity();
 
         // Establecer valores utilizando los métodos setter
-        author.setIdentifier(1L);
+        author.setId(1L);
         author.setFirstName("John");
         author.setLastName("Doe");
 
         // Verificar que los valores se establecieron correctamente utilizando
         // los métodos getter
-        assertEquals(1L, author.getIdentifier(), "getter");
+        assertEquals(1L, author.getId(), "getter");
         assertEquals("John", author.getFirstName(), "getter");
         assertEquals("Doe", author.getLastName(), "getter");
     }

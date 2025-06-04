@@ -3,9 +3,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,13 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
+import es.org.cxn.backapp.model.FederateState;
 import es.org.cxn.backapp.model.UserEntity;
 import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import es.org.cxn.backapp.repository.TeamEntityRepository;
@@ -77,8 +77,8 @@ public final class DefaultTeamService implements TeamService {
      */
     public DefaultTeamService(final TeamEntityRepository teamRepo, final UserEntityRepository userRepo) {
         super();
-        this.teamRepository = checkNotNull(teamRepo, "Received a null pointer as team repository");
-        this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
+        this.teamRepository = Objects.requireNonNull(teamRepo, "Received a null pointer as team repository");
+        this.userRepository = Objects.requireNonNull(userRepo, "Received a null pointer as user repository");
     }
 
     @Override
@@ -111,7 +111,8 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public UserTeamInfoDto addTeamPreference(String userEmail, String teamName) throws TeamServiceException {
+    public UserTeamInfoDto addOrRemoveTeamPreference(final String userEmail, final String teamName)
+            throws TeamServiceException {
         final var teamOptional = teamRepository.findById(teamName);
         if (teamOptional.isEmpty()) {
             throw new TeamServiceException(teamNotFoundMessage(teamName));
@@ -124,12 +125,31 @@ public final class DefaultTeamService implements TeamService {
         final var userEntity = userOptional.get();
         final var teamEntity = teamOptional.get();
 
-        userEntity.setTeamPreferred(teamEntity);
-        var userPreferredTeamList = teamEntity.getUsersPreferred();
-        userPreferredTeamList.add(userEntity);
+        if (!userEntity.getFederateState().getState().equals(FederateState.FEDERATE)) {
+            throw new TeamServiceException("Member with email: " + userEmail + " is not federated.");
+        }
+
+        if (userEntity.getTeamPreferred() != null) {
+            if (userEntity.getTeamPreferred().getName().equals(teamName)) {
+                var userPreferredTeamList = teamEntity.getUsersPreferred();
+                userPreferredTeamList.remove(userEntity);
+                teamEntity.setUsersPreferred(userPreferredTeamList);
+                userEntity.setTeamPreferred(null);
+            } else {
+                userEntity.setTeamPreferred(teamEntity);
+                var userPreferredTeamList = teamEntity.getUsersPreferred();
+                userPreferredTeamList.add(userEntity);
+                teamEntity.setUsersPreferred(userPreferredTeamList);
+            }
+        } else {
+            userEntity.setTeamPreferred(teamEntity);
+            var userPreferredTeamList = teamEntity.getUsersPreferred();
+            userPreferredTeamList.add(userEntity);
+            teamEntity.setUsersPreferred(userPreferredTeamList);
+        }
 
         final var userWithNoPreference = userRepository.save(userEntity);
-        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+        teamRepository.save(teamEntity);
 
         return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
                 userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),
@@ -158,9 +178,7 @@ public final class DefaultTeamService implements TeamService {
     public List<TeamInfoDto> getAllTeams() {
         final var teams = teamRepository.findAll();
         ArrayList<TeamInfoDto> responseTeams = new ArrayList<>();
-        teams.forEach((PersistentTeamEntity team) -> {
-            responseTeams.add(new TeamInfoDto(team));
-        });
+        teams.forEach((PersistentTeamEntity team) -> responseTeams.add(new TeamInfoDto(team)));
         return responseTeams;
     }
 
@@ -220,7 +238,7 @@ public final class DefaultTeamService implements TeamService {
 
     @Override
     @Transactional
-    public UserTeamInfoDto removeTeamPreference(String userEmail) throws TeamServiceException {
+    public UserTeamInfoDto removeTeamPreference(final String userEmail) throws TeamServiceException {
 
         final var userOptional = userRepository.findByEmail(userEmail);
         if (userOptional.isEmpty()) {
@@ -247,7 +265,7 @@ public final class DefaultTeamService implements TeamService {
         userEntity.setTeamPreferred(null);
 
         final var userWithNoPreference = userRepository.save(userEntity);
-        final var teamWithNoUserInPreferenceList = teamRepository.save(teamEntity);
+        teamRepository.save(teamEntity);
 
         return new UserTeamInfoDto(userWithNoPreference.getDni(), userWithNoPreference.getEmail(),
                 userWithNoPreference.getProfile().getName(), userWithNoPreference.getProfile().getFirstSurname(),

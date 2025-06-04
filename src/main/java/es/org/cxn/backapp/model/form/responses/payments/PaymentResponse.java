@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.form.responses.payments;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,6 +33,7 @@ import java.util.UUID;
 import es.org.cxn.backapp.model.PaymentsEntity;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsCategory;
 import es.org.cxn.backapp.model.persistence.payments.PaymentsState;
+import es.org.cxn.backapp.service.dto.PaymentDetails;
 
 /**
  * Represents a response containing payment information. This record is used to
@@ -58,6 +59,20 @@ public record PaymentResponse(UUID id, String title, String description, Payment
         BigDecimal amount, String userDni, LocalDateTime createdAt, LocalDateTime paidAt) {
 
     /**
+     * Constructs a PaymentResponse object from a {@link PaymentDetails} and a
+     * userDni.
+     *
+     * @param details the {@link PaymentDetails} object containing payment data.
+     *                Must not be null.
+     * @param userDni the DNI of the user associated with the payment. Must not be
+     *                null.
+     */
+    public PaymentResponse(final PaymentDetails details, final String userDni) {
+        this(details.id(), details.title(), details.description(), details.state(), details.category(),
+                details.amount(), userDni, details.createdAt(), details.paidAt());
+    }
+
+    /**
      * Constructs a PaymentResponse object from a {@link PaymentsEntity}.
      *
      * @param entity The PaymentsEntity object containing payment data. Must not be
@@ -67,4 +82,5 @@ public record PaymentResponse(UUID id, String title, String description, Payment
         this(entity.getId(), entity.getTitle(), entity.getDescription(), entity.getState(), entity.getCategory(),
                 entity.getAmount(), entity.getUserDni(), entity.getCreatedAt(), entity.getPaidAt());
     }
+
 }

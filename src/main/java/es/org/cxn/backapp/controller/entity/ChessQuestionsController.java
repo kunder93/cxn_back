@@ -27,9 +27,8 @@ package es.org.cxn.backapp.controller.entity;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Collection;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -74,7 +73,7 @@ public class ChessQuestionsController {
     public ChessQuestionsController(final ChessQuestionsService service) {
         super();
 
-        chessQuestionsService = checkNotNull(service, "Received a null pointer as service");
+        chessQuestionsService = Objects.requireNonNull(service, "Received a null pointer as service");
     }
 
     /**

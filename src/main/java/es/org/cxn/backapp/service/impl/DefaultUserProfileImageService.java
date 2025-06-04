@@ -3,9 +3,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,12 +27,11 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Base64;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -88,11 +87,12 @@ public final class DefaultUserProfileImageService implements UserProfileImageSer
 
             final ImageProfileEntityRepository imgRepo, final DefaultImageStorageService imgStorageService) {
         super();
-        userService = checkNotNull(usrServ, "Receiver a null pointer as user service.");
-        this.userRepository = checkNotNull(userRepo, "Received a null pointer as user repository");
-        this.imageProfileEntityRepository = checkNotNull(imgRepo,
+        userService = Objects.requireNonNull(usrServ, "Receiver a null pointer as user service.");
+        this.userRepository = Objects.requireNonNull(userRepo, "Received a null pointer as user repository");
+        this.imageProfileEntityRepository = Objects.requireNonNull(imgRepo,
                 "Received a null pointer as image profile repository");
-        this.imageStorageService = checkNotNull(imgStorageService, "Received a null pointer as image storage service");
+        this.imageStorageService = Objects.requireNonNull(imgStorageService,
+                "Received a null pointer as image storage service");
     }
 
     private void deleteExistingProfileImage(final String existingImagePath) throws UserServiceException {

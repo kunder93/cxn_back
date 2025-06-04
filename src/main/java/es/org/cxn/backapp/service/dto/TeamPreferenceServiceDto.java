@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service.dto;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,6 +27,12 @@ package es.org.cxn.backapp.service.dto;
  * #L%
  */
 
+/**
+ * Data Transfer Object (DTO) representing a user's preference for a team.
+ *
+ * @param teamName  the name of the preferred team.
+ * @param userEmail the email of the user who prefers the team.
+ */
 public record TeamPreferenceServiceDto(String teamName, String userEmail) {
 
 }

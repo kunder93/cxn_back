@@ -38,8 +38,19 @@ import org.junit.jupiter.api.Test;
 import es.org.cxn.backapp.model.persistence.team.PersistentTeamEntity;
 import es.org.cxn.backapp.model.persistence.user.PersistentUserEntity;
 
+/**
+ * Unit test class for {@link PersistentTeamEntity}.
+ * <p>
+ * This class contains test cases to verify the correct behavior of
+ * {@link PersistentTeamEntity}, including its equality, hashCode, and
+ * getter/setter methods.
+ * </p>
+ */
 class PersistentTeamEntityTest {
 
+    /**
+     * Team entity.
+     */
     private PersistentTeamEntity teamEntity;
 
     @BeforeEach

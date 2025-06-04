@@ -42,3 +42,11 @@ databaseChangeLog:
         - column:
             name: byes
             type: varchar(50)
+- changeSet:
+    id: fix_fide_id_type_tournamentparticipant
+    author: Santiago
+    changes:
+      - modifyDataType:
+          tableName: tournamentparticipant
+          columnName: fide_id
+          newDataType: numeric(38,0)

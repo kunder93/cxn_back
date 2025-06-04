@@ -53,7 +53,7 @@ public class MailConfig {
         /**
          * Default constructor for {@code MailHostCondition}.
          */
-        public MailHostCondition() {
+        MailHostCondition() {
             // Default constructor
         }
 
@@ -66,7 +66,7 @@ public class MailConfig {
          *         otherwise {@code false}
          */
         @Override
-        public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+        public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
             String host = context.getEnvironment().getProperty("spring.mail.host");
             return host != null && !host.isEmpty();
         }
@@ -104,6 +104,33 @@ public class MailConfig {
     private String mailPassword;
 
     /**
+     * The SMTP connection timeout in milliseconds. This value is retrieved from the
+     * application properties using the key
+     * {@code spring.mail.properties.mail.smtp.connectiontimeout}. Defaults to
+     * {@code 5000} if not specified.
+     */
+    @Value("${spring.mail.properties.mail.smtp.connectiontimeout:5000}")
+    private String connectionTimeout;
+
+    /**
+     * The SMTP read timeout in milliseconds. This value is retrieved from the
+     * application properties using the key
+     * {@code spring.mail.properties.mail.smtp.timeout}. Defaults to {@code 5000} if
+     * not specified.
+     */
+    @Value("${spring.mail.properties.mail.smtp.timeout:5000}")
+    private String timeout;
+
+    /**
+     * The SMTP write timeout in milliseconds. This value is retrieved from the
+     * application properties using the key
+     * {@code spring.mail.properties.mail.smtp.writetimeout}. Defaults to
+     * {@code 5000} if not specified.
+     */
+    @Value("${spring.mail.properties.mail.smtp.writetimeout:5000}")
+    private String writeTimeout;
+
+    /**
      * Default constructor for {@code MailConfig}. It is required by Spring for
      * component scanning and bean creation.
      */
@@ -129,6 +156,10 @@ public class MailConfig {
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.debug", "true"); // <--- activar debug SMTP
+        props.put("mail.smtp.connectiontimeout", connectionTimeout);
+        props.put("mail.smtp.timeout", timeout);
+        props.put("mail.smtp.writetimeout", writeTimeout);
 
         mailSender.setJavaMailProperties(props);
         return mailSender;

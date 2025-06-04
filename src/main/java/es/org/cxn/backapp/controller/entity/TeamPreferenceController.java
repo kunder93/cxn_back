@@ -3,9 +3,9 @@ package es.org.cxn.backapp.controller.entity;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ package es.org.cxn.backapp.controller.entity;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,6 +53,11 @@ import jakarta.validation.constraints.Size;
 public class TeamPreferenceController {
 
     /**
+     * Max length of team name.
+     */
+    private static final int TEAM_NAME_MAX_LENGTH = 100;
+
+    /**
      * The team service.
      */
     private final TeamService teamService;
@@ -64,21 +69,22 @@ public class TeamPreferenceController {
      */
     public TeamPreferenceController(final TeamService service) {
         super();
-        teamService = checkNotNull(service, "Received a null pointer as service");
+        teamService = Objects.requireNonNull(service, "Received a null pointer as service");
     }
 
     /**
-     * Adds team as user preference.
+     * Adds the specified team as the user's preferred team, or removes it if it is
+     * already set as preferred.
      *
-     * @param teamName The name of the team.
-     * @return The updated team information.
+     * @param teamName the name of the team to add or remove as a preferred team.
+     * @return the updated user team information.
      */
     @PatchMapping("/{teamName}")
-    public ResponseEntity<UserTeamInfoDto> addUserToTeam(@PathVariable
-    @Size(max = 100) final String teamName) {
+    public ResponseEntity<UserTeamInfoDto> addOrRemoveUserToTeam(@PathVariable
+    @Size(max = TEAM_NAME_MAX_LENGTH) final String teamName) {
         final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         try {
-            final var userInfo = teamService.addTeamPreference(userEmail, teamName);
+            final var userInfo = teamService.addOrRemoveTeamPreference(userEmail, teamName);
             return ResponseEntity.ok(userInfo);
         } catch (TeamServiceException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);

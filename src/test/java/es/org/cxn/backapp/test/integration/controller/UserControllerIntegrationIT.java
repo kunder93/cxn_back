@@ -126,6 +126,9 @@ class UserControllerIntegrationIT {
      */
     private static final String CHANGE_KIND_MEMBER_URL = "/api/user/changeKindOfMember";
 
+    /**
+     * Mocked image storage service.
+     */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
 
@@ -178,7 +181,7 @@ class UserControllerIntegrationIT {
     }
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
+    static void setProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> "1025");
         registry.add("spring.mail.username", () -> "test@example.com");
@@ -444,7 +447,6 @@ class UserControllerIntegrationIT {
     void testChangeMemberPasswordCurrentPasswordDontMatch() throws Exception {
         // Configurar el comportamiento del mock JavaMailSender
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-        var memberEmail = UsersControllerFactory.USER_A_EMAIL;
         var memberRequestPasswordNotValid = "456456";
         var memberNewPassword = "321321";
 
@@ -480,7 +482,6 @@ class UserControllerIntegrationIT {
     void testChangeMemberPasswordNotExistingMemberBadRequest() throws Exception {
         // Configurar el comportamiento del mock JavaMailSender
         when(javaMailSender.createMimeMessage()).thenReturn(mimeMessage);
-        final var notExistingMemberEmail = "email@email.es";
         final var currentPassword = "123123";
         final var newPassword = "321321";
         var changePasswordRequest = new UserChangePasswordRequest(currentPassword, newPassword);

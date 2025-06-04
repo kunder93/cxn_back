@@ -30,7 +30,6 @@ package es.org.cxn.backapp.test.unit.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
@@ -48,7 +47,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.google.gson.GsonBuilder;
@@ -91,11 +89,6 @@ class BookControllerTest {
      * Book publish year for test.
      */
     private static final LocalDate PUBLISH_YEAR = LocalDate.of(2024, 1, 1);
-
-    /**
-     * Mocked image file.
-     */
-    final MultipartFile mockFile = mock(MultipartFile.class);
 
     /**
      * MockMvc instance used for performing HTTP requests in the tests.
@@ -166,43 +159,6 @@ class BookControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/api/resources/book").contentType(MediaType.APPLICATION_JSON)
                 .content(bookRequestJson).accept(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest());
     }
-
-    /**
-     * Tests that a book is successfully added to the library.
-     * <p>
-     * This test performs a POST request to add a new book and verifies that the
-     * response status is CREATED (201).
-     * </p>
-     *
-     * @throws Exception if the test fails
-     */
-//    @Test
-//    @WithMockUser(username = "santi@santi.es", roles = { "ADMIN" })
-//    void testAddBookSuccess() throws Exception {
-//        // Arrange
-//        var bookRequest = new AddBookRequestDto(TEST_ISBN, "Test Book", "description", "Fiction", // gender
-//                PUBLISH_YEAR, "English", // language
-//                List.of(new AuthorRequest("Test Author", "A", "Spain")));
-//
-//        var addedBook = PersistentBookEntity.builder().isbn(TEST_ISBN).title("Test Book").publishYear(PUBLISH_YEAR)
-//                .build();
-//
-//        var gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-//                .create();
-//
-//        var bookRequestJson = gson.toJson(bookRequest);
-//        // Simulate a null or empty file
-//        MockMultipartFile imageFile = new MockMultipartFile("imageFile", "", "image/jpeg", new byte[] {});
-//
-//        when(bookService.add(any(AddBookRequestDto.class), any())).thenReturn(addedBook);
-//
-//        // Act and Assert
-//        mockMvc.perform(MockMvcRequestBuilders.multipart("/api/resources/book").file(imageFile) // Empty file
-//                .param("data", bookRequestJson) // Correctly include 'data' as a parameter
-//                .contentType(MediaType.MULTIPART_FORM_DATA).accept(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isCreated()).andExpect(jsonPath("$.isbn").value(TEST_ISBN))
-//                .andExpect(jsonPath("$.title").value("Test Book"));
-//    }
 
     /**
      * Tests that removing a book fails and returns a BAD REQUEST status.
