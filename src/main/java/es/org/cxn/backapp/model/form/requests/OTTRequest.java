@@ -12,10 +12,10 @@ package es.org.cxn.backapp.model.form.requests;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,12 +42,9 @@ import jakarta.validation.constraints.Size;
  */
 public record OTTRequest(@NotNull(message = "Email must not be null")
 @NotBlank(message = "Email must not be blank")
-@Size(max = ValidationConstants.EMAIL_MAX_SIZE,
-        message = "Email must not exceed " + ValidationConstants.EMAIL_MAX_SIZE + " characters") String email,
+@Size(max = 255, message = "Email must not exceed 255 characters") String email,
 
         @NotNull(message = "DNI must not be null")
         @NotBlank(message = "DNI must not be blank")
-        @Size(max = ValidationConstants.DNI_MAX_LENGTH,
-                message = "DNI must not exceed " + ValidationConstants.DNI_MAX_LENGTH + " characters") String dni) {
-
+        @Size(max = 9, message = "DNI must not exceed 9 characters") String dni) {
 }

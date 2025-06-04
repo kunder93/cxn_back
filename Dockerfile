@@ -35,7 +35,7 @@ ENV BUILD_PROFILE=dev
 
 # Copy the generated JAR file from the builder stage
 
-COPY --from=builder /usr/src/app/target/back-app-9.0.0-SNAPSHOT.jar /app/app.jar
+COPY --from=builder /usr/src/app/target/back-app-9.0.0-RELEASE.jar /app/app.jar
 
 # Expose ports
 EXPOSE 8080

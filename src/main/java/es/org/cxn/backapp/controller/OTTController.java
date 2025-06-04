@@ -1,8 +1,6 @@
 
 package es.org.cxn.backapp.controller;
 
-import java.util.Objects;
-
 /*-
  * #%L
  * CXN-back-app
@@ -15,10 +13,10 @@ import java.util.Objects;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -40,6 +38,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.google.common.base.Preconditions;
+
 import es.org.cxn.backapp.model.form.requests.OTTRequest;
 import es.org.cxn.backapp.model.form.requests.ResetPasswordRequest;
 import es.org.cxn.backapp.service.RecoverPasswordService;
@@ -48,60 +48,39 @@ import es.org.cxn.backapp.service.exceptions.RecoverPasswordServiceException;
 import es.org.cxn.backapp.service.exceptions.UserServiceException;
 
 /**
- * Controller for handling One-Time Token (OTT) authentication and password
- * recovery.
+ * Controlador para la gestión de tokens de un solo uso (One-Time Token, OTT) y
+ * recuperación de contraseña.
+ *
  * <p>
- * This controller provides endpoints to generate one-time tokens for password
- * recovery and to reset a user's password using a valid OTT.
+ * Este controlador permite generar un token de un solo uso y enviarlo por
+ * correo electrónico para la recuperación de contraseña. También maneja la
+ * solicitud de restablecimiento de contraseña utilizando el token recibido.
  * </p>
  *
+ * @author Santiago Paz Perez
  */
 @RestController
 @RequestMapping("/api/ott/my-generate-url")
 public class OTTController {
-    /**
-     * Service for handling One-Time Token (OTT) authentication.
-     * <p>
-     * This service is responsible for generating, validating, and consuming
-     * one-time tokens used in authentication flows.
-     * </p>
-     */
     private final OneTimeTokenService oneTimeTokenService;
-
-    /**
-     * Service for managing user-related operations.
-     * <p>
-     * This service provides methods for user authentication, registration, and
-     * password recovery.
-     * </p>
-     */
     private final UserService userService;
-
-    /**
-     * Service for handling password recovery operations.
-     * <p>
-     * This service manages the process of sending one-time tokens to users and
-     * validating their requests to reset passwords.
-     * </p>
-     */
     private final RecoverPasswordService recoverPasswordService;
 
     /**
-     * Constructs an {@code OTTController} initializing the required services.
+     * Constructor de {@code OTTController} que inicializa los servicios necesarios.
      *
-     * @param oneTimeTokenServ    the service for managing one-time tokens.
-     * @param userServ            the user management service.
-     * @param recoverPasswordServ the service for handling password recovery.
-     * @throws NullPointerException if any of the parameters is {@code null}.
+     * @param oneTimeTokenServ Servicio para la gestión de tokens de un solo uso.
+     * @param userServ         Servicio de gestión de usuarios.
+     * @throws NullPointerException si algún parámetro es {@code null}.
      */
     public OTTController(final OneTimeTokenService oneTimeTokenServ, final UserService userServ,
             final RecoverPasswordService recoverPasswordServ) {
         super();
 
-        this.oneTimeTokenService = Objects.requireNonNull(oneTimeTokenServ,
+        this.oneTimeTokenService = Preconditions.checkNotNull(oneTimeTokenServ,
                 "Received a null pointer as One time token service.");
-        this.userService = Objects.requireNonNull(userServ, "Received a null pointer as user service.");
-        this.recoverPasswordService = Objects.requireNonNull(recoverPasswordServ,
+        this.userService = Preconditions.checkNotNull(userServ, "Received a null pointer as user service.");
+        this.recoverPasswordService = Preconditions.checkNotNull(recoverPasswordServ,
                 "Received a null pointer as recover password service.");
     }
 
@@ -115,7 +94,7 @@ public class OTTController {
      * @throws ResponseStatusException if an error occurs when sending the email.
      */
     @PostMapping()
-    public ResponseEntity<String> requestOTT(@RequestBody final OTTRequest request) {
+    public ResponseEntity<String> requestOTT(@RequestBody OTTRequest request) {
         try {
             recoverPasswordService.sendToken(request.email(), request.dni());
         } catch (RecoverPasswordServiceException e) {
@@ -125,16 +104,14 @@ public class OTTController {
     }
 
     /**
-     * Resets the user's password using a valid one-time token (OTT).
+     * Permite restablecer la contraseña del usuario utilizando un token de un solo
+     * uso.
      *
-     * @param request {@link ResetPasswordRequest} containing the token and new
-     *                password.
-     * @return ResponseEntity with a success message if the password is updated
-     *         successfully, or an error response if the token is invalid or
-     *         expired.
+     * @param request Objeto que contiene el token y la nueva contraseña.
+     * @return Respuesta indicando el éxito o fallo de la operación.
      */
     @PostMapping("/password/reset")
-    public ResponseEntity<String> resetPassword(@RequestBody final ResetPasswordRequest request) {
+    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
         try {
             OneTimeToken verifiedToken = oneTimeTokenService
                     .consume(new OneTimeTokenAuthenticationToken(request.token()));
