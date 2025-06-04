@@ -1,5 +1,5 @@
 # Use Maven base image to compile the application
-FROM maven:3.9.9-eclipse-temurin-23-alpine AS builder
+FROM maven:3.9.9-eclipse-temurin-23 AS builder
 
 # Set the working directory
 WORKDIR /usr/src/app
@@ -25,7 +25,7 @@ COPY . .
 RUN mvn clean install -P${BUILD_PROFILE}
 
 # Use a lightweight Java runtime image for running the application
-FROM eclipse-temurin:23-jre-alpine
+FROM eclipse-temurin:23-jre
 
 ENV SPRING_UID=1000
 ENV SPRING_GID=1000
@@ -54,7 +54,7 @@ USER spring:spring
 RUN mkdir -p ${STORAGE_LOCATION_PATH} && chown spring:spring ${STORAGE_LOCATION_PATH}
 
 
-# Set user for run app.
+# Set user for run app.git c
 USER spring 
 # Command to run the Spring Boot application with the specified profile
 ENTRYPOINT ["sh", "-c", "java -Dspring.profiles.active=${BUILD_PROFILE} -jar /app/app.jar"]
