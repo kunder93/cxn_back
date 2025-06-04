@@ -28,6 +28,7 @@ package es.org.cxn.backapp.model;
  */
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import es.org.cxn.backapp.model.persistence.PersistentAddressEntity;
@@ -148,6 +149,13 @@ public interface UserEntity extends Serializable {
     PersistentTeamEntity getTeamPreferred();
 
     /**
+     * Get the unsubscribe initial action date time.
+     *
+     * @return The initial unsubscribe action start date time.
+     */
+    LocalDateTime getUnsubscribeDate();
+
+    /**
      * Checks if the user's account is enabled.
      *
      * @return {@code true} if the account is enabled, {@code false} otherwise.
@@ -258,5 +266,12 @@ public interface UserEntity extends Serializable {
      * @param teamPreferred The team preferred.
      */
     void setTeamPreferred(PersistentTeamEntity teamPreferred);
+
+    /**
+     * Sets unsubscribe date with time.
+     *
+     * @param date The unsubscribe start action initial moment.
+     */
+    void setUnsubscribeDate(LocalDateTime date);
 
 }

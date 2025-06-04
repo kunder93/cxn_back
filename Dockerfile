@@ -1,24 +1,37 @@
 # Use Maven base image to compile the application
-FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
+FROM maven:3.9.9-eclipse-temurin-23-alpine AS builder
 
 # Set the working directory
 WORKDIR /usr/src/app
 
-# Define an argument to specify the Maven profile
-ARG BUILD_PROFILE=dev
+# Define an argument to specify the Maven profile (By default dev profile)
+# Avaliables:  
+#   - dev: developement profile.
+#   - devdocker: same as dev but using postgresql db instead h2.
+#   - prod: production profile.
+#
+ENV BUILD_PROFILE=dev
 
 # Copy only the necessary files to download dependencies
 COPY pom.xml ./
-RUN mvn dependency:go-offline -P${BUILD_PROFILE}
+RUN mvn dependency:go-offline -P${BUILD_PROFILE} --batch-mode
 
 # Copy the rest of the application source code
 COPY . .
+
+
 
 # Build the application using the specified profile
 RUN mvn clean install -P${BUILD_PROFILE}
 
 # Use a lightweight Java runtime image for running the application
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:23-jre-alpine
+
+ENV SPRING_UID=1000
+ENV SPRING_GID=1000
+ENV STORAGE_LOCATION_PATH=/home/appStorage
+ENV BUILD_PROFILE=dev
+
 
 # Copy the generated JAR file from the builder stage
 
@@ -28,20 +41,21 @@ COPY --from=builder /usr/src/app/target/back-app-9.0.0-RELEASE.jar /app/app.jar
 EXPOSE 8080
 EXPOSE 443
 
-# Optional: Copy certificates if needed
-ARG COPY_CERTIFICATES=false
-RUN if [ "$COPY_CERTIFICATES" = "true" ]; then \
-      mkdir -p /etc/ssl/certs/xadreznaron.es /etc/ssl/certs/www.xadreznaron.es && \
-      cp /certificates/xadreznaron.es/fullchain.pem /etc/ssl/certs/xadreznaron.es/ && \
-      cp /certificates/xadreznaron.es/privkey.pem /etc/ssl/certs/xadreznaron.es/ && \
-      cp /certificates/xadreznaron.es/keystore.p12 /etc/ssl/certs/xadreznaron.es/ && \
-      cp /certificates/xadreznaron.es/newkey.jks /etc/ssl/certs/xadreznaron.es/ && \
-      cp /certificates/www.xadreznaron.es/fullchain.pem /etc/ssl/certs/www.xadreznaron.es/ && \
-      cp /certificates/www.xadreznaron.es/privkey.pem /etc/ssl/certs/www.xadreznaron.es/; \
-    fi
+# Crear grupo y usuario con UID y GID específicos
+RUN addgroup -S -g ${SPRING_GID} spring && \
+    adduser -S -u ${SPRING_UID} -G spring spring
 
-# Set an environment variable to choose the Spring profile at runtime
-ENV PROFILE=dev
+# Crear el directorio y dar permisos al usuario spring
+RUN mkdir -p ${STORAGE_LOCATION_PATH} && \
+    chown -R ${SPRING_UID}:${SPRING_GID} ${STORAGE_LOCATION_PATH}
+USER spring:spring
 
+# Crear el directorio donde se montará el volumen
+RUN mkdir -p ${STORAGE_LOCATION_PATH} && chown spring:spring ${STORAGE_LOCATION_PATH}
+
+
+# Set user for run app.
+USER spring 
 # Command to run the Spring Boot application with the specified profile
-CMD ["java", "-Dspring.profiles.active=${PROFILE}", "-jar", "/app/app.jar"]
+ENTRYPOINT ["sh", "-c", "java -Dspring.profiles.active=${BUILD_PROFILE} -jar /app/app.jar"]
+

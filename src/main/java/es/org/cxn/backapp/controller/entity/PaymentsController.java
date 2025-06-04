@@ -27,13 +27,12 @@ package es.org.cxn.backapp.controller.entity;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -53,7 +52,6 @@ import org.springframework.web.server.ResponseStatusException;
 import es.org.cxn.backapp.model.PaymentsEntity;
 import es.org.cxn.backapp.model.form.requests.payments.CreatePaymentRequest;
 import es.org.cxn.backapp.model.form.responses.payments.PaymentResponse;
-import es.org.cxn.backapp.model.persistence.payments.PersistentPaymentsEntity;
 import es.org.cxn.backapp.service.PaymentsService;
 import es.org.cxn.backapp.service.dto.PaymentDetails;
 import es.org.cxn.backapp.service.exceptions.PaymentsServiceException;
@@ -81,7 +79,7 @@ public class PaymentsController {
      */
     public PaymentsController(final PaymentsService service) {
         super();
-        paymentsService = checkNotNull(service, "Received a null pointer as service");
+        paymentsService = Objects.requireNonNull(service, "Received a null pointer as service");
     }
 
     /**
@@ -149,15 +147,15 @@ public class PaymentsController {
     @GetMapping()
     public ResponseEntity<Set<PaymentDetails>> getOwnPayments() {
         final var userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        List<PersistentPaymentsEntity> userPayments;
+        List<PaymentDetails> userPayments;
         try {
             userPayments = paymentsService.getUserPaymentsByEmail(userEmail);
 
             Set<PaymentDetails> response = new HashSet<>();
 
-            userPayments.forEach((PersistentPaymentsEntity payment) -> response.add(new PaymentDetails(payment.getId(),
-                    payment.getTitle(), payment.getDescription(), payment.getAmount(), payment.getCategory(),
-                    payment.getState(), payment.getCreatedAt(), payment.getPaidAt())));
+            userPayments.forEach((PaymentDetails payment) -> response
+                    .add(new PaymentDetails(payment.id(), payment.title(), payment.description(), payment.amount(),
+                            payment.category(), payment.state(), payment.createdAt(), payment.paidAt())));
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (PaymentsServiceException e) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -194,10 +192,10 @@ public class PaymentsController {
     @GetMapping("/user/{userDni}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('TESORERO')")
     public ResponseEntity<List<PaymentResponse>> getUserPayments(@PathVariable final String userDni) {
-        final List<PersistentPaymentsEntity> results = paymentsService.getUserPayments(userDni);
+        final List<PaymentDetails> results = paymentsService.getUserPayments(userDni);
         final List<PaymentResponse> responsesList = new ArrayList<>();
         results.forEach(
-                (PersistentPaymentsEntity paymentEntity) -> responsesList.add(new PaymentResponse(paymentEntity)));
+                (PaymentDetails paymentDetails) -> responsesList.add(new PaymentResponse(paymentDetails, userDni)));
         return new ResponseEntity<>(responsesList, HttpStatus.OK);
     }
 

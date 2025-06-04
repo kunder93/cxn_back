@@ -2,9 +2,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,10 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -97,26 +96,9 @@ public final class DefaultPaymentsService implements PaymentsService {
      */
     public DefaultPaymentsService(final PaymentsEntityRepository repository, final UserEntityRepository userRepo,
             final EmailService emailServ) {
-        paymentsRepository = checkNotNull(repository, "Payments entity repository cannot be null.");
-        userRepository = checkNotNull(userRepo, "User repository cannot be null.");
-        emailService = checkNotNull(emailServ, "Email service cannot be null.");
-    }
-
-    /**
-     * Transforms a list of PersistentPaymentsEntity objects to a list of
-     * PaymentDetails.
-     *
-     * @param payments the list of PersistentPaymentsEntity objects to transform
-     * @return an unmodifiable list of PaymentDetails, each representing a payment's
-     *         details including title, description, amount, category, state, and
-     *         timestamps
-     */
-    public static List<PaymentDetails> transformToPaymentDetails(final List<PersistentPaymentsEntity> payments) {
-        return payments.stream()
-                .map(payment -> new PaymentDetails(payment.getId(), payment.getTitle(), payment.getDescription(),
-                        payment.getAmount(), payment.getCategory(), payment.getState(), payment.getCreatedAt(),
-                        payment.getPaidAt()))
-                .toList(); // Stream.toList() for an unmodifiable list
+        paymentsRepository = Objects.requireNonNull(repository, "Payments entity repository cannot be null.");
+        userRepository = Objects.requireNonNull(userRepo, "User repository cannot be null.");
+        emailService = Objects.requireNonNull(emailServ, "Email service cannot be null.");
     }
 
     /**
@@ -136,6 +118,7 @@ public final class DefaultPaymentsService implements PaymentsService {
      *                                  {@link PaymentsState#CANCELLED} state.
      */
     @Override
+    @Transactional
     public PaymentsEntity cancelPayment(final UUID paymentId) throws PaymentsServiceException {
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
 
@@ -174,6 +157,7 @@ public final class DefaultPaymentsService implements PaymentsService {
      * @see PaymentsState
      */
     @Override
+    @Transactional
     public PaymentsEntity createPayment(final BigDecimal amount, final PaymentsCategory category,
             final String description, final String title, final String userDni) throws PaymentsServiceException {
         Objects.requireNonNull(userDni, "User DNI must not be null.");
@@ -240,6 +224,7 @@ public final class DefaultPaymentsService implements PaymentsService {
      * @see PaymentsServiceException
      */
     @Override
+    @Transactional
     public PaymentsEntity findPayment(final UUID paymentId) throws PaymentsServiceException {
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
 
@@ -256,12 +241,12 @@ public final class DefaultPaymentsService implements PaymentsService {
      *         their payments.
      */
     @Override
+    @Transactional
     public Map<String, List<PaymentDetails>> getAllUsersWithPayments() {
         // Get all users from the user service
         final var users = userRepository.findAll();
         // Create a map of user DNI to their list of payments
-        return users.stream().collect(Collectors.toMap(UserEntity::getDni,
-                user -> transformToPaymentDetails(getUserPayments(user.getDni()))));
+        return users.stream().collect(Collectors.toMap(UserEntity::getDni, user -> (getUserPayments(user.getDni()))));
     }
 
     private PersistentPaymentsEntity getPaymentEntity(final UUID paymentId) throws PaymentsServiceException {
@@ -300,20 +285,37 @@ public final class DefaultPaymentsService implements PaymentsService {
      * @throws IllegalArgumentException if the provided userDni is null or empty.
      */
     @Override
-    public List<PersistentPaymentsEntity> getUserPayments(final String userDni) {
+    @Transactional
+    public List<PaymentDetails> getUserPayments(final String userDni) {
         Objects.requireNonNull(userDni, "User DNI must not be null.");
-        return paymentsRepository.findByUserDni(userDni);
+
+        final var listPaymentEntity = paymentsRepository.findByUserDni(userDni);
+
+        List<PaymentDetails> result = new ArrayList<>();
+
+        listPaymentEntity.forEach((PersistentPaymentsEntity entity) -> {
+            result.add(new PaymentDetails(entity));
+        });
+
+        return result;
     }
 
     @Override
-    public List<PersistentPaymentsEntity> getUserPaymentsByEmail(final String email) throws PaymentsServiceException {
+    @Transactional
+    public List<PaymentDetails> getUserPaymentsByEmail(final String email) throws PaymentsServiceException {
         final var userOpt = userRepository.findByEmail(email);
         if (userOpt.isEmpty()) {
             throw new PaymentsServiceException("User with email: " + email + " not found.");
 
         }
         final var userEntity = userOpt.get();
-        return paymentsRepository.findByUserDni(userEntity.getDni());
+        final var listPaymentsEntity = paymentsRepository.findByUserDni(userEntity.getDni());
+        List<PaymentDetails> result = new ArrayList<>();
+
+        listPaymentsEntity.forEach((PersistentPaymentsEntity payment) -> {
+            result.add(new PaymentDetails(payment));
+        });
+        return result;
 
     }
 
@@ -369,6 +371,7 @@ public final class DefaultPaymentsService implements PaymentsService {
      * @throws PaymentsServiceException if a payment cannot be found.
      */
     @Override
+    @Transactional
     public void remove(final UUID paymentId) throws PaymentsServiceException {
         final Optional<PersistentPaymentsEntity> paymentOptional = paymentsRepository.findById(paymentId);
         if (paymentOptional.isEmpty()) {

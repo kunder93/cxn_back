@@ -29,6 +29,7 @@ package es.org.cxn.backapp.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,8 +47,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
-
-import com.google.common.base.Preconditions;
 
 import es.org.cxn.backapp.model.UserRoleName;
 import es.org.cxn.backapp.model.form.requests.AuthenticationRequest;
@@ -112,8 +111,7 @@ public class AuthController {
      * <strong>Dependency Requirements:</strong>
      * </p>
      * <ul>
-     * <li>All parameters must be non-null (validated via
-     * {@link Preconditions#checkNotNull})</li>
+     * <li>All parameters must be non-null
      * <li>Dependencies are typically injected by the Spring framework</li>
      * </ul>
      *
@@ -135,12 +133,13 @@ public class AuthController {
             final UserDetailsService userDetailsServ, final DefaultJwtUtils jwtUtils,
             final DefaultEmailService emailServ, final RoleService roleServ) {
         super();
-        this.jwtUtils = Preconditions.checkNotNull(jwtUtils, "Received a null pointer as jwtUtils");
-        this.userService = Preconditions.checkNotNull(serviceUser, "Received a null pointer as userService");
-        this.authManager = Preconditions.checkNotNull(authManag, "Received a null pointer as authenticationManager");
-        this.usrDtlsSrv = Preconditions.checkNotNull(userDetailsServ, "Received a null pointer as userDetailsService");
-        this.emailService = Preconditions.checkNotNull(emailServ, "Received a null pointer as email service.");
-        this.roleService = Preconditions.checkNotNull(roleServ, "Received a null pointer as email service.");
+        this.jwtUtils = Objects.requireNonNull(jwtUtils, "Received a null pointer as jwtUtils");
+        this.userService = Objects.requireNonNull(serviceUser, "Received a null pointer as userService");
+        this.authManager = Objects.requireNonNull(authManag, "Received a null pointer as authenticationManager");
+        this.usrDtlsSrv = Objects.requireNonNull(userDetailsServ, "Received a null pointer as userDetailsService");
+        this.emailService = Objects.requireNonNull(emailServ, "Received a null pointer as email service.");
+        this.roleService = Objects.requireNonNull(roleServ, "Received a null pointer as role service.");
+
     }
 
     /**

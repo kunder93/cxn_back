@@ -22,9 +22,6 @@ databaseChangeLog:
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
-              - column:
-                  name: nationality
-                  type: VARCHAR(255)
   - changeSet:
       id: library_books_table
       author: Santiago
@@ -34,7 +31,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: isbn
-                  type: BIGINT
+                  type: VARCHAR(13)
                   constraints:
                     primaryKey: true
               - column:
@@ -43,7 +40,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: gender
+                  name: genre
                   type: varchar(30)
                   constraints:
                     nullable: true
@@ -56,7 +53,12 @@ databaseChangeLog:
                   name: language
                   type: varchar(20)
                   constraints:
-                    nullable: true   
+                    nullable: true
+              - column:
+                  name: cover_src
+                  type: varchar(255)
+                  constraints:
+                    nullable: true    
   - changeSet:
       id: book_author_table
       author: Santiago
@@ -66,7 +68,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: book_isbn
-                  type: BIGINT
+                  type: VARCHAR(13)
                   constraints:
                     primaryKey: true
               - column:
@@ -86,48 +88,7 @@ databaseChangeLog:
                 baseColumnNames: author_id
                 baseTableName: author
                 referencedColumnNames: id
-                referencedTableName: author
-
-  - changeSet:
-      id: edit_book_data
-      author: Santiago
-      changes:
-        - addColumn:
-            tableName: book
-            columns:
-              - column:
-                  name: description
-                  type: text
-                  constraints:
-                    nullable: false   
-              - column:
-                  name: coverSrc
-                  type: varchar(255) 
-                  constraints:
-                    nullable: true      
-  - changeSet:
-      id: edit_author_data
-      author: Santiago
-      changes:
-        - dropColumn:
-            tableName: author
-            columns:
-              - column:
-                  name: nationality
-                  type: VARCHAR(255)
-  - changeSet:
-      id: modify_book_table_isbn_and_gender
-      author: Santiago
-      changes:
-        - modifyDataType:
-            tableName: book
-            columnName: isbn
-            newDataType: VARCHAR(13)
-        - renameColumn:
-            tableName: book
-            oldColumnName: gender
-            newColumnName: genre
-            columnDataType: VARCHAR(30)
+                referencedTableName: author     
   - changeSet:
       id: library_magazine_table
       author: Santiago
@@ -169,12 +130,7 @@ databaseChangeLog:
                   name: language
                   type: varchar(20)
                   constraints:
-                    nullable: true   
-              - column:
-                  name: description
-                  type: text
-                  constraints:
-                    nullable: false   
+                    nullable: true    
               - column:
                   name: coverSrc
                   type: varchar(255) 
@@ -209,6 +165,65 @@ databaseChangeLog:
                 baseColumnNames: author_id
                 baseTableName: author
                 referencedColumnNames: id
-                referencedTableName: author 
-            
-            
+                referencedTableName: author             
+  - changeSet:
+      id: add-description-postgresql-book
+      author: Santiago
+      dbms: postgresql
+      changes:
+        - addColumn:
+            tableName: book
+            columns:
+              - column:
+                  name: description
+                  type: oid
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-description-h2-book
+      author: Santiago
+      dbms: h2
+      changes:
+        - addColumn:
+            tableName: book
+            columns:
+              - column:
+                  name: description
+                  type: clob
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-description-postgresql-magazine
+      author: Santiago
+      dbms: postgresql
+      changes:
+        - addColumn:
+            tableName: magazine
+            columns:
+              - column:
+                  name: description
+                  type: oid
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-description-h2-magazine
+      author: Santiago
+      dbms: h2
+      changes:
+        - addColumn:
+            tableName: magazine
+            columns:
+              - column:
+                  name: description
+                  type: clob
+                  constraints:
+                    nullable: false                    
+  - changeSet:
+      id: rename-magazine-column-cover_src
+      author: Santiago
+      changes:
+        - renameColumn:
+            tableName: magazine
+            oldColumnName: coverSrc
+            newColumnName: cover_src
+            columnDataType: varchar(255)

@@ -14,11 +14,6 @@ databaseChangeLog:
               nullable: false
               unique: true
         - column:
-            name: description
-            type: text
-            constraints:
-              nullable: false
-        - column:
             name: start_date
             type: datetime
             constraints:
@@ -43,6 +38,31 @@ databaseChangeLog:
             type: varchar(120)
             constraints:
               nullable: true
-           
+- changeSet:
+    id: add-description-postgresql-activities
+    author: Santiago
+    dbms: postgresql
+    changes:
+      - addColumn:
+          tableName: activities
+          columns:
+            - column:
+                name: description
+                type: oid
+                constraints:
+                  nullable: false
+- changeSet:
+    id: add-description-h2-activities
+    author: Santiago
+    dbms: h2
+    changes:
+      - addColumn:
+          tableName: activities
+          columns:
+            - column:
+                name: description
+                type: clob
+                constraints:
+                  nullable: false      
               
             

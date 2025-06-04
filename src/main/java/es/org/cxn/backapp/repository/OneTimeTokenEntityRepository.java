@@ -33,8 +33,26 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import es.org.cxn.backapp.model.persistence.user.PersistentOneTimeTokenEntity;
 
+/**
+ * Repository interface for managing {@link PersistentOneTimeTokenEntity}
+ * entities. Extends JpaRepository to provide standard CRUD operations.
+ */
 public interface OneTimeTokenEntityRepository extends JpaRepository<PersistentOneTimeTokenEntity, String> {
+    /**
+     * Deletes all one-time token entities that have expired before the specified
+     * instant.
+     *
+     * @param now the {@link java.time.Instant} before which tokens are considered
+     *            expired and should be deleted.
+     */
     void deleteByExpiredAtBefore(java.time.Instant now);
 
+    /**
+     * Finds a one-time token entity by its token value.
+     *
+     * @param tokenValue the token value to search for.
+     * @return an {@link Optional} containing the found
+     *         {@link PersistentOneTimeTokenEntity}, or empty if none found.
+     */
     Optional<PersistentOneTimeTokenEntity> findByTokenValue(String tokenValue);
 }

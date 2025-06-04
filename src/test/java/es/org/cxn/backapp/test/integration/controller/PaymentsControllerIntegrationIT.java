@@ -95,11 +95,6 @@ class PaymentsControllerIntegrationIT {
     private static final BigDecimal PAYMENT_AMOUNT = BigDecimal.valueOf(100.00);
 
     /**
-     * URL endpoint for delete users with delete method.
-     */
-    private static final String ENDPOINT_USER_URL = "/api/user";
-
-    /**
      * The payment title used in test payment requests.
      */
     private static final String PAYMENT_TITLE = "Title Payment";
@@ -120,6 +115,9 @@ class PaymentsControllerIntegrationIT {
      */
     private static final String SIGN_IN_URL = "/api/auth/signinn";
 
+    /**
+     * Mocked image storage service.
+     */
     @MockitoBean
     private DefaultImageStorageService imageStorageService;
 
@@ -169,7 +167,7 @@ class PaymentsControllerIntegrationIT {
     }
 
     @DynamicPropertySource
-    static void setProperties(DynamicPropertyRegistry registry) {
+    static void setProperties(final DynamicPropertyRegistry registry) {
         registry.add("spring.mail.host", () -> "localhost");
         registry.add("spring.mail.port", () -> "1025");
         registry.add("spring.mail.username", () -> "test@example.com");
@@ -324,9 +322,10 @@ class PaymentsControllerIntegrationIT {
         String token = authenticateAndGetToken(UsersControllerFactory.USER_A_EMAIL,
                 UsersControllerFactory.USER_A_PASSWORD);
         // Verificar que un tesorero puede obtener todos los pagos
+        final int amountOfDni = 3;
         mockMvc.perform(get("/api/payments/getAll").header("Authorization", "Bearer " + token))
-                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(3)) // 2 DNIs en el objeto de
-                                                                                       // respuesta
+                .andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(amountOfDni))
+                // respuesta
                 .andExpect(jsonPath("$.32721860J").isArray()).andExpect(jsonPath("$.32721860J.length()").value(1))
                 // Un pago para este usuario
                 .andExpect(jsonPath("$.32721860J[0].id").exists()) // Validar que hay un pago

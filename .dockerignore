@@ -35,3 +35,8 @@ node_modules/
 
 # Test or other non-essential directories
 test/
+
+#  Maven files
+.mvn/
+mvnw
+mvnw.cmd

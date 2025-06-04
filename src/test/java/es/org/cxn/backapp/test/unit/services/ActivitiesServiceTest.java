@@ -64,6 +64,7 @@ import es.org.cxn.backapp.model.persistence.PersistentActivityEntity;
 import es.org.cxn.backapp.repository.ActivityEntityRepository;
 import es.org.cxn.backapp.service.dto.ActivityDto;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityImageNotFoundException;
+import es.org.cxn.backapp.service.exceptions.activity.ActivityNotFoundException;
 import es.org.cxn.backapp.service.exceptions.activity.ActivityServiceException;
 import es.org.cxn.backapp.service.impl.DefaultActivitiesService;
 import es.org.cxn.backapp.service.impl.storage.DefaultImageStorageService;
@@ -445,4 +446,37 @@ class ActivitiesServiceTest {
         result.close();
     }
 
+    /**
+     * Test to verify that removeActivity throws an exception when activity does not
+     * exist.
+     */
+    @Test
+    void testRemoveActivityNotFound() {
+        // Arrange
+        when(activityRepository.existsById(activityTitle)).thenReturn(false);
+
+        // Act & Assert
+        ActivityNotFoundException exception = assertThrows(ActivityNotFoundException.class, () -> {
+            activitiesService.remove(activityTitle);
+        });
+
+        assertEquals("Activity with title: " + activityTitle + " not found.", exception.getMessage());
+        verify(activityRepository, never()).deleteById(activityTitle);
+    }
+
+    /**
+     * Test to verify that removeActivity successfully deletes an existing activity.
+     */
+    @Test
+    void testRemoveActivitySuccess() throws Exception {
+        // Arrange
+        when(activityRepository.findById(activityTitle)).thenReturn(Optional.of(sampleActivity));
+
+        // Act
+        activitiesService.remove(activityTitle);
+
+        // Assert
+        verify(activityRepository, times(1)).findById(activityTitle);
+        verify(activityRepository, times(1)).deleteById(activityTitle);
+    }
 }

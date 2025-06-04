@@ -27,7 +27,7 @@ package es.org.cxn.backapp.controller.entity;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -70,7 +70,7 @@ public class RoleController {
     public RoleController(final RoleService serv) {
         super();
 
-        roleService = checkNotNull(serv, "Received a null pointer as user service");
+        roleService = Objects.requireNonNull(serv, "Received a null pointer as user service");
     }
 
     /**

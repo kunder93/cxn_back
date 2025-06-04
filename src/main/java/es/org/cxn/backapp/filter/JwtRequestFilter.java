@@ -172,7 +172,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private boolean isUnprotectedUri(final String requestURI) {
         return requestURI.startsWith("/h2-console") || requestURI.startsWith(AppURL.SIGN_UP_URL)
                 || requestURI.startsWith(AppURL.SIGN_IN_URL) || requestURI.startsWith("/api/address/getCountries")
-                || requestURI.startsWith("/getAllLichessProfiles");
+                || requestURI.startsWith("/getAllLichessProfiles") || requestURI.startsWith("/api/ott/my-generate-url");
     }
 
     /**

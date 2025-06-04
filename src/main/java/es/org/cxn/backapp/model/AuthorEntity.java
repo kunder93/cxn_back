@@ -50,7 +50,7 @@ public interface AuthorEntity extends Serializable {
      *
      * @return the author identifier.
      */
-    Long getIdentifier();
+    Long getId();
 
     /**
      * Gets the last name of the author.

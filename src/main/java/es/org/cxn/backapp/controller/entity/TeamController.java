@@ -3,9 +3,9 @@ package es.org.cxn.backapp.controller.entity;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,9 @@ package es.org.cxn.backapp.controller.entity;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,6 +63,11 @@ import jakarta.validation.constraints.Size;
 public class TeamController {
 
     /**
+     * Max length of team name.
+     */
+    private static final int TEAM_NAME_MAX_LENGTH = 100;
+
+    /**
      * The team service.
      */
     private final TeamService teamService;
@@ -75,7 +79,7 @@ public class TeamController {
      */
     public TeamController(final TeamService service) {
         super();
-        teamService = checkNotNull(service, "Received a null pointer as service");
+        teamService = Objects.requireNonNull(service, "Received a null pointer as service");
     }
 
     /**
@@ -88,7 +92,7 @@ public class TeamController {
     @PatchMapping("/{teamName}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
     public ResponseEntity<TeamInfoResponse> addUserToTeam(@PathVariable
-    @Size(max = 100) final String teamName, @RequestBody final AddUserRequest addUserRequest) {
+    @Size(max = TEAM_NAME_MAX_LENGTH) final String teamName, @RequestBody final AddUserRequest addUserRequest) {
         try {
             final var updatedTeam = teamService.addAssignedMember(teamName, addUserRequest.userEmail());
             return ResponseEntity.ok(new TeamInfoResponse(updatedTeam));
@@ -138,7 +142,7 @@ public class TeamController {
      */
     @GetMapping("/{teamName}")
     public ResponseEntity<TeamInfoResponse> getTeamInfo(@PathVariable
-    @Size(max = 100) final String teamName) {
+    @Size(max = TEAM_NAME_MAX_LENGTH) final String teamName) {
         try {
             final var team = teamService.getTeamInfo(teamName);
             return ResponseEntity.ok(new TeamInfoResponse(team));
@@ -156,7 +160,7 @@ public class TeamController {
     @DeleteMapping("/{teamName}")
     @PreAuthorize("hasRole('ADMIN') or hasRole('PRESIDENTE') or hasRole('SECRETARIO')")
     public ResponseEntity<Void> removeTeam(@PathVariable
-    @Size(max = 100) final String teamName) {
+    @Size(max = TEAM_NAME_MAX_LENGTH) final String teamName) {
         try {
             teamService.removeTeam(teamName);
             return ResponseEntity.noContent().build(); // HTTP 204 - No Content
@@ -178,10 +182,10 @@ public class TeamController {
     @DeleteMapping("/{teamName}/{userEmail}")
     public ResponseEntity<TeamInfoResponse> removeUserFromTeam(@PathVariable
     @NotBlank
-    @Size(max = 100) final String teamName,
+    @Size(max = TEAM_NAME_MAX_LENGTH) final String teamName,
             @PathVariable
             @NotBlank
-            @Email String userEmail) {
+            @Email final String userEmail) {
         try {
             final var updatedTeam = teamService.removeAssignedMember(teamName, userEmail);
             return ResponseEntity.ok(new TeamInfoResponse(updatedTeam));

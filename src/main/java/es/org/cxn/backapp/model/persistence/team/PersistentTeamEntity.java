@@ -57,6 +57,21 @@ import jakarta.persistence.Table;
 public class PersistentTeamEntity implements TeamEntity {
 
     /**
+     * The name max length allowed.
+     */
+    private static final int NAME_LENGTH = 100;
+
+    /**
+     * The category max length allowed.
+     */
+    private static final int CATEGORY_LENGTH = 100;
+
+    /**
+     * The description max length allowed.
+     */
+    private static final int DESCRIPTION_LENGTH = 100;
+
+    /**
      * Generated UID for serialization.
      */
     private static final long serialVersionUID = -2334928772024222275L;
@@ -65,19 +80,19 @@ public class PersistentTeamEntity implements TeamEntity {
      * The unique name of the team. This is the primary key.
      */
     @Id
-    @Column(name = "name", length = 100, nullable = false)
+    @Column(name = "name", length = NAME_LENGTH, nullable = false)
     private String name;
 
     /**
      * The category of the team.
      */
-    @Column(name = "category", length = 50, nullable = false)
+    @Column(name = "category", length = CATEGORY_LENGTH, nullable = false)
     private String category;
 
     /**
      * The description of the team.
      */
-    @Column(name = "description", length = 255, nullable = false)
+    @Column(name = "description", length = DESCRIPTION_LENGTH, nullable = false)
     private String description;
 
     /**
@@ -121,7 +136,7 @@ public class PersistentTeamEntity implements TeamEntity {
      * @return true if the given object is equal to this team, false otherwise.
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
@@ -197,52 +212,50 @@ public class PersistentTeamEntity implements TeamEntity {
     /**
      * Sets the category of the team.
      *
-     * @param category the category to set.
+     * @param val the category to set.
      */
     @Override
-    public void setCategory(final String category) {
-        this.category = category;
+    public void setCategory(final String val) {
+        category = val;
     }
 
     /**
      * Sets the description of the team.
      *
-     * @param description the description to set.
+     * @param val the description to set.
      */
     @Override
-    public void setDescription(final String description) {
-        this.description = description;
+    public void setDescription(final String val) {
+        description = val;
     }
 
     /**
      * Sets the name of the team.
      *
-     * @param name the name to set.
+     * @param val the name to set.
      */
     @Override
-    public void setName(final String name) {
-        this.name = name;
+    public void setName(final String val) {
+        name = val;
     }
 
     /**
      * Sets the list of users associated as assgined to team.
      *
-     * @param users a list of {@link PersistentUserEntity} to associate with the
-     *              team.
+     * @param val list of {@link PersistentUserEntity} to associate with the team.
      */
     @Override
-    public void setUsersAssigned(final List<PersistentUserEntity> users) {
-        this.usersAssigned = users;
+    public void setUsersAssigned(final List<PersistentUserEntity> val) {
+        usersAssigned = val;
     }
 
     /**
      * Sets the list of users associated as preferred to team.
      *
-     * @param users a list of {@link PersistentUserEntity} to associate with the
-     *              team.
+     * @param val a list of {@link PersistentUserEntity} to associate with the team.
      */
     @Override
-    public void setUsersPreferred(final List<PersistentUserEntity> users) {
-        this.usersPreferred = users;
+    public void setUsersPreferred(final List<PersistentUserEntity> val) {
+        usersPreferred = val;
     }
 }

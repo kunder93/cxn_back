@@ -1,6 +1,8 @@
 
 package es.org.cxn.backapp.controller.entity;
 
+import java.util.Objects;
+
 /*-
  * #%L
  * back-app
@@ -27,8 +29,6 @@ package es.org.cxn.backapp.controller.entity;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -47,8 +47,8 @@ import org.springframework.web.server.ResponseStatusException;
 import es.org.cxn.backapp.model.form.requests.ConfirmCancelFederateRequest;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList;
 import es.org.cxn.backapp.model.form.responses.FederateStateExtendedResponseList.FederateStateExtendedResponse;
-import es.org.cxn.backapp.model.form.responses.user.DniImagesResponse;
 import es.org.cxn.backapp.model.form.responses.FederateStateResponse;
+import es.org.cxn.backapp.model.form.responses.user.DniImagesResponse;
 import es.org.cxn.backapp.service.FederateStateService;
 import es.org.cxn.backapp.service.UserService;
 import es.org.cxn.backapp.service.dto.UserDniImagesDto;
@@ -134,8 +134,9 @@ public class FederateController {
      * @throws NullPointerException if the federate state service is null
      */
     public FederateController(final FederateStateService federateStateServ, final UserService userServ) {
-        federateStateService = checkNotNull(federateStateServ, "Received a null pointer as federate state service");
-        userService = checkNotNull(userServ, "Received a null pointer as user service.");
+        federateStateService = Objects.requireNonNull(federateStateServ,
+                "Received a null pointer as federate state service");
+        userService = Objects.requireNonNull(userServ, "Received a null pointer as user service.");
     }
 
     /**

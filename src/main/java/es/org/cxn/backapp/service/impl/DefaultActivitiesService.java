@@ -3,9 +3,9 @@ package es.org.cxn.backapp.service.impl;
 
 /*-
  * #%L
- * back-app
+ * CXN-back-app
  * %%
- * Copyright (C) 2022 - 2025 Circulo Xadrez Naron
+ * Copyright (C) 2022 - 2025 Círculo Xadrez Narón
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -13,10 +13,10 @@ package es.org.cxn.backapp.service.impl;
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
- *
+ * 
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- *
+ * 
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,11 +27,10 @@ package es.org.cxn.backapp.service.impl;
  * #L%
  */
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
@@ -92,8 +91,10 @@ public final class DefaultActivitiesService implements ActivitiesService {
     public DefaultActivitiesService(final ActivityEntityRepository repoActivity,
             final DefaultImageStorageService imgStorageService) {
         super();
-        this.activityRepository = checkNotNull(repoActivity, "Received a null pointer as activity repository");
-        this.imageStorageService = checkNotNull(imgStorageService, "Received a null pointer as image storage service");
+        this.activityRepository = Objects.requireNonNull(repoActivity,
+                "Received a null pointer as activity repository");
+        this.imageStorageService = Objects.requireNonNull(imgStorageService,
+                "Received a null pointer as image storage service");
     }
 
     /**
@@ -212,6 +213,29 @@ public final class DefaultActivitiesService implements ActivitiesService {
         final List<PersistentActivityEntity> activitiesList = activityRepository.findAll();
         return activitiesList.stream().map(activity -> new ActivityDto(activity.getTitle(), activity.getDescription(),
                 activity.getStartDate(), activity.getEndDate(), activity.getCategory()));
+    }
+
+    /**
+     * Removes an activity by its title.
+     *
+     * <p>
+     * If no activity exists with the specified title, an
+     * {@link ActivityNotFoundException} is thrown.
+     * </p>
+     *
+     * @param title the title of the activity to be removed; must not be null or
+     *              empty
+     * @throws ActivityNotFoundException if no activity is found with the specified
+     *                                   title
+     */
+    @Override
+    public void remove(final String title) throws ActivityNotFoundException {
+        final var activityOpt = activityRepository.findById(title);
+        // Case 1: Activity not exist
+        if (activityOpt.isEmpty()) {
+            throw new ActivityNotFoundException("Activity with title: " + title + " not found.");
+        }
+        activityRepository.deleteById(title);
     }
 
 }

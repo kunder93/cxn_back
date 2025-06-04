@@ -21,7 +21,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.1</version>
+		<version>3.4.5</version>
 		<relativePath />
 	</parent>
 
@@ -75,34 +75,49 @@
 			<id>local-repo</id>
 			<url>file://${project.basedir}/target/repo</url>
 		</repository>
-
 	</distributionManagement>
 
 	<properties>
-		<java.version>21</java.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+		<java.version>23</java.version>
+		<maven.compiler.source>23</maven.compiler.source>
+		<maven.compiler.target>23</maven.compiler.target>
 		<!-- Spring Versions -->
-		<springdoc.openapi.starter.version>2.6.0</springdoc.openapi.starter.version>
+		<springdoc.openapi.starter.version>2.8.6</springdoc.openapi.starter.version>
 		<therapi.runtime.version>0.15.0</therapi.runtime.version>
 		<jjwt.version>0.12.6</jjwt.version>
-		<junit.jupiter.version>5.11.4</junit.jupiter.version>
 		<lombok.version>1.18.36</lombok.version>
 		<pmd.plugin.version>3.26.0</pmd.plugin.version>
+		<rewrite.maven.plugin.version>6.4.0</rewrite.maven.plugin.version>
+		<rewrite.logging.frameworks.version>3.0.0</rewrite.logging.frameworks.version>
+		<rewrite.migrate.java.version>3.0.0</rewrite.migrate.java.version>
+		<tidy.maven.plugin.version>1.4.0</tidy.maven.plugin.version>
+		<apache.rat.plugin.version>0.16.1</apache.rat.plugin.version>
+		<license-maven.plugin.version>2.5.0</license-maven.plugin.version>
+		<swagger.models.jakarta.version>2.2.28</swagger.models.jakarta.version>
+		<tika.core.version>3.1.0</tika.core.version>
+		<jetty.ee10.maven.plugin.version>12.0.16</jetty.ee10.maven.plugin.version>
 		<maven.dependency.plugin.version>3.8.1</maven.dependency.plugin.version>
 		<maven.jacoco.plugin.version>0.8.12</maven.jacoco.plugin.version>
 		<maven.javadoc.plugin.version>3.11.2</maven.javadoc.plugin.version>
 		<maven.site.plugin.version>3.21.0</maven.site.plugin.version>
-		<maven.surefire.plugin.version>3.5.2</maven.surefire.plugin.version>
+		<maven.surefire.plugin.version>3.5.3</maven.surefire.plugin.version>
 		<maven.jxr.plugin.version>3.6.0</maven.jxr.plugin.version>
 		<maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
-		<maven.info.reports.plugin.version>3.8.0</maven.info.reports.plugin.version>
+		<maven.info.reports.plugin.version>3.9.0</maven.info.reports.plugin.version>
 		<maven.plugin.report.version>3.15.1</maven.plugin.report.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>	
 	</properties>
 
 	<dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
@@ -151,7 +166,7 @@
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-models-jakarta</artifactId>
-			<version>2.2.25</version>
+			<version>${swagger.models.jakarta.version}</version>
 		</dependency>
 		<!-- Spring Boot Test -->
 		<dependency>
@@ -234,7 +249,7 @@
 		<dependency>
             <groupId>org.apache.tika</groupId>
             <artifactId>tika-core</artifactId>
-            <version>2.9.1</version>
+            <version>${tika.core.version}</version>
         </dependency>
 		
 		<dependency>
@@ -284,6 +299,7 @@
 			<groupId>jakarta.mail</groupId>
 			<artifactId>jakarta.mail-api</artifactId>
 		</dependency>
+               
 		<!-- ============================================== -->
 		<!-- ================= ASPECTJ ==================== -->
 		<!-- ============================================== -->
@@ -357,10 +373,7 @@
 			<artifactId>logback-classic</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-		</dependency>
+
 		<!-- Java JWT -->
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
@@ -445,7 +458,7 @@
 			<plugin>
 				<groupId>org.eclipse.jetty.ee10</groupId>
 				<artifactId>jetty-ee10-maven-plugin</artifactId>
-				<version>12.0.16</version>
+				<version>${jetty.ee10.maven.plugin.version}</version>
 				<configuration>
 					<stopPort>8005</stopPort>
 					<stopKey>STOP</stopKey>
@@ -471,7 +484,7 @@
 			<plugin>
 				<groupId>org.openrewrite.maven</groupId>
 				<artifactId>rewrite-maven-plugin</artifactId>
-				<version>6.0.0</version>
+				<version>${rewrite.maven.plugin.version}</version>
 				<configuration>
 					<exportDatatables>true</exportDatatables>
 					<activeRecipes>
@@ -492,17 +505,17 @@
 					<dependency>
 						<groupId>org.openrewrite.recipe</groupId>
 						<artifactId>rewrite-spring</artifactId>
-						<version>6.0.0</version>
+						<version>${rewrite.maven.plugin.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>org.openrewrite.recipe</groupId>
 						<artifactId>rewrite-logging-frameworks</artifactId>
-						<version>3.0.0</version>
+						<version>${rewrite.logging.frameworks.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>org.openrewrite.recipe</groupId>
 						<artifactId>rewrite-migrate-java</artifactId>
-						<version>3.0.0</version>
+						<version>${rewrite.migrate.java.version}</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -521,7 +534,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>tidy-maven-plugin</artifactId>
-				<version>1.3.0</version>
+				<version>${tidy.maven.plugin.version}</version>
 				<executions>
 					<execution>
 						<id>validate</id>
@@ -537,7 +550,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
-				<version>2.5.0</version>
+				<version>${license-maven.plugin.version}</version>
 				<configuration>
 
 					<excludedArtifacts>swagger-ui</excludedArtifacts>
@@ -607,13 +620,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.junit.jupiter</groupId>
-						<artifactId>junit-jupiter-engine</artifactId>
-						<version>${junit.jupiter.version}</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -733,13 +739,10 @@
 							</goals>
 						</execution>
 					</executions>
-
 				</configuration>
-
 				<reportSets>
 					<reportSet>
 						<reports>
-
 							<report>summary</report>
 							<report>licenses</report>
 							<report>modules</report>
@@ -804,9 +807,9 @@
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>${maven.javadoc.plugin.version}</version>
 				<configuration>
-					<doctitle>My API for ${project.name} ${project.version}</doctitle>
+					<doctitle>API for ${project.name} ${project.version}</doctitle>
 					<windowtitle> API for ${project.name} ${project.version}</windowtitle>
-					<testDoctitle>My Test API for ${project.name}
+					<testDoctitle>Test API for ${project.name}
 						${project.version}</testDoctitle>
 					<testWindowtitle>My Test API for ${project.name}
 						${project.version}</testWindowtitle>
@@ -862,7 +865,7 @@
 			<plugin>
 				<groupId>org.apache.rat</groupId>
 				<artifactId>apache-rat-plugin</artifactId>
-				<version>0.16.1</version>
+				<version>${apache.rat.plugin.version}</version>
 				<configuration>
 					<excludes>
 						<exclude>doc/**</exclude>
@@ -906,6 +909,12 @@
 			<properties>
 				<spring.profiles.active>dev</spring.profiles.active>
 			</properties>
+		</profile>
+		<profile>
+		<id>devdocker</id>
+		<properties>
+                <spring.profiles.active>devdocker</spring.profiles.active>
+            </properties>
 		</profile>
 		<profile>
 			<id>prod</id>
