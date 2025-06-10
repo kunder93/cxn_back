@@ -22,7 +22,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.5</version>
-		<relativePath />
+		<relativePath/>
 	</parent>
 
 	<groupId>es.org.cxn</groupId>
@@ -60,7 +60,7 @@
 				<role>Developer</role>
 			</roles>
 			<timezone>+1</timezone>
-			<properties />
+			<properties/>
 		</developer>
 	</developers>
 
@@ -93,7 +93,7 @@
 		<tidy.maven.plugin.version>1.4.0</tidy.maven.plugin.version>
 		<apache.rat.plugin.version>0.16.1</apache.rat.plugin.version>
 		<license-maven.plugin.version>2.5.0</license-maven.plugin.version>
-		<swagger.models.jakarta.version>2.2.28</swagger.models.jakarta.version>
+		<swagger.models.jakarta.version>2.2.32</swagger.models.jakarta.version>
 		<tika.core.version>3.1.0</tika.core.version>
 		<jetty.ee10.maven.plugin.version>12.0.16</jetty.ee10.maven.plugin.version>
 		<maven.dependency.plugin.version>3.8.1</maven.dependency.plugin.version>
